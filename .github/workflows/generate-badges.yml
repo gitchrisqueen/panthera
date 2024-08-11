@@ -8,6 +8,8 @@ on:
 jobs:
   badges:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GH_TOKEN for the entire job
 
     steps:
       - name: Check out the repository
@@ -18,10 +20,6 @@ jobs:
 
       - name: Create Badges Directory
         run: mkdir -p badges  # Ensure the badges directory exists
-
-      - name: Set up GitHub CLI Authentication
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authentication
 
       - name: Install Dependencies
         run: npm install -g badge-maker
