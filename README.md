@@ -110,7 +110,7 @@ We welcome contributions from the community! Please refer to the [Contributing G
 
 This project is an exciting opportunity for stakeholders and investors interested in the growing sports betting market. Project Panthera is designed to scale and adapt, providing value to a wide range of users.
 
-For business inquiries, please contact [Chris Queen](mailto:chris@yourcompany.com).
+For business inquiries, please contact [Chris Queen](mailto:chris@christopherqueenconsulting.com).
 
 ## 📝 License
 
