@@ -1,7 +1,8 @@
 # Project Panthera 🐆
 
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen)
-![Ticket Status](https://img.shields.io/badge/tickets-10%20open%2C%2020%20closed-blue)
+![GitHub issues](https://img.shields.io/github/issues/gitchrisqueen/panthera)
+![GitHub closed issues](https://img.shields.io/github/issues-closed/gitchrisqueen/panthera)
 ![CI Build](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -15,6 +16,16 @@ All project documentation can be found in the [`docs`](https://github.com/gitchr
 - [Project Plan](https://github.com/gitchrisqueen/panthera/blob/main/docs/project-plan.md): Breakdown of the project milestones, tasks, and estimated hours.
 - [Project Summary](https://github.com/gitchrisqueen/panthera/blob/main/docs/project-summary.md): Overview of the product, target audience, and estimated project duration.
 - [Sports Betting Process](https://github.com/gitchrisqueen/panthera/blob/main/docs/sports_betting_process.md): Comprehensive guide to the sports betting analysis process that drives the app.
+
+## 🔑 Key Elements
+
+- [Project Overview](#project-overview)
+- [Getting Started](#getting-started)
+- [Development Workflow](#development-workflow)
+- [Features](#features)
+- [Contributing](#contributing)
+- [Stakeholders and Investors](#stakeholders-and-investors)
+- [License and Contact](#license-and-contact)
 
 ## 🚀 Getting Started
 
