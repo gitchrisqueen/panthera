@@ -119,16 +119,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact
 
 For any questions, issues, or contributions, please reach out via [GitHub Issues](https://github.com/gitchrisqueen/panthera/issues) or contact the project lead directly at [Chris Queen](mailto:chris@yourcompany.com).
-
-
-### **Key Elements in the README.md:**
-- **Badges**: Quickly communicate the project status, CI build status, and more.
-- **Documentation Links**: Direct links to all critical documents within the repository for easy access.
-- **Getting Started**: Steps for cloning the repo, installing dependencies, and running the app locally.
-- **Development Workflow**: Outlines the branching strategy, CI setup, and guidelines for submitting pull requests.
-- **Features**: Highlights the core features of the application.
-- **Contribution Guidelines**: Encourages contributions and provides basic guidelines.
-- **Stakeholders and Investors Section**: A section dedicated to attracting potential investors or stakeholders with a business interest in the project.
-- **License and Contact**: Standard information for license and contact.
-
-You can copy and paste this into your `README.md` file on GitHub. Let me know if you need any more adjustments or additional information!
