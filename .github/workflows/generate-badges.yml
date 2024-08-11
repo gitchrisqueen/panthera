@@ -1,0 +1,38 @@
+name: Generate Badges
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+
+jobs:
+  badges:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Dependencies
+        run: npm install -g badge-maker
+
+      - name: Generate Badge for Open Issues
+        run: |
+          OPEN_ISSUES=$(gh api repos/gitchrisqueen/panthera/issues | jq 'map(select(.state=="open")) | length')
+          npx badge --label "Open Issues" --message "$OPEN_ISSUES" --color "blue" > badges/open_issues.svg
+
+      - name: Generate Badge for Closed Issues
+        run: |
+          CLOSED_ISSUES=$(gh api repos/gitchrisqueen/panthera/issues?state=closed | jq 'length')
+          npx badge --label "Closed Issues" --message "$CLOSED_ISSUES" --color "green" > badges/closed_issues.svg
+
+      - name: Commit Badges
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add badges/open_issues.svg badges/closed_issues.svg
+          git commit -m "Update badges"
+          git push
