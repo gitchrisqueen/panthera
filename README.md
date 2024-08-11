@@ -1,8 +1,8 @@
 # Project Panthera 🐆
 
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen)
-![GitHub issues](https://img.shields.io/github/issues/gitchrisqueen/panthera)
-![GitHub closed issues](https://img.shields.io/github/issues-closed/gitchrisqueen/panthera)
+![Open Issues](https://gitchrisqueen.github.io/panthera/badges/open_issues.svg)
+![Closed Issues](https://gitchrisqueen.github.io/panthera/badges/closed_issues.svg)
 ![CI Build](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
