@@ -19,13 +19,12 @@ All project documentation can be found in the [`docs`](https://github.com/gitchr
 
 ## 🔑 Key Elements
 
-- [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Features](#features)
-- [Contributing](#contributing)
-- [Stakeholders and Investors](#stakeholders-and-investors)
-- [License and Contact](#license-and-contact)
+- [Development Workflow](#🛠️-development-workflow)
+- [Features](#💡-features)
+- [Contributing](#🧑‍💻-contributing)
+- [Stakeholders and Investors](#👥-stakeholders-and-investors)
+- [License and Contact](#📝-license-and-contact)
 
 ## 🚀 Getting Started
 
