@@ -27,12 +27,14 @@ jobs:
       - name: Generate Badge for Open Issues
         run: |
           OPEN_ISSUES=$(gh api -H "Accept: application/vnd.github+json" repos/gitchrisqueen/panthera/issues --jq 'map(select(.state=="open")) | length' || echo "0")
-          npx badge --label "Open Issues" --message "$OPEN_ISSUES" --color "blue" > badges/open_issues.svg
+          TIMESTAMP=$(date +%s)
+          npx badge --label "Open Issues | Updated: $TIMESTAMP" --message "$OPEN_ISSUES" --color "blue" --labelColor "grey" --style "flat" > badges/open_issues.svg
 
       - name: Generate Badge for Closed Issues
         run: |
           CLOSED_ISSUES=$(gh api -H "Accept: application/vnd.github+json" repos/gitchrisqueen/panthera/issues?state=closed --jq 'length' || echo "0")
-          npx badge --label "Closed Issues" --message "$CLOSED_ISSUES" --color "green" > badges/closed_issues.svg
+          TIMESTAMP=$(date +%s)
+          npx badge --label "Closed Issues | Updated: $TIMESTAMP" --message "$CLOSED_ISSUES" --color "green" --labelColor "grey" --style "flat" > badges/closed_issues.svg
 
       - name: Commit Badges
         run: |
