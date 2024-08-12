@@ -3,7 +3,7 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen)
 ![Open Issues](https://gitchrisqueen.github.io/panthera/badges/open_issues.svg)
 ![Closed Issues](https://gitchrisqueen.github.io/panthera/badges/closed_issues.svg)
-![CI Build](https://img.shields.io/github/actions/workflow/status/gitchrisqueen/panthera/ci.yml)
+![CI Build](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 Welcome to **Project Panthera**, a cutting-edge Sports Betting Analysis Application designed as a Software-as-a-Service (SaaS) platform. This application leverages real-time data, historical analysis, and automation to provide users with informed betting decisions.

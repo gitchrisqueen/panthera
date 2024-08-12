@@ -34,7 +34,7 @@ jobs:
         run: |
           CLOSED_ISSUES=$(gh api -H "Accept: application/vnd.github+json" repos/gitchrisqueen/panthera/issues?state=closed --jq 'length' || echo "0")
           TIMESTAMP=$(date +"%m/%d/%y")
-          npx badge "$CLOSED_ISSUES" "Closed Issues | Updated: $TIMESTAMP" "green" "grey" @flat > badges/closed_issues.svg
+          npx badge "$CLOSED_ISSUES" "Closed Issues | Updated: $TIMESTAMP" "brightgreen" "grey" @flat > badges/closed_issues.svg
 
       - name: Commit Badges
         run: |
