@@ -48,7 +48,3 @@ typings/
 *.swo
 *.bak
 *.tmp
-
-# Ignore everything under badges folder but not the folder itself
-badges/*
-!badges/.gitkeep
