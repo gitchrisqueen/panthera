@@ -38,6 +38,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add badges/open_issues.svg badges/closed_issues.svg
+          git add -f badges/open_issues.svg badges/closed_issues.svg
           git commit -m "Update badges"
           git push
