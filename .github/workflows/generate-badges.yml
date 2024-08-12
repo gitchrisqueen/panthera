@@ -39,9 +39,6 @@ jobs:
           TIMESTAMP=$(date +"%m/%d/%y")
           npx badge "$CLOSED_ISSUES" "Closed Issues | Updated: $TIMESTAMP" "brightgreen" "grey" @flat > badges/closed_issues.svg
 
-      - name: Purge Cache
-        uses: kevincobain2000/action-camo-purge@v1
-
       - name: Commit Badges
         run: |
           git config --global user.name "GitHub Actions"
@@ -49,3 +46,12 @@ jobs:
           git add -f badges/open_issues.svg badges/closed_issues.svg
           git commit -m "Update badges"
           git push
+
+      - name: Purge Cache
+        shell: bash
+        run: |
+          urls=$(curl -sLk -H "Authorization: token $GH_TOKEN" https://github.com/${{github.repository_owner}}/${{ github.event.repository.name }}/tree/${{ steps.branch-name.outputs.current_branch }} | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
+
+          while IFS= read -r line; do
+            curl -X PURGE -H "Authorization: token $GH_TOKEN" $line
+          done <<< $urls
