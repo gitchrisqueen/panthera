@@ -55,6 +55,7 @@ jobs:
       - name: Purge Cache
         shell: bash
         run: |
+          # TODO: Fix the badge generation step that purges the github cache
           #!/bin/bash
           
           # Fetch SVG files from the badges folder

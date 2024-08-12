@@ -7,6 +7,8 @@ import UserList from './components/UserList';
 import GameList from './components/GameList';
 import BettingLineList from './components/BettingLineList';
 import AlertList from './components/AlertList';
+import PastMLBGames from './components/PastMLBGames'; // Ensure this path is correct
+
 import './styles/App.css';
 
 function App() {
