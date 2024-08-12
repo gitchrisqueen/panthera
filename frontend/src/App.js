@@ -18,6 +18,7 @@ function App() {
                 <GameList />
                 <BettingLineList />
                 <AlertList />
+                 <PastMLBGames />
             </main>
             <Footer />
         </div>
