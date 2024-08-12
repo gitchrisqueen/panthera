@@ -21,6 +21,9 @@ jobs:
       - name: Create Badges Directory
         run: mkdir -p badges  # Ensure the badges directory exists
 
+      - name: Remove Old Badges
+        run: rm -f badges/*.svg  # Remove old badge files
+
       - name: Install Dependencies
         run: npm install -g badge-maker
 
@@ -36,6 +39,9 @@ jobs:
           TIMESTAMP=$(date +"%m/%d/%y")
           npx badge "$CLOSED_ISSUES" "Closed Issues | Updated: $TIMESTAMP" "brightgreen" "grey" @flat > badges/closed_issues.svg
 
+      - name: Purge Cache
+        uses: kevincobain2000/action-camo-purge@v1
+
       - name: Commit Badges
         run: |
           git config --global user.name "GitHub Actions"
@@ -43,6 +49,3 @@ jobs:
           git add -f badges/open_issues.svg badges/closed_issues.svg
           git commit -m "Update badges"
           git push
-
-      - name: Purge Cache
-        uses: kevincobain2000/action-camo-purge@v1
