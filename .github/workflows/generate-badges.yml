@@ -49,14 +49,29 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add -f badges/*.svg
-          git commit -m "Update badges"
+          git commit -m "Update badges" -a || echo "No changes to commit"
           git push
 
       - name: Purge Cache
         shell: bash
         run: |
-          urls=$(curl -sLk -H "Authorization: token $GH_TOKEN" https://github.com/${{github.repository_owner}}/${{ github.event.repository.name }}/tree/${{ steps.branch-name.outputs.current_branch }} | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
-
-          while IFS= read -r line; do
-            curl -X PURGE -H "Authorization: token $GH_TOKEN" $line
-          done <<< $urls
+          #!/bin/bash
+          
+          # Fetch SVG files from the badges folder
+          svg_files=$(find badges -name "*.svg")
+          
+          # Process each SVG file
+          for svg_file in $svg_files; do
+            # Get the raw content URL for the SVG file
+            raw_url="https://github.com/${{ github.repository }}/raw/main/$svg_file"
+          
+            # Construct the camo URL
+            camo_url=$(curl -sI -H "Authorization: token $GH_TOKEN" "$raw_url" | grep -i "location" | cut -d' ' -f2 | tr -d '\r')
+          
+            if [ -n "$camo_url" ]; then
+              echo "Purging cache for $svg_file"
+              curl -X PURGE -H "Authorization: token $GH_TOKEN" "$camo_url"
+            else
+              echo "No camo URL found for $svg_file"
+            fi
+          done
