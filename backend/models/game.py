@@ -1,3 +1,6 @@
+
+# TODO: Define the Game model. [Milestone: Database Schema]
+
 from . import db
 
 class Game(db.Model):

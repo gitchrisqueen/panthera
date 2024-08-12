@@ -1,3 +1,6 @@
+
+# TODO: Implement the main application logic. [Milestone: MVP]
+
 from flask import Flask
 from config import Config
 from models import db

@@ -1,3 +1,5 @@
+// TODO: Add error handling for API calls. [Milestone: Error Handling]
+
 const API_URL = 'http://localhost:5000';
 
 export async function fetchUsers() {

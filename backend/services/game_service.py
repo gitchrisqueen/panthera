@@ -1,3 +1,6 @@
+
+# TODO: Implement game-related services. [Milestone: Business Logic]
+
 from models import db
 from models.game import Game
 

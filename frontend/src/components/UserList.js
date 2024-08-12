@@ -1,3 +1,5 @@
+// TODO: Add user interaction features. [Milestone: User Features]
+
 import React, { useEffect, useState } from 'react';
 import { fetchUsers } from '../services/api';
 import '../styles/UserList.css';

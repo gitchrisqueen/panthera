@@ -1,3 +1,5 @@
+// TODO: Add game interaction features. [Milestone: Game Features]
+
 import React, { useEffect, useState } from 'react';
 import { fetchGames } from '../services/api';
 import '../styles/GameList.css';

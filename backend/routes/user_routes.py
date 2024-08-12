@@ -1,3 +1,6 @@
+
+# TODO: Implement user-related routes. [Milestone: API Endpoints]
+
 from flask import Blueprint, request, jsonify
 from services.user_service import UserService
 

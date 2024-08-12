@@ -1,3 +1,6 @@
+
+# TODO: Implement alert-related routes. [Milestone: API Endpoints]
+
 from flask import Blueprint, request, jsonify
 from services.alert_service import AlertService
 

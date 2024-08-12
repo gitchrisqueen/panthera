@@ -1,3 +1,6 @@
+
+# TODO: Define the User model. [Milestone: Database Schema]
+
 from . import db
 
 class User(db.Model):

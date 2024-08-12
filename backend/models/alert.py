@@ -1,3 +1,6 @@
+
+# TODO: Define the Alert model. [Milestone: Database Schema]
+
 from . import db
 
 class Alert(db.Model):

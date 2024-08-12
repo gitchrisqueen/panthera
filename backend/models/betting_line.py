@@ -1,3 +1,6 @@
+
+# TODO: Define the BettingLine model. [Milestone: Database Schema]
+
 from . import db
 
 class BettingLine(db.Model):

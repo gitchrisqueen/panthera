@@ -1,3 +1,5 @@
+// TODO: Add alert interaction features. [Milestone: Alert Features]
+
 import React, { useEffect, useState } from 'react';
 import { fetchAlerts } from '../services/api';
 import '../styles/AlertList.css';
