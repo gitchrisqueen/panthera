@@ -1,0 +1,54 @@
+# .gitignore
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Coverage
+coverage/
+*.cover
+*.lcov
+
+# Dependency directories
+jspm_packages/
+typings/
+
+# Miscellaneous
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Ignore everything under badges folder but not the folder itself
+badges/*
+!badges/.gitkeep
