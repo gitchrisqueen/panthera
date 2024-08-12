@@ -43,3 +43,6 @@ jobs:
           git add -f badges/open_issues.svg badges/closed_issues.svg
           git commit -m "Update badges"
           git push
+
+      - name: Purge Cache
+        uses: kevincobain2000/action-camo-purge@v1
