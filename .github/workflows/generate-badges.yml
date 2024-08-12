@@ -22,7 +22,12 @@ jobs:
         run: mkdir -p badges  # Ensure the badges directory exists
 
       - name: Remove Old Badges
-        run: rm -f badges/*.svg  # Remove old badge files
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git rm --cached badges/*.svg
+          git commit -m "Removing old badges"
+          git push
 
       - name: Install Dependencies
         run: npm install -g badge-maker
@@ -39,12 +44,11 @@ jobs:
           TIMESTAMP=$(date +"%m/%d/%y")
           npx badge "$CLOSED_ISSUES" "Closed Issues" "brightgreen" "grey" @flat > badges/closed_issues.svg
 
-      - name: Commit Badges
+      - name: Commit New Badges
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git rm --cached badges/open_issues.svg badges/closed_issues.svg
-          git add -f badges/open_issues.svg badges/closed_issues.svg
+          git add -f badges/*.svg
           git commit -m "Update badges"
           git push
 
