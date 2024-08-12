@@ -31,18 +31,19 @@ jobs:
         run: |
           OPEN_ISSUES=$(gh api -H "Accept: application/vnd.github+json" repos/gitchrisqueen/panthera/issues --jq 'map(select(.state=="open")) | length' || echo "0")
           TIMESTAMP=$(date +"%m/%d/%y")
-          npx badge "$OPEN_ISSUES" "Open Issues | Updated: $TIMESTAMP" "blue" "grey" @flat > badges/open_issues.svg
+          npx badge "$OPEN_ISSUES" "Open Issues" "blue" "grey" @flat > badges/open_issues.svg
 
       - name: Generate Badge for Closed Issues
         run: |
           CLOSED_ISSUES=$(gh api -H "Accept: application/vnd.github+json" repos/gitchrisqueen/panthera/issues?state=closed --jq 'length' || echo "0")
           TIMESTAMP=$(date +"%m/%d/%y")
-          npx badge "$CLOSED_ISSUES" "Closed Issues | Updated: $TIMESTAMP" "brightgreen" "grey" @flat > badges/closed_issues.svg
+          npx badge "$CLOSED_ISSUES" "Closed Issues" "brightgreen" "grey" @flat > badges/closed_issues.svg
 
       - name: Commit Badges
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git rm --cached badges/open_issues.svg badges/closed_issues.svg
           git add -f badges/open_issues.svg badges/closed_issues.svg
           git commit -m "Update badges"
           git push
