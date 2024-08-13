@@ -1,9 +1,9 @@
 # Project Panthera 🐆
 
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen)
-![Open Issues](https://gitchrisqueen.github.io/panthera/badges/open_issues.svg)
-![Closed Issues](https://gitchrisqueen.github.io/panthera/badges/closed_issues.svg)
-![CI Build](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml/badge.svg)
+[![Open Issues](https://gitchrisqueen.github.io/panthera/badges/open_issues.svg)](https://github.com/gitchrisqueen/panthera/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen)
+[![Closed Issues](https://gitchrisqueen.github.io/panthera/badges/closed_issues.svg)](https://github.com/gitchrisqueen/panthera/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aclosed)
+[![CI Build](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml/badge.svg)](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 Welcome to **Project Panthera**, a cutting-edge Sports Betting Analysis Application designed as a Software-as-a-Service (SaaS) platform. This application leverages real-time data, historical analysis, and automation to provide users with informed betting decisions.
@@ -32,9 +32,9 @@ All project documentation can be found in the [`docs`](https://github.com/gitchr
 
 To run this project locally, you'll need to have the following installed:
 
-- Node.js (v14 or higher)
+- Node.js and npm
 - Python (v3.8 or higher)
-- PostgreSQL or MongoDB
+- Docker
 - Git
 
 ### Installation
@@ -45,38 +45,26 @@ To run this project locally, you'll need to have the following installed:
    cd panthera
    ```
 
-2. **Install dependencies:**
-   ```bash
-   # For the backend
-   cd backend
-   npm install
-   # or
-   pip install -r requirements.txt
-
-   # For the frontend
-   cd ../frontend
-   npm install
-   ```
-
-3. **Configure environment variables:**
+2. **Configure environment variables:**
    - Create a `.env` file in both `backend` and `frontend` directories and fill in the necessary environment variables as described in the respective `env.example` files.
 
-4. **Run the application:**
-   ```bash
-   # Backend
-   cd backend
-   npm start
-   # or
-   python app.py
 
-   # Frontend
-   cd ../frontend
-   npm start
-   ```
+3. **Start The application:**
+
+   **Start Using Docker:**
+      ```bash
+      ./scripts/start_docker.sh 
+      ```
+
+   **or Start Locally:**
+      ```bash
+      ./scripts/start.sh
+      ```
+
 
 ## 🛠️ Development Workflow
 
-We follow Agile methodologies, with a focus on iterative development and regular feedback loops. Our ticketing system is managed via GitHub Issues and Projects.
+We follow Agile methodologies, with a focus on iterative development and regular feedback loops. Our ticketing system is managed via [GitHub Issues](https://github.com/gitchrisqueen/panthera/issues) and [Projects](https://github.com/gitchrisqueen/panthera/projects).
 
 ### Continuous Integration
 
