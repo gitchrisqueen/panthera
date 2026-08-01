@@ -20,7 +20,7 @@ from .config import config_hash, load_config
 from .grading import grade_pending
 from .matching import match_events
 from .report import write_daily_report, write_ledger_report
-from .strategy.dossier import Dossier
+from .strategy.dossier import Dossier, SeasonContext
 from .strategy.movement import extract_game_prices
 from .strategy.rules import Pass, Pick, generate_pick
 from .timeutil import ET, now_utc, utc_iso
@@ -134,23 +134,40 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
     return games
 
 
-def _build_dossier(g: mlb.GameInfo) -> Dossier:
-    dossier = Dossier(
-        era_home=g.home_pitcher.era if g.home_pitcher else None,
-        era_away=g.away_pitcher.era if g.away_pitcher else None,
-    )
+def _build_season_context(date_et: str) -> SeasonContext | None:
+    """One league-wide schedule call covering the season to date; feeds every
+    dossier's recent-outcomes/trends fields (doc §3). Returns None when the
+    MLB API is unreachable — dossier tiebreaks then simply don't fire."""
+    season = date_et[:4]
+    yesterday = str(date.fromisoformat(date_et) - timedelta(days=1))
     try:
-        season = int(g.game_date_et[:4])
-        meetings = mlb.season_meetings(
-            g.home_team_id,
-            g.away_team_id,
-            season,
-            date.fromisoformat(g.game_date_et) - timedelta(days=1),
-        )
-        dossier.first_meeting = meetings == 0
-    except Exception as exc:  # network hiccup: degrade, don't die
-        print(f"[picks] dossier enrichment failed for {g.game_pk}: {exc}", file=sys.stderr)
-    return dossier
+        finals = mlb.get_schedule_range(f"{season}-03-15", yesterday)
+    except Exception as exc:
+        print(f"[picks] season context unavailable: {exc}", file=sys.stderr)
+        return None
+    ctx = SeasonContext()
+    for g in finals:
+        if g.game_type != "R" or g.status != "Final":
+            continue
+        if g.home_score is None or g.away_score is None:
+            continue
+        ctx.add_final(g.home_team_id, g.away_team_id, g.home_score, g.away_score)
+    return ctx
+
+
+def _build_dossier(g: mlb.GameInfo, ctx: SeasonContext | None, cfg: dict) -> Dossier:
+    era_home = g.home_pitcher.era if g.home_pitcher else None
+    era_away = g.away_pitcher.era if g.away_pitcher else None
+    if ctx is None:
+        return Dossier(era_home=era_home, era_away=era_away)
+    return Dossier.from_context(
+        ctx,
+        home_key=g.home_team_id,
+        away_key=g.away_team_id,
+        era_home=era_home,
+        era_away=era_away,
+        last10_n=int(cfg.get("dossier", {}).get("last10_n", 10)),
+    )
 
 
 def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
@@ -164,6 +181,7 @@ def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
         return
 
     games = _refresh_games(d)
+    season_ctx = _build_season_context(d)
     events_by_pk = (
         lines_today.dropna(subset=["game_pk"])
         .drop_duplicates("game_pk")
@@ -193,7 +211,9 @@ def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
             if event_id
             else None
         )
-        result = generate_pick(g, event_id, prices, _build_dossier(g), cfg)
+        result = generate_pick(
+            g, event_id, prices, _build_dossier(g, season_ctx, cfg), cfg
+        )
         if isinstance(result, Pick):
             picks.append(result)
         elif isinstance(result, Pass):

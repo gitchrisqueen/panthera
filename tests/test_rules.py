@@ -116,11 +116,61 @@ def test_r5_vegas_slot_favorite_takes_run_line(cfg):
     assert result.price_american == 110
 
 
-def test_r3_neutral_no_era_passes(cfg):
+def test_r3_neutral_no_dossier_edge_passes(cfg):
     prices = _prices(away_ml_open=-160, away_ml_latest=-162)
     result = generate_pick(_game(), "e", prices, Dossier(), cfg)
     assert isinstance(result, Pass)
     assert result.rule_id == "R3"
+
+
+def test_r3_form_fallback_on_neutral_movement(cfg):
+    # No ERA data; away team is 8-2 in its last 10 vs home 3-7 -> form edge.
+    prices = _prices(away_ml_open=-160, away_ml_latest=-162)
+    dossier = Dossier(
+        last10_wins_home=3,
+        last10_games_home=10,
+        last10_wins_away=8,
+        last10_games_away=10,
+    )
+    result = generate_pick(_game(), "e", prices, dossier, cfg)
+    assert isinstance(result, Pick)
+    assert result.rule_id == "R3_form"
+    assert result.selection == "New York Yankees"
+    assert "last-10 form 3-8" in result.rationale
+
+
+def test_r3_series_fallback_when_form_is_close(cfg):
+    # No ERA, last-10 gap below threshold, but home leads the series 4-1.
+    prices = _prices(away_ml_open=-160, away_ml_latest=-162)
+    dossier = Dossier(
+        last10_wins_home=5,
+        last10_wins_away=6,
+        series_wins_home=4,
+        series_wins_away=1,
+    )
+    result = generate_pick(_game(), "e", prices, dossier, cfg)
+    assert isinstance(result, Pick)
+    assert result.rule_id == "R3_series"
+    assert result.selection == "Boston Red Sox"
+    assert "season series 4-1" in result.rationale
+
+
+def test_era_edge_outranks_form_and_series(cfg):
+    prices = _prices(away_ml_open=-160, away_ml_latest=-162)
+    dossier = Dossier(
+        era_home=3.0,
+        era_away=5.0,
+        last10_wins_home=2,
+        last10_wins_away=9,
+        series_wins_home=0,
+        series_wins_away=5,
+    )
+    result = generate_pick(_game(), "e", prices, dossier, cfg)
+    assert isinstance(result, Pick)
+    # ERA edge (home, 3.0 < 5.0) wins the cascade despite away's superior
+    # form and series lead.
+    assert result.rule_id == "R3_era"
+    assert result.selection == "Boston Red Sox"
 
 
 def test_r7_heavy_favorite_converts_to_run_line(cfg):

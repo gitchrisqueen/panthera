@@ -18,7 +18,7 @@ import pandas as pd
 
 from .. import paths
 from ..clients.mlb import GameInfo
-from ..strategy.dossier import Dossier
+from ..strategy.dossier import Dossier, SeasonContext
 from ..strategy.rules import GamePrices, Pass, Pick, generate_pick
 from ..timeutil import ET, UTC
 from .loader import load_dir
@@ -33,7 +33,11 @@ class BacktestResult:
 def _prepare_games(hist: pd.DataFrame) -> list[tuple[GameInfo, GamePrices, Dossier, dict]]:
     """Precompute per-game inputs once; reused across every config in a sweep."""
     prepared = []
-    meetings_seen: dict[tuple, int] = {}
+    # Chronological iteration + per-season contexts: each game's dossier sees
+    # only strictly earlier finals (no lookahead). Team keys are the raw
+    # abbreviations from the archive files.
+    hist = hist.sort_values(["season", "game_date"]).reset_index(drop=True)
+    contexts: dict[int, SeasonContext] = {}
     for idx, row in enumerate(hist.itertuples(index=False)):
         # Fabricate a 19:05 ET start; only the DATE matters because hybrid
         # days are skipped in backtests.
@@ -73,9 +77,16 @@ def _prepare_games(hist: pd.DataFrame) -> list[tuple[GameInfo, GamePrices, Dossi
             home_rl_price=home_rl,
             away_rl_price=vis_rl,
         )
-        pair = (row.season, *sorted([str(row.home_team), str(row.vis_team)]))
-        dossier = Dossier(first_meeting=meetings_seen.get(pair, 0) == 0)
-        meetings_seen[pair] = meetings_seen.get(pair, 0) + 1
+        ctx = contexts.setdefault(int(row.season), SeasonContext())
+        dossier = Dossier.from_context(
+            ctx, home_key=str(row.home_team), away_key=str(row.vis_team)
+        )
+        ctx.add_final(
+            str(row.home_team),
+            str(row.vis_team),
+            int(row.home_final),
+            int(row.vis_final),
+        )
         result = {
             "home_final": row.home_final,
             "vis_final": row.vis_final,
