@@ -45,9 +45,12 @@ strategy, ROI < −5% falsifies it.
 
 ### Setup
 
-The pipeline needs exactly one secret: `ODDS_API_KEY` (repo → Settings →
-Secrets and variables → Actions). Everything else is keyless; workflows
-commit with the built-in `GITHUB_TOKEN`.
+Repo Actions secrets (Settings → Secrets and variables → Actions):
+
+- `ODDS_API_KEY` — required. Free at [the-odds-api.com](https://the-odds-api.com) (500 credits/month).
+- `LUMIFY_API_KEY` — optional. Free at [lumify.ai/api-keys](https://lumify.ai/api-keys) (1,000 non-expiring credits). Enables public **betting-splits** collection in the pregame run — a direct measurement of the strategy's Public-vs-Vegas premise. If unset, splits collection skips silently and everything else still works.
+
+Everything else is keyless; workflows commit with the built-in `GITHUB_TOKEN`.
 
 ### Local development
 

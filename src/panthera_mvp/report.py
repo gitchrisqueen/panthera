@@ -229,8 +229,55 @@ def write_daily_report(
             lines.append(f"- {p.matchup}: [{p.rule_id}] {p.reason}")
         lines.append("")
 
+    lines += _splits_section(date_et, picks)
+
     if credits_note:
         lines += ["## Odds API credits", "", credits_note, ""]
 
     path.write_text("\n".join(lines) + "\n")
     return path
+
+
+def _splits_section(date_et: str, picks: pd.DataFrame) -> list[str]:
+    """Measured public-betting splits (Lumify) vs the movement-inferred pick.
+
+    Observational: splits do not influence pick generation; this section
+    exists so the ledger can eventually test whether rule R2's movement
+    inference agrees with measured public money."""
+    from .clients.lumify import load_splits
+
+    splits = load_splits()
+    if splits.empty:
+        return []
+    todays = splits[splits["game_date_et"] == date_et]
+    if todays.empty:
+        return []
+
+    picks_by_pk = (
+        picks[picks["game_date_et"] == date_et].set_index("game_pk")
+        if not picks.empty
+        else pd.DataFrame()
+    )
+    lines = [
+        "## Public betting splits (Lumify — observational)",
+        "",
+        "| Matchup | Split metrics (consensus) | Our pick |",
+        "|---|---|---|",
+    ]
+    for _event_id, grp in todays.groupby("lumify_event_id"):
+        name = grp.iloc[0]["event_name"]
+        interesting = grp[
+            grp["metric"].str.contains("ticket|money|bet|handle", case=False)
+        ]
+        shown = interesting if not interesting.empty else grp.head(6)
+        metrics = "; ".join(
+            f"{row.metric}={row.value:g}" for row in shown.head(8).itertuples()
+        )
+        pk = grp.iloc[0]["game_pk"]
+        pick_label = ""
+        if pd.notna(pk) and len(picks_by_pk) and int(pk) in picks_by_pk.index:
+            prow = picks_by_pk.loc[int(pk)]
+            pick_label = f"{prow['selection']} ({prow['rule_id']})"
+        lines.append(f"| {name} | {metrics} | {pick_label} |")
+    lines.append("")
+    return lines

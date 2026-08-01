@@ -15,7 +15,7 @@ from datetime import date, timedelta
 import pandas as pd
 
 from . import paths, store
-from .clients import espn, mlb, odds
+from .clients import espn, lumify, mlb, odds
 from .config import config_hash, load_config
 from .grading import grade_pending
 from .matching import match_events
@@ -305,6 +305,85 @@ def _espn_fallback(date_et: str) -> None:
         games.loc[mask, "run_diff"] = abs(eg.home_score - eg.away_score)
         games.loc[mask, "total_runs"] = eg.home_score + eg.away_score
     games.to_csv(paths.games_csv(), index=False)
+
+
+def match_splits_to_games(df: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
+    """Fill game_pk by parsing the Lumify event name into away/home teams and
+    matching against the day's schedule. Unparsed events keep game_pk empty —
+    the raw event name still identifies them in reports."""
+    from .matching import team_id
+
+    if df.empty or games.empty:
+        return df
+
+    def _resolve(row):
+        name = str(row["event_name"] or "")
+        for sep in (" @ ", " at ", " vs. ", " vs "):
+            if sep in name:
+                away_name, home_name = name.split(sep, 1)
+                away, home = team_id(away_name), team_id(home_name)
+                if away is None or home is None:
+                    return None
+                match = games[
+                    (games["game_date_et"] == row["game_date_et"])
+                    & (games["home_team_id"] == home)
+                    & (games["away_team_id"] == away)
+                ]
+                if not match.empty:
+                    return int(match.iloc[0]["game_pk"])
+        return None
+
+    df = df.copy()
+    df["game_pk"] = df.apply(_resolve, axis=1)
+    return df
+
+
+def cmd_splits(dry_run: bool = False) -> None:
+    cfg = load_config()
+    d = str(today_et())
+    lcfg = cfg.get("lumify", {})
+
+    if dry_run:
+        fixture = os.environ.get("PANTHERA_SPLITS_FIXTURE")
+        if not fixture:
+            raise SystemExit(
+                "--dry-run requires PANTHERA_SPLITS_FIXTURE pointing to a "
+                "recorded Lumify splits JSON"
+            )
+        with open(fixture) as fh:
+            results = json.load(fh)
+        print(f"[splits] dry-run: {len(results)} events from fixture")
+    else:
+        api_key = os.environ.get("LUMIFY_API_KEY")
+        if not api_key:
+            print("[splits] LUMIFY_API_KEY not set; skipping splits collection")
+            return
+        try:
+            results, info = lumify.fetch_splits_for_date(
+                api_key,
+                d,
+                league=lcfg.get("league", "MLB"),
+                min_credits_reserve=lcfg.get("min_credits_reserve", 50),
+            )
+        except lumify.LumifyCreditGuardError as exc:
+            print(f"[splits] SKIPPED: {exc}")
+            return
+        lumify.record_credits(info)
+        lumify.save_raw(results, d)
+        print(
+            f"[splits] {len(results)} events with splits; credits "
+            f"remaining={info.remaining}"
+        )
+
+    df = lumify.normalize(results, d)
+    if df.empty:
+        print("[splits] no split percentages found")
+        return
+    games = store.load_games()
+    df = match_splits_to_games(df, games)
+    added = lumify.append_splits(df)
+    matched = df["game_pk"].notna().sum()
+    print(f"[splits] stored {added} rows ({matched} rows matched to games)")
 
 
 def cmd_report() -> None:

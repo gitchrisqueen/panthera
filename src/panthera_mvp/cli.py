@@ -24,6 +24,11 @@ def main(argv: list[str] | None = None) -> None:
     )
     p_picks.add_argument("--dry-run", action="store_true")
 
+    p_splits = sub.add_parser(
+        "splits", help="Collect public betting splits (Lumify) for today's slate"
+    )
+    p_splits.add_argument("--dry-run", action="store_true")
+
     p_grade = sub.add_parser("grade", help="Settle pending picks with final scores")
     p_grade.add_argument("--date", default=None, help="Only grade picks for this ET date")
 
@@ -49,6 +54,10 @@ def main(argv: list[str] | None = None) -> None:
         from .pipeline import cmd_picks
 
         cmd_picks(args.window_end_et, dry_run=args.dry_run)
+    elif args.command == "splits":
+        from .pipeline import cmd_splits
+
+        cmd_splits(dry_run=args.dry_run)
     elif args.command == "grade":
         from .pipeline import cmd_grade
 
