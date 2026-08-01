@@ -69,6 +69,7 @@ See [`CLAUDE.md`](CLAUDE.md) for conventions and gotchas.
 ## 📚 Documentation
 
 - [MVP Design](docs/mvp-design.md): strategy formalization, rule table, and parameter glossary — **start here**.
+- [Data Source Registry](docs/data-sources.md): APIs in use, vetted free-API candidates (betting splits, line-movement history), and the NFL/NBA expansion blueprint.
 - [Sports Betting Process](docs/sports_betting_process.md): the original strategy outline the MVP encodes.
 - [Code Requirements](docs/code-requirements.md), [Project Plan](docs/project-plan.md), [Project Summary](docs/project-summary.md): the original SaaS specs (future phase; time estimates assume human developers).
 
