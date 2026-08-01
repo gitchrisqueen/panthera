@@ -12,6 +12,8 @@ Rule map (doc section -> id):
   R1  §2 day/slot classification (P, V, hybrid Wednesday)
   R2  §1 line-movement signal on the favorite's ML consensus
   R3  §5 base pick: P slot backs the public side, V slot backs the Vegas side
+      (neutral movement falls back through the dossier: ERA edge -> last-10
+      form -> season-series lead -> pass; rule ids R3_era/R3_form/R3_series)
   R4  §6 evenly-matched public slot -> underdog run line +1.5
   R5  §6 Vegas slot favorite -> favorite run line -1.5
   R6  §6 first meeting -> ML/RL only
@@ -129,12 +131,31 @@ def generate_pick(
             f"fav ML drifted {signal.open_price:+.0f}->{signal.latest_price:+.0f}"
         )
     else:
+        # Doc §5: "evaluate recent game outcomes, pitcher performance, and
+        # trends" — the dossier cascade breaks the tie when the line is quiet.
+        dcfg = cfg.get("dossier", {})
         edge = dossier.era_edge_side()
-        if edge is None:
-            return Pass(game.game_pk, matchup, "R3", "no movement signal, no ERA edge")
-        selection = game.home_team if edge == "home" else game.away_team
         rule_id = "R3_era"
         rationale_core = f"no movement; ERA edge {dossier.era_home} vs {dossier.era_away}"
+        if edge is None:
+            edge = dossier.form_edge_side(int(dcfg.get("min_last10_win_gap", 3)))
+            rule_id = "R3_form"
+            rationale_core = (
+                f"no movement; last-10 form {dossier.last10_wins_home}"
+                f"-{dossier.last10_wins_away} (home-away wins)"
+            )
+        if edge is None:
+            edge = dossier.series_edge_side(int(dcfg.get("min_series_lead", 2)))
+            rule_id = "R3_series"
+            rationale_core = (
+                f"no movement; season series {dossier.series_wins_home}"
+                f"-{dossier.series_wins_away} (home-away)"
+            )
+        if edge is None:
+            return Pass(
+                game.game_pk, matchup, "R3", "no movement signal, no dossier edge"
+            )
+        selection = game.home_team if edge == "home" else game.away_team
 
     sel_ml = home_ml if selection == game.home_team else away_ml
     market, line = "ml", None

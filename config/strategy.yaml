@@ -54,6 +54,15 @@ thresholds:
   # or pass.
   heavy_fav_action: run_line
 
+dossier:
+  # §3/§5: recent outcomes and trends used as tiebreakers when line movement
+  # is neutral. Cascade: ERA edge -> last-10 form -> season-series lead.
+  last10_n: 10
+  # Minimum last-10 win gap between the teams to count as a form edge. GUESS.
+  min_last10_win_gap: 3
+  # Minimum season-series win lead to count as a series edge. GUESS.
+  min_series_lead: 2
+
 staking:
   # Flat staking for the paper-trade ledger.
   flat_stake: 100

@@ -21,7 +21,7 @@ maps each statement in that outline to executable rules and named parameters.
 | R0 | §6 | Regular-season games only; must be upcoming and priced | `season.game_types` |
 | R1 | §2 | Day type from map; hybrid slots split at boundary hour | `day_map`, `hybrid_boundary_hour_et` |
 | R2 | §1 | Movement on favorite's consensus ML (median of books), open → latest snapshot; below threshold = neutral | `movement.min_move_cents` |
-| R3 | §5 | P slot backs public side; V slot backs Vegas side; neutral falls back to probable-pitcher ERA edge, else pass | — |
+| R3 | §5 | P slot backs public side; V slot backs Vegas side; neutral movement falls back through the dossier cascade: ERA edge (`R3_era`) → last-10 form (`R3_form`) → season-series lead (`R3_series`) → pass | `dossier.last10_n`, `min_last10_win_gap`, `min_series_lead` |
 | R4 | §6 | Evenly-matched P slot → underdog run line +1.5 | `thresholds.evenly_matched_max_abs_ml`, `evenly_matched_max_era_diff` |
 | R5 | §6 | V slot with favorite selected → favorite run line −1.5 | — |
 | R6 | §6 | First meeting of season → ML/RL only | derived from schedule |
@@ -59,6 +59,36 @@ override any value in `config/strategy.yaml` at any time.
   Hybrid Wednesday is untestable historically (no start times). Both
   limitations are stated in `reports/CALIBRATION.md`; forward paper-trading
   is the real test.
+
+## Fidelity to the strategy document
+
+Status of every data input named in §3/§5 ("evaluate recent game outcomes,
+pitcher performance, and trends"):
+
+| Doc input | Status |
+|---|---|
+| Pitcher performance (ERA comparison) | ✅ Implemented — probable-pitcher season ERA feeds `R3_era`, R4's evenness check, and the R8 veto |
+| Recent game outcomes (previous game) | ✅ Implemented — previous-game run differential from a league-wide season context; powers the R8 veto |
+| Last-10 record | ✅ Implemented — last-10 ML wins per team; `R3_form` tiebreak (ATS last-10 not tracked: historical archives lack it, so ML-only keeps live and backtest consistent) |
+| Head-to-head / season series | ✅ Implemented — season-series win counts; `R3_series` tiebreak and the first-meeting flag (R6) |
+| Trends *within* a series | ⚠️ Not distinguished from overall series record |
+| O/U trends | ❌ Not collected; **no totals picks are generated** — deferred until the ML/RL core has a track record |
+| Public vs Vegas money | ✅ Movement-inferred (R2/R3) + directly measured betting splits (Lumify), the latter observational only |
+| 12 PM check / final pre-game scan | ✅ Midday + pregame snapshots |
+
+The season context is built from one league-wide MLB schedule call per picks
+run (live) and incrementally per season in backtests (strictly prior games
+only — no lookahead).
+
+### Strategy version history
+
+Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
+
+- **v1 (2026-08-01):** day/slot + movement + ERA fallback; R8 defined but its
+  previous-game input was not populated live (it could never fire).
+- **v2 (2026-08-02):** dossier completed — previous-game run differential
+  (activates R8), last-10 form (`R3_form`) and season-series (`R3_series`)
+  tiebreaks per doc §3/§5. Calibration re-run under the v2 engine.
 
 ## Verdict criteria (pre-registered)
 
