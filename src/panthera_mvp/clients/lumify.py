@@ -140,10 +140,10 @@ def fetch_splits_for_date(
     return results, SplitsCreditInfo(used=last_used, remaining=last_rem)
 
 
-def save_raw(results: list[dict], date_et: str) -> None:
+def save_raw(results: list[dict], date_et: str, label: str = "manual") -> None:
     out = raw_dir(date_et)
     out.mkdir(parents=True, exist_ok=True)
-    with open(out / "splits.json", "w") as fh:
+    with open(out / f"splits-{label}.json", "w") as fh:
         json.dump(results, fh, indent=1, default=str)
 
 
@@ -163,7 +163,7 @@ def _walk_percentages(node: Any, path: tuple = ()) -> list[tuple[tuple, float]]:
     return found
 
 
-def normalize(results: list[dict], date_et: str) -> pd.DataFrame:
+def normalize(results: list[dict], date_et: str, label: str = "manual") -> pd.DataFrame:
     """Flatten splits to a long table: one row per (event, metric path)."""
     rows = []
     ts = utc_iso(now_utc())
@@ -175,6 +175,7 @@ def normalize(results: list[dict], date_et: str) -> pd.DataFrame:
                 {
                     "fetched_ts_utc": ts,
                     "game_date_et": date_et,
+                    "snapshot_label": label,
                     "lumify_event_id": ev.get("id"),
                     "event_name": ev.get("name"),
                     "starts_at_utc": ev.get("starts_at"),
@@ -187,17 +188,21 @@ def normalize(results: list[dict], date_et: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-SPLITS_KEY = ["game_date_et", "lumify_event_id", "metric"]
+SPLITS_KEY = ["game_date_et", "snapshot_label", "lumify_event_id", "metric"]
 
 
 def append_splits(df: pd.DataFrame) -> int:
-    """Upsert by (date, event, metric): re-fetches refresh the day's values."""
+    """Upsert by (date, label, event, metric): morning and pregame snapshots
+    coexist; re-running the same label refreshes its values."""
     if df.empty:
         return 0
     path = splits_csv()
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         existing = pd.read_csv(path)
+        if "snapshot_label" not in existing.columns:
+            # Rows written before labels existed came from manual runs.
+            existing["snapshot_label"] = "manual"
         merged_keys = set(map(tuple, df[SPLITS_KEY].astype(str).values))
         keep = [
             tuple(map(str, row)) not in merged_keys

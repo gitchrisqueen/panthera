@@ -249,6 +249,8 @@ def _splits_section(date_et: str, picks: pd.DataFrame) -> list[str]:
     splits = load_splits()
     if splits.empty:
         return []
+    if "snapshot_label" not in splits.columns:
+        splits["snapshot_label"] = "manual"
     todays = splits[splits["game_date_et"] == date_et]
     if todays.empty:
         return []
@@ -261,11 +263,15 @@ def _splits_section(date_et: str, picks: pd.DataFrame) -> list[str]:
     lines = [
         "## Public betting splits (Lumify — observational)",
         "",
-        "| Matchup | Split metrics (consensus) | Our pick |",
-        "|---|---|---|",
+        "| Matchup | Snapshot | Split metrics (consensus) | Our pick |",
+        "|---|---|---|---|",
     ]
     for _event_id, grp in todays.groupby("lumify_event_id"):
+        # Show the most recent snapshot for each event.
+        latest_ts = grp["fetched_ts_utc"].max()
+        grp = grp[grp["fetched_ts_utc"] == latest_ts]
         name = grp.iloc[0]["event_name"]
+        label = grp.iloc[0]["snapshot_label"]
         interesting = grp[
             grp["metric"].str.contains("ticket|money|bet|handle", case=False)
         ]
@@ -278,6 +284,6 @@ def _splits_section(date_et: str, picks: pd.DataFrame) -> list[str]:
         if pd.notna(pk) and len(picks_by_pk) and int(pk) in picks_by_pk.index:
             prow = picks_by_pk.loc[int(pk)]
             pick_label = f"{prow['selection']} ({prow['rule_id']})"
-        lines.append(f"| {name} | {metrics} | {pick_label} |")
+        lines.append(f"| {name} | {label} | {metrics} | {pick_label} |")
     lines.append("")
     return lines

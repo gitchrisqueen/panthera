@@ -10,6 +10,11 @@ on:
         description: "Use fixture splits instead of live Lumify calls"
         type: boolean
         default: false
+      label:
+        description: "Snapshot label to store the fetch under"
+        type: choice
+        options: [manual, morning, pregame]
+        default: manual
 
 permissions:
   contents: write
@@ -38,9 +43,9 @@ jobs:
           PANTHERA_SPLITS_FIXTURE: tests/fixtures/lumify_splits.json
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            panthera-mvp splits --dry-run
+            panthera-mvp splits --label "${{ inputs.label }}" --dry-run
           else
-            panthera-mvp splits
+            panthera-mvp splits --label "${{ inputs.label }}"
           fi
 
       - name: Regenerate reports

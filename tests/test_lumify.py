@@ -52,6 +52,30 @@ def test_append_splits_upserts_by_key(tmp_root, fixtures_dir):
     )
 
 
+def test_morning_and_pregame_snapshots_coexist(tmp_root, fixtures_dir):
+    morning = lumify.normalize(_fixture(fixtures_dir), "2026-08-01", "morning")
+    pregame = lumify.normalize(_fixture(fixtures_dir), "2026-08-01", "pregame")
+    pregame["value"] = pregame["value"] + 5
+    lumify.append_splits(morning)
+    lumify.append_splits(pregame)
+    stored = lumify.load_splits()
+    assert len(stored) == 20  # both snapshots kept
+    assert set(stored["snapshot_label"]) == {"morning", "pregame"}
+
+
+def test_legacy_rows_without_label_migrate_to_manual(tmp_root, fixtures_dir):
+    df = lumify.normalize(_fixture(fixtures_dir), "2026-08-01", "manual")
+    legacy = df.drop(columns=["snapshot_label"])
+    path = lumify.splits_csv()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    legacy.to_csv(path, index=False)
+    fresh = lumify.normalize(_fixture(fixtures_dir), "2026-08-01", "morning")
+    lumify.append_splits(fresh)
+    stored = lumify.load_splits()
+    assert set(stored["snapshot_label"]) == {"manual", "morning"}
+    assert len(stored) == 20
+
+
 def test_match_splits_to_games(tmp_root, fixtures_dir):
     df = lumify.normalize(_fixture(fixtures_dir), "2026-08-01")
     games = pd.DataFrame(
