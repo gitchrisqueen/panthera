@@ -49,6 +49,17 @@ jobs:
             panthera-mvp snapshot --label open
           fi
 
+      - name: Public betting splits (Lumify, morning)
+        env:
+          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
+          PANTHERA_SPLITS_FIXTURE: tests/fixtures/lumify_splits.json
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            panthera-mvp splits --label morning --dry-run
+          else
+            panthera-mvp splits --label morning
+          fi
+
       - name: Picks for afternoon games
         run: panthera-mvp picks --window-end-et 16:00
 

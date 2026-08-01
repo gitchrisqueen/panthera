@@ -338,7 +338,7 @@ def match_splits_to_games(df: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame
     return df
 
 
-def cmd_splits(dry_run: bool = False) -> None:
+def cmd_splits(label: str = "manual", dry_run: bool = False) -> None:
     cfg = load_config()
     d = str(today_et())
     lcfg = cfg.get("lumify", {})
@@ -369,13 +369,13 @@ def cmd_splits(dry_run: bool = False) -> None:
             print(f"[splits] SKIPPED: {exc}")
             return
         lumify.record_credits(info)
-        lumify.save_raw(results, d)
+        lumify.save_raw(results, d, label)
         print(
-            f"[splits] {len(results)} events with splits; credits "
+            f"[splits] {len(results)} events with splits ({label}); credits "
             f"remaining={info.remaining}"
         )
 
-    df = lumify.normalize(results, d)
+    df = lumify.normalize(results, d, label)
     if df.empty:
         print("[splits] no split percentages found")
         return

@@ -27,6 +27,9 @@ def main(argv: list[str] | None = None) -> None:
     p_splits = sub.add_parser(
         "splits", help="Collect public betting splits (Lumify) for today's slate"
     )
+    p_splits.add_argument(
+        "--label", default="manual", choices=["morning", "pregame", "manual"]
+    )
     p_splits.add_argument("--dry-run", action="store_true")
 
     p_grade = sub.add_parser("grade", help="Settle pending picks with final scores")
@@ -57,7 +60,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "splits":
         from .pipeline import cmd_splits
 
-        cmd_splits(dry_run=args.dry_run)
+        cmd_splits(label=args.label, dry_run=args.dry_run)
     elif args.command == "grade":
         from .pipeline import cmd_grade
 

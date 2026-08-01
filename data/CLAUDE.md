@@ -37,12 +37,14 @@ profit`
 `pick_id = <gamePk>-<market>-<yyyymmdd>`; append-once, settle-in-place;
 status: pending → win|loss|push|void. Picks are never deleted or re-termed.
 
-### splits/splits.csv (upsert by game_date_et + lumify_event_id + metric)
-`fetched_ts_utc, game_date_et, lumify_event_id, event_name, starts_at_utc,
-captured_at, game_pk, metric, value`
+### splits/splits.csv (upsert by game_date_et + snapshot_label + lumify_event_id + metric)
+`fetched_ts_utc, game_date_et, snapshot_label, lumify_event_id, event_name,
+starts_at_utc, captured_at, game_pk, metric, value`
 Public betting splits from Lumify, flattened from the schemaless consensus
-payload (`metric` = JSON path, e.g. `moneyline.away.tickets_pct`). Raw
-responses in `splits/raw/YYYY-MM-DD/splits.json`; credit log in
+payload (`metric` = JSON path; live field names are `bets_pct` = ticket share
+and `handle_pct` = money share, per market/side). `snapshot_label` is
+morning|pregame|manual so AM and PM captures coexist. Raw responses in
+`splits/raw/YYYY-MM-DD/splits-{label}.json`; credit log in
 `splits/credit_log.csv`. **Observational only — never an input to picks.**
 
 ### historical/ & calibration/

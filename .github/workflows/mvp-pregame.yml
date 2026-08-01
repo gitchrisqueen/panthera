@@ -51,9 +51,9 @@ jobs:
           PANTHERA_SPLITS_FIXTURE: tests/fixtures/lumify_splits.json
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            panthera-mvp splits --dry-run
+            panthera-mvp splits --label pregame --dry-run
           else
-            panthera-mvp splits
+            panthera-mvp splits --label pregame
           fi
 
       - name: Picks for evening games
