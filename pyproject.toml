@@ -1,27 +1,43 @@
-[tool.poetry]
-name = "panthera"
-version = "0.1.0"
-description = "An application for managing users, games, betting lines, and alerts."
-authors = ["Christopher Queen <christopher.queen@gmail.com>"]
-license = "MIT"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-Flask = "3.0.3"
-Flask-SQLAlchemy = "3.1.1"
-APScheduler = "3.10.4"
-requests = "2.32.3"
-PyJWT = "2.9.0"
-Werkzeug="3.0.3"
-Flask-Migrate="4.0.7"
-Flask-Script="2.0.6"
-python-dotenv="1.0.1"
-pymysql="1.1.1"
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2"
-pytest-flask = "^1.2"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "panthera-mvp"
+version = "0.1.0"
+description = "Project Panthera MVP — automated MLB betting strategy validation pipeline"
+authors = [{ name = "Christopher Queen", email = "christopher.queen@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "pandas>=2.1",
+    "PyYAML>=6.0",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+panthera-mvp = "panthera_mvp.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/panthera_mvp"]
+
+[tool.pytest.ini_options]
+# Fence: only collect the new top-level tests/ dir. backend/tests/ contains
+# broken legacy stubs that must never be collected.
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["backend", "frontend", "db", "mockup", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]

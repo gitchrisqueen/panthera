@@ -1,0 +1,84 @@
+[
+  {
+    "id": "evt-nyy-bos",
+    "sport_key": "baseball_mlb",
+    "commence_time": "2026-08-01T23:05:00Z",
+    "home_team": "Boston Red Sox",
+    "away_team": "New York Yankees",
+    "bookmakers": [
+      {
+        "key": "draftkings",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Boston Red Sox", "price": 130},
+              {"name": "New York Yankees", "price": -155}
+            ]
+          },
+          {
+            "key": "spreads",
+            "outcomes": [
+              {"name": "Boston Red Sox", "price": -125, "point": 1.5},
+              {"name": "New York Yankees", "price": 105, "point": -1.5}
+            ]
+          },
+          {
+            "key": "totals",
+            "outcomes": [
+              {"name": "Over", "price": -110, "point": 8.5},
+              {"name": "Under", "price": -110, "point": 8.5}
+            ]
+          }
+        ]
+      },
+      {
+        "key": "fanduel",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Boston Red Sox", "price": 132},
+              {"name": "New York Yankees", "price": -157}
+            ]
+          },
+          {
+            "key": "spreads",
+            "outcomes": [
+              {"name": "Boston Red Sox", "price": -122, "point": 1.5},
+              {"name": "New York Yankees", "price": 102, "point": -1.5}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evt-lad-sd",
+    "sport_key": "baseball_mlb",
+    "commence_time": "2026-08-02T00:40:00Z",
+    "home_team": "San Diego Padres",
+    "away_team": "Los Angeles Dodgers",
+    "bookmakers": [
+      {
+        "key": "draftkings",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "San Diego Padres", "price": 110},
+              {"name": "Los Angeles Dodgers", "price": -130}
+            ]
+          },
+          {
+            "key": "spreads",
+            "outcomes": [
+              {"name": "San Diego Padres", "price": -140, "point": 1.5},
+              {"name": "Los Angeles Dodgers", "price": 118, "point": -1.5}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

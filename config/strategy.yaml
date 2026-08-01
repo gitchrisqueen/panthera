@@ -1,0 +1,70 @@
+# Project Panthera — strategy parameters.
+#
+# Every tunable in the strategy lives here. Values marked GUESS are documented
+# placeholders pending calibration (`panthera-mvp calibrate --write-config`
+# writes overrides to config/strategy.calibrated.yaml, which is merged on top
+# of this file). Edit this file to override anything by hand — no code changes
+# needed. Every pick records a config_hash so results always trace back to the
+# exact parameter set that produced them.
+
+meta:
+  version: 1
+  calibrated: false
+
+season:
+  # docs/sports_betting_process.md §6: "Exclude spring training data from
+  # analysis." MLB gameType R = regular season.
+  game_types: ["R"]
+
+# §2: each day is a Public (P) or Vegas (V) day; Wednesday is explicitly
+# hybrid (AM public / PM Vegas). The doc never states the Mon-Sun mapping —
+# GUESS below, replaced by data-driven calibration.
+day_map:
+  monday: P
+  tuesday: V
+  wednesday: HYBRID
+  thursday: V
+  friday: P
+  saturday: P
+  sunday: V
+
+# §2: hybrid day boundary. Games starting before this ET hour are Public
+# slots, at/after are Vegas slots. GUESS (16 = 4:00 PM ET).
+hybrid_boundary_hour_et: 16
+
+movement:
+  # §1: line shortening (-160 -> -180) = public money; line drifting
+  # (-180 -> -160) = Vegas. Minimum absolute American-odds delta to count as
+  # a real signal rather than noise. GUESS.
+  min_move_cents: 10
+  # Consensus price = median across bookmakers at each snapshot.
+  reference: consensus_median
+
+thresholds:
+  # §6: "underdog spread in evenly matched public slots". Evenly matched =
+  # favorite ML no shorter than this. GUESS.
+  evenly_matched_max_abs_ml: 130
+  # Secondary evenness check on probable-pitcher ERA gap. GUESS.
+  evenly_matched_max_era_diff: 0.75
+  # §6: "Guidelines for high Moneyline odds (-200, -250, -300)". Picked side
+  # shorter than this triggers heavy_fav_action. GUESS (uses the doc's first
+  # tier).
+  heavy_fav_abs_ml: 200
+  # What to do with a heavy favorite pick: run_line (convert ML -> fav -1.5)
+  # or pass.
+  heavy_fav_action: run_line
+
+staking:
+  # Flat staking for the paper-trade ledger.
+  flat_stake: 100
+
+bet_limits:
+  max_picks_per_day: 6
+  one_pick_per_game: true
+
+odds_api:
+  regions: us
+  markets: [h2h, spreads, totals]
+  # Hard stop: refuse a live snapshot when the monthly credit balance is at or
+  # below this floor (free tier = 500/month, each snapshot = 3 credits).
+  min_credits_reserve: 30

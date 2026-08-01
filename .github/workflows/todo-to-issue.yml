@@ -1,5 +1,7 @@
 name: "Run TODO to Issue"
-on: [ "push" ]
+# Manual-only: the MVP data workflows push to main several times a day, and an
+# on-push trigger would re-scan the whole repo on every bot commit.
+on: ["workflow_dispatch"]
 jobs:
   build:
     runs-on: "ubuntu-latest"

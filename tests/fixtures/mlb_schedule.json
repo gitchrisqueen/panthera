@@ -1,0 +1,55 @@
+{
+  "dates": [
+    {
+      "date": "2026-08-01",
+      "games": [
+        {
+          "gamePk": 776001,
+          "gameType": "R",
+          "gameDate": "2026-08-01T23:05:00Z",
+          "doubleHeader": "N",
+          "gameNumber": 1,
+          "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+          "teams": {
+            "away": {
+              "team": {"id": 147, "name": "New York Yankees"},
+              "probablePitcher": {
+                "id": 543037,
+                "fullName": "Ace Starter",
+                "stats": [
+                  {"splits": [{"stat": {"era": "2.95"}}]}
+                ]
+              }
+            },
+            "home": {
+              "team": {"id": 111, "name": "Boston Red Sox"},
+              "probablePitcher": {
+                "id": 605155,
+                "fullName": "Sox Starter",
+                "stats": [
+                  {"splits": [{"stat": {"era": "4.10"}}]}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "gamePk": 776002,
+          "gameType": "R",
+          "gameDate": "2026-08-02T00:40:00Z",
+          "doubleHeader": "N",
+          "gameNumber": 1,
+          "status": {"abstractGameState": "Preview", "detailedState": "Scheduled"},
+          "teams": {
+            "away": {
+              "team": {"id": 119, "name": "Los Angeles Dodgers"}
+            },
+            "home": {
+              "team": {"id": 135, "name": "San Diego Padres"}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

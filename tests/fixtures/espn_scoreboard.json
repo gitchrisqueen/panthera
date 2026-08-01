@@ -1,0 +1,15 @@
+{
+  "events": [
+    {
+      "competitions": [
+        {
+          "status": {"type": {"completed": true}},
+          "competitors": [
+            {"homeAway": "home", "team": {"displayName": "Boston Red Sox"}, "score": "3"},
+            {"homeAway": "away", "team": {"displayName": "New York Yankees"}, "score": "5"}
+          ]
+        }
+      ]
+    }
+  ]
+}
