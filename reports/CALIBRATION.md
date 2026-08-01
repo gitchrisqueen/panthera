@@ -1,6 +1,6 @@
 # Calibration Report — P/V Day Map & Thresholds
 
-Generated: 2026-08-01T03:37:25Z
+Generated: 2026-08-01T18:04:36Z
 
 ## Data coverage
 
@@ -27,20 +27,20 @@ Grid: 64 day-maps (Wed fixed HYBRID) × min_move [5, 10, 15, 20] × evenly-match
 
 | Day map (M,T,Th,F,Sa,Su) | min_move | even_ml | heavy_fav | Train bets | Train ROI | Valid bets | Valid ROI |
 |---|---|---|---|---|---|---|---|
-| PVPPPP | 10 | 120 | 200 | 6345 | -2.31% | 2539 | +1.55% |
-| PVPPPP | 10 | 120 | 300 | 6345 | -2.31% | 2539 | +1.55% |
-| PVPPPP | 10 | 120 | 250 | 6345 | -2.31% | 2539 | +1.55% |
-| VVPPPP | 5 | 120 | 300 | 8403 | -2.10% | 3406 | +1.32% |
-| VVPPPP | 5 | 120 | 250 | 8403 | -2.10% | 3406 | +1.32% |
-| VVPPPP | 5 | 120 | 200 | 8403 | -2.10% | 3406 | +1.32% |
-| PVPVPP | 10 | 120 | 300 | 6345 | -2.30% | 2539 | +1.28% |
-| PVPVPP | 10 | 120 | 250 | 6345 | -2.30% | 2539 | +1.28% |
-| PVPVPP | 10 | 120 | 200 | 6345 | -2.30% | 2539 | +1.28% |
-| VVPPPP | 10 | 120 | 300 | 6345 | -2.53% | 2539 | +1.26% |
+| VVPPPP | 5 | 120 | 200 | 9542 | -1.83% | 3853 | +1.40% |
+| VVPPPP | 5 | 120 | 300 | 9542 | -1.83% | 3853 | +1.40% |
+| VVPPPP | 5 | 120 | 250 | 9542 | -1.83% | 3853 | +1.40% |
+| VVPPPV | 5 | 120 | 250 | 9542 | -1.96% | 3853 | +0.89% |
+| VVPPPV | 5 | 120 | 200 | 9542 | -1.96% | 3853 | +0.89% |
+| VVPPPV | 5 | 120 | 300 | 9542 | -1.96% | 3853 | +0.89% |
+| PVPPPP | 10 | 120 | 250 | 8653 | -1.93% | 3505 | +0.82% |
+| PVPPPP | 10 | 120 | 300 | 8653 | -1.93% | 3505 | +0.82% |
+| PVPPPP | 10 | 120 | 200 | 8653 | -1.93% | 3505 | +0.82% |
+| PVPPPP | 5 | 120 | 200 | 9542 | -2.17% | 3853 | +0.80% |
 
 ## Chosen config
 
-`PVPPPP-m10-e120-h200` — day map **PVPPPP** over (Mon, Tue, Thu, Fri, Sat, Sun), Wednesday HYBRID. Validation ROI +1.55% on 2539 bets (train -2.31% on 6345).
+`VVPPPP-m5-e120-h200` — day map **VVPPPP** over (Mon, Tue, Thu, Fri, Sat, Sun), Wednesday HYBRID. Validation ROI +1.40% on 3853 bets (train -1.83% on 9542).
 
 Written to `config/strategy.calibrated.yaml` when `--write-config` is used;
 override any value by editing `config/strategy.yaml`.
