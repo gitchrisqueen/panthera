@@ -3,18 +3,18 @@
 # these values were chosen. Safe to edit or delete.
 meta:
   calibrated: true
-  calibrated_at: '2026-08-01T02:59:54Z'
-  config_id: VVPPPV-m10-e130-h200
+  calibrated_at: '2026-08-01T03:37:25Z'
+  config_id: PVPPPP-m10-e120-h200
 day_map:
   wednesday: HYBRID
-  monday: V
+  monday: P
   tuesday: V
   thursday: P
   friday: P
   saturday: P
-  sunday: V
+  sunday: P
 movement:
   min_move_cents: 10
 thresholds:
-  evenly_matched_max_abs_ml: 130
+  evenly_matched_max_abs_ml: 120
   heavy_fav_abs_ml: 200
