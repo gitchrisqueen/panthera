@@ -1,0 +1,50 @@
+[
+  {
+    "event": {
+      "id": 90001,
+      "name": "New York Yankees @ Boston Red Sox",
+      "sport": "baseball",
+      "league": "MLB",
+      "starts_at": "2026-08-01T23:05:00Z",
+      "status": "scheduled"
+    },
+    "splits": {
+      "event_id": 90001,
+      "available": true,
+      "captured_at": "2026-08-01T20:00:00Z",
+      "consensus": {
+        "moneyline": {
+          "home": {"tickets_pct": 38, "money_pct": 45},
+          "away": {"tickets_pct": 62, "money_pct": 55}
+        },
+        "spread": {
+          "home": {"tickets_pct": 41},
+          "away": {"tickets_pct": 59}
+        }
+      },
+      "books": []
+    }
+  },
+  {
+    "event": {
+      "id": 90002,
+      "name": "Los Angeles Dodgers @ San Diego Padres",
+      "sport": "baseball",
+      "league": "MLB",
+      "starts_at": "2026-08-02T00:40:00Z",
+      "status": "scheduled"
+    },
+    "splits": {
+      "event_id": 90002,
+      "available": true,
+      "captured_at": "2026-08-01T20:00:00Z",
+      "consensus": {
+        "moneyline": {
+          "home": {"tickets_pct": 30, "money_pct": 28},
+          "away": {"tickets_pct": 70, "money_pct": 72}
+        }
+      },
+      "books": []
+    }
+  }
+]

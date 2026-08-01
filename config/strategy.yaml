@@ -68,3 +68,10 @@ odds_api:
   # Hard stop: refuse a live snapshot when the monthly credit balance is at or
   # below this floor (free tier = 500/month, each snapshot = 3 credits).
   min_credits_reserve: 30
+
+lumify:
+  # Public betting splits (observational — never changes picks). Free tier =
+  # 1,000 non-expiring credits; one slate fetch = ~16 calls, so pregame-only
+  # collection lasts roughly two months. Guard mirrors odds_api.
+  league: MLB
+  min_credits_reserve: 50

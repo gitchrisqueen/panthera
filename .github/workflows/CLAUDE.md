@@ -6,7 +6,7 @@
 |---|---|---|---|
 | mvp-morning | 35 14 * * * | 10:35 | grade yesterday → snapshot `open` (3 cr) → picks for pre-16:00 starts → report |
 | mvp-midday | 5 16 * * * | 12:05 | snapshot `midday` (3 cr) → report |
-| mvp-pregame | 50 20 * * * | 16:50 | snapshot `pregame` (3 cr) → picks for evening slate → report |
+| mvp-pregame | 50 20 * * * | 16:50 | snapshot `pregame` (3 cr) → Lumify splits (~16 cr of its own 1,000 pool) → picks for evening slate → report |
 | mvp-calibrate | manual | — | download archives → calibration sweep → write calibrated config |
 | ci | push/PR | — | ruff + pytest on `tests/` only |
 
