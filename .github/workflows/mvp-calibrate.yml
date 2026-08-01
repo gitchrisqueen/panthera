@@ -1,0 +1,81 @@
+name: MVP Historical Calibration
+
+# One-off (manual) workflow: downloads free historical MLB odds archives,
+# commits them, then runs the backtest calibration sweep to derive the P/V
+# day map + thresholds and writes config/strategy.calibrated.yaml and
+# reports/CALIBRATION.md. Runs on a GitHub runner because the archives and
+# calibration need unrestricted network + ~30 min of CPU.
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "Season range to download"
+        default: "2014-2023"
+      train:
+        description: "Training seasons"
+        default: "2014-2019"
+      validate:
+        description: "Validation seasons (2020 skipped: 60-game season)"
+        default: "2021-2023"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Download historical odds archives
+        run: |
+          mkdir -p data/historical/raw
+          IFS=- read LO HI <<< "${{ inputs.seasons }}"
+          for Y in $(seq $LO $HI); do
+            [ "$Y" = "2020" ] && continue  # 60-game COVID season skews rates
+            OUT="data/historical/raw/mlb odds $Y.xlsx"
+            [ -s "$OUT" ] && { echo "$Y already present"; continue; }
+            for URL in \
+              "https://www.sportsbookreviewsonline.com/scoresoddsarchives/mlb/mlb%20odds%20$Y.xlsx" \
+              "https://www.sportsbookreviewsonline.com/wp-content/uploads/sportsbookreviewsonline_com_737/mlb-odds-$Y.xlsx"; do
+              echo "trying $URL"
+              if curl -fsSL --retry 3 -o "$OUT" "$URL" && [ -s "$OUT" ]; then
+                echo "downloaded $Y"; break
+              fi
+              rm -f "$OUT"
+            done
+            [ -s "$OUT" ] || echo "WARNING: season $Y unavailable from known sources"
+          done
+          ls -la data/historical/raw/
+
+      - name: Run calibration sweep
+        run: |
+          panthera-mvp calibrate \
+            --train "${{ inputs.train }}" \
+            --validate "${{ inputs.validate }}" \
+            --write-config
+
+      - name: Commit & push
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data config reports
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: historical calibration sweep [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
