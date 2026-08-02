@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-02T16:26:51Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-02T21:11:01Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-02T16:26:51Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 3-3-0 (0 void)
 - **P/L:** $+20.61 on $600 risked
 - **ROI:** +3.44%
-- **Pending picks:** 6
+- **Pending picks:** 7
 
 ## Breakdown by rule
 
@@ -56,3 +56,4 @@ Updated: 2026-08-02T16:26:51Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-02 | Arizona Diamondbacks @ Cleveland Guardians | Arizona Diamondbacks ML | +148 | R3_form | pending |  |
 | 2026-08-02 | Pittsburgh Pirates @ Cincinnati Reds | Cincinnati Reds ML | -138 | R3_form | pending |  |
 | 2026-08-02 | Chicago White Sox @ Tampa Bay Rays | Tampa Bay Rays ML | -148 | R3_series | pending |  |
+| 2026-08-02 | Boston Red Sox @ Los Angeles Dodgers | Boston Red Sox ML | +155 | R3_series | pending |  |
