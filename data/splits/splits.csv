@@ -747,3 +747,302 @@ fetched_ts_utc,game_date_et,lumify_event_id,event_name,starts_at_utc,captured_at
 2026-08-01T21:10:40Z,2026-08-01,11625,New York Yankees @ Chicago Cubs,2026-08-01T23:15:00Z,2026-08-01T21:05:14Z,824649,total.under.bets_pct,42.0,pregame
 2026-08-01T21:10:40Z,2026-08-01,11625,New York Yankees @ Chicago Cubs,2026-08-01T23:15:00Z,2026-08-01T21:05:14Z,824649,total.under.handle_pct,51.0,pregame
 2026-08-01T21:10:40Z,2026-08-01,11625,New York Yankees @ Chicago Cubs,2026-08-01T23:15:00Z,2026-08-01T21:05:14Z,824649,total.under.line,6.5,pregame
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,moneyline.home.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,moneyline.home.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,moneyline.away.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,moneyline.away.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,spread.home.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,spread.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,spread.away.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,spread.away.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.over.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.over.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.over.line,12.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.under.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.under.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11626,Kansas City Royals @ Colorado Rockies,2026-08-02T00:10:00Z,2026-08-02T00:05:17Z,824323,total.under.line,12.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,moneyline.home.bets_pct,83.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,moneyline.home.handle_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,moneyline.away.bets_pct,17.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,moneyline.away.handle_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,spread.home.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,spread.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,spread.away.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,spread.away.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.over.bets_pct,33.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.over.handle_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.over.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.under.bets_pct,67.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.under.handle_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11627,San Francisco Giants @ San Diego Padres,2026-08-02T00:40:00Z,2026-08-02T00:35:19Z,823270,total.under.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,moneyline.home.bets_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,moneyline.home.handle_pct,21.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,moneyline.away.bets_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,moneyline.away.handle_pct,79.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,spread.home.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,spread.home.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,spread.away.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,spread.away.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.over.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.over.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.over.line,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.under.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.under.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11628,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T01:10:00Z,2026-08-02T01:05:13Z,823919,total.under.line,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,moneyline.home.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,moneyline.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,moneyline.away.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,moneyline.away.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,spread.home.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,spread.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,spread.away.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,spread.away.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.over.bets_pct,40.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.over.handle_pct,12.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.over.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.under.bets_pct,60.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.under.handle_pct,88.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11629,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T01:38:00Z,2026-08-02T01:35:16Z,823996,total.under.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,moneyline.home.bets_pct,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,moneyline.home.handle_pct,1.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,moneyline.away.bets_pct,91.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,moneyline.away.handle_pct,99.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,spread.home.bets_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,spread.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,spread.away.bets_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,spread.away.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.over.bets_pct,20.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.over.handle_pct,7.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.over.line,11.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.under.bets_pct,80.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.under.handle_pct,93.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11630,Detroit Tigers @ Athletics,2026-08-02T01:40:00Z,2026-08-02T01:35:16Z,824971,total.under.line,11.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,moneyline.home.bets_pct,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,moneyline.home.handle_pct,6.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,moneyline.away.bets_pct,91.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,moneyline.away.handle_pct,94.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,spread.home.bets_pct,20.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,spread.home.handle_pct,2.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,spread.away.bets_pct,80.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,spread.away.handle_pct,98.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.over.bets_pct,22.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.over.handle_pct,13.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.over.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.under.bets_pct,78.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.under.handle_pct,87.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11673,Philadelphia Phillies @ Baltimore Orioles,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824807,total.under.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,moneyline.home.bets_pct,71.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,moneyline.home.handle_pct,56.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,moneyline.away.bets_pct,29.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,moneyline.away.handle_pct,44.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,spread.home.bets_pct,77.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,spread.home.handle_pct,52.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,spread.away.bets_pct,23.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,spread.away.handle_pct,48.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.over.bets_pct,46.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.over.handle_pct,63.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.over.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.under.bets_pct,54.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.under.handle_pct,37.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11674,Washington Nationals @ Atlanta Braves,2026-08-02T17:35:00Z,2026-08-02T14:35:16Z,824891,total.under.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,moneyline.home.bets_pct,30.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,moneyline.home.handle_pct,14.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,moneyline.away.bets_pct,70.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,moneyline.away.handle_pct,86.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,spread.home.bets_pct,60.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,spread.home.handle_pct,38.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,spread.away.bets_pct,40.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,spread.away.handle_pct,62.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.over.bets_pct,74.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.over.handle_pct,74.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.over.line,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.under.bets_pct,26.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.under.handle_pct,26.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11675,St. Louis Cardinals @ Toronto Blue Jays,2026-08-02T17:37:00Z,2026-08-02T14:35:16Z,822783,total.under.line,9.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,moneyline.home.bets_pct,63.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,moneyline.home.handle_pct,78.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,moneyline.away.bets_pct,37.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,moneyline.away.handle_pct,22.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,spread.home.bets_pct,47.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,spread.home.handle_pct,58.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,spread.away.bets_pct,53.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,spread.away.handle_pct,42.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.over.bets_pct,48.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.over.handle_pct,38.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.over.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.under.bets_pct,52.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.under.handle_pct,62.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11676,Arizona Diamondbacks @ Cleveland Guardians,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824404,total.under.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,moneyline.home.bets_pct,88.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,moneyline.home.handle_pct,96.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,moneyline.away.bets_pct,12.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,moneyline.away.handle_pct,4.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,spread.home.bets_pct,46.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,spread.home.handle_pct,73.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,spread.away.bets_pct,54.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,spread.away.handle_pct,27.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.over.bets_pct,65.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.over.handle_pct,63.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.over.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.under.bets_pct,35.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.under.handle_pct,37.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11677,Pittsburgh Pirates @ Cincinnati Reds,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,824483,total.under.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,moneyline.home.bets_pct,89.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,moneyline.home.handle_pct,98.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,moneyline.away.bets_pct,11.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,moneyline.away.handle_pct,2.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,spread.home.bets_pct,22.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,spread.home.handle_pct,31.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,spread.away.bets_pct,78.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,spread.away.handle_pct,69.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.over.bets_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.over.handle_pct,68.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.over.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.under.bets_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.under.handle_pct,32.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11678,Chicago White Sox @ Tampa Bay Rays,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,822943,total.under.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,moneyline.home.bets_pct,12.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,moneyline.home.handle_pct,14.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,moneyline.away.bets_pct,88.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,moneyline.away.handle_pct,86.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,spread.home.bets_pct,52.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,spread.home.handle_pct,31.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,spread.away.bets_pct,48.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,spread.away.handle_pct,69.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.over.bets_pct,54.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.over.handle_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.over.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.under.bets_pct,46.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.under.handle_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11679,Miami Marlins @ New York Mets,2026-08-02T17:40:00Z,2026-08-02T14:35:16Z,823592,total.under.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,moneyline.home.bets_pct,80.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,moneyline.home.handle_pct,92.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,moneyline.away.bets_pct,20.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,moneyline.away.handle_pct,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,spread.home.bets_pct,75.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,spread.home.handle_pct,99.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,spread.away.bets_pct,25.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,spread.away.handle_pct,1.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.over.bets_pct,58.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.over.handle_pct,68.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.over.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.under.bets_pct,42.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.under.handle_pct,32.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11680,Texas Rangers @ Houston Astros,2026-08-02T18:10:00Z,2026-08-02T14:35:16Z,824163,total.under.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,moneyline.home.bets_pct,44.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,moneyline.home.handle_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,moneyline.away.bets_pct,56.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,moneyline.away.handle_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,spread.home.bets_pct,24.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,spread.home.handle_pct,42.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,spread.away.bets_pct,76.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,spread.away.handle_pct,58.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.over.bets_pct,88.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.over.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.over.line,6.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.under.bets_pct,12.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.under.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11681,New York Yankees @ Chicago Cubs,2026-08-02T18:20:00Z,2026-08-02T14:35:16Z,824648,total.under.line,6.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,moneyline.home.bets_pct,40.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,moneyline.home.handle_pct,62.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,moneyline.away.bets_pct,60.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,moneyline.away.handle_pct,38.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,spread.home.bets_pct,58.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,spread.home.handle_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,spread.away.bets_pct,42.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,spread.away.handle_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.over.bets_pct,19.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.over.handle_pct,32.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.over.line,11.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.under.bets_pct,81.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.under.handle_pct,68.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11682,Kansas City Royals @ Colorado Rockies,2026-08-02T19:10:00Z,2026-08-02T14:35:16Z,824323,total.under.line,11.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,moneyline.home.bets_pct,16.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,moneyline.home.handle_pct,5.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,moneyline.away.bets_pct,84.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,moneyline.away.handle_pct,95.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,spread.home.bets_pct,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,spread.home.handle_pct,0.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,spread.away.bets_pct,92.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,spread.away.handle_pct,100.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.over.bets_pct,53.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.over.handle_pct,32.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.over.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.under.bets_pct,47.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.under.handle_pct,68.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11683,Milwaukee Brewers @ Los Angeles Angels,2026-08-02T19:15:00Z,2026-08-02T14:35:16Z,823996,total.under.line,7.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,moneyline.home.bets_pct,31.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,moneyline.home.handle_pct,7.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,moneyline.away.bets_pct,69.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,moneyline.away.handle_pct,93.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,spread.home.bets_pct,23.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,spread.home.handle_pct,17.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,spread.home.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,spread.away.bets_pct,77.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,spread.away.handle_pct,83.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.over.bets_pct,14.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.over.handle_pct,37.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.over.line,11.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.under.bets_pct,86.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.under.handle_pct,63.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11684,Detroit Tigers @ Athletics,2026-08-02T20:05:00Z,2026-08-02T14:35:16Z,824971,total.under.line,11.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,moneyline.home.bets_pct,90.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,moneyline.home.handle_pct,88.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,moneyline.away.bets_pct,10.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,moneyline.away.handle_pct,12.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,spread.home.bets_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,spread.home.handle_pct,72.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,spread.away.bets_pct,50.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,spread.away.handle_pct,28.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.over.bets_pct,73.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.over.handle_pct,87.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.over.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.under.bets_pct,27.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.under.handle_pct,13.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11685,San Francisco Giants @ San Diego Padres,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823270,total.under.line,8.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,moneyline.home.bets_pct,60.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,moneyline.home.handle_pct,52.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,moneyline.away.bets_pct,40.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,moneyline.away.handle_pct,48.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,spread.home.bets_pct,46.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,spread.home.handle_pct,40.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,spread.away.bets_pct,54.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,spread.away.handle_pct,60.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.over.bets_pct,76.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.over.handle_pct,51.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.over.line,7.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.under.bets_pct,24.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.under.handle_pct,49.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11686,Minnesota Twins @ Seattle Mariners,2026-08-02T20:10:00Z,2026-08-02T14:35:16Z,823107,total.under.line,7.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,moneyline.home.bets_pct,28.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,moneyline.home.handle_pct,20.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,moneyline.away.bets_pct,72.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,moneyline.away.handle_pct,80.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,spread.home.bets_pct,64.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,spread.home.handle_pct,66.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,spread.away.bets_pct,36.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,spread.away.handle_pct,34.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,spread.away.line,1.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.over.bets_pct,46.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.over.handle_pct,35.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.over.line,8.5,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.under.bets_pct,54.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.under.handle_pct,65.0,morning
+2026-08-02T14:55:02Z,2026-08-02,11687,Boston Red Sox @ Los Angeles Dodgers,2026-08-02T23:20:00Z,2026-08-02T14:35:16Z,823919,total.under.line,8.5,morning
