@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-03T16:54:57Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-03T21:16:11Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-03T16:54:57Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 6-7-0 (0 void)
 - **P/L:** $-69.29 on $1,300 risked
 - **ROI:** -5.33%
-- **Pending picks:** 0
+- **Pending picks:** 5
 
 ## Breakdown by rule
 
@@ -45,9 +45,6 @@ Updated: 2026-08-03T16:54:57Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-01 | Pittsburgh Pirates @ Cincinnati Reds | Cincinnati Reds +1.5 | -160 | R4 | loss | $-100.00 |
-| 2026-08-01 | Philadelphia Phillies @ Baltimore Orioles | Baltimore Orioles ML | +128 | R3_form | loss | $-100.00 |
-| 2026-08-01 | Texas Rangers @ Houston Astros | Houston Astros ML | +110 | R3_form | win | $+110.00 |
 | 2026-08-01 | Arizona Diamondbacks @ Cleveland Guardians | Arizona Diamondbacks ML | +150 | R3_form | win | $+150.00 |
 | 2026-08-01 | Washington Nationals @ Atlanta Braves | Atlanta Braves ML | -165 | R3 | win | $+60.61 |
 | 2026-08-01 | New York Yankees @ Chicago Cubs | New York Yankees +1.5 | +176 | R4 | loss | $-100.00 |
@@ -58,3 +55,8 @@ Updated: 2026-08-03T16:54:57Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-02 | Pittsburgh Pirates @ Cincinnati Reds | Cincinnati Reds ML | -138 | R3_form | win | $+72.46 |
 | 2026-08-02 | Chicago White Sox @ Tampa Bay Rays | Tampa Bay Rays ML | -148 | R3_series | loss | $-100.00 |
 | 2026-08-02 | Boston Red Sox @ Los Angeles Dodgers | Boston Red Sox ML | +155 | R3_series | win | $+155.00 |
+| 2026-08-03 | Washington Nationals @ Philadelphia Phillies | Washington Nationals ML | +130 | R3 | pending |  |
+| 2026-08-03 | St. Louis Cardinals @ New York Yankees | New York Yankees -1.5 | -106 | R5 | pending |  |
+| 2026-08-03 | Pittsburgh Pirates @ Milwaukee Brewers | Pittsburgh Pirates ML | +129 | R3 | pending |  |
+| 2026-08-03 | Toronto Blue Jays @ Houston Astros | Houston Astros -1.5 | +150 | R5 | pending |  |
+| 2026-08-03 | Tampa Bay Rays @ Colorado Rockies | Colorado Rockies ML | +154 | R3 | pending |  |
