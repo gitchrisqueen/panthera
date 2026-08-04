@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-04T16:43:16Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-04T21:18:04Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-04T16:43:16Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 7-11-0 (0 void)
 - **P/L:** $-340.29 on $1,800 risked
 - **ROI:** -18.91%
-- **Pending picks:** 0
+- **Pending picks:** 6
 
 ## Breakdown by rule
 
@@ -48,12 +48,6 @@ Updated: 2026-08-04T16:43:16Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-01 | Arizona Diamondbacks @ Cleveland Guardians | Arizona Diamondbacks ML | +150 | R3_form | win | $+150.00 |
-| 2026-08-01 | Washington Nationals @ Atlanta Braves | Atlanta Braves ML | -165 | R3 | win | $+60.61 |
-| 2026-08-01 | New York Yankees @ Chicago Cubs | New York Yankees +1.5 | +176 | R4 | loss | $-100.00 |
-| 2026-08-02 | Philadelphia Phillies @ Baltimore Orioles | Baltimore Orioles ML | +118 | R3_form | loss | $-100.00 |
-| 2026-08-02 | Washington Nationals @ Atlanta Braves | Atlanta Braves ML | -121 | R3_form | win | $+82.64 |
-| 2026-08-02 | St. Louis Cardinals @ Toronto Blue Jays | Toronto Blue Jays ML | -123 | R3_form | loss | $-100.00 |
 | 2026-08-02 | Arizona Diamondbacks @ Cleveland Guardians | Arizona Diamondbacks ML | +148 | R3_form | loss | $-100.00 |
 | 2026-08-02 | Pittsburgh Pirates @ Cincinnati Reds | Cincinnati Reds ML | -138 | R3_form | win | $+72.46 |
 | 2026-08-02 | Chicago White Sox @ Tampa Bay Rays | Tampa Bay Rays ML | -148 | R3_series | loss | $-100.00 |
@@ -63,3 +57,9 @@ Updated: 2026-08-04T16:43:16Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-03 | Pittsburgh Pirates @ Milwaukee Brewers | Pittsburgh Pirates ML | +129 | R3 | win | $+129.00 |
 | 2026-08-03 | Toronto Blue Jays @ Houston Astros | Houston Astros -1.5 | +150 | R5 | loss | $-100.00 |
 | 2026-08-03 | Tampa Bay Rays @ Colorado Rockies | Colorado Rockies ML | +154 | R3 | loss | $-100.00 |
+| 2026-08-04 | Los Angeles Angels @ Baltimore Orioles | Baltimore Orioles -1.5 | +135 | R5 | pending |  |
+| 2026-08-04 | New York Mets @ Cleveland Guardians | New York Mets ML | +117 | R3 | pending |  |
+| 2026-08-04 | Athletics @ Cincinnati Reds | Cincinnati Reds -1.5 | +148 | R5 | pending |  |
+| 2026-08-04 | Washington Nationals @ Philadelphia Phillies | Washington Nationals ML | +265 | R3 | pending |  |
+| 2026-08-04 | Chicago White Sox @ Boston Red Sox | Chicago White Sox ML | +127 | R3 | pending |  |
+| 2026-08-04 | Miami Marlins @ Atlanta Braves | Atlanta Braves -1.5 | +135 | R5 | pending |  |
