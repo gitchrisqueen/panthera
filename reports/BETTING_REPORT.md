@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-05T16:39:21Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-05T22:00:35Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-05T16:39:21Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 10-14-0 (0 void)
 - **P/L:** $-253.29 on $2,400 risked
 - **ROI:** -10.55%
-- **Pending picks:** 2
+- **Pending picks:** 8
 
 ## Breakdown by rule
 
@@ -48,12 +48,6 @@ Updated: 2026-08-05T16:39:21Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-02 | Chicago White Sox @ Tampa Bay Rays | Tampa Bay Rays ML | -148 | R3_series | loss | $-100.00 |
-| 2026-08-02 | Boston Red Sox @ Los Angeles Dodgers | Boston Red Sox ML | +155 | R3_series | win | $+155.00 |
-| 2026-08-03 | Washington Nationals @ Philadelphia Phillies | Washington Nationals ML | +130 | R3 | loss | $-100.00 |
-| 2026-08-03 | St. Louis Cardinals @ New York Yankees | New York Yankees -1.5 | -106 | R5 | loss | $-100.00 |
-| 2026-08-03 | Pittsburgh Pirates @ Milwaukee Brewers | Pittsburgh Pirates ML | +129 | R3 | win | $+129.00 |
-| 2026-08-03 | Toronto Blue Jays @ Houston Astros | Houston Astros -1.5 | +150 | R5 | loss | $-100.00 |
 | 2026-08-03 | Tampa Bay Rays @ Colorado Rockies | Colorado Rockies ML | +154 | R3 | loss | $-100.00 |
 | 2026-08-04 | Los Angeles Angels @ Baltimore Orioles | Baltimore Orioles -1.5 | +135 | R5 | win | $+135.00 |
 | 2026-08-04 | New York Mets @ Cleveland Guardians | New York Mets ML | +117 | R3 | win | $+117.00 |
@@ -63,3 +57,9 @@ Updated: 2026-08-05T16:39:21Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-04 | Miami Marlins @ Atlanta Braves | Atlanta Braves -1.5 | +135 | R5 | win | $+135.00 |
 | 2026-08-05 | Los Angeles Dodgers @ Chicago Cubs | Los Angeles Dodgers +1.5 | -185 | R4 | pending |  |
 | 2026-08-05 | Tampa Bay Rays @ Colorado Rockies | Tampa Bay Rays ML | -163 | R3_form | pending |  |
+| 2026-08-05 | Los Angeles Angels @ Baltimore Orioles | Los Angeles Angels ML | +120 | R3 | pending |  |
+| 2026-08-05 | Athletics @ Cincinnati Reds | Athletics ML | +146 | R3 | pending |  |
+| 2026-08-05 | Washington Nationals @ Philadelphia Phillies | Washington Nationals ML | +175 | R3 | pending |  |
+| 2026-08-05 | Chicago White Sox @ Boston Red Sox | Boston Red Sox -1.5 | +152 | R5 | pending |  |
+| 2026-08-05 | Miami Marlins @ Atlanta Braves | Atlanta Braves -1.5 | +161 | R5 | pending |  |
+| 2026-08-05 | Minnesota Twins @ Kansas City Royals | Kansas City Royals -1.5 | +163 | R5 | pending |  |
