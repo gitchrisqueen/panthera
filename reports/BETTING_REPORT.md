@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-07T16:59:47Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-07T21:24:02Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-07T16:59:47Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 15-17-0 (0 void)
 - **P/L:** $+50.11 on $3,200 risked
 - **ROI:** +1.57%
-- **Pending picks:** 0
+- **Pending picks:** 6
 
 ## Breakdown by rule
 
@@ -49,12 +49,6 @@ Updated: 2026-08-07T16:59:47Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-03 | Tampa Bay Rays @ Colorado Rockies | Colorado Rockies ML | +154 | R3 | loss | $-100.00 |
-| 2026-08-04 | Los Angeles Angels @ Baltimore Orioles | Baltimore Orioles -1.5 | +135 | R5 | win | $+135.00 |
-| 2026-08-04 | New York Mets @ Cleveland Guardians | New York Mets ML | +117 | R3 | win | $+117.00 |
-| 2026-08-04 | Athletics @ Cincinnati Reds | Cincinnati Reds -1.5 | +148 | R5 | loss | $-100.00 |
-| 2026-08-04 | Washington Nationals @ Philadelphia Phillies | Washington Nationals ML | +265 | R3 | loss | $-100.00 |
-| 2026-08-04 | Chicago White Sox @ Boston Red Sox | Chicago White Sox ML | +127 | R3 | loss | $-100.00 |
 | 2026-08-04 | Miami Marlins @ Atlanta Braves | Atlanta Braves -1.5 | +135 | R5 | win | $+135.00 |
 | 2026-08-05 | Los Angeles Dodgers @ Chicago Cubs | Los Angeles Dodgers +1.5 | -185 | R4 | win | $+54.05 |
 | 2026-08-05 | Tampa Bay Rays @ Colorado Rockies | Tampa Bay Rays ML | -163 | R3_form | win | $+61.35 |
@@ -64,3 +58,9 @@ Updated: 2026-08-07T16:59:47Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-05 | Chicago White Sox @ Boston Red Sox | Boston Red Sox -1.5 | +152 | R5 | win | $+152.00 |
 | 2026-08-05 | Miami Marlins @ Atlanta Braves | Atlanta Braves -1.5 | +161 | R5 | win | $+161.00 |
 | 2026-08-05 | Minnesota Twins @ Kansas City Royals | Kansas City Royals -1.5 | +163 | R5 | loss | $-100.00 |
+| 2026-08-07 | New York Mets @ Pittsburgh Pirates | New York Mets ML | +119 | R3_form | pending |  |
+| 2026-08-07 | Toronto Blue Jays @ Philadelphia Phillies | Philadelphia Phillies -1.5 | +100 | R7 | pending |  |
+| 2026-08-07 | Cincinnati Reds @ Washington Nationals | Cincinnati Reds ML | +109 | R3_form | pending |  |
+| 2026-08-07 | Atlanta Braves @ New York Yankees | New York Yankees ML | -125 | R3 | pending |  |
+| 2026-08-07 | Athletics @ Boston Red Sox | Boston Red Sox -1.5 | -130 | R7 | pending |  |
+| 2026-08-07 | Los Angeles Angels @ Miami Marlins | Miami Marlins ML | -147 | R3_form | pending |  |
