@@ -20993,3 +20993,541 @@ snapshot_ts_utc,snapshot_label,odds_event_id,game_pk,game_date_et,commence_time_
 2026-08-09T21:17:03Z,pregame,73ef1f850670696ba58e162fd6a974c5,,2026-08-09,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,spreads,Los Angeles Dodgers,-1.5,-129,1.7752
 2026-08-09T21:17:03Z,pregame,73ef1f850670696ba58e162fd6a974c5,,2026-08-09,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,totals,Over,7.5,-112,1.8929
 2026-08-09T21:17:03Z,pregame,73ef1f850670696ba58e162fd6a974c5,,2026-08-09,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,totals,Under,7.5,-112,1.8929
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,h2h,Boston Red Sox,,-148,1.6757
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,h2h,Toronto Blue Jays,,138,2.38
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,spreads,Boston Red Sox,-1.5,114,2.14
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,spreads,Toronto Blue Jays,1.5,-137,1.7299
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,totals,Over,8.5,-101,1.9901
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,draftkings,totals,Under,8.5,-119,1.8403
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,h2h,Boston Red Sox,,-150,1.6667
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,h2h,Toronto Blue Jays,,136,2.36
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,spreads,Boston Red Sox,-1.5,118,2.18
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,spreads,Toronto Blue Jays,1.5,-133,1.7519
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,totals,Over,8.0,-118,1.8475
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,lowvig,totals,Under,8.0,103,2.03
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,h2h,Boston Red Sox,,-150,1.6667
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,h2h,Toronto Blue Jays,,136,2.36
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,spreads,Boston Red Sox,-1.5,115,2.15
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,spreads,Toronto Blue Jays,1.5,-135,1.7407
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,totals,Over,8.0,-120,1.8333
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betonlineag,totals,Under,8.0,100,2.0
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,h2h,Boston Red Sox,,-146,1.6849
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,h2h,Toronto Blue Jays,,136,2.36
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,spreads,Boston Red Sox,-1.5,114,2.14
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,spreads,Toronto Blue Jays,1.5,-137,1.7299
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,totals,Over,8.5,100,2.0
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,fanduel,totals,Under,8.5,-122,1.8197
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,h2h,Boston Red Sox,,-150,1.6667
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,h2h,Toronto Blue Jays,,125,2.25
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,spreads,Boston Red Sox,-1.5,115,2.15
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,spreads,Toronto Blue Jays,1.5,-140,1.7143
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,totals,Over,8.0,-120,1.8333
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betmgm,totals,Under,8.0,100,2.0
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,h2h,Boston Red Sox,,-146,1.6849
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,h2h,Toronto Blue Jays,,131,2.31
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,spreads,Boston Red Sox,-1.5,115,2.15
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,spreads,Toronto Blue Jays,1.5,-135,1.7407
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,totals,Over,8.0,-120,1.8333
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betus,totals,Under,8.0,100,2.0
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,h2h,Boston Red Sox,,-155,1.6452
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,h2h,Toronto Blue Jays,,130,2.3
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,spreads,Boston Red Sox,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,spreads,Toronto Blue Jays,1.5,-130,1.7692
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,totals,Over,8.0,-120,1.8333
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,bovada,totals,Under,8.0,100,2.0
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,h2h,Boston Red Sox,,-159,1.6289
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,h2h,Toronto Blue Jays,,135,2.35
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,spreads,Boston Red Sox,-1.5,104,2.04
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,spreads,Toronto Blue Jays,1.5,-125,1.8
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,betrivers,totals,Under,8.5,-114,1.8772
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,h2h,Boston Red Sox,,-155,1.6452
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,h2h,Toronto Blue Jays,,131,2.31
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,spreads,Boston Red Sox,-1.5,113,2.13
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,spreads,Toronto Blue Jays,1.5,-132,1.7576
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,totals,Over,8.0,-120,1.8333
+2026-08-10T15:31:00Z,open,af25489423425fb7619de2e178b46bc0,822780.0,2026-08-10,2026-08-10T23:07:00Z,Toronto Blue Jays,Boston Red Sox,mybookieag,totals,Under,8.0,-102,1.9804
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,h2h,Atlanta Braves,,-142,1.7042
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,h2h,New York Mets,,132,2.32
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,spreads,Atlanta Braves,-1.5,139,2.39
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,spreads,New York Mets,1.5,-168,1.5952
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,totals,Over,8.5,-108,1.9259
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,draftkings,totals,Under,8.5,-112,1.8929
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,h2h,Atlanta Braves,,-145,1.6897
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,h2h,New York Mets,,131,2.31
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,spreads,Atlanta Braves,-1.5,143,2.43
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,spreads,New York Mets,1.5,-162,1.6173
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,lowvig,totals,Under,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,h2h,Atlanta Braves,,-145,1.6897
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,h2h,New York Mets,,131,2.31
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,spreads,Atlanta Braves,-1.5,142,2.42
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,spreads,New York Mets,1.5,-162,1.6173
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betonlineag,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,h2h,Atlanta Braves,,-150,1.6667
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,h2h,New York Mets,,125,2.25
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,spreads,Atlanta Braves,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,spreads,New York Mets,1.5,-170,1.5882
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betmgm,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,h2h,Atlanta Braves,,-145,1.6897
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,h2h,New York Mets,,130,2.3
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,spreads,Atlanta Braves,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,spreads,New York Mets,1.5,-160,1.625
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betus,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,h2h,Atlanta Braves,,-140,1.7143
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,h2h,New York Mets,,130,2.3
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,spreads,Atlanta Braves,-1.5,136,2.36
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,spreads,New York Mets,1.5,-164,1.6098
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,totals,Over,8.5,-108,1.9259
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,fanduel,totals,Under,8.5,-112,1.8929
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,h2h,Atlanta Braves,,-148,1.6757
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,h2h,New York Mets,,124,2.24
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,spreads,Atlanta Braves,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,spreads,New York Mets,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,bovada,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,h2h,Atlanta Braves,,-139,1.7194
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,h2h,New York Mets,,117,2.17
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,spreads,Atlanta Braves,-1.5,143,2.43
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,spreads,New York Mets,1.5,-177,1.565
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,betrivers,totals,Under,8.5,-114,1.8772
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,h2h,Atlanta Braves,,-147,1.6803
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,h2h,New York Mets,,125,2.25
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,spreads,Atlanta Braves,-1.5,144,2.44
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,spreads,New York Mets,1.5,-171,1.5848
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,4a90a077ddd83a66ffc796851a64a7ac,824887.0,2026-08-10,2026-08-10T23:15:00Z,Atlanta Braves,New York Mets,mybookieag,totals,Under,8.5,-114,1.8772
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,h2h,Baltimore Orioles,,-112,1.8929
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,h2h,Minnesota Twins,,104,2.04
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,spreads,Baltimore Orioles,-1.5,141,2.41
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,spreads,Minnesota Twins,1.5,-171,1.5848
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,draftkings,totals,Under,8.5,-113,1.885
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,h2h,Baltimore Orioles,,-113,1.885
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,h2h,Minnesota Twins,,103,2.03
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,spreads,Baltimore Orioles,-1.5,146,2.46
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,spreads,Minnesota Twins,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,totals,Over,8.5,-102,1.9804
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,lowvig,totals,Under,8.5,-113,1.885
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,h2h,Baltimore Orioles,,-113,1.885
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,h2h,Minnesota Twins,,103,2.03
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,spreads,Baltimore Orioles,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,spreads,Minnesota Twins,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betonlineag,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,h2h,Baltimore Orioles,,-112,1.8929
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,h2h,Minnesota Twins,,102,2.02
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,spreads,Baltimore Orioles,-1.5,146,2.46
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,spreads,Minnesota Twins,1.5,-176,1.5682
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,fanduel,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betmgm,h2h,Baltimore Orioles,,-118,1.8475
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betmgm,h2h,Minnesota Twins,,-102,1.9804
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betmgm,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betmgm,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,h2h,Baltimore Orioles,,-113,1.885
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,h2h,Minnesota Twins,,103,2.03
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,spreads,Baltimore Orioles,-1.5,144,2.44
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,spreads,Minnesota Twins,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betus,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,h2h,Baltimore Orioles,,-118,1.8475
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,h2h,Minnesota Twins,,-102,1.9804
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,spreads,Baltimore Orioles,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,spreads,Minnesota Twins,1.5,-170,1.5882
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,bovada,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,h2h,Baltimore Orioles,,-112,1.8929
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,h2h,Minnesota Twins,,-107,1.9346
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,spreads,Baltimore Orioles,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,spreads,Minnesota Twins,1.5,-180,1.5556
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,totals,Over,8.0,-127,1.7874
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,betrivers,totals,Under,8.0,-112,1.8929
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,h2h,Baltimore Orioles,,-115,1.8696
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,h2h,Minnesota Twins,,-102,1.9804
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,spreads,Baltimore Orioles,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,spreads,Minnesota Twins,1.5,-171,1.5848
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,253334441d4a57efddaf3e77f2c41ad4,823675.0,2026-08-10,2026-08-10T23:40:00Z,Minnesota Twins,Baltimore Orioles,mybookieag,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,h2h,Philadelphia Phillies,,-114,1.8772
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,h2h,St. Louis Cardinals,,106,2.06
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,spreads,Philadelphia Phillies,-1.5,134,2.34
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,spreads,St. Louis Cardinals,1.5,-162,1.6173
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,totals,Over,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,fanduel,totals,Under,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,h2h,Philadelphia Phillies,,-116,1.8621
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,h2h,St. Louis Cardinals,,105,2.05
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,spreads,Philadelphia Phillies,-1.5,139,2.39
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,spreads,St. Louis Cardinals,1.5,-157,1.6369
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,totals,Over,9.0,-104,1.9615
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,lowvig,totals,Under,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,h2h,Philadelphia Phillies,,-116,1.8621
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,h2h,St. Louis Cardinals,,105,2.05
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,spreads,Philadelphia Phillies,-1.5,138,2.38
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,spreads,St. Louis Cardinals,1.5,-158,1.6329
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,totals,Over,9.0,-107,1.9346
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betonlineag,totals,Under,9.0,-113,1.885
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,h2h,Philadelphia Phillies,,-115,1.8696
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,h2h,St. Louis Cardinals,,107,2.07
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,spreads,Philadelphia Phillies,-1.5,135,2.35
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,spreads,St. Louis Cardinals,1.5,-163,1.6135
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,totals,Over,9.0,-109,1.9174
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,draftkings,totals,Under,9.0,-111,1.9009
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,h2h,Philadelphia Phillies,,-120,1.8333
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,h2h,St. Louis Cardinals,,100,2.0
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,spreads,Philadelphia Phillies,-1.5,135,2.35
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,spreads,St. Louis Cardinals,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,totals,Over,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betmgm,totals,Under,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,h2h,Philadelphia Phillies,,-115,1.8696
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,h2h,St. Louis Cardinals,,105,2.05
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,spreads,Philadelphia Phillies,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,spreads,St. Louis Cardinals,1.5,-160,1.625
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,totals,Over,9.0,-105,1.9524
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betus,totals,Under,9.0,-115,1.8696
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,h2h,Philadelphia Phillies,,-120,1.8333
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,h2h,St. Louis Cardinals,,100,2.0
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,spreads,Philadelphia Phillies,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,spreads,St. Louis Cardinals,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,totals,Over,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,bovada,totals,Under,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,h2h,Philadelphia Phillies,,-120,1.8333
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,h2h,St. Louis Cardinals,,102,2.02
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,spreads,Philadelphia Phillies,-1.5,138,2.38
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,spreads,St. Louis Cardinals,1.5,-167,1.5988
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,totals,Over,9.0,-108,1.9259
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,betrivers,totals,Under,9.0,-110,1.9091
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,h2h,Philadelphia Phillies,,-119,1.8403
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,h2h,St. Louis Cardinals,,102,2.02
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,spreads,Philadelphia Phillies,-1.5,134,2.34
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,spreads,St. Louis Cardinals,1.5,-158,1.6329
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,totals,Over,9.0,-114,1.8772
+2026-08-10T15:31:00Z,open,c255384aa44923f4efbe8a468688481e,823018.0,2026-08-10,2026-08-10T23:46:00Z,St. Louis Cardinals,Philadelphia Phillies,mybookieag,totals,Under,9.0,-107,1.9346
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,h2h,Los Angeles Angels,,103,2.03
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,h2h,Texas Rangers,,-111,1.9009
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,spreads,Los Angeles Angels,1.5,-175,1.5714
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,spreads,Texas Rangers,-1.5,144,2.44
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,totals,Over,8.0,-112,1.8929
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,draftkings,totals,Under,8.0,-108,1.9259
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,h2h,Los Angeles Angels,,102,2.02
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,h2h,Texas Rangers,,-112,1.8929
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,spreads,Los Angeles Angels,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,spreads,Texas Rangers,-1.5,146,2.46
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,totals,Over,8.0,-107,1.9346
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,lowvig,totals,Under,8.0,-107,1.9346
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,h2h,Los Angeles Angels,,102,2.02
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,h2h,Texas Rangers,,-112,1.8929
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,spreads,Los Angeles Angels,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,spreads,Texas Rangers,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,totals,Over,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betonlineag,totals,Under,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,h2h,Los Angeles Angels,,104,2.04
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,h2h,Texas Rangers,,-114,1.8772
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,spreads,Los Angeles Angels,1.5,-164,1.6098
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,spreads,Texas Rangers,-1.5,136,2.36
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,totals,Over,8.5,102,2.02
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,fanduel,totals,Under,8.5,-124,1.8065
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,h2h,Los Angeles Angels,,-101,1.9901
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,h2h,Texas Rangers,,-109,1.9174
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,spreads,Los Angeles Angels,1.5,-165,1.6061
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,spreads,Texas Rangers,-1.5,144,2.44
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,totals,Over,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betus,totals,Under,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,h2h,Los Angeles Angels,,-103,1.9709
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,h2h,Texas Rangers,,-117,1.8547
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,spreads,Los Angeles Angels,1.5,-170,1.5882
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,spreads,Texas Rangers,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,totals,Over,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,bovada,totals,Under,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,h2h,Los Angeles Angels,,106,2.06
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,h2h,Texas Rangers,,-124,1.8065
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,spreads,Los Angeles Angels,1.5,-167,1.5988
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,spreads,Texas Rangers,-1.5,138,2.38
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,totals,Over,8.0,-108,1.9259
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betrivers,totals,Under,8.0,-110,1.9091
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,h2h,Los Angeles Angels,,-102,1.9804
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,h2h,Texas Rangers,,-118,1.8475
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,spreads,Los Angeles Angels,1.5,-170,1.5882
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,spreads,Texas Rangers,-1.5,140,2.4
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,totals,Over,8.0,-115,1.8696
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,betmgm,totals,Under,8.0,-105,1.9524
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,h2h,Los Angeles Angels,,-102,1.9804
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,h2h,Texas Rangers,,-115,1.8696
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,spreads,Los Angeles Angels,1.5,-168,1.5952
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,spreads,Texas Rangers,-1.5,142,2.42
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,totals,Over,8.0,-117,1.8547
+2026-08-10T15:31:00Z,open,d84c052615fe26488fde71d793be8173,823998.0,2026-08-10,2026-08-11T01:38:00Z,Los Angeles Angels,Texas Rangers,mybookieag,totals,Under,8.0,-104,1.9615
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,h2h,Arizona Diamondbacks,,-194,1.5155
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,h2h,Colorado Rockies,,180,2.8
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,spreads,Arizona Diamondbacks,-1.5,101,2.01
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,spreads,Colorado Rockies,1.5,-122,1.8197
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,totals,Over,9.0,-102,1.9804
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,draftkings,totals,Under,9.0,-118,1.8475
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,h2h,Arizona Diamondbacks,,-210,1.4762
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,h2h,Colorado Rockies,,170,2.7
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,spreads,Arizona Diamondbacks,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,spreads,Colorado Rockies,1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,totals,Over,9.0,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betmgm,totals,Under,9.0,-130,1.7692
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,h2h,Arizona Diamondbacks,,-197,1.5076
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,h2h,Colorado Rockies,,177,2.77
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,spreads,Arizona Diamondbacks,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,spreads,Colorado Rockies,1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,totals,Over,8.5,-125,1.8
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betonlineag,totals,Under,8.5,105,2.05
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,h2h,Arizona Diamondbacks,,-197,1.5076
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,h2h,Colorado Rockies,,177,2.77
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,spreads,Arizona Diamondbacks,-1.5,103,2.03
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,spreads,Colorado Rockies,1.5,-117,1.8547
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,totals,Over,8.5,-123,1.813
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,lowvig,totals,Under,8.5,107,2.07
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,h2h,Arizona Diamondbacks,,-200,1.5
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,h2h,Colorado Rockies,,168,2.68
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,spreads,Arizona Diamondbacks,-1.5,-102,1.9804
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,spreads,Colorado Rockies,1.5,-115,1.8696
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,totals,Over,9.0,-102,1.9804
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,mybookieag,totals,Under,9.0,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,h2h,Arizona Diamondbacks,,-186,1.5376
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,h2h,Colorado Rockies,,174,2.74
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,spreads,Arizona Diamondbacks,-1.5,102,2.02
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,spreads,Colorado Rockies,1.5,-122,1.8197
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,totals,Over,8.5,-122,1.8197
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,fanduel,totals,Under,8.5,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,h2h,Arizona Diamondbacks,,-197,1.5076
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,h2h,Colorado Rockies,,172,2.72
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,spreads,Arizona Diamondbacks,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,spreads,Colorado Rockies,1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,totals,Over,8.5,-125,1.8
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betus,totals,Under,8.5,105,2.05
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,h2h,Arizona Diamondbacks,,-214,1.4673
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,h2h,Colorado Rockies,,174,2.74
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,spreads,Arizona Diamondbacks,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,spreads,Colorado Rockies,1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,totals,Over,9.0,100,2.0
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,bovada,totals,Under,9.0,-120,1.8333
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,h2h,Arizona Diamondbacks,,-200,1.5
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,h2h,Colorado Rockies,,170,2.7
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,spreads,Arizona Diamondbacks,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,spreads,Colorado Rockies,1.5,-134,1.7463
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,totals,Over,8.5,-121,1.8264
+2026-08-10T15:31:00Z,open,7c6d0e2bd8dfba396c576cbb261f0652,825048.0,2026-08-10,2026-08-11T01:40:00Z,Arizona Diamondbacks,Colorado Rockies,betrivers,totals,Under,8.5,102,2.02
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,h2h,Athletics,,136,2.36
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,h2h,Tampa Bay Rays,,-146,1.6849
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,spreads,Athletics,1.5,-122,1.8197
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,spreads,Tampa Bay Rays,-1.5,102,2.02
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,totals,Over,10.0,-104,1.9615
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,fanduel,totals,Under,10.0,-118,1.8475
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,h2h,Athletics,,138,2.38
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,h2h,Tampa Bay Rays,,-164,1.6098
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,spreads,Athletics,1.5,-115,1.8696
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,spreads,Tampa Bay Rays,-1.5,-105,1.9524
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,totals,Over,10.0,100,2.0
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,bovada,totals,Under,10.0,-120,1.8333
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,h2h,Athletics,,131,2.31
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,h2h,Tampa Bay Rays,,-155,1.6452
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,spreads,Athletics,1.5,-117,1.8547
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,spreads,Tampa Bay Rays,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,totals,Over,9.5,-117,1.8547
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,mybookieag,totals,Under,9.5,-105,1.9524
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,h2h,Athletics,,135,2.35
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,h2h,Tampa Bay Rays,,-159,1.6289
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,spreads,Athletics,1.5,-115,1.8696
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,spreads,Tampa Bay Rays,-1.5,-106,1.9434
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,totals,Over,10.0,-110,1.9091
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betrivers,totals,Under,10.0,-108,1.9259
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,h2h,Athletics,,140,2.4
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,h2h,Tampa Bay Rays,,-155,1.6452
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,spreads,Athletics,1.5,-114,1.8772
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,spreads,Tampa Bay Rays,-1.5,100,2.0
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,totals,Over,10.0,-101,1.9901
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,lowvig,totals,Under,10.0,-114,1.8772
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,h2h,Athletics,,140,2.4
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,h2h,Tampa Bay Rays,,-155,1.6452
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,spreads,Athletics,1.5,-117,1.8547
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,spreads,Tampa Bay Rays,-1.5,-103,1.9709
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,totals,Over,10.0,-104,1.9615
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betonlineag,totals,Under,10.0,-116,1.8621
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,h2h,Athletics,,138,2.38
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,h2h,Tampa Bay Rays,,-155,1.6452
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,spreads,Athletics,1.5,-115,1.8696
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,spreads,Tampa Bay Rays,-1.5,-105,1.9524
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,totals,Over,10.0,-105,1.9524
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betus,totals,Under,10.0,-115,1.8696
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,h2h,Athletics,,135,2.35
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,h2h,Tampa Bay Rays,,-160,1.625
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,spreads,Athletics,1.5,-118,1.8475
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,spreads,Tampa Bay Rays,-1.5,-102,1.9804
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,totals,Over,10.0,-105,1.9524
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,betmgm,totals,Under,10.0,-115,1.8696
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,h2h,Athletics,,135,2.35
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,h2h,Tampa Bay Rays,,-145,1.6897
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,spreads,Athletics,1.5,-125,1.8
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,spreads,Tampa Bay Rays,-1.5,104,2.04
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,totals,Over,10.0,-103,1.9709
+2026-08-10T15:31:00Z,open,5587cc1ecdf775d79a5d6efb0d87a1b4,824969.0,2026-08-10,2026-08-11T01:41:00Z,Athletics,Tampa Bay Rays,draftkings,totals,Under,10.0,-117,1.8547
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,h2h,Milwaukee Brewers,,-112,1.8929
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,h2h,San Diego Padres,,104,2.04
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,spreads,Milwaukee Brewers,-1.5,150,2.5
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,spreads,San Diego Padres,1.5,-182,1.5495
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,totals,Over,7.0,-115,1.8696
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,fanduel,totals,Under,7.0,-105,1.9524
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,h2h,Milwaukee Brewers,,-119,1.8403
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,h2h,San Diego Padres,,101,2.01
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,spreads,Milwaukee Brewers,-1.5,153,2.53
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,spreads,San Diego Padres,1.5,-180,1.5556
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,totals,Over,7.0,-116,1.8621
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,mybookieag,totals,Under,7.0,-105,1.9524
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,h2h,Milwaukee Brewers,,-121,1.8264
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,h2h,San Diego Padres,,101,2.01
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,spreads,Milwaukee Brewers,-1.5,155,2.55
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,spreads,San Diego Padres,1.5,-180,1.5556
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,totals,Over,7.0,-115,1.8696
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,bovada,totals,Under,7.0,-105,1.9524
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,h2h,Milwaukee Brewers,,-116,1.8621
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,h2h,San Diego Padres,,105,2.05
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,spreads,Milwaukee Brewers,-1.5,154,2.54
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,spreads,San Diego Padres,1.5,-175,1.5714
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,totals,Over,7.0,-107,1.9346
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,lowvig,totals,Under,7.0,-107,1.9346
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,h2h,Milwaukee Brewers,,-116,1.8621
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,h2h,San Diego Padres,,105,2.05
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,spreads,Milwaukee Brewers,-1.5,153,2.53
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,spreads,San Diego Padres,1.5,-175,1.5714
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,totals,Over,7.0,-110,1.9091
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betonlineag,totals,Under,7.0,-110,1.9091
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,h2h,Milwaukee Brewers,,-115,1.8696
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,h2h,San Diego Padres,,107,2.07
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,spreads,Milwaukee Brewers,-1.5,149,2.49
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,spreads,San Diego Padres,1.5,-181,1.5525
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,totals,Over,7.0,-112,1.8929
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,draftkings,totals,Under,7.0,-108,1.9259
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,h2h,Milwaukee Brewers,,-120,1.8333
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,h2h,San Diego Padres,,100,2.0
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,spreads,Milwaukee Brewers,-1.5,145,2.45
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,spreads,San Diego Padres,1.5,-180,1.5556
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,totals,Over,7.5,105,2.05
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betmgm,totals,Under,7.5,-125,1.8
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,h2h,Milwaukee Brewers,,-116,1.8621
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,h2h,San Diego Padres,,106,2.06
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,spreads,Milwaukee Brewers,-1.5,152,2.52
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,spreads,San Diego Padres,1.5,-175,1.5714
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,totals,Over,7.0,-110,1.9091
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betus,totals,Under,7.0,-110,1.9091
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,h2h,Milwaukee Brewers,,-112,1.8929
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,h2h,San Diego Padres,,-106,1.9434
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,spreads,Milwaukee Brewers,-1.5,160,2.6
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,spreads,San Diego Padres,1.5,-200,1.5
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,totals,Over,7.0,-114,1.8772
+2026-08-10T15:31:00Z,open,949b90cc4afe7385bc011bc5ef4518bd,823265.0,2026-08-10,2026-08-11T01:41:00Z,San Diego Padres,Milwaukee Brewers,betrivers,totals,Under,7.0,-105,1.9524
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,h2h,Houston Astros,,-146,1.6849
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,h2h,San Francisco Giants,,136,2.36
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,spreads,Houston Astros,-1.5,112,2.12
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,spreads,San Francisco Giants,1.5,-134,1.7463
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,fanduel,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,h2h,Houston Astros,,-157,1.6369
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,h2h,San Francisco Giants,,131,2.31
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,spreads,Houston Astros,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,spreads,San Francisco Giants,1.5,-130,1.7692
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,bovada,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,h2h,Houston Astros,,-159,1.6289
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,h2h,San Francisco Giants,,135,2.35
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,spreads,Houston Astros,-1.5,106,2.06
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,spreads,San Francisco Giants,1.5,-129,1.7752
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betrivers,totals,Under,8.5,-112,1.8929
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,h2h,Houston Astros,,-147,1.6803
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,h2h,San Francisco Giants,,137,2.37
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,spreads,Houston Astros,-1.5,109,2.09
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,spreads,San Francisco Giants,1.5,-131,1.7634
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,totals,Over,8.5,-106,1.9434
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,draftkings,totals,Under,8.5,-114,1.8772
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,h2h,Houston Astros,,-155,1.6452
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,h2h,San Francisco Giants,,125,2.25
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,spreads,Houston Astros,-1.5,105,2.05
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,spreads,San Francisco Giants,1.5,-125,1.8
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betmgm,totals,Under,8.5,-115,1.8696
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,h2h,Houston Astros,,-148,1.6757
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,h2h,San Francisco Giants,,134,2.34
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,spreads,Houston Astros,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,spreads,San Francisco Giants,1.5,-130,1.7692
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,totals,Over,8.5,-108,1.9259
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betonlineag,totals,Under,8.5,-112,1.8929
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,h2h,Houston Astros,,-148,1.6757
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,h2h,San Francisco Giants,,134,2.34
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,spreads,Houston Astros,-1.5,113,2.13
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,spreads,San Francisco Giants,1.5,-128,1.7812
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,totals,Over,8.5,-105,1.9524
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,lowvig,totals,Under,8.5,-109,1.9174
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,h2h,Houston Astros,,-148,1.6757
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,h2h,San Francisco Giants,,133,2.33
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,spreads,Houston Astros,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,spreads,San Francisco Giants,1.5,-130,1.7692
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,totals,Over,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,betus,totals,Under,8.5,-110,1.9091
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,h2h,Houston Astros,,-155,1.6452
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,h2h,San Francisco Giants,,131,2.31
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,spreads,Houston Astros,-1.5,110,2.1
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,spreads,San Francisco Giants,1.5,-129,1.7752
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,totals,Over,8.5,-107,1.9346
+2026-08-10T15:31:00Z,open,9ce232af92e1165ab3648c66fd2700e3,823189.0,2026-08-10,2026-08-11T01:46:00Z,San Francisco Giants,Houston Astros,mybookieag,totals,Under,8.5,-114,1.8772
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,h2h,Kansas City Royals,,241,3.41
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,h2h,Los Angeles Dodgers,,-261,1.3831
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,spreads,Kansas City Royals,1.5,102,2.02
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,spreads,Los Angeles Dodgers,-1.5,-122,1.8197
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,totals,Over,7.5,101,2.01
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,draftkings,totals,Under,7.5,-122,1.8197
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,h2h,Kansas City Royals,,235,3.35
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,h2h,Los Angeles Dodgers,,-264,1.3788
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,spreads,Kansas City Royals,1.5,106,2.06
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,spreads,Los Angeles Dodgers,-1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,totals,Over,7.5,105,2.05
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,lowvig,totals,Under,7.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,h2h,Kansas City Royals,,235,3.35
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,h2h,Los Angeles Dodgers,,-264,1.3788
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,spreads,Kansas City Royals,1.5,103,2.03
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,spreads,Los Angeles Dodgers,-1.5,-123,1.813
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,totals,Over,7.5,102,2.02
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betonlineag,totals,Under,7.5,-122,1.8197
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,h2h,Kansas City Royals,,226,3.26
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,h2h,Los Angeles Dodgers,,-275,1.3636
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,spreads,Kansas City Royals,1.5,105,2.05
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,spreads,Los Angeles Dodgers,-1.5,-123,1.813
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,totals,Over,7.0,-126,1.7937
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,mybookieag,totals,Under,7.0,103,2.03
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,h2h,Kansas City Royals,,240,3.4
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,h2h,Los Angeles Dodgers,,-270,1.3704
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,spreads,Kansas City Royals,1.5,-102,1.9804
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,spreads,Los Angeles Dodgers,-1.5,-118,1.8475
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,totals,Over,7.5,-102,1.9804
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,fanduel,totals,Under,7.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,h2h,Kansas City Royals,,220,3.2
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,h2h,Los Angeles Dodgers,,-275,1.3636
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,spreads,Kansas City Royals,1.5,100,2.0
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,spreads,Los Angeles Dodgers,-1.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,totals,Over,7.5,100,2.0
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betmgm,totals,Under,7.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,h2h,Kansas City Royals,,225,3.25
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,h2h,Los Angeles Dodgers,,-280,1.3571
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,spreads,Kansas City Royals,1.5,105,2.05
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,spreads,Los Angeles Dodgers,-1.5,-125,1.8
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,totals,Over,7.5,105,2.05
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,bovada,totals,Under,7.5,-125,1.8
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,h2h,Kansas City Royals,,226,3.26
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,h2h,Los Angeles Dodgers,,-264,1.3788
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,spreads,Kansas City Royals,1.5,105,2.05
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,spreads,Los Angeles Dodgers,-1.5,-125,1.8
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,totals,Over,7.5,100,2.0
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betus,totals,Under,7.5,-120,1.8333
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,h2h,Kansas City Royals,,240,3.4
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,h2h,Los Angeles Dodgers,,-295,1.339
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,spreads,Kansas City Royals,1.5,-104,1.9615
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,spreads,Los Angeles Dodgers,-1.5,-118,1.8475
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,totals,Over,7.5,102,2.02
+2026-08-10T15:31:00Z,open,73ef1f850670696ba58e162fd6a974c5,823918.0,2026-08-10,2026-08-11T02:10:00Z,Los Angeles Dodgers,Kansas City Royals,betrivers,totals,Under,7.5,-122,1.8197
