@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-12T17:03:44Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-12T21:30:33Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-12T17:03:44Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 28-34-0 (0 void)
 - **P/L:** $-265.75 on $6,200 risked
 - **ROI:** -4.29%
-- **Pending picks:** 2
+- **Pending picks:** 8
 
 ## Breakdown by rule
 
@@ -50,12 +50,6 @@ Updated: 2026-08-12T17:03:44Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-09 | Baltimore Orioles @ Texas Rangers | Texas Rangers ML | -126 | R3_series | loss | $-100.00 |
-| 2026-08-10 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +140 | R3 | win | $+140.00 |
-| 2026-08-10 | New York Mets @ Atlanta Braves | New York Mets ML | +130 | R3_series | win | $+130.00 |
-| 2026-08-10 | Baltimore Orioles @ Minnesota Twins | Baltimore Orioles ML | -105 | R3 | loss | $-100.00 |
-| 2026-08-10 | Texas Rangers @ Los Angeles Angels | Los Angeles Angels ML | -101 | R3_series | loss | $-100.00 |
-| 2026-08-10 | Colorado Rockies @ Arizona Diamondbacks | Colorado Rockies ML | +180 | R3 | loss | $-100.00 |
 | 2026-08-10 | Tampa Bay Rays @ Athletics | Tampa Bay Rays -1.5 | -102 | R5 | win | $+98.04 |
 | 2026-08-11 | Cleveland Guardians @ Detroit Tigers | Cleveland Guardians ML | +124 | R3 | loss | $-100.00 |
 | 2026-08-11 | Chicago Cubs @ Washington Nationals | Washington Nationals ML | +157 | R3 | loss | $-100.00 |
@@ -65,3 +59,9 @@ Updated: 2026-08-12T17:03:44Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-11 | Texas Rangers @ Los Angeles Angels | Los Angeles Angels ML | +135 | R3 | win | $+135.00 |
 | 2026-08-12 | Tampa Bay Rays @ Athletics | Tampa Bay Rays -1.5 | -134 | R7 | pending |  |
 | 2026-08-12 | Colorado Rockies @ Arizona Diamondbacks | Arizona Diamondbacks ML | -168 | R3_series | pending |  |
+| 2026-08-12 | Cleveland Guardians @ Detroit Tigers | Detroit Tigers -1.5 | +164 | R5 | pending |  |
+| 2026-08-12 | Pittsburgh Pirates @ Miami Marlins | Pittsburgh Pirates ML | +104 | R3 | pending |  |
+| 2026-08-12 | Chicago Cubs @ Washington Nationals | Washington Nationals ML | +138 | R3 | pending |  |
+| 2026-08-12 | Seattle Mariners @ New York Yankees | New York Yankees -1.5 | +155 | R5 | pending |  |
+| 2026-08-12 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +116 | R3 | pending |  |
+| 2026-08-12 | New York Mets @ Atlanta Braves | New York Mets ML | +158 | R3_series | pending |  |
