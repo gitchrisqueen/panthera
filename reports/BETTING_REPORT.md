@@ -1,34 +1,34 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-12T21:30:33Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-13T15:31:11Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
-**INCONCLUSIVE — collecting data.** 62/100 graded picks recorded. Verdict criteria (pre-registered): after 100 graded picks, ROI > 0% → strategy SUPPORTED; ROI < -5% → strategy FALSIFIED; otherwise inconclusive, keep collecting.
+**INCONCLUSIVE — collecting data.** 70/100 graded picks recorded. Verdict criteria (pre-registered): after 100 graded picks, ROI > 0% → strategy SUPPORTED; ROI < -5% → strategy FALSIFIED; otherwise inconclusive, keep collecting.
 
 ## Headline
 
-- **Record:** 28-34-0 (0 void)
-- **P/L:** $-265.75 on $6,200 risked
-- **ROI:** -4.29%
-- **Pending picks:** 8
+- **Record:** 31-39-0 (0 void)
+- **P/L:** $-420.40 on $7,000 risked
+- **ROI:** -6.01%
+- **Pending picks:** 4
 
 ## Breakdown by rule
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| R3 | 9-13-0 | $-271.20 | -12.33% |
+| R3 | 10-15-0 | $-355.20 | -14.21% |
 | R3_form | 8-8-0 | $-20.05 | -1.25% |
-| R3_series | 3-4-0 | $-46.51 | -6.64% |
+| R3_series | 3-6-0 | $-246.51 | -27.39% |
 | R4 | 1-3-0 | $-245.95 | -61.49% |
-| R5 | 6-4-0 | $+441.04 | +44.10% |
-| R7 | 1-2-0 | $-123.08 | -41.03% |
+| R5 | 7-5-0 | $+496.04 | +41.34% |
+| R7 | 2-2-0 | $-48.73 | -12.18% |
 
 ## Breakdown by day type
 
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
-| HYBRID | 5-3-0 | $+303.40 | +37.92% |
+| HYBRID | 8-8-0 | $+148.75 | +9.30% |
 | P | 13-18-0 | $-587.19 | -18.94% |
 | V | 10-13-0 | $+18.04 | +0.78% |
 
@@ -36,32 +36,32 @@ Updated: 2026-08-12T21:30:33Z · Flat stake: $100 · All picks are paper trades.
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 15-18-0 | $-471.79 | -14.30% |
-| V | 13-16-0 | $+206.04 | +7.10% |
+| P | 16-19-0 | $-497.44 | -14.21% |
+| V | 15-20-0 | $+77.04 | +2.20% |
 
 ## Breakdown by market
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 20-25-0 | $-337.76 | -7.51% |
-| rl | 8-9-0 | $+72.01 | +4.24% |
+| ml | 21-29-0 | $-621.76 | -12.44% |
+| rl | 10-10-0 | $+201.36 | +10.07% |
 
 ## Last 15 picks
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-10 | Tampa Bay Rays @ Athletics | Tampa Bay Rays -1.5 | -102 | R5 | win | $+98.04 |
-| 2026-08-11 | Cleveland Guardians @ Detroit Tigers | Cleveland Guardians ML | +124 | R3 | loss | $-100.00 |
-| 2026-08-11 | Chicago Cubs @ Washington Nationals | Washington Nationals ML | +157 | R3 | loss | $-100.00 |
-| 2026-08-11 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays -1.5 | +160 | R5 | win | $+160.00 |
 | 2026-08-11 | New York Mets @ Atlanta Braves | New York Mets ML | +114 | R3_series | loss | $-100.00 |
 | 2026-08-11 | Philadelphia Phillies @ St. Louis Cardinals | St. Louis Cardinals ML | +139 | R3 | win | $+139.00 |
 | 2026-08-11 | Texas Rangers @ Los Angeles Angels | Los Angeles Angels ML | +135 | R3 | win | $+135.00 |
-| 2026-08-12 | Tampa Bay Rays @ Athletics | Tampa Bay Rays -1.5 | -134 | R7 | pending |  |
-| 2026-08-12 | Colorado Rockies @ Arizona Diamondbacks | Arizona Diamondbacks ML | -168 | R3_series | pending |  |
-| 2026-08-12 | Cleveland Guardians @ Detroit Tigers | Detroit Tigers -1.5 | +164 | R5 | pending |  |
-| 2026-08-12 | Pittsburgh Pirates @ Miami Marlins | Pittsburgh Pirates ML | +104 | R3 | pending |  |
-| 2026-08-12 | Chicago Cubs @ Washington Nationals | Washington Nationals ML | +138 | R3 | pending |  |
-| 2026-08-12 | Seattle Mariners @ New York Yankees | New York Yankees -1.5 | +155 | R5 | pending |  |
-| 2026-08-12 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +116 | R3 | pending |  |
-| 2026-08-12 | New York Mets @ Atlanta Braves | New York Mets ML | +158 | R3_series | pending |  |
+| 2026-08-12 | Tampa Bay Rays @ Athletics | Tampa Bay Rays -1.5 | -134 | R7 | win | $+74.35 |
+| 2026-08-12 | Colorado Rockies @ Arizona Diamondbacks | Arizona Diamondbacks ML | -168 | R3_series | loss | $-100.00 |
+| 2026-08-12 | Cleveland Guardians @ Detroit Tigers | Detroit Tigers -1.5 | +164 | R5 | loss | $-100.00 |
+| 2026-08-12 | Pittsburgh Pirates @ Miami Marlins | Pittsburgh Pirates ML | +104 | R3 | loss | $-100.00 |
+| 2026-08-12 | Chicago Cubs @ Washington Nationals | Washington Nationals ML | +138 | R3 | loss | $-100.00 |
+| 2026-08-12 | Seattle Mariners @ New York Yankees | New York Yankees -1.5 | +155 | R5 | win | $+155.00 |
+| 2026-08-12 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +116 | R3 | win | $+116.00 |
+| 2026-08-12 | New York Mets @ Atlanta Braves | New York Mets ML | +158 | R3_series | loss | $-100.00 |
+| 2026-08-13 | Cleveland Guardians @ Detroit Tigers | Detroit Tigers +1.5 | -171 | R4 | pending |  |
+| 2026-08-13 | Pittsburgh Pirates @ Miami Marlins | Miami Marlins ML | +109 | R3_form | pending |  |
+| 2026-08-13 | Seattle Mariners @ New York Yankees | New York Yankees ML | -143 | R3_form | pending |  |
+| 2026-08-13 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +128 | R3_series | pending |  |
