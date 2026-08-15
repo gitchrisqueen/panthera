@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-15T16:33:04Z · Flat stake: $100 · All picks are paper trades.
+Updated: 2026-08-15T21:03:06Z · Flat stake: $100 · All picks are paper trades.
 
 ## Verdict
 
@@ -11,7 +11,7 @@ Updated: 2026-08-15T16:33:04Z · Flat stake: $100 · All picks are paper trades.
 - **Record:** 35-47-0 (0 void)
 - **P/L:** $-920.78 on $8,200 risked
 - **ROI:** -11.23%
-- **Pending picks:** 0
+- **Pending picks:** 6
 
 ## Breakdown by rule
 
@@ -50,12 +50,6 @@ Updated: 2026-08-15T16:33:04Z · Flat stake: $100 · All picks are paper trades.
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-12 | Seattle Mariners @ New York Yankees | New York Yankees -1.5 | +155 | R5 | win | $+155.00 |
-| 2026-08-12 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +116 | R3 | win | $+116.00 |
-| 2026-08-12 | New York Mets @ Atlanta Braves | New York Mets ML | +158 | R3_series | loss | $-100.00 |
-| 2026-08-13 | Cleveland Guardians @ Detroit Tigers | Detroit Tigers +1.5 | -171 | R4 | win | $+58.48 |
-| 2026-08-13 | Pittsburgh Pirates @ Miami Marlins | Miami Marlins ML | +109 | R3_form | loss | $-100.00 |
-| 2026-08-13 | Seattle Mariners @ New York Yankees | New York Yankees ML | -143 | R3_form | loss | $-100.00 |
 | 2026-08-13 | Boston Red Sox @ Toronto Blue Jays | Toronto Blue Jays ML | +128 | R3_series | loss | $-100.00 |
 | 2026-08-13 | Texas Rangers @ Los Angeles Angels | Los Angeles Angels ML | +133 | R3_series | win | $+133.00 |
 | 2026-08-13 | Milwaukee Brewers @ Los Angeles Dodgers | Los Angeles Dodgers ML | -146 | R3 | loss | $-100.00 |
@@ -65,3 +59,9 @@ Updated: 2026-08-15T16:33:04Z · Flat stake: $100 · All picks are paper trades.
 | 2026-08-14 | Seattle Mariners @ Houston Astros | Seattle Mariners ML | +107 | R3_series | loss | $-100.00 |
 | 2026-08-14 | Kansas City Royals @ Los Angeles Angels | Los Angeles Angels +1.5 | -172 | R4 | win | $+58.14 |
 | 2026-08-14 | Texas Rangers @ Athletics | Texas Rangers +1.5 | +145 | R4 | loss | $-100.00 |
+| 2026-08-15 | Baltimore Orioles @ Tampa Bay Rays | Tampa Bay Rays ML | -145 | R3_form | pending |  |
+| 2026-08-15 | San Diego Padres @ Cleveland Guardians | San Diego Padres +1.5 | -198 | R4 | pending |  |
+| 2026-08-15 | Seattle Mariners @ Houston Astros | Seattle Mariners +1.5 | -190 | R4 | pending |  |
+| 2026-08-15 | Boston Red Sox @ Pittsburgh Pirates | Pittsburgh Pirates +1.5 | -175 | R4 | pending |  |
+| 2026-08-15 | Kansas City Royals @ Los Angeles Angels | Kansas City Royals ML | +135 | R3_series | pending |  |
+| 2026-08-15 | Texas Rangers @ Athletics | Texas Rangers ML | -160 | R3 | pending |  |
