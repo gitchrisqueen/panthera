@@ -59,7 +59,31 @@ jobs:
             "probablePitcher" ; do
             echo "=============================================="
             echo "hydrate=$HYDRATE"
-            curl -sS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=$HYDRATE" \
-              -o /tmp/payload.json
-            python3 /tmp/inspect.py /tmp/payload.json
+            # -g: literal brackets (curl otherwise globs [season] as a URL
+            # range); || true: one failing variant must not end the probe.
+            curl -gsS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=$HYDRATE" \
+              -o /tmp/payload.json || { echo "  curl failed"; continue; }
+            python3 /tmp/inspect.py /tmp/payload.json || echo "  parse failed"
           done
+
+      - name: Probe people endpoint (batch ERA fallback candidate)
+        run: |
+          DATE="${{ inputs.date }}"
+          [ -z "$DATE" ] && DATE=$(TZ=America/New_York date +%F)
+          IDS=$(curl -gsS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=probablePitcher" \
+            | python3 -c 'import json,sys;p=json.load(sys.stdin);ids=[str(g["teams"][s]["probablePitcher"]["id"]) for d in p.get("dates",[]) for g in d.get("games",[]) for s in ("home","away") if g["teams"][s].get("probablePitcher")];print(",".join(ids[:8]))')
+          echo "pitcher ids: $IDS"
+          [ -z "$IDS" ] && { echo "no probable pitchers posted"; exit 0; }
+          curl -gsS "https://statsapi.mlb.com/api/v1/people?personIds=$IDS&hydrate=stats(group=[pitching],type=[season])" \
+            -o /tmp/people.json
+          python3 - <<'PYEOF'
+          import json
+
+          payload = json.load(open("/tmp/people.json"))
+          for person in payload.get("people", []):
+              era = None
+              for grp in person.get("stats", []):
+                  for split in grp.get("splits", []):
+                      era = split.get("stat", {}).get("era", era)
+              print(f"  {person.get('id')} {person.get('fullName')}: era={era}")
+          PYEOF
