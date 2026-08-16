@@ -245,6 +245,27 @@ def load_passes() -> pd.DataFrame:
     return _load(paths.data_dir() / "picks" / "passes.csv", PASSES_COLUMNS)
 
 
+def fill_clv(updates: pd.DataFrame) -> int:
+    """updates columns: pick_id, close_price, clv_cents. Fills only rows
+    whose close_price is currently null — CLV enrichment never rewrites
+    (mirrors the picks-immutable convention)."""
+    if updates.empty:
+        return 0
+    path = paths.picks_csv()
+    picks = _load_picks()
+    if picks.empty:
+        return 0
+    picks = picks.set_index("pick_id")
+    count = 0
+    for row in updates.itertuples(index=False):
+        if row.pick_id in picks.index and pd.isna(picks.at[row.pick_id, "close_price"]):
+            picks.at[row.pick_id, "close_price"] = row.close_price
+            picks.at[row.pick_id, "clv_cents"] = row.clv_cents
+            count += 1
+    picks.reset_index().reindex(columns=PICKS_COLUMNS).to_csv(path, index=False)
+    return count
+
+
 def settle_picks(settlements: pd.DataFrame) -> int:
     """settlements columns: pick_id, status, settled_ts_utc, final_score, profit."""
     if settlements.empty:

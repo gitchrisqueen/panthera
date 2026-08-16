@@ -58,6 +58,30 @@ def consensus_price(
 CLV_ONLY_LABELS = {"close"}
 
 
+def consensus_rl_price(
+    lines: pd.DataFrame,
+    odds_event_id: str,
+    team: str,
+    snapshot_label: str,
+    line: float,
+) -> float | None:
+    """Consensus run-line price at an EXACT point value.
+
+    `consensus_price` ignores `point`, and ~20% of events carry alternate
+    spread lines (3.5, 5.5, ...) — a point-blind median would silently blend
+    them. CLV comparisons must price the close at the pick's own line."""
+    sel = lines[
+        (lines["odds_event_id"] == odds_event_id)
+        & (lines["market"] == "spreads")
+        & (lines["outcome"] == team)
+        & (lines["snapshot_label"] == snapshot_label)
+        & (lines["point"] == line)
+    ]
+    if sel.empty:
+        return None
+    return float(sel["price_american"].median())
+
+
 def extract_game_prices(
     lines: pd.DataFrame,
     odds_event_id: str,

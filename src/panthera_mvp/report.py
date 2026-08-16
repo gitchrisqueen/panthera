@@ -113,21 +113,37 @@ def _breakdown(graded: pd.DataFrame, column: str) -> str:
     return "\n".join(lines)
 
 
-def _clv_cell(picks: pd.DataFrame) -> str:
-    """Avg CLV over covered picks. Coverage denominator: picks that could
-    have a close snapshot (created after the close label first existed);
-    legacy picks predate it and are excluded, not counted as misses."""
+def _close_launch_ts() -> str | None:
+    """First timestamp the `close` snapshot label ever appeared — picks
+    created before it can never have CLV and are excluded from coverage
+    denominators (not counted as misses)."""
+    lines = store.load_lines()
+    if lines.empty or "snapshot_label" not in lines.columns:
+        return None
+    close_rows = lines[lines["snapshot_label"] == "close"]
+    if close_rows.empty:
+        return None
+    return str(close_rows["snapshot_ts_utc"].min())
+
+
+def _clv_cell(picks: pd.DataFrame, launch_ts: str | None) -> str:
+    """Avg CLV over covered picks ('close' = last pre-start snapshot — a
+    directional price-capture cross-check, not an independent edge test)."""
     if "clv_cents" not in picks.columns:
         return "—"
     covered = picks[picks["clv_cents"].notna()]
-    eligible = picks[picks["close_price"].notna() | picks["clv_cents"].notna()]
     if covered.empty:
         return "—"
+    eligible = (
+        picks[picks["created_ts_utc"].astype(str) >= launch_ts]
+        if launch_ts
+        else covered
+    )
+    denom = max(len(eligible), len(covered))
     avg = float(covered["clv_cents"].mean())
     pos = 100 * float((covered["clv_cents"] > 0).mean())
-    return f"{avg:+.1f}c (n={len(covered)}, {pos:.0f}% pos)" + (
-        "" if len(eligible) == len(covered) else f" of {len(eligible)} eligible"
-    )
+    coverage = 100 * len(covered) / denom if denom else 0
+    return f"{avg:+.1f}c (n={len(covered)}, {pos:.0f}% pos, {coverage:.0f}% cov)"
 
 
 def _verdict_text(criteria: dict, stats: dict, n_graded: int) -> str:
@@ -301,6 +317,7 @@ def write_ledger_report(cfg: dict) -> Path:
         "|---|---|---|---|---|---|---|---|---|---|",
     ]
     totals = {"profit": 0.0, "risked": 0.0}
+    launch_ts = _close_launch_ts()
     for sid in all_sids:
         mine = picks[picks["strategy_id"] == sid]
         scfg = strategies.get(sid)
@@ -323,7 +340,7 @@ def write_ledger_report(cfg: dict) -> Path:
         totals["risked"] += s["risked"]
         body.append(
             f"| {sid} | {kind} | {n} | {s['wins']}-{s['losses']}-{s['pushes']} "
-            f"| ${s['profit']:+,.2f} | {s['roi']:+.2f}%{se_txt} | {_clv_cell(mine)} "
+            f"| ${s['profit']:+,.2f} | {s['roi']:+.2f}%{se_txt} | {_clv_cell(mine, launch_ts)} "
             f"| {_overlap_pct(picks, sid)} | {len(pending)} "
             f"| {_status_summary(scfg, mine) if scfg else 'retired'} |"
         )

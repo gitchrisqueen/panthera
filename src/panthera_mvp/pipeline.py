@@ -495,6 +495,11 @@ def cmd_grade(grade_date: str | None = None) -> None:
             _espn_fallback(d)
     settled = grade_pending()
     print(f"[grade] settled {len(settled)} pick(s)")
+    from .clv import fill_clv
+
+    filled = fill_clv()
+    if filled:
+        print(f"[grade] CLV filled for {filled} pick(s)")
     write_ledger_report(cfg)
     for d in pending_dates:
         write_daily_report(d, cfg, credits_note=_credits_note())
