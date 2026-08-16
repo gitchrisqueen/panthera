@@ -23,6 +23,30 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      - name: Write inspector script
+        # A file avoids python3 -c quoting: escaped quotes inside a
+        # single-quoted -c string are a SyntaxError (run #1's failure mode).
+        run: |
+          cat > /tmp/inspect.py <<'PYEOF'
+          import json, sys
+
+          payload = json.load(open(sys.argv[1]))
+          for day in payload.get("dates", []):
+              for g in day.get("games", [])[:3]:
+                  for side in ("home", "away"):
+                      prob = g["teams"][side].get("probablePitcher")
+                      if not prob:
+                          print(f"  {g['gamePk']} {side}: no probablePitcher")
+                          continue
+                      keys = sorted(prob.keys())
+                      has_stats = "stats" in prob
+                      name = prob.get("fullName")
+                      print(f"  {g['gamePk']} {side}: {name} keys={keys} stats={has_stats}")
+                      if has_stats:
+                          print("    stats sample:", json.dumps(prob["stats"])[:400])
+              break
+          PYEOF
+
       - name: Probe hydrate variants
         run: |
           DATE="${{ inputs.date }}"
@@ -36,21 +60,6 @@ jobs:
             echo "=============================================="
             echo "hydrate=$HYDRATE"
             curl -sS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=$HYDRATE" \
-              | python3 -c '
-          import json, sys
-          payload = json.load(sys.stdin)
-          for day in payload.get("dates", []):
-              for g in day.get("games", [])[:3]:
-                  for side in ("home", "away"):
-                      prob = g["teams"][side].get("probablePitcher")
-                      if not prob:
-                          print(f"  {g[\"gamePk\"]} {side}: no probablePitcher")
-                          continue
-                      keys = sorted(prob.keys())
-                      has_stats = "stats" in prob
-                      print(f"  {g[\"gamePk\"]} {side}: {prob.get(\"fullName\")} keys={keys} stats={has_stats}")
-                      if has_stats:
-                          print("    stats sample:", json.dumps(prob["stats"])[:400])
-              break
-          '
+              -o /tmp/payload.json
+            python3 /tmp/inspect.py /tmp/payload.json
           done
