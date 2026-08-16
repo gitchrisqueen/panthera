@@ -92,6 +92,61 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
 
 ## Verdict criteria (pre-registered)
 
-After **100 graded picks**: ROI > 0% → supported; ROI < −5% → falsified;
-otherwise keep collecting. Flat $100 stakes. Criteria live in
-`report.py` and are printed in every ledger update — no moving goalposts.
+Criteria are **per-strategy**, declared in each strategy's YAML at
+registration and rendered in every ledger update — no moving goalposts.
+The incumbent pv_v2 keeps its original criteria (pre-registered 2026-07-31):
+after **100 graded picks**, ROI > 0% → supported; ROI < −5% → falsified;
+otherwise keep collecting. Flat $100 stakes.
+
+## Multi-strategy framework (2026-08-17)
+
+The pipeline runs N strategies in parallel over one shared slate (zero extra
+API credits). A **strategy** = an engine (pure function
+`StrategyContext -> Pick | Pass | None`, registered in
+`strategy/registry.py`) + a YAML in `config/strategies/<id>.yaml` carrying
+its id, scope, behavioral parameters, bet limits, and evaluation criteria.
+
+**Lifecycle:** register (YAML committed with `registered_at`, hypothesis,
+and criteria — all before the first pick) → forward-test → per-strategy
+verdict or SCREEN → retire or continue as a labeled control. Evaluation
+starts at registration; earlier data is an excluded exploration window.
+
+**Segments and lineage.** `config_hash` covers only behavioral parameters
+(the `strategy`/`verdict`/`screen`/`meta` blocks are excluded, so editing a
+hypothesis or lineage never changes it). Each strategy declares a
+`hash_lineage`: the hashes whose picks pool into its verdict. Any behavioral
+change — config or code semantics (code changes must bump a hashed marker,
+e.g. `bet_limits.cap_semantics`) — produces a new hash outside the lineage,
+and those picks render as a separate SCREEN segment with fresh counters.
+A verdict-eligible successor requires a new strategy id.
+
+**Worked example (the cap fix):** the original per-invocation daily cap let
+morning+pregame runs place 7–8 picks/day vs the configured 6 on 4 of the
+first 15 live days. The per-day fix is a declared behavior change: pv_v2's
+verdict prints on the pre-fix segment only (`hash_lineage: [6f0d0924d4]`),
+and post-fix picks form a SCREEN segment. Proofs: replaying the per-day cap
+over the live ledger drops exactly 6 picks worth +$285.19
+(`docs/proofs/cap-delta.md`); the refactor itself is behavior-identical on
+replayed slates (`docs/proofs/refactor-identity.md`).
+
+**Evaluation honesty** (printed in the ledger header): per-strategy SE from
+that strategy's own realized SD; both nulls stated (zero-edge and
+pays-the-vig); a 0% SUPPORTED bar is a 50% coin flip at any n, and even the
+forward-test template (n=300, +2%/−5%) has 37%/21% false-print rates under a
+zero-edge null with 50% power against a true +2% edge — paper-ROI verdicts
+are screens by nature; replication and CLV direction are the corroborating
+instruments. **Registration budget:** at most 2 new forward_test strategies
+per season beyond the launch set (registering k null strategies at the +2%
+bar gives P(≥1 false SUPPORTED) ≈ 1−0.63^k — 75% at k=3). Splits strategies
+run under a pre-registered credit-budget stopping rule with SCREEN-only
+evaluation; extending a budget after seeing interim results permanently
+downgrades the strategy to exploratory.
+
+**Launch set:** `pv_v2` (incumbent control), `fav_ml` (live vig-anchor
+baseline, uncapped by design), `dog_ml` (backtest-only baseline),
+`sharp_split` + `fade_public` (splits forward-tests, disabled until their
+volume-rule thresholds are set on post-fetch-fix data — see their YAMLs).
+Explicitly rejected: registering any further sweep-derived P/V variant as a
+"winner" (768 distinct hypotheses, zero train+validate positives, best
+validation +1.40%, and the archives priced no run lines so R4/R5/R7 were
+swept as ML bets).

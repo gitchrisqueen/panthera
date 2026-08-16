@@ -1,0 +1,23 @@
+# Backtest-only baseline: bet the underdog ML in every eligible game.
+# Together with fav_ml this brackets the vig band in CALIBRATION.md. Not run
+# live — a second live baseline would double ledger noise for no information.
+strategy:
+  id: dog_ml
+  engine: dog_ml
+  enabled: false
+  kind: baseline
+  scope: [backtest]
+  registered_at: "2026-08-17"
+  hash_lineage: []
+  hypothesis: >
+    Control, not a strategy: full-slate underdog ML brackets the vig band
+    from the other side in historical backtests.
+
+verdict: null
+screen: {checkpoints: []}
+
+bet_limits:
+  max_picks_per_day: null
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

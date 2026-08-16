@@ -70,6 +70,22 @@ staking:
 bet_limits:
   max_picks_per_day: 6
   one_pick_per_game: true
+  # Cap semantics version marker (hashed). `per_day` = the daily cap counts
+  # picks already recorded today across runs. The original code applied the
+  # cap per *invocation* — morning and pregame runs each got a fresh budget,
+  # producing 7-8 picks on 4 of the first 15 live days. Fixing it changes
+  # which picks exist, so the marker forces a new config_hash: the report
+  # segments pre-fix and post-fix picks instead of silently pooling them.
+  cap_semantics: per_day
+
+# Scheduled picks runs (ET). Drives the late-run guard: GitHub cron drift can
+# fire a run hours late (observed 2026-08-06, ~4h), silently shrinking the
+# slate; runs starting more than late_run_grace_minutes past schedule write a
+# durable note into the run log / daily report.
+runs:
+  morning: {snapshot_label: open, scheduled_et: "10:35"}
+  pregame: {snapshot_label: pregame, scheduled_et: "16:50"}
+  late_run_grace_minutes: 90
 
 odds_api:
   regions: us
@@ -79,8 +95,12 @@ odds_api:
   min_credits_reserve: 30
 
 lumify:
-  # Public betting splits (observational — never changes picks). Free tier =
-  # 1,000 non-expiring credits; one slate fetch = ~16 calls, so pregame-only
-  # collection lasts roughly two months. Guard mirrors odds_api.
+  # Public betting splits. Observational for the P/V rules engine (never an
+  # input there); splits-based strategies (config/strategies/) consume them as
+  # a signal. Free tier grant = 1,000 non-expiring credits (observed opening
+  # balance 1,082). Fetch policy: only not-yet-started events on the target ET
+  # day (Lumify's date param is UTC-keyed, so the evening fetch queries both
+  # overlapping UTC dates); the morning fetch covers only the <16:00 ET
+  # window. Guard mirrors odds_api.
   league: MLB
   min_credits_reserve: 50

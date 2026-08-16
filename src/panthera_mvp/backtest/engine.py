@@ -13,15 +13,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, time
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .. import paths
 from ..clients.mlb import GameInfo
 from ..strategy.dossier import Dossier, SeasonContext
-from ..strategy.rules import GamePrices, Pass, Pick, generate_pick
+from ..strategy.rules import GamePrices, Pass, Pick
 from ..timeutil import ET, UTC
 from .loader import load_dir
+
+if TYPE_CHECKING:
+    from ..strategy.registry import GenerateFn
 
 
 @dataclass
@@ -117,7 +121,17 @@ def run(
     prepared: list[tuple[GameInfo, GamePrices, Dossier, dict]],
     cfg: dict,
     stake: float = 100.0,
+    generate: GenerateFn | None = None,
 ) -> BacktestResult:
+    """Replay one strategy engine over the prepared games.
+
+    `generate` is a registry engine (StrategyContext -> Pick|Pass|None);
+    the default is the `_pv_rules` adapter — raw `generate_pick` has a
+    5-argument signature and is not a GenerateFn, so the adapter keeps one
+    shared engine shape between live pipeline and backtest."""
+    from ..strategy.registry import StrategyContext, _pv_rules
+
+    engine = generate or _pv_rules
     rows = []
     skipped_hybrid = 0
     for game, prices, dossier, result in prepared:
@@ -125,7 +139,15 @@ def run(
         if cfg["day_map"].get(result["day_of_week"]) == "HYBRID":
             skipped_hybrid += 1
             continue
-        outcome = generate_pick(game, f"bt-{game.game_pk}", prices, dossier, cfg)
+        outcome = engine(
+            StrategyContext(
+                game=game,
+                odds_event_id=f"bt-{game.game_pk}",
+                prices=prices,
+                dossier=dossier,
+                cfg=cfg,
+            )
+        )
         if not isinstance(outcome, Pick):
             if isinstance(outcome, Pass):
                 continue
@@ -176,21 +198,66 @@ def _parse_seasons(spec: str | None) -> tuple[int, int] | None:
     return int(lo), int(hi or lo)
 
 
-def cmd_backtest(seasons: str | None) -> None:
-    from ..config import load_config
+def cmd_backtest(seasons: str | None, strategy: str | None = None) -> None:
+    from ..config import load_strategy_configs
+    from ..strategy.registry import BACKTESTABLE_ENGINES, engines
+
+    strategies = load_strategy_configs(known_engines=set(engines()))
+    if strategy:
+        if strategy not in strategies:
+            raise SystemExit(f"[backtest] unknown strategy id: {strategy}")
+        targets = {strategy: strategies[strategy]}
+    else:
+        targets = {
+            sid: scfg
+            for sid, scfg in strategies.items()
+            if "backtest" in scfg["strategy"]["scope"]
+        }
+    if not targets:
+        raise SystemExit("[backtest] no strategies with backtest scope")
 
     hist = load_dir()
     rng = _parse_seasons(seasons)
     if rng:
         hist = hist[(hist["season"] >= rng[0]) & (hist["season"] <= rng[1])]
-    cfg = load_config()
-    prepared = _prepare_games(hist)
-    result = run(prepared, cfg)
-    print(f"[backtest] seasons={seasons or 'all'} summary={result.summary}")
-    out = paths.calibration_dir() / "backtest_picks.csv"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    result.picks.to_csv(out, index=False)
-    print(f"[backtest] picks written to {out}")
-    if not result.picks.empty:
-        by_rule = result.picks.groupby("rule_id")["profit"].agg(["count", "sum"])
-        print(by_rule.to_string())
+    prepared = _prepare_games(hist)  # expensive part — shared across strategies
+
+    for sid, scfg in targets.items():
+        engine_name = scfg["strategy"]["engine"]
+        if engine_name not in BACKTESTABLE_ENGINES:
+            # Loud refusal, never silent emptiness: splits engines have no
+            # historical inputs (no splits archives exist).
+            print(
+                f"[backtest] REFUSED {sid}: engine '{engine_name}' is not "
+                "backtestable (no historical splits data). Forward paper-trade "
+                "only."
+            )
+            continue
+        result = run(prepared, scfg, generate=engines()[engine_name])
+        print(f"[backtest:{sid}] seasons={seasons or 'all'} summary={result.summary}")
+        out = paths.calibration_dir() / f"backtest_picks_{sid}.csv"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        result.picks.to_csv(out, index=False)
+        print(f"[backtest:{sid}] picks written to {out}")
+        if not result.picks.empty:
+            graded = result.picks[result.picks["status"].isin(["win", "loss"])]
+            by_rule = (
+                result.picks.groupby("rule_id")
+                .agg(
+                    n=("profit", "size"),
+                    wins=("status", lambda s: int((s == "win").sum())),
+                    profit=("profit", "sum"),
+                )
+                .assign(
+                    roi_pct=lambda df: (
+                        100 * df["profit"] / (100.0 * df["n"])
+                    ).round(2)
+                )
+            )
+            by_rule_out = paths.calibration_dir() / f"backtest_by_rule_{sid}.csv"
+            by_rule.to_csv(by_rule_out)
+            print(by_rule.to_string())
+            print(
+                f"[backtest:{sid}] graded={len(graded)} by-rule breakdown "
+                f"written to {by_rule_out}"
+            )

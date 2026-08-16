@@ -1,11 +1,18 @@
-name: MVP Pregame Run
+name: MVP Close Snapshot
 
-# 16:50 ET, ~2h before the main evening slate. Takes the pregame snapshot
-# (3 credits) and generates picks for the evening games with movement
-# measured open -> pregame.
+# 18:20 ET (22:20 UTC in EDT) — the closing-line-value snapshot. Lands after
+# the pregame picks run priced its bets (~17:00 ET) and before ~96% of first
+# pitches, giving nearly every pick a genuinely post-pick pre-start price.
+# This label is CLV-only: pick generation never uses `close` as a movement
+# endpoint (see strategy/movement.py). Costs 3 credits; total budget stays
+# ~360/month against the 500 free-tier cap.
+#
+# DST caveat: cron is UTC. 22:20 UTC = 18:20 ET only during EDT; in EST it
+# drifts to 17:20 ET, which is still after the pregame run and before the
+# evening slate, so no adjustment is required in November.
 on:
   schedule:
-    - cron: "50 20 * * *"
+    - cron: "20 22 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -34,33 +41,16 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      - name: Pregame odds snapshot
+      - name: Close odds snapshot (CLV endpoint)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           PANTHERA_ODDS_FIXTURE: tests/fixtures/odds_snapshot.json
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            panthera-mvp snapshot --label pregame --dry-run
+            panthera-mvp snapshot --label close --dry-run
           else
-            panthera-mvp snapshot --label pregame
+            panthera-mvp snapshot --label close
           fi
-
-      - name: Public betting splits (Lumify)
-        env:
-          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
-          PANTHERA_SPLITS_FIXTURE: tests/fixtures/lumify_splits.json
-        run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            panthera-mvp splits --label pregame --dry-run
-          else
-            panthera-mvp splits --label pregame
-          fi
-
-      - name: Picks for evening games
-        run: panthera-mvp picks --window-end-et 23:59 --label pregame
-
-      - name: Regenerate reports
-        run: panthera-mvp report
 
       - name: Commit & push
         run: |
@@ -71,6 +61,6 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "data: pregame run $(date -u +%FT%TZ) [skip ci]"
+          git commit -m "data: close snapshot $(date -u +%FT%TZ) [skip ci]"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"

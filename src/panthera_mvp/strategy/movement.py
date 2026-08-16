@@ -53,10 +53,48 @@ def consensus_price(
     return float(sel["price_american"].median())
 
 
-def extract_game_prices(lines: pd.DataFrame, odds_event_id: str, home_team: str, away_team: str):
+#: The `close` snapshot exists only for closing-line-value measurement; it is
+#: never a movement endpoint for pick generation.
+CLV_ONLY_LABELS = {"close"}
+
+
+def consensus_rl_price(
+    lines: pd.DataFrame,
+    odds_event_id: str,
+    team: str,
+    snapshot_label: str,
+    line: float,
+) -> float | None:
+    """Consensus run-line price at an EXACT point value.
+
+    `consensus_price` ignores `point`, and ~20% of events carry alternate
+    spread lines (3.5, 5.5, ...) — a point-blind median would silently blend
+    them. CLV comparisons must price the close at the pick's own line."""
+    sel = lines[
+        (lines["odds_event_id"] == odds_event_id)
+        & (lines["market"] == "spreads")
+        & (lines["outcome"] == team)
+        & (lines["snapshot_label"] == snapshot_label)
+        & (lines["point"] == line)
+    ]
+    if sel.empty:
+        return None
+    return float(sel["price_american"].median())
+
+
+def extract_game_prices(
+    lines: pd.DataFrame,
+    odds_event_id: str,
+    home_team: str,
+    away_team: str,
+    latest_label: str | None = None,
+):
     """Build a GamePrices bundle from the lines table for one event.
 
-    `open` = earliest snapshot label present today, `latest` = most recent.
+    `open` = earliest snapshot label present today. `latest` = the caller's
+    own snapshot label when given (each picks run measures movement up to the
+    snapshot *it* took), otherwise the most recent non-CLV label present —
+    the `close` snapshot is for CLV only and is never a movement endpoint.
     Run-line prices come from the spreads market at the standard +/-1.5.
     """
     from .rules import GamePrices  # local import to avoid a cycle
@@ -64,8 +102,18 @@ def extract_game_prices(lines: pd.DataFrame, odds_event_id: str, home_team: str,
     sel = lines[lines["odds_event_id"] == odds_event_id]
     if sel.empty:
         return None
-    ordered = sel.sort_values("snapshot_ts_utc")["snapshot_label"].unique()
-    open_label, latest_label = ordered[0], ordered[-1]
+    ordered = [
+        lab
+        for lab in sel.sort_values("snapshot_ts_utc")["snapshot_label"].unique()
+        if lab not in CLV_ONLY_LABELS
+    ]
+    if not ordered:
+        return None
+    open_label = ordered[0]
+    if latest_label is not None and latest_label in ordered:
+        pass  # explicit label, present today — use it as-is
+    else:
+        latest_label = ordered[-1]
 
     def _rl(team: str) -> float | None:
         rows = sel[

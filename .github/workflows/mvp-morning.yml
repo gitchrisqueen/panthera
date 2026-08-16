@@ -61,7 +61,7 @@ jobs:
           fi
 
       - name: Picks for afternoon games
-        run: panthera-mvp picks --window-end-et 16:00
+        run: panthera-mvp picks --window-end-et 16:00 --label morning
 
       - name: Regenerate reports
         run: panthera-mvp report

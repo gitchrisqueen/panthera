@@ -1,0 +1,55 @@
+# The incumbent P/V day-type strategy — behavioral parameters INLINED.
+#
+# Registry strategies deliberately do not merge strategy.calibrated.yaml
+# (its header says "safe to edit or delete" and `calibrate --write-config`
+# overwrites it); everything pv_v2's behavior depends on is pinned here so a
+# stray calibrate run cannot silently re-segment the incumbent mid-evaluation.
+# Values = the calibrated config that generated every live pick to date
+# (config_id VVPPPP-m5-e120-h200, calibrated 2026-08-01).
+strategy:
+  id: pv_v2
+  engine: pv_rules
+  enabled: true
+  kind: incumbent
+  scope: [live, backtest]
+  registered_at: "2026-08-17"
+  # Hashes whose picks pool into this strategy's verdict. 6f0d0924d4 is the
+  # hash that stamped all 93 pre-framework picks (segment 1). The
+  # post-framework hash is deliberately NOT listed: the per-day cap fix
+  # (bet_limits.cap_semantics) is a declared behavior change, so post-fix
+  # picks form segment 2, rendered as SCREEN only — never a second verdict.
+  hash_lineage: [6f0d0924d4]
+  hypothesis: >
+    Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct
+    sweep hypotheses (2,304 configs, heavy_fav parameter inert): validation
+    +1.40%, train -1.83%, zero configs positive on both splits, and the
+    archives priced no run lines, so R4/R5/R7 were swept as ML bets rather
+    than the RL bets placed live. Live segment 1 verdict recorded at 100
+    graded picks; the strategy continues afterwards as the labeled control —
+    a deliberate, documented choice.
+
+day_map:
+  monday: V
+  tuesday: V
+  wednesday: HYBRID
+  thursday: P
+  friday: P
+  saturday: P
+  sunday: P
+movement:
+  min_move_cents: 5
+thresholds:
+  evenly_matched_max_abs_ml: 120
+  heavy_fav_abs_ml: 200
+
+# Locked as pre-registered 2026-07-31; applies to the hash_lineage segment
+# only. Segments outside the lineage render as SCREEN and can never print a
+# verdict; a verdict-eligible successor requires a new strategy id.
+verdict: {min_graded: 100, supported_roi: 0.0, falsified_roi: -5.0}
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  max_picks_per_day: 6
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

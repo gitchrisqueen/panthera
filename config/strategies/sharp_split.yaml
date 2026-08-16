@@ -1,0 +1,53 @@
+# Forward-test: back the side whose money share (handle_pct) exceeds its
+# ticket share (bets_pct) — the classic sharp-money signature, measured by
+# Lumify splits rather than inferred from line movement.
+#
+# DISABLED until: (1) ~3 days of post-fetch-policy splits data exist (the
+# thresholds' volume rule is defined on the new capture semantics), and
+# (2) scripts/splits_replay.py's variant table is committed and the final
+# thresholds are set by the pre-stated mechanical rule — "largest
+# min_handle_minus_bets yielding >= 4 qualifying bets/day, deduped to one per
+# (date, game_pk)". Thresholds are volume-chosen, never in-sample-ROI-chosen:
+# the in-window replay spans roughly -11% to +3% ROI at n=30-86 (SE 11-18
+# pts) — noise either way, disclosed in docs/mvp-design.md.
+#
+# Evaluation: SCREEN checkpoints only (no verdict) — at ~4 bets/day, a
+# 300-pick verdict needs ~70 slates but the Lumify budget affords ~40-60.
+# Pre-registered stopping rule: evaluation ends when Lumify credits hit the
+# reserve floor; the final state is the last SCREEN. Anti-optional-stopping:
+# if the credit budget is extended after seeing interim results, this
+# strategy is permanently exploratory (can never print a verdict); a
+# verdict-eligible successor requires a new id and a budget funded before
+# its registration. Any change to splits_signal.* retires this id
+# (sharp_split_v2, fresh counters). Evaluation starts at registered_at; all
+# earlier splits data is the excluded exploration window.
+strategy:
+  id: sharp_split
+  engine: sharp_split
+  enabled: false                 # enable at registration (see header)
+  kind: forward_test
+  scope: [live]
+  registered_at: null            # set when enabled; evaluation clock starts here
+  hash_lineage: []
+  hypothesis: >
+    A side taking a much larger share of money than of tickets is where
+    informed ("sharp") bettors are. Backing that side at the latest lines.csv
+    consensus beats the vig. Grounded in 16 days of measured divergences
+    (e.g. 29% tickets / 86% handle); no historical splits exist, so this is
+    forward-test only and is NOT backtestable.
+
+splits_signal:
+  market: moneyline
+  min_handle_minus_bets: 10      # volume-rule output on Aug 1-16 window (docs/proofs/splits-replay.md); re-run on post-fix data before enabling
+  min_handle_pct: 50
+  max_abs_price: 300             # price read from lines.csv consensus, never splits
+  max_staleness_hours: 12
+
+verdict: null
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  max_picks_per_day: 6
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

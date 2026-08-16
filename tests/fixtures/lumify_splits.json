@@ -3,10 +3,12 @@
     "event": {
       "id": 90001,
       "name": "New York Yankees @ Boston Red Sox",
-      "sport": "baseball",
-      "league": "MLB",
+      "sport": "mlb",
+      "league": "mlb",
       "starts_at": "2026-08-01T23:05:00Z",
-      "status": "scheduled"
+      "scheduled_start_at": "2026-08-01T23:05:00Z",
+      "status": "scheduled",
+      "venue": {"id": 3, "name": "Fenway Park", "city": "Boston", "timezone": "America/New_York"}
     },
     "splits": {
       "event_id": 90001,
@@ -14,12 +16,16 @@
       "captured_at": "2026-08-01T20:00:00Z",
       "consensus": {
         "moneyline": {
-          "home": {"tickets_pct": 38, "money_pct": 45},
-          "away": {"tickets_pct": 62, "money_pct": 55}
+          "home": {"bets_pct": 38, "handle_pct": 45, "price": -120},
+          "away": {"bets_pct": 62, "handle_pct": 55, "price": 102}
         },
         "spread": {
-          "home": {"tickets_pct": 41},
-          "away": {"tickets_pct": 59}
+          "home": {"bets_pct": 41, "handle_pct": 44},
+          "away": {"bets_pct": 59, "handle_pct": 56}
+        },
+        "total": {
+          "over": {"bets_pct": 55, "handle_pct": 60, "line": 8.5},
+          "under": {"bets_pct": 45, "handle_pct": 40, "line": 8.5}
         }
       },
       "books": []
@@ -29,10 +35,12 @@
     "event": {
       "id": 90002,
       "name": "Los Angeles Dodgers @ San Diego Padres",
-      "sport": "baseball",
-      "league": "MLB",
+      "sport": "mlb",
+      "league": "mlb",
       "starts_at": "2026-08-02T00:40:00Z",
-      "status": "scheduled"
+      "scheduled_start_at": "2026-08-02T00:40:00Z",
+      "status": "scheduled",
+      "venue": {"id": 2680, "name": "Petco Park", "city": "San Diego", "timezone": "America/Los_Angeles"}
     },
     "splits": {
       "event_id": 90002,
@@ -40,8 +48,8 @@
       "captured_at": "2026-08-01T20:00:00Z",
       "consensus": {
         "moneyline": {
-          "home": {"tickets_pct": 30, "money_pct": 28},
-          "away": {"tickets_pct": 70, "money_pct": 72}
+          "home": {"bets_pct": 30, "handle_pct": 28, "price": 110},
+          "away": {"bets_pct": 70, "handle_pct": 72, "price": -130}
         }
       },
       "books": []
