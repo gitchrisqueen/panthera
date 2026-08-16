@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-16T18:30:15Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-16T21:01:55Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,8 +27,9 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fav_ml | baseline | 0 | — | — | — | — | — | 0 | screen only |
-| pv_v2 | incumbent | 88 | 37-51-0 | $-1,205.65 | -13.70% ±11.2 | — | — | 5 | collecting (88/100) |
+| fav_ml | baseline | 0 | — | — | — | — | — | 1 | screen only |
+| pv_v2 | incumbent | 88 | 37-51-0 | $-1,205.65 | -13.70% ±11.2 | — | 0% | 5 | collecting (88/100) |
+| pv_v3 | incumbent | 0 | — | — | — | — | — | 1 | collecting |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,205.65 | -13.70% |  |  |  |  |
 
 ## Strategy: fav_ml
@@ -36,6 +37,16 @@ not a tournament.
 _Control, not a strategy: full-slate favorite ML measures the vig drag on this slate/feed. Uncapped by design — a named exception to the explicit- cap rule, because a capped anchor (earliest games only) is a biased subsample. Its stakes dominate the informational portfolio row._
 
 _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-limited forward test)._
+
+**SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested.
+
+_No graded picks yet (1 pending)._
+
+**Last 10 picks**
+
+| Date | Matchup | Pick | Price | Rule | Status | P/L |
+|---|---|---|---|---|---|---|
+| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | B_FAV | pending |  |
 
 ## Strategy: pv_v2
 
@@ -97,4 +108,20 @@ _Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct sweep hy
 | 2026-08-16 | San Diego Padres @ Cleveland Guardians | Cleveland Guardians +1.5 | -175 | R4 | pending |  |
 | 2026-08-16 | Chicago White Sox @ Detroit Tigers | Chicago White Sox +1.5 | +159 | R4 | pending |  |
 | 2026-08-16 | Philadelphia Phillies @ Minnesota Twins | Minnesota Twins +1.5 | -170 | R4 | pending |  |
+
+## Strategy: pv_v3
+
+_The documented P/V strategy with its full dossier finally active: day/slot classification, line movement, and the ERA inputs (R3_era, R4 evenness, R8 veto) that were silently dormant in pv_v2 because the live schedule hydrate never returned pitcher stats. Same calibrated parameters as pv_v2 (VVPPPP-m5-e120-h200); the only change is ERA availability. Evaluation clock starts at registration — no pre-registration picks pool here._
+
+**Verdict segment** (config hashes: e7a93ebed7):
+
+**INCONCLUSIVE — collecting data.** 0/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+
+_No graded picks yet (1 pending)._
+
+**Last 10 picks**
+
+| Date | Matchup | Pick | Price | Rule | Status | P/L |
+|---|---|---|---|---|---|---|
+| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | R3_era | pending |  |
 
