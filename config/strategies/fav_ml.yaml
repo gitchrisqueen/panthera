@@ -1,0 +1,31 @@
+# Live baseline: bet the favorite ML in every eligible game.
+#
+# Purpose: (1) a vig anchor — the measured cost of skill-free betting on this
+# exact slate and price feed, against which every strategy's ROI is read;
+# (2) a grading/price-capture bug detector (any anomaly in a strategy that
+# bets everything shows up fast). Expected drag is stated as MEASURED, not
+# assumed: at this engine's convention (lower-ML side at latest consensus),
+# -6.7% on the Aug 1-16 2026 finals; across snapshot conventions -5.8% to
+# -8.2% (n=191, SE ±6.2 pts — wide). No verdict: baselines are descriptive.
+strategy:
+  id: fav_ml
+  engine: fav_ml
+  enabled: true
+  kind: baseline
+  scope: [live, backtest]
+  registered_at: "2026-08-17"
+  hash_lineage: []
+  hypothesis: >
+    Control, not a strategy: full-slate favorite ML measures the vig drag on
+    this slate/feed. Uncapped by design — a named exception to the explicit-
+    cap rule, because a capped anchor (earliest games only) is a biased
+    subsample. Its stakes dominate the informational portfolio row.
+
+verdict: null
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  max_picks_per_day: null   # explicit uncapped form (declared exception)
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

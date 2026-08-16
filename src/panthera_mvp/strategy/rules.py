@@ -47,7 +47,6 @@ class GamePrices:
 
 @dataclass
 class Pick:
-    pick_id: str
     game_pk: int
     odds_event_id: str
     game_date_et: str
@@ -65,6 +64,10 @@ class Pick:
     latest_price: float | None
     movement_cents: float
     rationale: str
+    # Engines may leave this None: the pipeline row builder is the single
+    # authoritative stamping site and overwrites whatever an engine set
+    # (strategy-prefixed format `<strategy_id>-<gamePk>-<market>-<yyyymmdd>`).
+    pick_id: str | None = None
 
 
 @dataclass

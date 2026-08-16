@@ -20,7 +20,11 @@
   append-once + settle-in-place (picks).
 - `strategy/` — the IP: `daytype.py` (P/V/hybrid), `movement.py` (public vs
   Vegas line moves), `dossier.py` (ERA/first-meeting features), `rules.py`
-  (R0–R8 rules engine; the rule-ID table is in its docstring).
+  (R0–R8 rules engine; the rule-ID table is in its docstring),
+  `registry.py` (multi-strategy layer: engines are pure functions
+  `StrategyContext -> Pick | Pass | None`; strategies are engine + YAML in
+  `config/strategies/`; baselines fav_ml/dog_ml live here),
+  `splits_signal.py` (Lumify splits engines).
 - `grading.py` — settles picks (ML/RL/total, pushes, voids).
 - `report.py` — regenerates all markdown from `picks.csv`.
 - `backtest/` — `loader.py` (sbro-format archives), `engine.py` (replays the
@@ -29,10 +33,18 @@
 ## Conventions
 
 - **Picks are immutable once created** — settle them, never rewrite terms.
-- **Every behavior knob lives in `config/strategy.yaml`** — no magic numbers
-  in `rules.py`. New thresholds get a documented YAML entry.
+  CLV enrichment (`close_price`/`clv_cents`) fills nulls once, never rewrites.
+- **Every behavior knob lives in `config/strategy.yaml` or the strategy's
+  own `config/strategies/<id>.yaml`** — no magic numbers in engine code.
+  New thresholds get a documented YAML entry. (Amended 2026-08-17: registry
+  strategies inline their behavioral params and do NOT merge
+  `strategy.calibrated.yaml`.)
 - `generate_pick` takes plain `GamePrices` values so live pipeline and
-  backtest share one code path. Don't fork the rules logic.
+  backtest share one code path (the registry wraps it in the `_pv_rules`
+  adapter). Don't fork the rules logic.
+- **A behavioral change under a reused strategy id is a protocol violation**:
+  it changes `config_hash`, and the report refuses to pool it with the
+  declared `hash_lineage`. New behavior ⇒ new strategy id, fresh counters.
 - Store timestamps with `timeutil.utc_iso()`; compare game days in ET only.
 - Tests run offline on `tests/fixtures/` — network calls are never made in
   unit tests. If you add a client method, add a fixture and a parse test.

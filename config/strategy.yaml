@@ -70,6 +70,13 @@ staking:
 bet_limits:
   max_picks_per_day: 6
   one_pick_per_game: true
+  # Cap semantics version marker (hashed). `per_day` = the daily cap counts
+  # picks already recorded today across runs. The original code applied the
+  # cap per *invocation* — morning and pregame runs each got a fresh budget,
+  # producing 7-8 picks on 4 of the first 15 live days. Fixing it changes
+  # which picks exist, so the marker forces a new config_hash: the report
+  # segments pre-fix and post-fix picks instead of silently pooling them.
+  cap_semantics: per_day
 
 # Scheduled picks runs (ET). Drives the late-run guard: GitHub cron drift can
 # fire a run hours late (observed 2026-08-06, ~4h), silently shrinking the

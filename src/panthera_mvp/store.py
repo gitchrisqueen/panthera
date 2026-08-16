@@ -25,6 +25,7 @@ LINES_KEY = [
 
 PICKS_COLUMNS = [
     "pick_id",
+    "strategy_id",
     "created_ts_utc",
     "game_date_et",
     "game_pk",
@@ -49,7 +50,29 @@ PICKS_COLUMNS = [
     "settled_ts_utc",
     "final_score",
     "profit",
+    "close_price",
+    "clv_cents",
 ]
+
+#: Append-once identity for a pick. `pick_id` alone can't be the dedupe key:
+#: the 93 legacy rows keep their unprefixed ids (annotated, never re-termed),
+#: which would collide with nothing and protect nothing once ids gained the
+#: strategy prefix. `pick_id` remains the settlement key and must stay unique.
+PICKS_DEDUPE_KEY = ["strategy_id", "game_pk", "market", "game_date_et"]
+
+PASSES_COLUMNS = [
+    "ts_utc",
+    "run_label",
+    "strategy_id",
+    "game_pk",
+    "game_date_et",
+    "reason",
+]
+
+#: A game passed in the morning run and picked in the pregame run must not
+#: double-count: passes are keyed per run, and reports subtract games that
+#: later produced a pick.
+PASSES_KEY = ["strategy_id", "game_pk", "game_date_et", "run_label"]
 
 GAMES_COLUMNS = [
     "game_pk",
@@ -118,8 +141,18 @@ def load_games() -> pd.DataFrame:
     return _load(paths.games_csv(), GAMES_COLUMNS)
 
 
+def _load_picks() -> pd.DataFrame:
+    """Load picks reindexed to the canonical schema (legacy files gain the
+    new columns as nulls). Scoped to picks only — a blanket reindex in _load
+    would drop unknown columns from lines/games. Every picks call site
+    (load/append/settle) routes through here so an append after a schema
+    extension can never silently write the legacy column set back."""
+    df = _load(paths.picks_csv(), PICKS_COLUMNS)
+    return df.reindex(columns=PICKS_COLUMNS)
+
+
 def load_picks() -> pd.DataFrame:
-    return _load(paths.picks_csv(), PICKS_COLUMNS)
+    return _load_picks()
 
 
 def append_lines(df: pd.DataFrame) -> int:
@@ -159,14 +192,48 @@ def upsert_games(df: pd.DataFrame) -> None:
 
 
 def append_picks(df: pd.DataFrame) -> int:
-    """Append picks whose pick_id is not already present (idempotent)."""
+    """Append picks not already present (idempotent, append-once).
+
+    Dedupe key is (strategy_id, game_pk, market, game_date_et) — see
+    PICKS_DEDUPE_KEY. Intra-strategy re-runs append nothing (picks are
+    immutable once created); a second strategy on the same game/market is a
+    distinct row."""
     if df.empty:
         return 0
     path = paths.picks_csv()
     path.parent.mkdir(parents=True, exist_ok=True)
-    existing = _load(path, PICKS_COLUMNS)
+    existing = _load_picks()
     if not existing.empty:
-        df = df[~df["pick_id"].isin(existing["pick_id"])]
+        existing_keys = set(
+            map(tuple, existing[PICKS_DEDUPE_KEY].astype(str).values)
+        )
+        mask = [
+            tuple(map(str, row)) not in existing_keys
+            for row in df[PICKS_DEDUPE_KEY].values
+        ]
+        df = df[mask]
+        if df.empty:
+            return 0
+    combined = pd.concat([existing, df], ignore_index=True)
+    combined = combined.reindex(columns=PICKS_COLUMNS)
+    combined.to_csv(path, index=False)
+    return len(df)
+
+
+def append_passes(df: pd.DataFrame) -> int:
+    """Append pass records keyed by PASSES_KEY (append-once per run)."""
+    if df.empty:
+        return 0
+    path = paths.data_dir() / "picks" / "passes.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    existing = _load(path, PASSES_COLUMNS)
+    if not existing.empty:
+        existing_keys = set(map(tuple, existing[PASSES_KEY].astype(str).values))
+        mask = [
+            tuple(map(str, row)) not in existing_keys
+            for row in df[PASSES_KEY].values
+        ]
+        df = df[mask]
         if df.empty:
             return 0
     combined = pd.concat([existing, df], ignore_index=True)
@@ -174,12 +241,16 @@ def append_picks(df: pd.DataFrame) -> int:
     return len(df)
 
 
+def load_passes() -> pd.DataFrame:
+    return _load(paths.data_dir() / "picks" / "passes.csv", PASSES_COLUMNS)
+
+
 def settle_picks(settlements: pd.DataFrame) -> int:
     """settlements columns: pick_id, status, settled_ts_utc, final_score, profit."""
     if settlements.empty:
         return 0
     path = paths.picks_csv()
-    picks = _load(path, PICKS_COLUMNS)
+    picks = _load_picks()
     if picks.empty:
         return 0
     count = 0

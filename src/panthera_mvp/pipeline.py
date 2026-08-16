@@ -16,13 +16,14 @@ import pandas as pd
 
 from . import paths, store
 from .clients import espn, lumify, mlb, odds
-from .config import config_hash, load_config
+from .config import config_hash, load_config, load_strategy_configs
 from .grading import grade_pending
 from .matching import match_events
 from .report import write_daily_report, write_ledger_report
 from .strategy.dossier import Dossier, SeasonContext
 from .strategy.movement import extract_game_prices
-from .strategy.rules import Pass, Pick, generate_pick
+from .strategy.registry import StrategyContext, engines
+from .strategy.rules import Pass, Pick
 from .timeutil import ET, now_utc, utc_iso
 
 
@@ -88,8 +89,19 @@ def cmd_snapshot(label: str, dry_run: bool = False) -> None:
 
 
 def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
-    """Fetch today's MLB schedule and upsert into games.csv."""
-    games = mlb.get_schedule(date_et)
+    """Fetch today's MLB schedule and upsert into games.csv.
+
+    PANTHERA_MLB_FIXTURE (tests/offline dry-runs) points at a recorded
+    schedule payload instead of calling statsapi — unit tests never touch
+    the network."""
+    fixture = os.environ.get("PANTHERA_MLB_FIXTURE")
+    if fixture:
+        with open(fixture) as fh:
+            games = [
+                g for g in mlb.parse_schedule(json.load(fh)) if g.game_date_et == date_et
+            ]
+    else:
+        games = mlb.get_schedule(date_et)
     rows = []
     for g in games:
         rows.append(
@@ -138,6 +150,17 @@ def _build_season_context(date_et: str) -> SeasonContext | None:
     """One league-wide schedule call covering the season to date; feeds every
     dossier's recent-outcomes/trends fields (doc §3). Returns None when the
     MLB API is unreachable — dossier tiebreaks then simply don't fire."""
+    fixture = os.environ.get("PANTHERA_MLB_FIXTURE")
+    if fixture:
+        # Offline: any finals present in the fixture feed the context; a
+        # picks-day fixture usually has none, so tiebreaks simply don't fire.
+        with open(fixture) as fh:
+            payload = json.load(fh)
+        ctx = SeasonContext()
+        for g in mlb.parse_schedule(payload):
+            if g.game_type == "R" and g.status == "Final" and g.home_score is not None:
+                ctx.add_final(g.home_team_id, g.away_team_id, g.home_score, g.away_score)
+        return ctx
     season = date_et[:4]
     yesterday = str(date.fromisoformat(date_et) - timedelta(days=1))
     try:
@@ -228,9 +251,118 @@ def _late_run_check(run_label: str, cfg: dict, d: str) -> None:
         store.append_run_note(d, run_label, "late_run", note)
 
 
+def _pick_row(p: Pick, strategy_id: str, scfg: dict, chash: str) -> dict:
+    """Build a ledger row from a Pick. The single authoritative pick_id
+    stamping site: whatever id the engine set is overwritten with the
+    strategy-prefixed format."""
+    return {
+        "pick_id": f"{strategy_id}-{p.game_pk}-{p.market}-{p.game_date_et.replace('-', '')}",
+        "strategy_id": strategy_id,
+        "created_ts_utc": utc_iso(now_utc()),
+        "game_date_et": p.game_date_et,
+        "game_pk": p.game_pk,
+        "odds_event_id": p.odds_event_id,
+        "matchup": p.matchup,
+        "start_time_et": p.start_time_et,
+        "day_type": p.day_type,
+        "slot_type": p.slot_type,
+        "rule_id": p.rule_id,
+        "market": p.market,
+        "selection": p.selection,
+        "line": p.line,
+        "price_american": p.price_american,
+        "price_decimal": p.price_decimal,
+        "stake": scfg["staking"]["flat_stake"],
+        "open_price": p.open_price,
+        "latest_price": p.latest_price,
+        "movement_cents": p.movement_cents,
+        "rationale": p.rationale,
+        "config_hash": chash,
+        "status": "pending",
+        "settled_ts_utc": None,
+        "final_score": None,
+        "profit": None,
+        "close_price": None,
+        "clv_cents": None,
+    }
+
+
+def _strategy_picks(
+    sid: str,
+    scfg: dict,
+    games: list,
+    events_by_pk: dict,
+    lines_today: pd.DataFrame,
+    season_ctx,
+    snap_label: str | None,
+    window: tuple[int, int],
+    d: str,
+    dry_run: bool,
+    run_label: str,
+    existing: pd.DataFrame,
+    splits_lookup=None,
+) -> tuple[list[dict], list[Pass]]:
+    """Run one strategy's engine over the slate; returns (rows, passes).
+
+    Per-day cap: the budget counts picks this strategy already recorded today
+    (across runs) — the original per-invocation cap gave morning and pregame
+    runs a fresh budget each, over-capping 4 of the first 15 live days.
+    Earliest-start-first truncation bias: games arrive in schedule order, so
+    when the cap binds it drops the latest games, not random ones.
+    """
+    engine = engines()[scfg["strategy"]["engine"]]
+    chash = config_hash(scfg)
+    mine_today = (
+        existing[
+            (existing["game_date_et"] == d) & (existing["strategy_id"] == sid)
+        ]
+        if not existing.empty
+        else existing
+    )
+    max_per_day = scfg["bet_limits"]["max_picks_per_day"]
+    budget = None if max_per_day is None else max(0, int(max_per_day) - len(mine_today))
+    my_pks_today = set(mine_today["game_pk"]) if not mine_today.empty else set()
+
+    end_h, end_m = window
+    picks: list[Pick] = []
+    passes: list[Pass] = []
+    for g in games:
+        start_et = g.start_utc.astimezone(ET)
+        if (start_et.hour, start_et.minute) > (end_h, end_m):
+            continue
+        if start_et <= now_utc().astimezone(ET) and not dry_run:
+            continue  # game already started
+        if scfg["bet_limits"]["one_pick_per_game"] and g.game_pk in my_pks_today:
+            continue
+        event_id = events_by_pk.get(g.game_pk)
+        prices = (
+            extract_game_prices(
+                lines_today, event_id, g.home_team, g.away_team, latest_label=snap_label
+            )
+            if event_id
+            else None
+        )
+        ctx = StrategyContext(
+            game=g,
+            odds_event_id=event_id,
+            prices=prices,
+            dossier=_build_dossier(g, season_ctx, scfg),
+            cfg=scfg,
+            splits=splits_lookup(g) if splits_lookup else None,
+        )
+        result = engine(ctx)
+        if isinstance(result, Pick):
+            picks.append(result)
+        elif isinstance(result, Pass):
+            passes.append(result)
+
+    if budget is not None:
+        picks = picks[:budget]
+    return [_pick_row(p, sid, scfg, chash) for p in picks], passes
+
+
 def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manual") -> None:
-    cfg = load_config()
-    chash = config_hash(cfg)
+    cfg = load_config()  # pipeline config: shared prep + report plumbing only
     d = str(today_et())
     lines = store.load_lines()
     lines_today = lines[lines["game_date_et"] == d] if not lines.empty else lines
@@ -249,6 +381,18 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
         print(f"[picks] {note}")
         store.append_run_note(d, run_label, "degraded_snapshot", note)
 
+    strategies = load_strategy_configs(known_engines=set(engines()))
+    live = {
+        sid: scfg
+        for sid, scfg in strategies.items()
+        if scfg["strategy"].get("enabled") and "live" in scfg["strategy"]["scope"]
+    }
+    if not live:
+        print("[picks] no enabled live strategies")
+        return
+
+    # Shared prep — one schedule refresh, one season context, one lines slice
+    # for every strategy; N strategies cost zero extra API credits.
     games = _refresh_games(d)
     season_ctx = _build_season_context(d)
     events_by_pk = (
@@ -257,82 +401,73 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
         .set_index("game_pk")["odds_event_id"]
         .to_dict()
     )
-
-    end_h, end_m = (int(x) for x in window_end_et.split(":"))
-    picks: list[Pick] = []
-    passes: list[Pass] = []
+    splits_lookup = _make_splits_lookup(d)
+    window = tuple(int(x) for x in window_end_et.split(":"))
     existing = store.load_picks()
-    existing_pks_today = (
-        set(existing[existing["game_date_et"] == d]["game_pk"]) if not existing.empty else set()
-    )
 
-    for g in games:
-        start_et = g.start_utc.astimezone(ET)
-        if (start_et.hour, start_et.minute) > (end_h, end_m):
-            continue
-        if start_et <= now_utc().astimezone(ET) and not dry_run:
-            continue  # game already started
-        if cfg["bet_limits"]["one_pick_per_game"] and g.game_pk in existing_pks_today:
-            continue
-        event_id = events_by_pk.get(g.game_pk)
-        prices = (
-            extract_game_prices(
-                lines_today, event_id, g.home_team, g.away_team, latest_label=snap_label
+    total_added = 0
+    for sid, scfg in live.items():
+        try:
+            rows, passes = _strategy_picks(
+                sid,
+                scfg,
+                games,
+                events_by_pk,
+                lines_today,
+                season_ctx,
+                snap_label,
+                window,
+                d,
+                dry_run,
+                run_label,
+                existing,
+                splits_lookup=splits_lookup,
             )
-            if event_id
-            else None
-        )
-        result = generate_pick(
-            g, event_id, prices, _build_dossier(g, season_ctx, cfg), cfg
-        )
-        if isinstance(result, Pick):
-            picks.append(result)
-        elif isinstance(result, Pass):
-            passes.append(result)
-
-    picks = picks[: cfg["bet_limits"]["max_picks_per_day"]]
-    if picks:
-        rows = []
-        for p in picks:
-            rows.append(
-                {
-                    "pick_id": p.pick_id,
-                    "created_ts_utc": utc_iso(now_utc()),
-                    "game_date_et": p.game_date_et,
-                    "game_pk": p.game_pk,
-                    "odds_event_id": p.odds_event_id,
-                    "matchup": p.matchup,
-                    "start_time_et": p.start_time_et,
-                    "day_type": p.day_type,
-                    "slot_type": p.slot_type,
-                    "rule_id": p.rule_id,
-                    "market": p.market,
-                    "selection": p.selection,
-                    "line": p.line,
-                    "price_american": p.price_american,
-                    "price_decimal": p.price_decimal,
-                    "stake": cfg["staking"]["flat_stake"],
-                    "open_price": p.open_price,
-                    "latest_price": p.latest_price,
-                    "movement_cents": p.movement_cents,
-                    "rationale": p.rationale,
-                    "config_hash": chash,
-                    "status": "pending",
-                    "settled_ts_utc": None,
-                    "final_score": None,
-                    "profit": None,
-                }
+        except Exception as exc:  # isolate: one bad engine must not lose the slate
+            note = f"{sid}: engine error — {type(exc).__name__}: {exc}"
+            print(f"[picks:{sid}] ERROR {note}", file=sys.stderr)
+            store.append_run_note(d, run_label, "engine_error", note)
+            continue
+        if rows:
+            added = store.append_picks(pd.DataFrame(rows))
+            total_added += added
+            print(f"[picks:{sid}] {added} new pick(s) recorded")
+        else:
+            print(f"[picks:{sid}] no picks generated")
+        if passes:
+            ts = utc_iso(now_utc())
+            store.append_passes(
+                pd.DataFrame(
+                    [
+                        {
+                            "ts_utc": ts,
+                            "run_label": run_label,
+                            "strategy_id": sid,
+                            "game_pk": p.game_pk,
+                            "game_date_et": d,
+                            "reason": f"[{p.rule_id}] {p.reason}",
+                        }
+                        for p in passes
+                    ]
+                )
             )
-        added = store.append_picks(pd.DataFrame(rows))
-        print(f"[picks] {added} new pick(s) recorded")
-    else:
-        print("[picks] no picks generated")
-    for p in passes:
-        print(f"[picks] pass {p.matchup}: [{p.rule_id}] {p.reason}")
+            for p in passes:
+                print(f"[picks:{sid}] pass {p.matchup}: [{p.rule_id}] {p.reason}")
 
     credits_note = _credits_note()
-    write_daily_report(d, cfg, passes=passes, credits_note=credits_note)
+    write_daily_report(d, cfg, new_picks=pd.DataFrame(), credits_note=credits_note)
     write_ledger_report(cfg)
+
+
+def _make_splits_lookup(date_et: str):
+    """Build a per-game splits accessor for splits-based engines, or None
+    when the splits module/data is unavailable (engines then Pass)."""
+    try:
+        from .strategy.splits_signal import make_splits_lookup
+
+        return make_splits_lookup(date_et)
+    except ImportError:
+        return None
 
 
 def _credits_note() -> str:
