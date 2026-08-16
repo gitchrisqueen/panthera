@@ -50,7 +50,8 @@ def _pitcher_from_probable(side: dict) -> PitcherInfo | None:
     if not prob:
         return None
     era = None
-    # hydrate=probablePitcher(stats(type=season)) puts season stats on the pitcher
+    # The person(stats(type=season)) hydrate attaches season splits to the
+    # probablePitcher object itself.
     for grp in prob.get("stats", []):
         for split in grp.get("splits", []):
             stat = split.get("stat", {})
@@ -99,7 +100,11 @@ def get_schedule(date_et: str | date, session: requests.Session | None = None) -
         params={
             "sportId": 1,
             "date": str(date_et),
-            "hydrate": "probablePitcher(stats(type=season)),linescore,team",
+            # probablePitcher(stats(...)) is silently ignored by the live API
+            # (probe evidence: actions run 31966193151 — only fullName/id/link
+            # come back). The person(...) form returns the full person object
+            # with season pitching splits attached to probablePitcher.
+            "hydrate": "probablePitcher,person(stats(type=season)),linescore,team",
         },
         timeout=TIMEOUT,
     )

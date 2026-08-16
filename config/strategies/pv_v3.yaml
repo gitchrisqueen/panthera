@@ -1,0 +1,60 @@
+# P/V day-type strategy, generation 3 — the ERA-active successor to pv_v2.
+#
+# Same engine and behavioral parameters as pv_v2, deployed together with the
+# clients/mlb.py hydrate fix (probablePitcher,person(stats(type=season)) —
+# probe evidence: actions run 31966193151) that finally populates probable-
+# pitcher ERA live. That activates the previously dormant ERA rules:
+# R3_era fallback, R4's ERA-evenness check, and the R8 veto. Activating them
+# is a behavior change, so per protocol it ships as a new strategy id with a
+# fresh evaluation clock; pv_v2 is retired (enabled: false) at the same
+# commit. The `data_sources` block is a behavioral marker: it keeps this
+# strategy's config_hash distinct from pv_v2's post-framework segment, whose
+# picks ran with ERA structurally absent.
+strategy:
+  id: pv_v3
+  engine: pv_rules
+  enabled: true
+  kind: incumbent
+  scope: [live, backtest]
+  registered_at: "2026-08-16"
+  # Filled with this config's own hash at registration; picks under it pool
+  # into the verdict below. Any future behavioral change must NOT extend this
+  # list — it requires pv_v4.
+  hash_lineage: [e7a93ebed7]
+  hypothesis: >
+    The documented P/V strategy with its full dossier finally active: day/slot
+    classification, line movement, and the ERA inputs (R3_era, R4 evenness,
+    R8 veto) that were silently dormant in pv_v2 because the live schedule
+    hydrate never returned pitcher stats. Same calibrated parameters as pv_v2
+    (VVPPPP-m5-e120-h200); the only change is ERA availability. Evaluation
+    clock starts at registration — no pre-registration picks pool here.
+
+# Behavioral marker (hashed): ERA now sourced via the person() hydrate.
+data_sources:
+  era_hydrate: person
+
+day_map:
+  monday: V
+  tuesday: V
+  wednesday: HYBRID
+  thursday: P
+  friday: P
+  saturday: P
+  sunday: P
+movement:
+  min_move_cents: 5
+thresholds:
+  evenly_matched_max_abs_ml: 120
+  heavy_fav_abs_ml: 200
+
+# Pre-registered 2026-08-16 at deployment, same thresholds as pv_v2's:
+# after 100 graded picks in-lineage, ROI > 0% -> SUPPORTED, < -5% ->
+# FALSIFIED, else inconclusive. Applies only to hash_lineage picks.
+verdict: {min_graded: 100, supported_roi: 0.0, falsified_roi: -5.0}
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  max_picks_per_day: 6
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

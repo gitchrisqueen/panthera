@@ -89,6 +89,15 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
 - **v2 (2026-08-02):** dossier completed — previous-game run differential
   (activates R8), last-10 form (`R3_form`) and season-series (`R3_series`)
   tiebreaks per doc §3/§5. Calibration re-run under the v2 engine.
+- **v3 / strategy `pv_v3` (2026-08-16):** ERA actually flows. The live
+  schedule hydrate had silently never returned pitcher stats (probe: actions
+  run 31966193151), so `R3_era`, R4's ERA-evenness check, and the ERA half of
+  the R8 veto were structurally dormant through every v1/v2 pick. Fixed via
+  the `probablePitcher,person(stats(type=season))` hydrate. Behavior change ⇒
+  new strategy id per protocol: `pv_v2` retired (its frozen verdict segment
+  stays in the report), `pv_v3` registered with identical parameters, a
+  `data_sources.era_hydrate` behavioral marker, and a fresh 100-graded-pick
+  verdict clock.
 
 ## Verdict criteria (pre-registered)
 

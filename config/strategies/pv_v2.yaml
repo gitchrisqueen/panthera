@@ -6,10 +6,18 @@
 # stray calibrate run cannot silently re-segment the incumbent mid-evaluation.
 # Values = the calibrated config that generated every live pick to date
 # (config_id VVPPPP-m5-e120-h200, calibrated 2026-08-01).
+# RETIRED 2026-08-16: the clients/mlb.py ERA hydrate fix activates rules
+# (R3_era/R4-evenness/R8) that were structurally dormant during every pv_v2
+# pick, which is a behavior change this id cannot absorb. Successor: pv_v3
+# (same parameters, ERA active, fresh evaluation clock). pv_v2's history and
+# its verdict segment remain in the report; the verdict segment was already
+# frozen by the cap-semantics split at 88 graded + a handful of then-pending
+# picks, and cannot reach its 100-graded threshold — recorded here so the
+# permanently-"collecting" verdict line is not a surprise.
 strategy:
   id: pv_v2
   engine: pv_rules
-  enabled: true
+  enabled: false
   kind: incumbent
   scope: [live, backtest]
   registered_at: "2026-08-17"
