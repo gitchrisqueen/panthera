@@ -9,9 +9,11 @@ directly — change `src/panthera_mvp/report.py` and regenerate.
   (`config/strategies/<id>.yaml`) at registration and applied only to picks
   whose `config_hash` is in that strategy's declared `hash_lineage`; picks
   under any other hash render as SCREEN segments (descriptive only, never a
-  verdict). The incumbent pv_v2's original criteria (≥100 graded picks;
+  verdict). The retired pv_v2's original criteria (≥100 graded picks;
   ROI > 0% supported, < −5% falsified; pre-registered 2026-07-31) are
-  unchanged and apply to its legacy segment. **Portfolio totals are
+  unchanged and apply to its legacy segment, which froze short of 100 —
+  its verdict line stays "collecting" permanently by design. The live
+  incumbent is pv_v3 (ERA-active, registered 2026-08-16, fresh clock). **Portfolio totals are
   informational and never a verdict target. Do not move any strategy's
   goalposts after registration** — a changed evaluation requires a new
   strategy id with a fresh clock.
