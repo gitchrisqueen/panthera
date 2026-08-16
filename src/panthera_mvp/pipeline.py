@@ -170,7 +170,65 @@ def _build_dossier(g: mlb.GameInfo, ctx: SeasonContext | None, cfg: dict) -> Dos
     )
 
 
-def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
+# Snapshot-label canon, chronological. Two label vocabularies exist: snapshot
+# labels (below) name odds captures; picks-run labels (morning/pregame/manual)
+# name scheduled pipeline runs. Never conflate them — the mapping lives in
+# _resolve_snapshot_label.
+SNAPSHOT_LABEL_ORDER = ["open", "midday", "pregame", "close"]
+
+# picks-run label -> the snapshot label that run takes immediately beforehand.
+RUN_TO_SNAPSHOT = {"morning": "open", "pregame": "pregame"}
+
+
+def _resolve_snapshot_label(
+    run_label: str, lines_today: pd.DataFrame
+) -> tuple[str | None, bool]:
+    """Map a picks-run label to the movement-endpoint snapshot label.
+
+    Returns (label, degraded). Fallback when the mapped label has no rows
+    today (e.g. the credit guard skipped the snapshot): the latest label
+    present that sits at or before the mapped one in SNAPSHOT_LABEL_ORDER,
+    else the earliest label present — never zero-out the slate. `close` is
+    CLV-only and never selected. `manual` runs use the latest label present.
+    """
+    present = [
+        lab
+        for lab in SNAPSHOT_LABEL_ORDER[:-1]  # excludes `close`
+        if lab in set(lines_today["snapshot_label"])
+    ]
+    if not present:
+        return None, False
+    mapped = RUN_TO_SNAPSHOT.get(run_label)
+    if mapped is None:  # manual
+        return present[-1], False
+    if mapped in present:
+        return mapped, False
+    mapped_idx = SNAPSHOT_LABEL_ORDER.index(mapped)
+    before = [lab for lab in present if SNAPSHOT_LABEL_ORDER.index(lab) < mapped_idx]
+    return (before[-1] if before else present[0]), True
+
+
+def _late_run_check(run_label: str, cfg: dict, d: str) -> None:
+    """GitHub cron drift can fire a run hours late (observed 2026-08-06,
+    ~4h). Note it durably so the daily report explains a reduced slate."""
+    runs_cfg = cfg.get("runs", {})
+    sched = runs_cfg.get(run_label, {}).get("scheduled_et")
+    if not sched:
+        return
+    grace = int(runs_cfg.get("late_run_grace_minutes", 90))
+    now_et = now_utc().astimezone(ET)
+    sched_h, sched_m = (int(x) for x in sched.split(":"))
+    minutes_late = (now_et.hour * 60 + now_et.minute) - (sched_h * 60 + sched_m)
+    if minutes_late > grace:
+        note = (
+            f"late run: {run_label} started {minutes_late} min after its "
+            f"{sched} ET schedule; started games were skipped, slate reduced"
+        )
+        print(f"[picks] {note}")
+        store.append_run_note(d, run_label, "late_run", note)
+
+
+def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manual") -> None:
     cfg = load_config()
     chash = config_hash(cfg)
     d = str(today_et())
@@ -179,6 +237,17 @@ def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
     if lines_today.empty:
         print("[picks] no odds lines for today; run snapshot first")
         return
+
+    _late_run_check(run_label, cfg, d)
+    snap_label, degraded = _resolve_snapshot_label(run_label, lines_today)
+    if degraded:
+        note = (
+            f"degraded snapshot: {run_label} run expected the "
+            f"'{RUN_TO_SNAPSHOT[run_label]}' snapshot but it has no rows today; "
+            f"movement measured to '{snap_label}' instead"
+        )
+        print(f"[picks] {note}")
+        store.append_run_note(d, run_label, "degraded_snapshot", note)
 
     games = _refresh_games(d)
     season_ctx = _build_season_context(d)
@@ -207,7 +276,9 @@ def cmd_picks(window_end_et: str, dry_run: bool = False) -> None:
             continue
         event_id = events_by_pk.get(g.game_pk)
         prices = (
-            extract_game_prices(lines_today, event_id, g.home_team, g.away_team)
+            extract_game_prices(
+                lines_today, event_id, g.home_team, g.away_team, latest_label=snap_label
+            )
             if event_id
             else None
         )
@@ -378,16 +449,26 @@ def cmd_splits(label: str = "manual", dry_run: bool = False) -> None:
         if not api_key:
             print("[splits] LUMIFY_API_KEY not set; skipping splits collection")
             return
+        prev_remaining = lumify.last_known_remaining()
         try:
             results, info = lumify.fetch_splits_for_date(
                 api_key,
                 d,
                 league=lcfg.get("league", "MLB"),
                 min_credits_reserve=lcfg.get("min_credits_reserve", 50),
+                # Morning fetch covers only the morning pick window (<16:00 ET);
+                # the pregame fetch re-reads the evening slate fresher.
+                window="morning" if label == "morning" else "all",
             )
         except lumify.LumifyCreditGuardError as exc:
             print(f"[splits] SKIPPED: {exc}")
             return
+        # The SDK meta reports per-call credits (always 1); log the real
+        # per-run delta so budget policy can be computed from the log.
+        if prev_remaining is not None and info.remaining is not None:
+            info = lumify.SplitsCreditInfo(
+                used=prev_remaining - info.remaining, remaining=info.remaining
+            )
         lumify.record_credits(info)
         lumify.save_raw(results, d, label)
         print(

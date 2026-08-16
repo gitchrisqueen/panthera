@@ -229,6 +229,16 @@ def write_daily_report(
             lines.append(f"- {p.matchup}: [{p.rule_id}] {p.reason}")
         lines.append("")
 
+    run_log = store.load_run_log()
+    notes_today = (
+        run_log[run_log["game_date_et"] == date_et] if not run_log.empty else run_log
+    )
+    if not notes_today.empty:
+        lines += ["## Run notes", ""]
+        for _, row in notes_today.iterrows():
+            lines.append(f"- `{row['run_label']}` [{row['kind']}] {row['note']}")
+        lines.append("")
+
     lines += _splits_section(date_et, picks)
 
     if credits_note:

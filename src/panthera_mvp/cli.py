@@ -13,7 +13,9 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_snap = sub.add_parser("snapshot", help="Take an odds snapshot")
-    p_snap.add_argument("--label", required=True, choices=["open", "midday", "pregame"])
+    p_snap.add_argument(
+        "--label", required=True, choices=["open", "midday", "pregame", "close"]
+    )
     p_snap.add_argument("--dry-run", action="store_true")
 
     p_picks = sub.add_parser("picks", help="Generate picks for today's games")
@@ -21,6 +23,13 @@ def main(argv: list[str] | None = None) -> None:
         "--window-end-et",
         default="23:59",
         help="Only games starting at or before this ET time (HH:MM)",
+    )
+    p_picks.add_argument(
+        "--label",
+        default="manual",
+        choices=["morning", "pregame", "manual"],
+        help="Which scheduled picks run this is (maps to a snapshot label; "
+        "drives the late-run guard and pass records)",
     )
     p_picks.add_argument("--dry-run", action="store_true")
 
@@ -56,7 +65,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "picks":
         from .pipeline import cmd_picks
 
-        cmd_picks(args.window_end_et, dry_run=args.dry_run)
+        cmd_picks(args.window_end_et, dry_run=args.dry_run, run_label=args.label)
     elif args.command == "splits":
         from .pipeline import cmd_splits
 

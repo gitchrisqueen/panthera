@@ -1,0 +1,56 @@
+name: MVP Debug — probable pitcher ERA hydrate
+
+# Diagnostic only (no commits). Live games.csv has 0/232 rows with pitcher
+# ERA even though clients/mlb.py requests
+# hydrate=probablePitcher(stats(type=season)) — so R3_era, R4's ERA-evenness
+# check, and the R8 veto have been silently dormant. The parse path is
+# fixture-verified correct, so the suspect is the live hydrate response.
+# Sandboxed dev environments can't reach statsapi.mlb.com; this dispatchable
+# job dumps what the live API actually returns for each hydrate variant so
+# the fix can be made from evidence instead of guesswork.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "ET date to inspect (YYYY-MM-DD; blank = today)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe hydrate variants
+        run: |
+          DATE="${{ inputs.date }}"
+          [ -z "$DATE" ] && DATE=$(TZ=America/New_York date +%F)
+          echo "Probing statsapi for $DATE"
+          for HYDRATE in \
+            "probablePitcher(stats(type=season)),linescore,team" \
+            "probablePitcher(stats(type=[season])),linescore,team" \
+            "probablePitcher,person(stats(type=season)),linescore,team" \
+            "probablePitcher" ; do
+            echo "=============================================="
+            echo "hydrate=$HYDRATE"
+            curl -sS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=$HYDRATE" \
+              | python3 -c '
+          import json, sys
+          payload = json.load(sys.stdin)
+          for day in payload.get("dates", []):
+              for g in day.get("games", [])[:3]:
+                  for side in ("home", "away"):
+                      prob = g["teams"][side].get("probablePitcher")
+                      if not prob:
+                          print(f"  {g[\"gamePk\"]} {side}: no probablePitcher")
+                          continue
+                      keys = sorted(prob.keys())
+                      has_stats = "stats" in prob
+                      print(f"  {g[\"gamePk\"]} {side}: {prob.get(\"fullName\")} keys={keys} stats={has_stats}")
+                      if has_stats:
+                          print("    stats sample:", json.dumps(prob["stats"])[:400])
+              break
+          '
+          done

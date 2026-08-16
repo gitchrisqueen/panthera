@@ -75,10 +75,39 @@ GAMES_COLUMNS = [
 ]
 
 
+RUN_LOG_COLUMNS = ["ts_utc", "game_date_et", "run_label", "kind", "note"]
+
+
 def _load(path, columns: list[str] | None = None) -> pd.DataFrame:
     if path.exists():
         return pd.read_csv(path)
     return pd.DataFrame(columns=columns or [])
+
+
+def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> None:
+    """Persist an operational note (late run, degraded snapshot, engine error)
+    so daily-report regeneration doesn't erase it."""
+    from .timeutil import now_utc, utc_iso
+
+    path = paths.data_dir() / "picks" / "run_log.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    row = pd.DataFrame(
+        [
+            {
+                "ts_utc": utc_iso(now_utc()),
+                "game_date_et": game_date_et,
+                "run_label": run_label,
+                "kind": kind,
+                "note": note,
+            }
+        ]
+    )
+    existing = _load(path, RUN_LOG_COLUMNS)
+    pd.concat([existing, row], ignore_index=True).to_csv(path, index=False)
+
+
+def load_run_log() -> pd.DataFrame:
+    return _load(paths.data_dir() / "picks" / "run_log.csv", RUN_LOG_COLUMNS)
 
 
 def load_lines() -> pd.DataFrame:
