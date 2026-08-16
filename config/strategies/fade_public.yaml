@@ -1,0 +1,39 @@
+# Forward-test: bet against the side holding a lopsided share of TICKETS —
+# the standard contrarian "fade the public" hypothesis, on the same Lumify
+# data as sharp_split at zero extra credits.
+#
+# DISABLED until registration alongside sharp_split (same post-fetch-policy
+# measurement window, same mechanical volume rule for the threshold: largest
+# min_tickets_pct yielding >= 6 qualifying bets/day, deduped to one per
+# (date, game_pk); rule output on the Aug 1-16 window: F=70 at 6.8/day). Same stopping and
+# anti-optional-stopping rules as sharp_split. Correlated with sharp_split by
+# construction (in-window estimate: ~41% same-side overlap; recomputed at
+# registration) — the report's shared-pick column keeps that visible, and the
+# two results are NOT independent evidence.
+strategy:
+  id: fade_public
+  engine: fade_public
+  enabled: false                 # enable at registration (see header)
+  kind: forward_test
+  scope: [live]
+  registered_at: null
+  hash_lineage: []
+  hypothesis: >
+    Heavily ticketed sides are overpriced by recreational flow; the opposite
+    side at the latest lines.csv consensus beats the vig. Forward-test only;
+    NOT backtestable (no historical splits).
+
+splits_signal:
+  market: moneyline
+  min_tickets_pct: 70            # volume-rule output on Aug 1-16 window (docs/proofs/splits-replay.md); re-run on post-fix data before enabling
+  max_abs_price: 300
+  max_staleness_hours: 12
+
+verdict: null
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  max_picks_per_day: 10
+  one_pick_per_game: true
+staking:
+  flat_stake: 100
