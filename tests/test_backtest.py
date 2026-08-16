@@ -61,3 +61,45 @@ def test_hand_checked_pnl(hist, cfg):
     assert tex.iloc[0]["selection"] == "TEX"
     assert tex.iloc[0]["status"] == "loss"
     assert tex.iloc[0]["profit"] == -100.0
+
+
+def test_engine_accepts_registry_engines(hist, cfg):
+    """run(generate=...) takes any registry engine; default (_pv_rules) is
+    equivalent to the raw rules path."""
+    from panthera_mvp.strategy.registry import _pv_rules, fav_ml_pick
+
+    prepared = _prepare_games(hist)
+    default = run(prepared, cfg)
+    explicit = run(prepared, cfg, generate=_pv_rules)
+    assert default.summary == explicit.summary
+
+    fav = run(prepared, cfg, generate=fav_ml_pick)
+    assert fav.summary["n_bets"] == len(hist)  # baseline bets every game
+    assert set(fav.picks["rule_id"]) == {"B_FAV"}
+
+
+def test_cmd_backtest_writes_per_strategy_outputs(hist, tmp_root, capsys):
+    """Per-strategy output files, by-rule persistence, and the loud splits
+    refusal."""
+    import shutil
+
+    from conftest import REPO
+    from panthera_mvp.backtest.engine import cmd_backtest
+
+    sdir = tmp_root / "config" / "strategies"
+    for name in ("fav_ml", "dog_ml", "sharp_split"):
+        shutil.copy(REPO / "config" / "strategies" / f"{name}.yaml", sdir / f"{name}.yaml")
+
+    cmd_backtest("2021-2021")
+    out = capsys.readouterr().out
+    # sharp_split has scope [live], so the default run skips it entirely.
+    assert "sharp_split" not in out
+    for sid in ("pv_v2", "fav_ml", "dog_ml"):
+        assert (paths.calibration_dir() / f"backtest_picks_{sid}.csv").exists()
+        assert (paths.calibration_dir() / f"backtest_by_rule_{sid}.csv").exists()
+
+    # Explicitly requesting a splits strategy gets the loud refusal.
+    cmd_backtest("2021-2021", strategy="sharp_split")
+    out = capsys.readouterr().out
+    assert "REFUSED sharp_split" in out and "not backtestable" in out
+    assert not (paths.calibration_dir() / "backtest_picks_sharp_split.csv").exists()

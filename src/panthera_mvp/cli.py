@@ -47,8 +47,14 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("report", help="Regenerate markdown reports")
     sub.add_parser("status", help="Show pending picks and credit balance")
 
-    p_bt = sub.add_parser("backtest", help="Replay the rules over historical seasons")
+    p_bt = sub.add_parser("backtest", help="Replay strategies over historical seasons")
     p_bt.add_argument("--seasons", default=None, help="e.g. 2019-2023")
+    p_bt.add_argument(
+        "--strategy",
+        default=None,
+        help="Strategy id (config/strategies/<id>.yaml); default: all with "
+        "backtest scope. Splits strategies are refused (no historical splits).",
+    )
 
     p_cal = sub.add_parser("calibrate", help="Parameter sweep over historical seasons")
     p_cal.add_argument("--train", required=True, help="e.g. 2019-2021")
@@ -85,7 +91,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "backtest":
         from .backtest.engine import cmd_backtest
 
-        cmd_backtest(args.seasons)
+        cmd_backtest(args.seasons, strategy=args.strategy)
     elif args.command == "calibrate":
         from .backtest.calibrate import cmd_calibrate
 
