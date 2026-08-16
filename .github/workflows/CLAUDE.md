@@ -4,19 +4,34 @@
 
 | Workflow | Cron (UTC) | ET (EDT) | Does |
 |---|---|---|---|
-| mvp-morning | 35 14 * * * | 10:35 | grade yesterday → snapshot `open` (3 cr) → Lumify splits `morning` → picks for pre-16:00 starts → report |
+| mvp-morning | 35 14 * * * | 10:35 | grade yesterday (fills CLV) → snapshot `open` (3 cr) → Lumify splits `morning` (scoped to pre-16:00 ET starts) → picks `--label morning` for pre-16:00 starts → report |
 | mvp-midday | 5 16 * * * | 12:05 | snapshot `midday` (3 cr) → report |
-| mvp-pregame | 50 20 * * * | 16:50 | snapshot `pregame` (3 cr) → Lumify splits (~16 cr of its own 1,000 pool) → picks for evening slate → report |
-| mvp-calibrate | manual | — | download archives → calibration sweep → write calibrated config |
+| mvp-pregame | 50 20 * * * | 16:50 | snapshot `pregame` (3 cr) → Lumify splits (not-yet-started events, both overlapping UTC dates) → picks `--label pregame` for evening slate → report |
+| mvp-close | 20 22 * * * | 18:20 | snapshot `close` (3 cr) — **CLV endpoint only**, never a movement endpoint for pick generation; lands after the pregame picks priced and before ~96% of first pitches |
+| mvp-calibrate | manual | — | download archives → calibration sweep → write calibrated config (registry strategies do NOT read it — their params are inlined) |
+| mvp-debug-era | manual | — | probe live statsapi hydrate variants for the dormant probable-pitcher ERA (no commits) |
 | ci | push/PR | — | ruff + pytest on `tests/` only |
 
 **DST note:** crons are DST-dumb. When the US shifts (Nov/Mar), runs drift
 1 hour of wall-clock ET. All game logic is ET-internal so nothing breaks —
 shift the cron hours by 1 if the drift matters (MLB season mostly avoids it).
+The `close` snapshot at 17:20 ET (EST) is still post-pregame/pre-slate, so
+no November adjustment is required. GitHub cron drift (hours-late fires,
+observed 2026-08-06) is mitigated by the picks late-run guard: >90 min late
+writes a durable run note; started games are skipped as always.
 
-**Credit budget:** 3 snapshots/day × 3 credits ≈ 279/month vs 500 free. The
-credit guard (`min_credits_reserve` in `config/strategy.yaml`) skips
-snapshots rather than exhausting the balance.
+**Credit budgets:**
+- Odds API: 4 snapshots/day × 3 credits ≈ 360/month vs 500 free. The credit
+  guard (`min_credits_reserve`) skips snapshots rather than exhausting the
+  balance; a skipped snapshot degrades the picks run to the previous label
+  (durable "degraded snapshot" note), never to the `close` label.
+- Lumify: finite non-expiring pool (observed opening balance 1,082; reserve
+  floor 50). The fetch policy — future-start events only, morning window
+  scoped to pre-16:00 ET, both overlapping UTC dates queried in the evening —
+  cut the burn from ~28/day to an estimated ~13-15/day. `credit_log.csv`
+  records real per-run deltas since 2026-08-17; **measure ~3 days of actual
+  burn before enabling the splits strategies** (their stopping rule is
+  budget-based).
 
 ## Bot-commit loop guards (keep all three)
 

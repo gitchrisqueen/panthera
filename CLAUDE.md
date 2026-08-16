@@ -15,8 +15,11 @@ database.
   `docker-compose.yml` are the abandoned SaaS scaffold. Do **not** fix,
   import from, or extend them; they are quarantined from CI and tooling.
 - **Strategy source of truth:** `docs/sports_betting_process.md`; formalized
-  in `docs/mvp-design.md`; parameterized in `config/strategy.yaml`.
-- **The verdict lives in** `reports/BETTING_REPORT.md`.
+  in `docs/mvp-design.md`; parameterized in `config/strategy.yaml` plus one
+  YAML per registered strategy in `config/strategies/` (multi-strategy
+  framework: several strategies paper-trade the same slate in parallel, each
+  with its own pre-registered evaluation — see `docs/mvp-design.md`).
+- **The per-strategy verdicts live in** `reports/BETTING_REPORT.md`.
 
 ## Commands
 
@@ -25,11 +28,11 @@ python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 .venv/bin/pytest tests/ -q          # offline; runs on fixtures
 .venv/bin/ruff check src tests
 panthera-mvp snapshot --label open --dry-run   # fixture odds, no credits
-panthera-mvp picks --window-end-et 23:59
-panthera-mvp grade
+panthera-mvp picks --window-end-et 23:59 --label pregame
+panthera-mvp grade                              # also fills CLV
 panthera-mvp report
 panthera-mvp status
-panthera-mvp backtest --seasons 2014-2023
+panthera-mvp backtest --seasons 2014-2023 [--strategy pv_v2]
 panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
 ```
 
