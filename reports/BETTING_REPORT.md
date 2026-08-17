@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-16T21:01:55Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-17T14:54:46Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,10 +27,10 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fav_ml | baseline | 0 | — | — | — | — | — | 1 | screen only |
-| pv_v2 | incumbent | 88 | 37-51-0 | $-1,205.65 | -13.70% ±11.2 | — | 0% | 5 | collecting (88/100) |
-| pv_v3 | incumbent | 0 | — | — | — | — | — | 1 | collecting |
-| _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,205.65 | -13.70% |  |  |  |  |
+| fav_ml | baseline | 1 | 0-1-0 | $-100.00 | -100.00% | +3.0c (n=1, 100% pos, 100% cov) | 50% | 1 | screen only |
+| pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
+| pv_v3 | incumbent | 1 | 0-1-0 | $-100.00 | -100.00% | +3.0c (n=1, 100% pos, 100% cov) | 50% | 1 | collecting (1/100) |
+| _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,646.65 | -17.33% |  |  |  |  |
 
 ## Strategy: fav_ml
 
@@ -40,13 +40,23 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested.
 
-_No graded picks yet (1 pending)._
+- **Record:** 0-1-0 (0 void)
+- **P/L:** $-100.00 on $100 risked
+- **ROI:** -100.00%
+- **Pending:** 1
+
+**By rule**
+
+| rule_id | Record | P/L | ROI |
+|---|---|---|---|
+| B_FAV | 0-1-0 | $-100.00 | -100.00% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | B_FAV | pending |  |
+| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | B_FAV | loss | $-100.00 |
+| 2026-08-17 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals ML | -110 | B_FAV | pending |  |
 
 ## Strategy: pv_v2
 
@@ -54,21 +64,21 @@ _Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct sweep hy
 
 **Verdict segment** (config hashes: 6f0d0924d4):
 
-**INCONCLUSIVE — collecting data.** 88/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+**INCONCLUSIVE — collecting data.** 93/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
-- **Record:** 37-51-0 (0 void)
-- **P/L:** $-1,205.65 on $8,800 risked
-- **ROI:** -13.70% (±11.2 pts SE, own SD)
-- **Pending:** 5
+- **Record:** 38-55-0 (0 void)
+- **P/L:** $-1,446.65 on $9,300 risked
+- **ROI:** -15.56% (±10.9 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
 | R3 | 11-17-0 | $-492.70 | -17.60% |
-| R3_form | 8-12-0 | $-420.05 | -21.00% |
-| R3_series | 4-9-0 | $-413.51 | -31.81% |
-| R4 | 5-6-0 | $-326.70 | -29.70% |
+| R3_form | 8-13-0 | $-520.05 | -24.76% |
+| R3_series | 4-10-0 | $-513.51 | -36.68% |
+| R4 | 6-8-0 | $-367.70 | -26.26% |
 | R5 | 7-5-0 | $+496.04 | +41.34% |
 | R7 | 2-2-0 | $-48.73 | -12.18% |
 
@@ -77,22 +87,22 @@ _Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct sweep hy
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
 | HYBRID | 8-8-0 | $+148.75 | +9.30% |
-| P | 19-30-0 | $-1,372.44 | -28.01% |
+| P | 20-34-0 | $-1,613.44 | -29.88% |
 | V | 10-13-0 | $+18.04 | +0.78% |
 
 **By slot**
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 22-31-0 | $-1,282.69 | -24.20% |
+| P | 23-35-0 | $-1,523.69 | -26.27% |
 | V | 15-20-0 | $+77.04 | +2.20% |
 
 **By market**
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 23-38-0 | $-1,326.26 | -21.74% |
-| rl | 14-13-0 | $+120.61 | +4.47% |
+| ml | 23-40-0 | $-1,526.26 | -24.23% |
+| rl | 15-15-0 | $+79.61 | +2.65% |
 
 **Last 10 picks**
 
@@ -103,11 +113,11 @@ _Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct sweep hy
 | 2026-08-15 | Boston Red Sox @ Pittsburgh Pirates | Pittsburgh Pirates +1.5 | -175 | R4 | loss | $-100.00 |
 | 2026-08-15 | Kansas City Royals @ Los Angeles Angels | Kansas City Royals ML | +135 | R3_series | loss | $-100.00 |
 | 2026-08-15 | Texas Rangers @ Athletics | Texas Rangers ML | -160 | R3 | win | $+62.50 |
-| 2026-08-16 | Baltimore Orioles @ Tampa Bay Rays | Tampa Bay Rays ML | -140 | R3_form | pending |  |
-| 2026-08-16 | Arizona Diamondbacks @ Atlanta Braves | Arizona Diamondbacks ML | +112 | R3_series | pending |  |
-| 2026-08-16 | San Diego Padres @ Cleveland Guardians | Cleveland Guardians +1.5 | -175 | R4 | pending |  |
-| 2026-08-16 | Chicago White Sox @ Detroit Tigers | Chicago White Sox +1.5 | +159 | R4 | pending |  |
-| 2026-08-16 | Philadelphia Phillies @ Minnesota Twins | Minnesota Twins +1.5 | -170 | R4 | pending |  |
+| 2026-08-16 | Baltimore Orioles @ Tampa Bay Rays | Tampa Bay Rays ML | -140 | R3_form | loss | $-100.00 |
+| 2026-08-16 | Arizona Diamondbacks @ Atlanta Braves | Arizona Diamondbacks ML | +112 | R3_series | loss | $-100.00 |
+| 2026-08-16 | San Diego Padres @ Cleveland Guardians | Cleveland Guardians +1.5 | -175 | R4 | loss | $-100.00 |
+| 2026-08-16 | Chicago White Sox @ Detroit Tigers | Chicago White Sox +1.5 | +159 | R4 | win | $+159.00 |
+| 2026-08-16 | Philadelphia Phillies @ Minnesota Twins | Minnesota Twins +1.5 | -170 | R4 | loss | $-100.00 |
 
 ## Strategy: pv_v3
 
@@ -115,13 +125,41 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 **Verdict segment** (config hashes: e7a93ebed7):
 
-**INCONCLUSIVE — collecting data.** 0/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+**INCONCLUSIVE — collecting data.** 1/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
-_No graded picks yet (1 pending)._
+- **Record:** 0-1-0 (0 void)
+- **P/L:** $-100.00 on $100 risked
+- **ROI:** -100.00%
+- **Pending:** 1
+
+**By rule**
+
+| rule_id | Record | P/L | ROI |
+|---|---|---|---|
+| R3_era | 0-1-0 | $-100.00 | -100.00% |
+
+**By day type**
+
+| day_type | Record | P/L | ROI |
+|---|---|---|---|
+| P | 0-1-0 | $-100.00 | -100.00% |
+
+**By slot**
+
+| slot_type | Record | P/L | ROI |
+|---|---|---|---|
+| P | 0-1-0 | $-100.00 | -100.00% |
+
+**By market**
+
+| market | Record | P/L | ROI |
+|---|---|---|---|
+| ml | 0-1-0 | $-100.00 | -100.00% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | R3_era | pending |  |
+| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | R3_era | loss | $-100.00 |
+| 2026-08-17 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals -1.5 | +137 | R5 | pending |  |
 
