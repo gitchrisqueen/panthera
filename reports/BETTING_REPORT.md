@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-18T16:39:19Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-18T21:09:57Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,9 +27,9 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fav_ml | baseline | 12 | 8-4-0 | $+109.91 | +9.16% ±23.7 | +1.8c (n=4, 75% pos, 36% cov) | 8% | 0 | screen only |
+| fav_ml | baseline | 12 | 8-4-0 | $+109.91 | +9.16% ±23.7 | +1.8c (n=4, 75% pos, 15% cov) | 4% | 15 | screen only |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 7 | 0-7-0 | $-700.00 | -100.00% ±0.0 | +0.7c (n=3, 33% pos, 50% cov) | 14% | 0 | collecting (7/100) |
+| pv_v3 | incumbent | 7 | 0-7-0 | $-700.00 | -100.00% ±0.0 | +0.7c (n=3, 33% pos, 25% cov) | 8% | 6 | collecting (7/100) |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-2,036.74 | -18.19% |  |  |  |  |
 
 ## Strategy: fav_ml
@@ -43,7 +43,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 8-4-0 (0 void)
 - **P/L:** $+109.91 on $1,200 risked
 - **ROI:** +9.16% (±23.7 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 15
 
 **By rule**
 
@@ -55,16 +55,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-17 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals ML | -118 | B_FAV | loss | $-100.00 |
-| 2026-08-17 | Baltimore Orioles @ Tampa Bay Rays | Tampa Bay Rays ML | -160 | B_FAV | win | $+62.50 |
-| 2026-08-17 | Miami Marlins @ Philadelphia Phillies | Philadelphia Phillies ML | -245 | B_FAV | win | $+40.82 |
-| 2026-08-17 | Detroit Tigers @ Pittsburgh Pirates | Pittsburgh Pirates ML | -105 | B_FAV | loss | $-100.00 |
-| 2026-08-17 | Arizona Diamondbacks @ Boston Red Sox | Boston Red Sox ML | -132 | B_FAV | win | $+75.76 |
-| 2026-08-17 | San Diego Padres @ New York Mets | New York Mets ML | -120 | B_FAV | win | $+83.33 |
-| 2026-08-17 | Athletics @ Kansas City Royals | Kansas City Royals ML | -180 | B_FAV | win | $+55.56 |
-| 2026-08-17 | Atlanta Braves @ Minnesota Twins | Atlanta Braves ML | -127 | B_FAV | loss | $-100.00 |
-| 2026-08-17 | Chicago White Sox @ Chicago Cubs | Chicago Cubs ML | -158 | B_FAV | win | $+63.29 |
-| 2026-08-17 | Los Angeles Dodgers @ Colorado Rockies | Los Angeles Dodgers ML | -265 | B_FAV | win | $+37.74 |
+| 2026-08-18 | Miami Marlins @ Philadelphia Phillies | Philadelphia Phillies ML | -213 | B_FAV | pending |  |
+| 2026-08-18 | Arizona Diamondbacks @ Boston Red Sox | Boston Red Sox ML | -165 | B_FAV | pending |  |
+| 2026-08-18 | San Diego Padres @ New York Mets | San Diego Padres ML | -115 | B_FAV | pending |  |
+| 2026-08-18 | Athletics @ Kansas City Royals | Kansas City Royals ML | -158 | B_FAV | pending |  |
+| 2026-08-18 | Atlanta Braves @ Minnesota Twins | Atlanta Braves ML | -140 | B_FAV | pending |  |
+| 2026-08-18 | Seattle Mariners @ Milwaukee Brewers | Milwaukee Brewers ML | -172 | B_FAV | pending |  |
+| 2026-08-18 | Washington Nationals @ Texas Rangers | Texas Rangers ML | -148 | B_FAV | pending |  |
+| 2026-08-18 | Chicago White Sox @ Chicago Cubs | Chicago Cubs ML | -172 | B_FAV | pending |  |
+| 2026-08-18 | Los Angeles Angels @ Houston Astros | Houston Astros ML | -161 | B_FAV | pending |  |
+| 2026-08-18 | Los Angeles Dodgers @ Colorado Rockies | Los Angeles Dodgers ML | -190 | B_FAV | pending |  |
 
 ## Strategy: pv_v2
 
@@ -138,7 +138,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 - **Record:** 0-7-0 (0 void)
 - **P/L:** $-700.00 on $700 risked
 - **ROI:** -100.00% (±0.0 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 6
 
 **By rule**
 
@@ -173,11 +173,14 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-16 | Seattle Mariners @ Houston Astros | Houston Astros ML | -121 | R3_era | loss | $-100.00 |
-| 2026-08-17 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals -1.5 | +137 | R5 | loss | $-100.00 |
-| 2026-08-17 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals -1.5 | +131 | R5 | loss | $-100.00 |
 | 2026-08-17 | Baltimore Orioles @ Tampa Bay Rays | Tampa Bay Rays -1.5 | +132 | R5 | loss | $-100.00 |
 | 2026-08-17 | Miami Marlins @ Philadelphia Phillies | Miami Marlins ML | +212 | R3 | loss | $-100.00 |
 | 2026-08-17 | Detroit Tigers @ Pittsburgh Pirates | Pittsburgh Pirates -1.5 | -175 | R5 | loss | $-100.00 |
 | 2026-08-17 | Arizona Diamondbacks @ Boston Red Sox | Arizona Diamondbacks ML | +119 | R3 | loss | $-100.00 |
+| 2026-08-18 | New York Yankees @ Baltimore Orioles | New York Yankees -1.5 | +145 | R5 | pending |  |
+| 2026-08-18 | Detroit Tigers @ Pittsburgh Pirates | Detroit Tigers ML | +135 | R3 | pending |  |
+| 2026-08-18 | San Francisco Giants @ Cleveland Guardians | Cleveland Guardians -1.5 | +113 | R5 | pending |  |
+| 2026-08-18 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals -1.5 | +135 | R5 | pending |  |
+| 2026-08-18 | Toronto Blue Jays @ Tampa Bay Rays | Toronto Blue Jays ML | +118 | R3_era | pending |  |
+| 2026-08-18 | Miami Marlins @ Philadelphia Phillies | Miami Marlins ML | +190 | R3 | pending |  |
 
