@@ -1,20 +1,14 @@
 # Written by `panthera-mvp calibrate --write-config`.
-# Merged on top of strategy.yaml. See reports/CALIBRATION.md for how
-# these values were chosen. Safe to edit or delete.
+# Merged on top of strategy.yaml for non-registry-strategy pipeline
+# config only (registry strategies never merge this file). The day
+# map is never written here — it is a documented constant, not a
+# calibrated unknown. See reports/CALIBRATION.md. Safe to edit/delete.
 meta:
   calibrated: true
-  calibrated_at: '2026-08-01T18:04:36Z'
-  config_id: VVPPPP-m5-e120-h200
-day_map:
-  wednesday: HYBRID
-  monday: V
-  tuesday: V
-  thursday: P
-  friday: P
-  saturday: P
-  sunday: P
+  calibrated_at: '2026-08-19T22:26:46Z'
+  config_id: m10-e110-h250
 movement:
-  min_move_cents: 5
+  min_move_cents: 10
 thresholds:
-  evenly_matched_max_abs_ml: 120
-  heavy_fav_abs_ml: 200
+  evenly_matched_max_abs_ml: 110
+  heavy_fav_abs_ml: 250

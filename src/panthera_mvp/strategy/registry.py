@@ -21,8 +21,10 @@ from typing import TYPE_CHECKING, Any
 
 from ..clients.mlb import GameInfo
 from ..timeutil import to_et
+from . import orig_rules
 from .daytype import day_type, slot_type
 from .dossier import Dossier
+from .movement import TotalsPrices
 from .rules import GamePrices, Pass, Pick, american_to_decimal, generate_pick
 
 if TYPE_CHECKING:
@@ -40,6 +42,8 @@ class StrategyContext:
     dossier: Dossier
     cfg: dict[str, Any]
     splits: GameSplits | None = None
+    totals: TotalsPrices | None = None  # orig_rules' totals path; other engines ignore it
+    slot_type: str | None = None  # orig_rules' slots.py assignment; other engines compute their own
 
 
 GenerateFn = Callable[[StrategyContext], Pick | Pass | None]
@@ -48,6 +52,19 @@ GenerateFn = Callable[[StrategyContext], Pick | Pass | None]
 def _pv_rules(ctx: StrategyContext) -> Pick | Pass | None:
     """Adapter over the incumbent R0–R8 rules engine (strategy/rules.py)."""
     return generate_pick(ctx.game, ctx.odds_event_id, ctx.prices, ctx.dossier, ctx.cfg)
+
+
+def _orig_rules(ctx: StrategyContext) -> Pick | Pass | None:
+    """Adapter over the aligned O0-O7 engine (strategy/orig_rules.py)."""
+    return orig_rules.generate_pick(
+        ctx.game,
+        ctx.odds_event_id,
+        ctx.prices,
+        ctx.totals,
+        ctx.dossier,
+        ctx.slot_type,
+        ctx.cfg,
+    )
 
 
 def fav_ml_pick(ctx: StrategyContext) -> Pick | Pass | None:
@@ -144,6 +161,7 @@ def engines() -> dict[str, GenerateFn]:
     engine is a hard config error."""
     registry: dict[str, GenerateFn] = {
         "pv_rules": _pv_rules,
+        "orig_rules": _orig_rules,
         "fav_ml": fav_ml_pick,
         "dog_ml": dog_ml_pick,
     }
@@ -160,4 +178,4 @@ def engines() -> dict[str, GenerateFn]:
 #: Engines replayable over the historical archives. Splits engines are NOT
 #: backtestable — no historical splits exist — and the backtest refuses them
 #: loudly rather than silently emitting nothing.
-BACKTESTABLE_ENGINES = {"pv_rules", "fav_ml", "dog_ml"}
+BACKTESTABLE_ENGINES = {"pv_rules", "orig_rules", "fav_ml", "dog_ml"}

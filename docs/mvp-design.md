@@ -14,7 +14,15 @@ maps each statement in that outline to executable rules and named parameters.
 3. Betting the side matching the day/slot type (public side on P slots,
    Vegas side on V slots), with the documented sub-rules, beats the vig.
 
-## Rule table (implemented in `src/panthera_mvp/strategy/rules.py`)
+## Rule table — incumbent engine (`src/panthera_mvp/strategy/rules.py`)
+
+This table documents the **incumbent `pv_rules` engine** (`pv_v2`/`pv_v3`)
+as originally formalized from the bullet-point summary. It has known
+discrepancies against the source recordings — see "Alignment with the
+source recordings" below — deliberately left as-is per the multi-strategy
+protocol (`pv_v2`/`pv_v3` are frozen controls, not patched in place). The
+aligned reading lives in a separate engine, `strategy/orig_rules.py`
+(rule ids O0–O7; its own docstring is the rule table for that engine).
 
 | ID | Doc § | Rule | Parameters (config/strategy.yaml) |
 |---|---|---|---|
@@ -32,14 +40,62 @@ Every pick records its terminal `rule_id`, full rationale, and a
 `config_hash`, so `reports/BETTING_REPORT.md` can break results down by rule
 — that's how we learn **which** sub-rules carry (or sink) the strategy.
 
-## The unknown the doc never states
+## Alignment with the source recordings (2026-08-19)
 
-The actual Mon–Sun P/V mapping is not written anywhere. Decision (owner
-approved): **derive it from data**. `panthera-mvp calibrate` sweeps all 64
-non-Wednesday day maps × movement/threshold grids over historical seasons
-(train/validate split, minimum-bet floor, top-10 stability report) and
-writes the winner to `config/strategy.calibrated.yaml`. The owner can
-override any value in `config/strategy.yaml` at any time.
+`sports_betting_process.md` is a lossy bullet-point summary of two Zoom
+training recordings ("Line Reading Training" Parts 1 & 2, June 2024,
+presenter Kendrick Smith / "Ken the Millionaire", Google Drive PANTHERA
+folder — see `docs/source-material.md`). The summary dropped enough detail
+that the implemented engine (`pv_rules`/`pv_v2`/`pv_v3`) ended up testing a
+different strategy from the one the recordings describe. Full analysis,
+transcript citations, and the corrected rules live in the rewritten
+`docs/sports_betting_process.md`; the short version:
+
+- **The Mon–Sun P/V map IS stated directly** (P1 02:10, restated 99:41):
+  Mon=P, Tue=V, Wed=HYBRID, Thu=V, Fri=P, Sat=V, Sun=V. The claim below (in
+  the original text, kept for the record) that it "is not written anywhere"
+  was wrong — the presenter states it twice, unhedged, "extremely rare...
+  maybe 1% of the time" that it deviates. The 64-day-map × 2,304-config
+  sweep that followed from that claim picked **VVHPPPP**, nearly the
+  inverse of the documented **PVHVPVV** (Saturday and Sunday both flipped),
+  on +1.40% validation ROI against −1.83% train — a sweep artifact, not a
+  finding: 768 distinct hypotheses, zero positive on both splits. It ran
+  live as `pv_v2`/`pv_v3` for their entire history; both are −15.6%/−29.9%
+  ROI live as of 2026-08-19. The day map is a **documented constant** now
+  (`config/strategy.yaml`) and is no longer swept.
+- The engine was also missing: the shape-of-day slot algorithm
+  (`strategy/slots.py`), a day-over-day-vs-previous-head-to-head primary
+  signal with a natural-vs-scam classifier (`strategy/scam.py`) instead of
+  raw movement-direction mapping, the per-day play policy (Tue/Sun totals
+  primary, Thu/Sat off unless a big scam, Wed public-first-half-only,
+  Vegas-days-Vegas-slots-only discipline), the "-160 or cheaper" public
+  price filter, and a totals engine. The heavy-favorite rule
+  (`heavy_fav_action`) was inverted from "pass" to "convert to a run line
+  and bet it."
+- A backtest loader bug compounded this: the sbro archives' run-line odds
+  and totals prices sit in *unnamed* columns and were silently dropped, so
+  every backtested run-line pick fell back to a moneyline bet. R4/R5/R7
+  were never actually tested pre-2026-08-19, and the calibration that chose
+  the inverted day map ran on that contaminated data.
+
+**Resolution:** a new strategy, `pv_orig` (`strategy/orig_rules.py`,
+`config/strategies/pv_orig.yaml`), implements the recordings faithfully as
+a from-scratch engine rather than a patch to `pv_rules` — the two disagree
+structurally and the multi-strategy protocol forbids changing a live id's
+behavior in place. `pv_v2`/`pv_v3` are untouched and continue as labeled
+controls; the falsification stands for THEIR engine, not for the strategy
+the source material actually describes.
+
+`pv_orig`'s own genuine unknowns (merit-score thresholds, "big scam"
+magnitude — the source's read there is qualitative, "does it make sense?")
+were swept honestly on a 2014–2019 train / 2021 validate split
+(`backtest/calibrate.py::sweep_orig`, `reports/CALIBRATION.md`): the chosen
+config (`mm2.0-mp10.0-bs100-e120`) shows +2.86% train / +2.33% validate
+ROI, and — unlike the original day-map sweep — every one of the top 10
+configs by validation ROI is positive on BOTH splits. Applied to
+`pv_orig.yaml` 2026-08-19 (see its `meta:` block). Still noisy at n=303
+validate bets (SE≈6pts) and a single validation season: a real,
+stability-backed prior to confirm live, not proof.
 
 ## Data sources (all free)
 
@@ -63,7 +119,8 @@ override any value in `config/strategy.yaml` at any time.
 ## Fidelity to the strategy document
 
 Status of every data input named in §3/§5 ("evaluate recent game outcomes,
-pitcher performance, and trends"):
+pitcher performance, and trends"), for the **incumbent `pv_rules`
+(pv_v2/pv_v3) engine**:
 
 | Doc input | Status |
 |---|---|
@@ -79,6 +136,19 @@ pitcher performance, and trends"):
 The season context is built from one league-wide MLB schedule call per picks
 run (live) and incrementally per season in backtests (strictly prior games
 only — no lookahead).
+
+**`pv_orig` (`strategy/orig_rules.py`)** closes every one of the above gaps
+except two: it adds a real totals engine (`O3_totals`, gated on the
+first-season-meeting exclusion), full-season W-L record, previous-opponent
+strength, and ATS/cover streaks (`strategy/dossier.py`'s merit inputs) feed
+`strategy/scam.py`'s natural-vs-scam classifier instead of raw movement
+direction. Remaining gaps, both documented rather than hidden: (1) ATS
+streaks and the previous-H2H-meeting price (the primary signal) are only
+as deep as this pipeline's own captured odds history — sparse near launch,
+exactly like the ERA gap below; (2) no historical starter ERA (the sbro
+archives carry pitcher names, not ERAs), so ERA-dependent gates are
+partly dormant in the `pv_orig` backtest the same way they were for
+`pv_rules`.
 
 ### Strategy version history
 
@@ -98,6 +168,12 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   stays in the report), `pv_v3` registered with identical parameters, a
   `data_sources.era_hydrate` behavioral marker, and a fresh 100-graded-pick
   verdict clock.
+- **`pv_orig` (2026-08-19):** not a `pv_rules` version — a separate engine
+  (`strategy/orig_rules.py`) implementing the source recordings directly
+  (day map, slot algorithm, natural-vs-scam classifier, day policy, price
+  filter, totals; see "Alignment with the source recordings" above).
+  Registered with a fresh clock; `pv_v2`/`pv_v3` continue unchanged as
+  labeled controls.
 
 ## Verdict criteria (pre-registered)
 
@@ -151,11 +227,13 @@ run under a pre-registered credit-budget stopping rule with SCREEN-only
 evaluation; extending a budget after seeing interim results permanently
 downgrades the strategy to exploratory.
 
-**Launch set:** `pv_v2` (incumbent control), `fav_ml` (live vig-anchor
+**Launch set:** `pv_v2` (retired control), `pv_v3` (incumbent control,
+ERA-active), `pv_orig` (aligned engine, registered 2026-08-19 — see
+"Alignment with the source recordings" above), `fav_ml` (live vig-anchor
 baseline, uncapped by design), `dog_ml` (backtest-only baseline),
 `sharp_split` + `fade_public` (splits forward-tests, disabled until their
 volume-rule thresholds are set on post-fetch-fix data — see their YAMLs).
-Explicitly rejected: registering any further sweep-derived P/V variant as a
-"winner" (768 distinct hypotheses, zero train+validate positives, best
-validation +1.40%, and the archives priced no run lines so R4/R5/R7 were
-swept as ML bets).
+Explicitly rejected: registering any further sweep-derived P/V *day-map*
+variant as a "winner" for the `pv_rules` engine (that sweep is retired; the
+day map is now a documented constant, not a calibrated unknown — see
+above).

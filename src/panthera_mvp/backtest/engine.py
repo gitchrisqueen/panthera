@@ -1,27 +1,36 @@
-"""Replay the rules engine over normalized historical seasons.
+"""Replay a strategy engine over normalized historical seasons.
 
-Uses the exact same generate_pick code path as the live pipeline, with:
-  - movement = open -> close moneyline (a coarse proxy for intraday movement);
-  - no ERA/dossier data (sbro files carry pitcher names, not ERAs), so the
-    neutral-movement ERA fallback and the R8 veto never fire historically;
-  - hybrid (Wednesday) days skipped — the files carry no game start times, so
-    slots cannot be assigned. Hybrid behavior is only testable in forward
-    paper-trading. This is reported, not hidden.
+Shares the same StrategyContext -> Pick|Pass|None engine shape as the live
+pipeline (strategy/registry.py). As of the 2026-08-19 alignment work:
+
+  - movement = open -> close moneyline for pv_rules-family engines (a coarse
+    proxy for intraday movement); orig_rules additionally uses the previous
+    head-to-head meeting's own close as its primary signal (real data, not a
+    proxy -- the archives price every game).
+  - no probable-pitcher ERA in the archives (they carry pitcher names, not
+    ERAs), so ERA-dependent gates never fire historically. This is the one
+    remaining documented gap (see docs/mvp-design.md).
+  - real game start times are joined in from the MLB Stats API schedule
+    cache (clients/mlb_history.py) -- hybrid Wednesdays are no longer
+    skipped, and the shape-of-day slot algorithm (strategy/slots.py) can run.
+    A small fraction of games (~1.5%, an sbro home/away labeling edge case)
+    have no schedule match; those are dropped and counted, never guessed.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, time
 from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .. import paths
 from ..clients.mlb import GameInfo
+from ..clients.mlb_history import attach_start_times, load_schedules
 from ..strategy.dossier import Dossier, SeasonContext
-from ..strategy.rules import GamePrices, Pass, Pick
-from ..timeutil import ET, UTC
+from ..strategy.movement import TotalsPrices
+from ..strategy.rules import GamePrices, Pick
+from ..strategy.slots import assign_slots
 from .loader import load_dir
 
 if TYPE_CHECKING:
@@ -34,29 +43,43 @@ class BacktestResult:
     summary: dict
 
 
-def _prepare_games(hist: pd.DataFrame) -> list[tuple[GameInfo, GamePrices, Dossier, dict]]:
+def _totals_from_row(row) -> TotalsPrices | None:
+    if row.total_open is None or row.total_close is None:
+        return None
+    return TotalsPrices(
+        open_point=row.total_open,
+        latest_point=row.total_close,
+        over_price=row.total_close_over_odds,
+        under_price=row.total_close_under_odds,
+    )
+
+
+PreparedGame = tuple[GameInfo, GamePrices, "TotalsPrices | None", Dossier, dict]
+
+
+def _prepare_games(hist: pd.DataFrame) -> list[PreparedGame]:
     """Precompute per-game inputs once; reused across every config in a sweep."""
-    prepared = []
-    # Chronological iteration + per-season contexts: each game's dossier sees
-    # only strictly earlier finals (no lookahead). Team keys are the raw
-    # abbreviations from the archive files.
     hist = hist.sort_values(["season", "game_date"]).reset_index(drop=True)
+    schedules = load_schedules(sorted(hist["season"].unique()))
+    hist = attach_start_times(hist, schedules)
+
+    unmatched = int(hist["start_utc"].isna().sum())
+    if unmatched:
+        print(f"[backtest] {unmatched} game(s) had no schedule match; dropped, never guessed")
+    hist = hist[hist["start_utc"].notna()].reset_index(drop=True)
+
+    prepared = []
     contexts: dict[int, SeasonContext] = {}
     for idx, row in enumerate(hist.itertuples(index=False)):
-        # Fabricate a 19:05 ET start; only the DATE matters because hybrid
-        # days are skipped in backtests.
-        start_utc = datetime.combine(
-            pd.Timestamp(row.game_date).date(), time(19, 5), tzinfo=ET
-        ).astimezone(UTC)
         game = GameInfo(
-            game_pk=1_000_000 + idx,
+            game_pk=int(row.game_pk) if pd.notna(row.game_pk) else 1_000_000 + idx,
             game_date_et=str(row.game_date),
             game_type="R",
             status="Preview",
             detailed_state="Scheduled",
-            start_utc=start_utc,
-            doubleheader="N",
-            game_number=1,
+            start_utc=row.start_utc.to_pydatetime(),
+            doubleheader=str(row.doubleheader) if pd.notna(row.doubleheader) else "N",
+            game_number=int(row.game_number) if pd.notna(row.game_number) else 1,
             home_team_id=0,
             home_team=str(row.home_team),
             away_team_id=0,
@@ -81,27 +104,52 @@ def _prepare_games(hist: pd.DataFrame) -> list[tuple[GameInfo, GamePrices, Dossi
             home_rl_price=home_rl,
             away_rl_price=vis_rl,
         )
+        totals = _totals_from_row(row)
         ctx = contexts.setdefault(int(row.season), SeasonContext())
         dossier = Dossier.from_context(
             ctx, home_key=str(row.home_team), away_key=str(row.vis_team)
         )
+        home_covered = away_covered = None
+        if home_rl is not None:
+            margin = int(row.home_final) - int(row.vis_final)
+            adjusted = margin + float(row.home_rl_line)
+            if adjusted != 0:
+                home_covered = adjusted > 0
+                away_covered = not home_covered
         ctx.add_final(
             str(row.home_team),
             str(row.vis_team),
             int(row.home_final),
             int(row.vis_final),
+            a_covered_rl=home_covered,
+            b_covered_rl=away_covered,
+        )
+        ctx.add_h2h_price(
+            str(row.home_team), str(row.vis_team),
+            row.home_ml_close, row.vis_ml_close,
+            home_rl, vis_rl,
         )
         result = {
             "home_final": row.home_final,
             "vis_final": row.vis_final,
             "season": row.season,
+            "game_date": row.game_date,
             "day_of_week": row.day_of_week,
         }
-        prepared.append((game, prices, dossier, result))
+        prepared.append((game, prices, totals, dossier, result))
     return prepared
 
 
 def _grade(pick: Pick, result: dict, stake: float) -> tuple[str, float]:
+    if pick.market == "total":
+        total_runs = int(result["home_final"]) + int(result["vis_final"])
+        adjusted = total_runs - float(pick.line)
+        if adjusted == 0:
+            return "push", 0.0
+        over_won = adjusted > 0
+        won = over_won if pick.selection == "over" else not over_won
+        return ("win", round(stake * (pick.price_decimal - 1), 2)) if won else ("loss", -stake)
+
     home_win_margin = result["home_final"] - result["vis_final"]
     sel_is_home = pick.selection == pick.matchup.split(" @ ")[1]
     margin = home_win_margin if sel_is_home else -home_win_margin
@@ -117,8 +165,32 @@ def _grade(pick: Pick, result: dict, stake: float) -> tuple[str, float]:
     return "loss", -stake
 
 
+def _slot_maps(
+    prepared: list[PreparedGame],
+    cfg: dict,
+) -> dict[tuple[int, str], dict[int, str]]:
+    """Group prepared games by (season, game_date) and run the shape-of-day
+    slot algorithm (strategy/slots.py) once per day -- orig_rules' input.
+    Recomputed per strategy config (cheap: no I/O) since a config's own
+    day_map/hybrid_boundary_hour_et may in principle differ."""
+    by_day: dict[tuple[int, str], list[tuple[int, object]]] = {}
+    for game, _, _, _, result in prepared:
+        key = (result["season"], result["game_date"])
+        by_day.setdefault(key, []).append((game.game_pk, game.start_utc))
+
+    boundary = int(cfg.get("hybrid_boundary_hour_et", 18))
+    out: dict[tuple[int, str], dict[int, str]] = {}
+    for (season, day), games in by_day.items():
+        dow = pd.Timestamp(day).strftime("%A").lower()
+        dtype = cfg["day_map"].get(dow)
+        if dtype is None:
+            continue
+        out[(season, day)] = assign_slots(games, dtype, boundary)
+    return out
+
+
 def run(
-    prepared: list[tuple[GameInfo, GamePrices, Dossier, dict]],
+    prepared: list[PreparedGame],
     cfg: dict,
     stake: float = 100.0,
     generate: GenerateFn | None = None,
@@ -132,25 +204,28 @@ def run(
     from ..strategy.registry import StrategyContext, _pv_rules
 
     engine = generate or _pv_rules
+    needs_slots = getattr(engine, "__name__", "") == "_orig_rules"
+    slot_maps = _slot_maps(prepared, cfg) if needs_slots else {}
+
     rows = []
-    skipped_hybrid = 0
-    for game, prices, dossier, result in prepared:
-        # Hybrid days can't be slotted without start times.
-        if cfg["day_map"].get(result["day_of_week"]) == "HYBRID":
-            skipped_hybrid += 1
-            continue
+    for game, prices, totals, dossier, result in prepared:
+        slot_type = None
+        if needs_slots:
+            slot_type = slot_maps.get((result["season"], result["game_date"]), {}).get(
+                game.game_pk
+            )
         outcome = engine(
             StrategyContext(
                 game=game,
                 odds_event_id=f"bt-{game.game_pk}",
                 prices=prices,
+                totals=totals,
+                slot_type=slot_type,
                 dossier=dossier,
                 cfg=cfg,
             )
         )
         if not isinstance(outcome, Pick):
-            if isinstance(outcome, Pass):
-                continue
             continue
         status, profit = _grade(outcome, result, stake)
         rows.append(
@@ -186,7 +261,6 @@ def run(
             "pushes": pushes,
             "profit": profit,
             "roi": round(100 * profit / risked, 2) if risked else 0.0,
-            "skipped_hybrid": skipped_hybrid,
         }
     return BacktestResult(picks=picks, summary=summary)
 

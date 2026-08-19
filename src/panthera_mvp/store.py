@@ -155,6 +155,59 @@ def load_picks() -> pd.DataFrame:
     return _load_picks()
 
 
+def load_shadow_picks() -> pd.DataFrame:
+    """Retroactive replay ledger (data/picks/shadow_picks.csv) — same schema
+    as picks.csv, kept in a separate file so it can never pool into a live
+    strategy's pre-registered verdict."""
+    df = _load(paths.shadow_picks_csv(), PICKS_COLUMNS)
+    return df.reindex(columns=PICKS_COLUMNS)
+
+
+def append_shadow_picks(df: pd.DataFrame) -> int:
+    """Append-once into shadow_picks.csv, same dedupe key as append_picks."""
+    if df.empty:
+        return 0
+    path = paths.shadow_picks_csv()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    existing = load_shadow_picks()
+    if not existing.empty:
+        existing_keys = set(map(tuple, existing[PICKS_DEDUPE_KEY].astype(str).values))
+        mask = [
+            tuple(map(str, row)) not in existing_keys
+            for row in df[PICKS_DEDUPE_KEY].values
+        ]
+        df = df[mask]
+        if df.empty:
+            return 0
+    combined = pd.concat([existing, df], ignore_index=True)
+    combined = combined.reindex(columns=PICKS_COLUMNS)
+    combined.to_csv(path, index=False)
+    return len(df)
+
+
+def settle_shadow_picks(settlements: pd.DataFrame) -> int:
+    """Same shape/semantics as settle_picks, applied to shadow_picks.csv."""
+    if settlements.empty:
+        return 0
+    path = paths.shadow_picks_csv()
+    picks = load_shadow_picks()
+    if picks.empty:
+        return 0
+    count = 0
+    picks = picks.set_index("pick_id")
+    for col in ("status", "settled_ts_utc", "final_score"):
+        picks[col] = picks[col].astype(object)
+    for row in settlements.itertuples(index=False):
+        if row.pick_id in picks.index and picks.at[row.pick_id, "status"] == "pending":
+            picks.at[row.pick_id, "status"] = row.status
+            picks.at[row.pick_id, "settled_ts_utc"] = row.settled_ts_utc
+            picks.at[row.pick_id, "final_score"] = row.final_score
+            picks.at[row.pick_id, "profit"] = row.profit
+            count += 1
+    picks.reset_index().to_csv(path, index=False)
+    return count
+
+
 def append_lines(df: pd.DataFrame) -> int:
     """Append new line rows; skip rows whose dedupe key already exists."""
     if df.empty:

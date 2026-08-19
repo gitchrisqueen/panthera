@@ -49,8 +49,20 @@ def picks_csv() -> Path:
     return data_dir() / "picks" / "picks.csv"
 
 
+def shadow_picks_csv() -> Path:
+    """Retroactive replay output (`panthera-mvp replay`) — same schema as
+    picks.csv, but never pooled into any strategy's verdict. See
+    pipeline.py's cmd_replay and report.py's write_shadow_report."""
+    return data_dir() / "picks" / "shadow_picks.csv"
+
+
 def historical_raw_dir() -> Path:
     return data_dir() / "historical" / "raw"
+
+
+def historical_schedules_dir() -> Path:
+    """Cached MLB Stats API season schedules — the backtest's start times."""
+    return data_dir() / "historical" / "schedules"
 
 
 def historical_normalized_csv() -> Path:

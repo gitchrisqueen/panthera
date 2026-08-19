@@ -20,10 +20,12 @@ from .config import config_hash, load_config, load_strategy_configs
 from .grading import grade_pending
 from .matching import match_events
 from .report import write_daily_report, write_ledger_report
+from .strategy.daytype import day_type
 from .strategy.dossier import Dossier, SeasonContext
-from .strategy.movement import extract_game_prices
+from .strategy.movement import extract_game_prices, extract_totals_prices
 from .strategy.registry import StrategyContext, engines
 from .strategy.rules import Pass, Pick
+from .strategy.slots import assign_slots
 from .timeutil import ET, now_utc, utc_iso
 
 
@@ -160,6 +162,7 @@ def _build_season_context(date_et: str) -> SeasonContext | None:
         for g in mlb.parse_schedule(payload):
             if g.game_type == "R" and g.status == "Final" and g.home_score is not None:
                 ctx.add_final(g.home_team_id, g.away_team_id, g.home_score, g.away_score)
+        _backfill_h2h_prices(ctx)
         return ctx
     season = date_et[:4]
     yesterday = str(date.fromisoformat(date_et) - timedelta(days=1))
@@ -175,7 +178,46 @@ def _build_season_context(date_et: str) -> SeasonContext | None:
         if g.home_score is None or g.away_score is None:
             continue
         ctx.add_final(g.home_team_id, g.away_team_id, g.home_score, g.away_score)
+    _backfill_h2h_prices(ctx)
     return ctx
+
+
+def _backfill_h2h_prices(ctx: SeasonContext) -> None:
+    """Overlay closing H2H prices (orig_rules' primary signal, doc §1) onto
+    an already-scored SeasonContext, for whichever finals we ALSO captured
+    our own odds for. `_build_season_context`'s finals come from the whole
+    season via the MLB API; our own odds (data/odds/lines.csv) only exist
+    from this pipeline's own launch date forward, so early-season pairs
+    simply have no price on file -- Dossier.prev_h2h_ml_* stays None and
+    orig_rules' ML/RL path degrades to neutral for them, same as the
+    already-documented ERA/ATS gaps in mvp-design.md."""
+    games = store.load_games()
+    lines = store.load_lines()
+    if games.empty or lines.empty:
+        return
+    finals = games[
+        (games["status"] == "Final")
+        & games["home_score"].notna()
+        & games["away_score"].notna()
+    ].sort_values("game_date_et")
+    for row in finals.itertuples(index=False):
+        ev_rows = lines[
+            (lines["game_pk"] == row.game_pk) & (lines["snapshot_label"] != "close")
+        ]
+        if ev_rows.empty:
+            continue
+        odds_event_id = ev_rows.iloc[0]["odds_event_id"]
+        prices = extract_game_prices(lines, odds_event_id, row.home_team, row.away_team)
+        if prices is None:
+            continue
+        ctx.add_h2h_price(
+            row.home_team_id,
+            row.away_team_id,
+            prices.home_ml_latest,
+            prices.away_ml_latest,
+            prices.home_rl_price,
+            prices.away_rl_price,
+        )
 
 
 def _build_dossier(g: mlb.GameInfo, ctx: SeasonContext | None, cfg: dict) -> Dossier:
@@ -312,6 +354,17 @@ def _strategy_picks(
     """
     engine = engines()[scfg["strategy"]["engine"]]
     chash = config_hash(scfg)
+    # orig_rules' slot algorithm is a whole-day computation (strategy/
+    # slots.py), not per-game — run it once here rather than per game below.
+    # Other engines compute their own slot label internally and ignore this.
+    slot_map: dict[int, str] = {}
+    if scfg["strategy"]["engine"] == "orig_rules" and games:
+        dtype = day_type(date.fromisoformat(d), scfg)
+        slot_map = assign_slots(
+            [(g.game_pk, g.start_utc) for g in games],
+            dtype,
+            int(scfg["hybrid_boundary_hour_et"]),
+        )
     mine_today = (
         existing[
             (existing["game_date_et"] == d) & (existing["strategy_id"] == sid)
@@ -342,10 +395,17 @@ def _strategy_picks(
             if event_id
             else None
         )
+        totals = (
+            extract_totals_prices(lines_today, event_id, latest_label=snap_label)
+            if event_id and scfg["strategy"]["engine"] == "orig_rules"
+            else None
+        )
         ctx = StrategyContext(
             game=g,
             odds_event_id=event_id,
             prices=prices,
+            totals=totals,
+            slot_type=slot_map.get(g.game_pk),
             dossier=_build_dossier(g, season_ctx, scfg),
             cfg=scfg,
             splits=splits_lookup(g) if splits_lookup else None,

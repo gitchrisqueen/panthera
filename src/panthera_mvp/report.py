@@ -412,8 +412,57 @@ def write_ledger_report(cfg: dict) -> Path:
                 )
             body.append("")
 
+    body += _shadow_section()
+
     path.write_text("\n".join(header + body) + "\n")
     return path
+
+
+def _shadow_section() -> list[str]:
+    """Retroactive replay picks (`panthera-mvp replay`) — data/picks/
+    shadow_picks.csv. Rendered as a clearly-separate, non-evaluable section:
+    these picks were computed after the fact over already-known odds
+    history, not placed in real time, and are NEVER pooled into any
+    strategy's pre-registered verdict, portfolio total, or by-rule table
+    above."""
+    shadow = store.load_shadow_picks()
+    if shadow.empty:
+        return []
+    lines = [
+        "## Retroactive replay (NOT an evaluation — read before citing)",
+        "",
+        "_Picks below were computed by `panthera-mvp replay` over odds/game",
+        "history this pipeline had already captured — they were never placed",
+        "in real time and cost no API credits. They are useful as an early,",
+        "qualitative read on an engine before its live sample accumulates,",
+        "but they are look-ahead-free only with respect to the STRATEGY",
+        "(no future prices/results feed a pick's own inputs) — the SAMPLE",
+        "itself was picked after every outcome in it was already known, so",
+        "it carries none of the evidentiary weight of a forward paper-trade",
+        "or a train/validate backtest split. Never pooled into any",
+        "strategy's verdict, portfolio total, or the tables above._",
+        "",
+    ]
+    for sid in sorted(shadow["strategy_id"].dropna().unique()):
+        mine = shadow[shadow["strategy_id"] == sid]
+        graded = mine[mine["status"].isin(GRADED_STATUSES)]
+        lines.append(f"### {sid} (retroactive)")
+        lines.append("")
+        if graded.empty:
+            lines += [f"_{len(mine)} pick(s), none graded yet._", ""]
+            continue
+        s = _ledger_stats(graded)
+        lines += [
+            f"- Record {s['wins']}-{s['losses']}-{s['pushes']}, "
+            f"P/L ${s['profit']:+,.2f}, ROI {s['roi']:+.2f}% "
+            f"({len(graded)} graded, descriptive only)",
+            "",
+            "**By rule**",
+            "",
+            _breakdown(graded, "rule_id"),
+            "",
+        ]
+    return lines
 
 
 def write_daily_report(

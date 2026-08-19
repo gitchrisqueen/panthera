@@ -20,23 +20,43 @@ season:
 # hybrid (AM public / PM Vegas). The doc never states the Mon-Sun mapping —
 # GUESS below, replaced by data-driven calibration.
 day_map:
+  # Corrected 2026-08-19 against the source recordings (P1 02:10, restated
+  # 99:41): "Monday...public day...Tuesday...Vegas day...Wednesday...hybrid
+  # day...Thursday...Vegas day...Friday...public day...both Saturday and
+  # Sunday are both going to be Vegas days." Previously `saturday: P` here
+  # (a typo/guess) let the day-map calibration sweep search a space that
+  # included an already-wrong day for Saturday; combined with
+  # strategy.calibrated.yaml's now-removed VVHPPPP override, the *live*
+  # engine ran an inverted map on 4 of 6 days for its entire history. See
+  # docs/mvp-design.md and reports/CALIBRATION.md for the fuller account.
+  # fav_ml/dog_ml freeze their own pre-fix value — see their YAMLs.
   monday: P
   tuesday: V
   wednesday: HYBRID
   thursday: V
   friday: P
-  saturday: P
+  saturday: V
   sunday: V
 
 # §2: hybrid day boundary. Games starting before this ET hour are Public
-# slots, at/after are Vegas slots. GUESS (16 = 4:00 PM ET).
-hybrid_boundary_hour_et: 16
+# slots, at/after are Vegas slots. Corrected 2026-08-19: the presenter works
+# in CST throughout the recording (P1 10:34: "before 5pm CST... after 5pm
+# CST"; confirmed by his own live walkthrough writing a 12:20 PM ET game as
+# "11:20 AM", P1 571/578) -- 5 PM CST = 18:00 ET, not the previous 16 (4 PM
+# ET) guess. fav_ml/dog_ml freeze their own pre-fix value.
+hybrid_boundary_hour_et: 18
 
 movement:
   # §1: line shortening (-160 -> -180) = public money; line drifting
   # (-180 -> -160) = Vegas. Minimum absolute American-odds delta to count as
-  # a real signal rather than noise. GUESS.
-  min_move_cents: 10
+  # a real signal rather than noise. Corrected 2026-08-19: P2 34:46-35:05
+  # states this directly — "I typically like to see at least like five
+  # points paying less in public... if it's five plus, then I'm usually good
+  # to go." (Previously a GUESS of 10 that the calibration sweep
+  # independently converged on 5 for anyway — this makes the documented
+  # value the source of truth instead of a coincidence.) fav_ml/dog_ml
+  # freeze their own pre-fix value.
+  min_move_cents: 5
   # Consensus price = median across bookmakers at each snapshot.
   reference: consensus_median
 
@@ -51,8 +71,11 @@ thresholds:
   # tier).
   heavy_fav_abs_ml: 200
   # What to do with a heavy favorite pick: run_line (convert ML -> fav -1.5)
-  # or pass.
-  heavy_fav_action: run_line
+  # or pass. Corrected 2026-08-19: P1 83:43-85:17 -- "if it is a minus 200
+  # money line for a team, I personally skipped a game... those are typically
+  # what you call parlay breakers." The source passes, it never converts to
+  # the run line. fav_ml/dog_ml freeze their own pre-fix value.
+  heavy_fav_action: pass
 
 dossier:
   # §3/§5: recent outcomes and trends used as tiebreakers when line movement

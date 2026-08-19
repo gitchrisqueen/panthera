@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-19T21:12:23Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-19T22:32:29Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -28,6 +28,7 @@ not a tournament.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fav_ml | baseline | 27 | 20-7-0 | $+601.32 | +22.27% ±14.4 | +1.8c (n=4, 75% pos, 10% cov) | 10% | 14 | screen only |
+| pv_orig | aligned | 0 | — | — | — | — | — | 0 | collecting |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
 | pv_v3 | incumbent | 13 | 4-9-0 | $-389.00 | -29.92% ±30.4 | +0.7c (n=3, 33% pos, 17% cov) | 21% | 6 | collecting (13/100) |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,234.33 | -9.28% |  |  |  |  |
@@ -65,6 +66,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-19 | Washington Nationals @ Texas Rangers | Texas Rangers ML | -126 | B_FAV | pending |  |
 | 2026-08-19 | Los Angeles Angels @ Houston Astros | Houston Astros ML | -148 | B_FAV | pending |  |
 | 2026-08-19 | Los Angeles Dodgers @ Colorado Rockies | Los Angeles Dodgers ML | -193 | B_FAV | pending |  |
+
+## Strategy: pv_orig
+
+_The source strategy as the recordings actually describe it, not the doc's lossy bullet-point summary: the documented Mon-Sun day map (not the sweep-derived inverse), the shape-of-schedule slot algorithm (strategy/slots.py), a day-over-day-vs-previous-head-to-head primary signal with a natural-vs-scam classifier (strategy/scam.py) instead of raw movement-direction mapping, the per-day play policy (Tue/Sun totals primary, Thu/Sat off unless a big scam, Wed public-first-half-only, Vegas-days-Vegas-slots-only discipline), the -160-or-cheaper public price filter, heavy favorites (<=-200) passed rather than converted to a run line, and a totals engine. pv_v2/pv_v3's -15.6%/-29.9% live ROI falsifies THEIR engine; this strategy tests the one the source material actually documents. Fresh evaluation clock, no pre-registration picks._
+
+**Verdict segment** (config hashes: 3fff5be8ec):
+
+**INCONCLUSIVE — collecting data.** 0/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+
+_No graded picks yet (0 pending)._
 
 ## Strategy: pv_v2
 
@@ -183,4 +194,29 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-08-19 | Chicago White Sox @ Chicago Cubs | Chicago Cubs ML | -141 | R3_era | pending |  |
 | 2026-08-19 | Miami Marlins @ Philadelphia Phillies | Miami Marlins ML | +118 | R3 | pending |  |
 | 2026-08-19 | New York Yankees @ Baltimore Orioles | Baltimore Orioles ML | -104 | R3 | pending |  |
+
+## Retroactive replay (NOT an evaluation — read before citing)
+
+_Picks below were computed by `panthera-mvp replay` over odds/game
+history this pipeline had already captured — they were never placed
+in real time and cost no API credits. They are useful as an early,
+qualitative read on an engine before its live sample accumulates,
+but they are look-ahead-free only with respect to the STRATEGY
+(no future prices/results feed a pick's own inputs) — the SAMPLE
+itself was picked after every outcome in it was already known, so
+it carries none of the evidentiary weight of a forward paper-trade
+or a train/validate backtest split. Never pooled into any
+strategy's verdict, portfolio total, or the tables above._
+
+### pv_orig (retroactive)
+
+- Record 7-7-0, P/L $-135.83, ROI -9.70% (14 graded, descriptive only)
+
+**By rule**
+
+| rule_id | Record | P/L | ROI |
+|---|---|---|---|
+| O1_big_scam | 1-1-0 | $-3.85 | -1.93% |
+| O3_totals | 6-5-0 | $-31.98 | -2.91% |
+| O4 | 0-1-0 | $-100.00 | -100.00% |
 
