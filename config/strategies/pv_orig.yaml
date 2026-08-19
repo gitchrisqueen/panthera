@@ -1,0 +1,125 @@
+# The aligned P/V strategy — a faithful reading of the source recordings
+# (Google Drive PANTHERA folder, "Line Reading Training" Parts 1 & 2, June
+# 2024; see docs/source-material.md), built independently of the incumbent
+# pv_rules engine rather than as a patch to it. Every discrepancy this
+# strategy corrects is catalogued in docs/mvp-design.md's alignment section.
+#
+# Behavioral parameters are fully inlined per repo convention (registry
+# strategies do not merge strategy.calibrated.yaml).
+strategy:
+  id: pv_orig
+  engine: orig_rules
+  enabled: true
+  kind: aligned
+  scope: [live, backtest]
+  registered_at: "2026-08-19"
+  hash_lineage: [3fff5be8ec]
+  hypothesis: >
+    The source strategy as the recordings actually describe it, not the
+    doc's lossy bullet-point summary: the documented Mon-Sun day map (not
+    the sweep-derived inverse), the shape-of-schedule slot algorithm
+    (strategy/slots.py), a day-over-day-vs-previous-head-to-head primary
+    signal with a natural-vs-scam classifier (strategy/scam.py) instead of
+    raw movement-direction mapping, the per-day play policy (Tue/Sun totals
+    primary, Thu/Sat off unless a big scam, Wed public-first-half-only,
+    Vegas-days-Vegas-slots-only discipline), the -160-or-cheaper public
+    price filter, heavy favorites (<=-200) passed rather than converted to
+    a run line, and a totals engine. pv_v2/pv_v3's -15.6%/-29.9% live ROI
+    falsifies THEIR engine; this strategy tests the one the source material
+    actually documents. Fresh evaluation clock, no pre-registration picks.
+
+day_map:
+  # P1 02:10, restated 99:41 — see config/strategy.yaml for full citation.
+  monday: P
+  tuesday: V
+  wednesday: HYBRID
+  thursday: V
+  friday: P
+  saturday: V
+  sunday: V
+
+# P1 10:34 — 5pm CST = 18:00 ET.
+hybrid_boundary_hour_et: 18
+
+movement:
+  # Secondary/intraday confirmation threshold (P2 34:46-35:05): "at least
+  # like five points paying less in public."
+  min_move_cents: 5
+
+thresholds:
+  # §6/P1 40:17: "only two wins separating" read as evenly matched. Calibrated
+  # 2026-08-19 (see below) -> 120; distinct from pv_rules' own GUESS-lineage
+  # value.
+  evenly_matched_max_abs_ml: 120
+  evenly_matched_max_era_diff: 0.75
+  # P1 19:32 (repeated 3x): public plays require -160 or cheaper.
+  public_max_abs_price: 160
+  # P1 83:43: -200 or shorter -> pass, never converted to a run line.
+  heavy_fav_abs_ml: 200
+
+scam:
+  # Weights for strategy/scam.py's merit score -- a genuine unknown (the
+  # source's own read is qualitative, "does it make sense?"). Starting
+  # point only; a full 5-dimensional weight sweep is future work (not run
+  # 2026-08-19 -- see reports/CALIBRATION.md's method note), never
+  # hand-tuned to a live result.
+  merit_weights:
+    season_win_gap: 1.0
+    prev_opponent_rank_gap: 0.15
+    last10_win_gap: 1.5
+    ats_streak_gap: 1.0
+    era_edge: 2.0
+  # Calibrated 2026-08-19 (config_id mm2.0-mp10.0-bs100-e120, see below).
+  # Minimum |merit score| to call a clear edge either way.
+  min_merit_score: 2.0
+  # Minimum |primary price delta| (today vs previous H2H meeting, cents) to
+  # call the market's move real rather than noise.
+  min_price_delta_cents: 10.0
+
+day_policy:
+  # Thu/Sat off-day and Vegas-day/public-slot "outrageous scam" exceptions
+  # (P2 03:04, 12:07) require a price move at least this much larger than
+  # the ordinary min_price_delta_cents -- every worked "big scam" example
+  # in the transcripts moves 40+ cents (Twins 110pts, Guardians 65pts,
+  # Nationals 28-41pts is the SMALLEST cited example and is explicitly
+  # framed as ordinary, not "big"). Calibrated 2026-08-19 -> 100.
+  big_scam_min_price_delta_cents: 100
+
+# Calibrated 2026-08-19 (train 2014-2019 / validate 2021, 768 sbro seasons'
+# worth of picks under the fixed documented day map --
+# backtest/calibrate.py's sweep_orig, reports/CALIBRATION.md). Chosen config
+# `mm2.0-mp10.0-bs100-e120`: train +2.86% ROI (1,634 bets), validate +2.33%
+# ROI (303 bets) -- the top 10 configs by validation ROI are ALL positive on
+# BOTH splits, unlike the incumbent's original day-map sweep (768 distinct
+# hypotheses, zero positive on both splits). Still noisy at n=303
+# (SE(ROI)~6pts) and a single validation season -- a real, stability-backed
+# prior to confirm live, not proof. merit_weights above were held fixed
+# (not swept); the four values above were.
+meta:
+  calibrated: true
+  calibrated_at: "2026-08-19"
+  config_id: mm2.0-mp10.0-bs100-e120
+  train_roi: 2.86
+  train_bets: 1634
+  validate_roi: 2.33
+  validate_bets: 303
+
+totals:
+  # Minimum point-line move (open -> latest) to treat as a real signal
+  # rather than a rounding wobble.
+  min_point_move: 0.5
+
+# Fresh clock; no pre-registration data. Same bar as pv_v2/pv_v3's for
+# comparability -- see docs/mvp-design.md's verdict-criteria discussion for
+# why any single ROI bar is a screen, not proof, at these sample sizes.
+verdict: {min_graded: 100, supported_roi: 0.0, falsified_roi: -5.0}
+screen: {checkpoints: [100, 200]}
+
+bet_limits:
+  # The source ramps to ~1 pick/day at maturity (P1 98:53); the day policy
+  # (off-days, Vegas-slots-only discipline) already suppresses volume hard,
+  # so the cap is generous rather than binding.
+  max_picks_per_day: 3
+  one_pick_per_game: true
+staking:
+  flat_stake: 100

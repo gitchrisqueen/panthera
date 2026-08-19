@@ -1,13 +1,12 @@
 {
- "config_id": "VVPPPP-m5-e120-h200",
- "day_map": "VVPPPP",
- "min_move_cents": 5,
- "evenly_matched_max_abs_ml": 120,
- "heavy_fav_abs_ml": 200,
- "n_bets_train": 9542.0,
- "n_bets_valid": 3853.0,
- "profit_train": -17419.43,
- "profit_valid": 5406.09,
- "roi_train": -1.83,
- "roi_valid": 1.4
+ "config_id": "m10-e110-h250",
+ "min_move_cents": 10,
+ "evenly_matched_max_abs_ml": 110,
+ "heavy_fav_abs_ml": 250,
+ "n_bets_train": 11725.0,
+ "n_bets_valid": 1944.0,
+ "profit_train": -22971.14,
+ "profit_valid": 6743.23,
+ "roi_train": -1.96,
+ "roi_valid": 3.47
 }

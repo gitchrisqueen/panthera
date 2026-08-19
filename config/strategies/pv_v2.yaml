@@ -49,6 +49,15 @@ movement:
 thresholds:
   evenly_matched_max_abs_ml: 120
   heavy_fav_abs_ml: 200
+  # Config-hash freeze (2026-08-19): pinned at this strategy's actual
+  # deployed value. config/strategy.yaml's shared defaults are being
+  # corrected in the same change (hybrid boundary 16->18 ET, heavy_fav_action
+  # run_line->pass) to match the source documentation; without this pin the
+  # base-file edit would silently change this id's config_hash mid-
+  # evaluation, which is exactly the protocol violation hash_lineage exists
+  # to catch. This strategy's own behavior/history is unaffected.
+  heavy_fav_action: run_line
+hybrid_boundary_hour_et: 16
 
 # Locked as pre-registered 2026-07-31; applies to the hash_lineage segment
 # only. Segments outside the lineage render as SCREEN and can never print a

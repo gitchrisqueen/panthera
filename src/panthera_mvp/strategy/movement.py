@@ -134,6 +134,56 @@ def extract_game_prices(
     )
 
 
+@dataclass
+class TotalsPrices:
+    """Consensus totals (over/under) for one game -- doc §5/§6's totals rules
+    (strategy/orig_rules.py). `open_point`/`latest_point` are the LINE VALUE
+    itself (e.g. 8.5 -> 9), not a price -- the source's totals signal is
+    about the number moving, not the juice."""
+
+    open_point: float | None
+    latest_point: float | None
+    over_price: float | None  # at latest_point
+    under_price: float | None  # at latest_point
+
+
+def extract_totals_prices(
+    lines: pd.DataFrame,
+    odds_event_id: str,
+    latest_label: str | None = None,
+) -> TotalsPrices | None:
+    """Build a TotalsPrices bundle from the lines table for one event, mirroring
+    extract_game_prices' open/latest snapshot selection."""
+    sel = lines[(lines["odds_event_id"] == odds_event_id) & (lines["market"] == "totals")]
+    if sel.empty:
+        return None
+    ordered = [
+        lab
+        for lab in sel.sort_values("snapshot_ts_utc")["snapshot_label"].unique()
+        if lab not in CLV_ONLY_LABELS
+    ]
+    if not ordered:
+        return None
+    open_label = ordered[0]
+    if latest_label is None or latest_label not in ordered:
+        latest_label = ordered[-1]
+
+    def _point(label: str) -> float | None:
+        rows = sel[sel["snapshot_label"] == label]
+        return float(rows["point"].median()) if not rows.empty else None
+
+    def _price(outcome: str) -> float | None:
+        rows = sel[(sel["snapshot_label"] == latest_label) & (sel["outcome"] == outcome)]
+        return float(rows["price_american"].median()) if not rows.empty else None
+
+    return TotalsPrices(
+        open_point=_point(open_label),
+        latest_point=_point(latest_label),
+        over_price=_price("Over"),
+        under_price=_price("Under"),
+    )
+
+
 def movement_signal(
     open_price: float | None, latest_price: float | None, cfg: dict
 ) -> MovementSignal:

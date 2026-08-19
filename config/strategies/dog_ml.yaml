@@ -13,6 +13,23 @@ strategy:
     Control, not a strategy: full-slate underdog ML brackets the vig band
     from the other side in historical backtests.
 
+# Config-hash freeze (2026-08-19): the alignment change corrects
+# config/strategy.yaml's shared defaults (Saturday P->V, hybrid boundary
+# 16->18 ET, heavy_fav_action run_line->pass, min_move_cents 10->5) to match
+# the source strategy documentation. This baseline doesn't inline day_map/
+# thresholds/movement, so those defaults would otherwise silently change its
+# config_hash and fragment its ledger. Pinned here at the exact pre-fix
+# values so this baseline's behavior and hash are unaffected — it doesn't
+# consult these keys for its pick decision, only for the day_type/slot_type
+# labels stamped on each row.
+day_map:
+  saturday: P
+hybrid_boundary_hour_et: 16
+movement:
+  min_move_cents: 10
+thresholds:
+  heavy_fav_action: run_line
+
 verdict: null
 screen: {checkpoints: []}
 

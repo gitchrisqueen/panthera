@@ -8,11 +8,11 @@ from panthera_mvp.strategy.rules import GamePrices, Pass, Pick, generate_pick
 def _game(**kw) -> GameInfo:
     defaults = dict(
         game_pk=776001,
-        game_date_et="2026-08-01",  # Saturday -> P day in default config
+        game_date_et="2026-08-03",  # Monday -> P day in both old and new day maps
         game_type="R",
         status="Preview",
         detailed_state="Scheduled",
-        start_utc=datetime(2026, 8, 1, 23, 5, tzinfo=UTC),
+        start_utc=datetime(2026, 8, 3, 23, 5, tzinfo=UTC),
         doubleheader="N",
         game_number=1,
         home_team_id=111,
@@ -53,7 +53,7 @@ def test_r0_requires_odds(cfg):
 
 
 def test_p_slot_public_shortening_backs_favorite(cfg):
-    # Saturday (P). Favorite (away, -160 -> -180) shortened = public on fav.
+    # Monday (P). Favorite (away, -160 -> -180) shortened = public on fav.
     result = generate_pick(_game(), "e", _prices(), Dossier(), cfg)
     assert isinstance(result, Pick)
     assert result.selection == "New York Yankees"
@@ -78,7 +78,7 @@ def test_v_slot_vegas_drift_backs_underdog(cfg):
 
 
 def test_r4_evenly_matched_public_slot_takes_dog_run_line(cfg):
-    # Saturday (P), fav -120 (within 130), movement public.
+    # Monday (P), fav -120 (within 130), movement public.
     prices = _prices(
         away_ml_open=-105,
         away_ml_latest=-120,
@@ -174,7 +174,8 @@ def test_era_edge_outranks_form_and_series(cfg):
 
 
 def test_r7_heavy_favorite_converts_to_run_line(cfg):
-    # Saturday (P), fav -210 -> -230 shortened; ML pick would be -230 -> R7.
+    # Monday (P), fav -210 -> -230 shortened; ML pick would be -230 -> R7.
+    cfg["thresholds"]["heavy_fav_action"] = "run_line"  # default is now "pass"
     prices = _prices(
         away_ml_open=-210,
         away_ml_latest=-230,
@@ -211,6 +212,7 @@ def test_r8_veto(cfg):
 
 
 def test_rl_fallback_to_ml_when_unpriced(cfg):
+    cfg["thresholds"]["heavy_fav_action"] = "run_line"  # default is now "pass"
     prices = _prices(
         away_ml_open=-210,
         away_ml_latest=-230,

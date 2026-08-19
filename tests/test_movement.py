@@ -35,8 +35,8 @@ def test_cross_zero_movement(cfg):
 
 
 def test_small_move_is_neutral(cfg):
-    # Default min_move_cents = 10; a 5-cent move is noise.
-    assert movement_signal(-160, -165, cfg).direction == "neutral"
+    # Default min_move_cents = 5 (doc P2 34:46-35:05); a 3-cent move is noise.
+    assert movement_signal(-160, -163, cfg).direction == "neutral"
 
 
 def test_missing_prices_are_neutral(cfg):

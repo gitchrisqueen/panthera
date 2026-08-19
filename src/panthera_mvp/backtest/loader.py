@@ -2,13 +2,16 @@
 
 Expected raw format (one row per team, visitor then home, per game):
   Date (mmdd int) | Rot | VH (V/H/N) | Team (abbrev) | Pitcher |
-  1st..9th | Final | Open (ML) | Close (ML) | RunLine | RunLineOdds |
-  OpenOU | OpenOUOdds | CloseOU | CloseOUOdds
+  1st..9th | Final | Open (ML) | Close (ML) | RunLine | <RL odds> |
+  OpenOU | <over/under juice> | CloseOU | <over/under juice>
 
 Column names drift across seasons ("Open OU" vs "OpenOU", "Run Line" vs
 "RunLine"), so headers are normalized by stripping non-alphanumerics and
-lowercasing. Files must be named to contain a 4-digit season year, e.g.
-"mlb odds 2021.xlsx". Output: one row per GAME with visitor/home fields.
+lowercasing. The three price columns are *unnamed* in every published file
+and are resolved positionally — see ADJACENT_PRICE_COLUMNS.
+
+Files must be named to contain a 4-digit season year, e.g. "mlb odds
+2021.xlsx". Output: one row per GAME with visitor/home fields.
 """
 
 from __future__ import annotations
@@ -38,13 +41,45 @@ HEADER_MAP = {
     "close": "close_ml",
     "runline": "rl_line",
     "runlineodds": "rl_odds",
-    # Some seasons put the run line and its odds in adjacent unnamed columns;
-    # handled below via positional fallback.
     "openou": "open_ou",
     "openouodds": "open_ou_odds",
     "closeou": "close_ou",
     "closeouodds": "close_ou_odds",
 }
+
+#: Anchor column -> the canonical field held by the *unnamed* column directly
+#: to its right. Every sbro season file lays the price out this way
+#: ("Run Line | Unnamed: 18", "Open OU | Unnamed: 20", "Close OU |
+#: Unnamed: 22") — no season has ever carried a literal "Run Line Odds"
+#: header, so without this fallback those three price columns are dropped and
+#: every run-line/total bet silently degrades to a moneyline. Regression
+#: guard: tests/test_backtest.py::test_loader_captures_prices.
+ADJACENT_PRICE_COLUMNS = {
+    "runline": "rl_odds",
+    "openou": "open_ou_odds",
+    "closeou": "close_ou_odds",
+}
+
+
+def _resolve_headers(columns: list) -> dict:
+    """Map raw column labels -> canonical fields, including the positional
+    fallback for the unnamed price columns (see ADJACENT_PRICE_COLUMNS)."""
+    renamed = {}
+    norms = [_norm_header(c) for c in columns]
+    for col, norm in zip(columns, norms, strict=True):
+        if norm in HEADER_MAP:
+            renamed[col] = HEADER_MAP[norm]
+    taken = set(renamed.values())
+    for idx, norm in enumerate(norms):
+        field = ADJACENT_PRICE_COLUMNS.get(norm)
+        if field is None or field in taken or idx + 1 >= len(columns):
+            continue
+        # Only claim the neighbour when it is not itself a named data column.
+        if norms[idx + 1] in HEADER_MAP or norms[idx + 1] in ADJACENT_PRICE_COLUMNS:
+            continue
+        renamed[columns[idx + 1]] = field
+        taken.add(field)
+    return renamed
 
 
 def _season_from_name(path: Path) -> int | None:
@@ -74,12 +109,7 @@ def load_season_file(path: Path) -> pd.DataFrame:
     else:
         raw = pd.read_csv(path)
 
-    renamed = {}
-    for col in raw.columns:
-        norm = _norm_header(col)
-        if norm in HEADER_MAP:
-            renamed[col] = HEADER_MAP[norm]
-    raw = raw.rename(columns=renamed)
+    raw = raw.rename(columns=_resolve_headers(list(raw.columns)))
 
     required = {"date", "vh", "team", "final", "open_ml", "close_ml"}
     missing = required - set(raw.columns)
@@ -122,6 +152,16 @@ def load_season_file(path: Path) -> pd.DataFrame:
                 "vis_rl_odds": _to_num(vis.get("rl_odds")),
                 "home_rl_line": _to_num(home.get("rl_line")),
                 "home_rl_odds": _to_num(home.get("rl_odds")),
+                # sbro convention: the visitor row carries the OVER price and
+                # the home row the UNDER price; the total itself is repeated.
+                "total_open": _to_num(vis.get("open_ou")),
+                "total_open_over_odds": _to_num(vis.get("open_ou_odds")),
+                "total_open_under_odds": _to_num(home.get("open_ou_odds")),
+                "total_close": _to_num(vis.get("close_ou")),
+                "total_close_over_odds": _to_num(vis.get("close_ou_odds")),
+                "total_close_under_odds": _to_num(home.get("close_ou_odds")),
+                # Retained under its historical name: existing callers and the
+                # committed normalized CSV both reference `close_ou`.
                 "close_ou": _to_num(vis.get("close_ou")),
             }
         )

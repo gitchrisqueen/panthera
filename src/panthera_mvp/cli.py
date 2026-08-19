@@ -61,6 +61,16 @@ def main(argv: list[str] | None = None) -> None:
     p_cal.add_argument("--validate", required=True, help="e.g. 2022-2023")
     p_cal.add_argument("--write-config", action="store_true")
 
+    p_replay = sub.add_parser(
+        "replay",
+        help="Retroactively replay a strategy over already-captured odds/games "
+        "history (zero API cost); writes data/picks/shadow_picks.csv, never "
+        "pooled into any strategy's verdict",
+    )
+    p_replay.add_argument("--strategy", default="pv_orig", help="Strategy id to replay")
+    p_replay.add_argument("--from", dest="from_et", default=None, help="ET date, e.g. 2026-07-31")
+    p_replay.add_argument("--to", dest="to_et", default=None, help="ET date, e.g. 2026-08-19")
+
     args = parser.parse_args(argv)
 
     # Imports deferred so `--help` stays fast and dependency-light.
@@ -96,6 +106,10 @@ def main(argv: list[str] | None = None) -> None:
         from .backtest.calibrate import cmd_calibrate
 
         cmd_calibrate(args.train, args.validate, args.write_config)
+    elif args.command == "replay":
+        from .replay import cmd_replay
+
+        cmd_replay(strategy=args.strategy, from_et=args.from_et, to_et=args.to_et)
 
 
 if __name__ == "__main__":

@@ -82,14 +82,16 @@ def test_two_strategies_distinct_rows_and_caps(
     # Morning-labeled run at 11:30 ET (inside the late-run grace window).
     # Fixture game 1 has an ERA edge, so pv_v2 picks it via the neutral-
     # movement dossier cascade; movement_cents MUST be 0 — the morning run's
-    # endpoint is the `open` snapshot even when later labels exist.
+    # endpoint is the `open` snapshot even when later labels exist. 2026-08-01
+    # is a Saturday -> V slot in the corrected default day map, so the
+    # ERA-favored side (a V-slot favorite) converts ML -> run line via R5.
     clock["now"] = datetime(2026, 8, 1, 15, 30, tzinfo=UTC)
     cmd_picks("23:59", run_label="morning")
     picks = store.load_picks()
     pv = picks[picks["strategy_id"] == "pv_v2"]
     assert len(pv) == 1
-    assert pv.iloc[0]["pick_id"] == "pv_v2-776001-ml-20260801"
-    assert pv.iloc[0]["rule_id"] == "R3_era"
+    assert pv.iloc[0]["pick_id"] == "pv_v2-776001-rl-20260801"
+    assert pv.iloc[0]["rule_id"] == "R5"
     assert float(pv.iloc[0]["movement_cents"]) == 0.0
     assert len(picks[picks["strategy_id"] == "fav_ml"]) == 2
 
@@ -118,11 +120,12 @@ def test_two_strategies_distinct_rows_and_caps(
     game2 = pv[pv["game_pk"] == 776002].iloc[0]
     assert float(game2["movement_cents"]) == 20.0
 
-    # Same game+market carries two strategies' rows with distinct pick_ids.
+    # Same game carries two strategies' rows with distinct pick_ids (pv_v2's
+    # is a run line here — see the R5 note above).
     game1 = picks[picks["game_pk"] == 776001]
     assert sorted(game1["pick_id"]) == [
         "fav_ml-776001-ml-20260801",
-        "pv_v2-776001-ml-20260801",
+        "pv_v2-776001-rl-20260801",
     ]
 
     # Per-day cap counts picks already recorded today across runs: pv_v2's

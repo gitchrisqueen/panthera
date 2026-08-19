@@ -12,14 +12,22 @@ directly — change `src/panthera_mvp/report.py` and regenerate.
   verdict). The retired pv_v2's original criteria (≥100 graded picks;
   ROI > 0% supported, < −5% falsified; pre-registered 2026-07-31) are
   unchanged and apply to its legacy segment, which froze short of 100 —
-  its verdict line stays "collecting" permanently by design. The live
-  incumbent is pv_v3 (ERA-active, registered 2026-08-16, fresh clock). **Portfolio totals are
-  informational and never a verdict target. Do not move any strategy's
-  goalposts after registration** — a changed evaluation requires a new
-  strategy id with a fresh clock.
+  its verdict line stays "collecting" permanently by design. pv_v3
+  (ERA-active, registered 2026-08-16) and **pv_orig** (the aligned engine —
+  see `docs/mvp-design.md`'s alignment section — registered 2026-08-19,
+  fresh clock) are both live. **Portfolio totals are informational and
+  never a verdict target. Do not move any strategy's goalposts after
+  registration** — a changed evaluation requires a new strategy id with a
+  fresh clock. A final **Retroactive replay** section (from
+  `panthera-mvp replay` / `data/picks/shadow_picks.csv`) is rendered
+  separately and is NEVER pooled into any verdict, hash_lineage segment, or
+  portfolio total — those picks were computed after every outcome in them
+  was already known and carry no evidentiary weight beyond an early,
+  descriptive read.
 - `daily/YYYY-MM-DD.md` — per-day picks by strategy, grades, passes (net of
   later picks), run notes, splits, credits.
-- `CALIBRATION.md` — written by `panthera-mvp calibrate`; documents how the
-  P/V day map and thresholds were derived and its caveats (including that
-  the archives price no run lines, so R4/R5/R7 were swept as ML bets).
+- `CALIBRATION.md` — written by `panthera-mvp calibrate`; documents the
+  incumbent-threshold and pv_orig threshold sweeps and their caveats. The
+  day map is no longer swept (2026-08-19) — it is a documented constant
+  from the source recordings, not an unknown; see `docs/mvp-design.md`.
 - Migration proofs live in `docs/proofs/` (not regenerated).
