@@ -69,3 +69,44 @@ def cfg(tmp_root):
     from panthera_mvp.config import load_config
 
     return load_config()
+
+
+def make_pick(
+    pick_id,
+    status="pending",
+    profit=None,
+    rule_id="R3",
+    settled="",
+    strategy_id="pv_v2",
+    game_pk=1,
+    selection="New York Yankees",
+    config_hash="6f0d0924d4",
+    market="ml",
+):
+    """Shared picks.csv row builder — used by test_report.py and
+    test_dashboard.py so both stay pinned to the same schema/shape."""
+    from panthera_mvp import store
+
+    return {c: None for c in store.PICKS_COLUMNS} | {
+        "pick_id": pick_id,
+        "strategy_id": strategy_id,
+        "game_pk": game_pk,
+        "game_date_et": "2026-08-01",
+        "matchup": "NYY @ BOS",
+        "start_time_et": "2026-08-01 19:05",
+        "day_type": "P",
+        "slot_type": "P",
+        "rule_id": rule_id,
+        "market": market,
+        "selection": selection,
+        "price_american": -150,
+        "price_decimal": 1.6667,
+        "stake": 100,
+        "movement_cents": 20,
+        "rationale": "test",
+        "config_hash": config_hash,
+        "status": status,
+        "settled_ts_utc": settled,
+        "profit": profit,
+        "final_score": "NYY 5 - BOS 3" if status != "pending" else None,
+    }

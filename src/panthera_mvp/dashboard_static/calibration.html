@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Panthera — Calibration</title>
+<meta name="description" content="Parameter-sweep calibration results for Project Panthera's betting strategies.">
+<link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-row">
+      <div>
+        <h1>🐆 Calibration</h1>
+        <p class="tagline">Train/validate parameter-sweep results behind the strategy YAMLs.
+          This page is a compact summary — full methodology and caveats live in
+          <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/CALIBRATION.md" target="_blank" rel="noopener">reports/CALIBRATION.md</a>.</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+    </div>
+  </div>
+</header>
+
+<nav class="sitenav" aria-label="Sections">
+  <div class="wrap"><a href="index.html">← Back to ledger</a></div>
+</nav>
+
+<main class="wrap">
+  <section id="calibration-body">
+    <p class="section-sub" id="cal-status">Loading…</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><p>Part of the <a href="https://github.com/gitchrisqueen/panthera">Project Panthera</a> research pipeline. Paper trades only — not financial advice.</p></div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function esc(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+  function currentIsDark() {
+    const t = document.documentElement.getAttribute("data-theme");
+    if (t) return t === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function initTheme() {
+    const saved = localStorage.getItem("panthera-theme");
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    const btn = document.getElementById("theme-toggle");
+    const paint = () => { btn.textContent = currentIsDark() ? "Light" : "Dark"; };
+    paint();
+    btn.addEventListener("click", () => {
+      const next = currentIsDark() ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("panthera-theme", next);
+      paint();
+    });
+  }
+  async function init() {
+    initTheme();
+    let data;
+    try {
+      const res = await fetch("calibration_data.json", { cache: "no-store" });
+      data = await res.json();
+    } catch (e) {
+      document.getElementById("cal-status").textContent = "Failed to load calibration_data.json";
+      return;
+    }
+    const body = document.getElementById("calibration-body");
+    if (!data.available) {
+      body.innerHTML = `<p class="section-sub">No calibration sweep has been run yet (<code>panthera-mvp calibrate</code>).</p>`;
+      return;
+    }
+    let html = "";
+    if (data.best_params) {
+      const bp = data.best_params;
+      html += `<h2>Chosen config</h2><div class="stat-grid">` +
+        Object.keys(bp).map((k) => `<div><div class="stat-label">${esc(k)}</div><div class="stat-value" style="font-size:14px;">${esc(bp[k])}</div></div>`).join("") +
+        `</div>`;
+    }
+    if (data.top_configs && data.top_configs.length) {
+      html += `<h2 style="margin-top:32px;">Top configs by validation ROI</h2>
+        <div class="table-scroll"><table><thead><tr><th>Config</th><th class="num">N (valid)</th><th class="num">ROI (valid)</th><th class="num">P/L (valid)</th></tr></thead><tbody>` +
+        data.top_configs.map((c) => `<tr><td><code>${esc(c.config_id)}</code></td><td class="num">${c.n_bets}</td><td class="num">${c.roi_valid >= 0 ? "+" : ""}${c.roi_valid.toFixed(2)}%</td><td class="num">$${c.profit_valid.toFixed(2)}</td></tr>`).join("") +
+        `</tbody></table></div>`;
+    }
+    document.getElementById("cal-status").remove();
+    body.insertAdjacentHTML("beforeend", html);
+  }
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>

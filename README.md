@@ -2,6 +2,9 @@
 
 [![CI Build](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml/badge.svg)](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+[![View Live Dashboard](https://img.shields.io/badge/dashboard-live_results-1a7f37?logo=github)](https://gitchrisqueen.github.io/panthera/)
+
+### 📊 [**View the live picks & performance dashboard →**](https://gitchrisqueen.github.io/panthera/)
 
 **Project Panthera** is an MLB sports-betting analysis project. Its long-term
 vision is a SaaS platform; its **current phase is an automated MVP that
@@ -16,7 +19,8 @@ three times a day, generate picks from the documented strategy rules, grade
 them the next morning, and commit a running ledger back to this repo — git is
 the database, markdown is the dashboard.
 
-- 📈 **Live results & verdict:** [`reports/BETTING_REPORT.md`](reports/BETTING_REPORT.md)
+- 📊 **Live dashboard:** [gitchrisqueen.github.io/panthera](https://gitchrisqueen.github.io/panthera/) — auto-updated 2×/day
+- 📈 **Live results & verdict (markdown source):** [`reports/BETTING_REPORT.md`](reports/BETTING_REPORT.md)
 - 📅 **Daily pick reports:** [`reports/daily/`](reports/daily)
 - 🔬 **Design & rule formalization:** [`docs/mvp-design.md`](docs/mvp-design.md)
 - 📖 **The strategy itself:** [`docs/sports_betting_process.md`](docs/sports_betting_process.md)

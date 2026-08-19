@@ -71,3 +71,11 @@ def historical_normalized_csv() -> Path:
 
 def calibration_dir() -> Path:
     return data_dir() / "calibration"
+
+
+def site_dir() -> Path:
+    """Build output for the public GitHub Pages dashboard (`panthera-mvp
+    pages`). Disposable and gitignored — regenerated fresh on every deploy
+    from data/picks/picks.csv, never committed (unlike reports/, which is
+    bot-owned committed markdown history)."""
+    return repo_root() / "site"
