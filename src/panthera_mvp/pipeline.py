@@ -694,6 +694,13 @@ def cmd_report() -> None:
     print("[report] reports regenerated")
 
 
+def cmd_pages(run_label: str = "manual") -> None:
+    from .dashboard import write_site
+
+    out = write_site(generated_by_run=run_label)
+    print(f"[pages] site regenerated at {out}")
+
+
 def cmd_status() -> None:
     picks = store.load_picks()
     pending = 0 if picks.empty else int((picks["status"] == "pending").sum())

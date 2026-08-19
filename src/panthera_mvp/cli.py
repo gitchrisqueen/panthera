@@ -47,6 +47,17 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("report", help="Regenerate markdown reports")
     sub.add_parser("status", help="Show pending picks and credit balance")
 
+    p_pages = sub.add_parser(
+        "pages", help="Build the static GitHub Pages dashboard from picks.csv"
+    )
+    p_pages.add_argument(
+        "--run-label",
+        default="manual",
+        choices=["morning", "pregame", "manual"],
+        help="Which scheduled run triggered this build (shown in the "
+        "dashboard's freshness badge)",
+    )
+
     p_bt = sub.add_parser("backtest", help="Replay strategies over historical seasons")
     p_bt.add_argument("--seasons", default=None, help="e.g. 2019-2023")
     p_bt.add_argument(
@@ -98,6 +109,10 @@ def main(argv: list[str] | None = None) -> None:
         from .pipeline import cmd_status
 
         cmd_status()
+    elif args.command == "pages":
+        from .pipeline import cmd_pages
+
+        cmd_pages(run_label=args.run_label)
     elif args.command == "backtest":
         from .backtest.engine import cmd_backtest
 

@@ -1,0 +1,66 @@
+name: Deploy Pages
+
+# Builds and deploys the public GitHub Pages dashboard (panthera-mvp pages)
+# after either data-changing run completes. Triggered via workflow_run, not
+# push, because pushes made with the default GITHUB_TOKEN don't trigger new
+# workflow runs (see .github/workflows/CLAUDE.md's bot-commit loop guards) —
+# workflow_run fires on completion of the named run regardless. Deliberately
+# NOT wired into mvp-close.yml: close only takes a CLV snapshot and never
+# calls `panthera-mvp report`, so there is no new ledger data to publish
+# after it runs.
+#
+# One-time manual step this workflow depends on (not done by this file):
+# the repo's Pages source must be switched to "GitHub Actions" in
+# Settings -> Pages (or `gh api -X PUT repos/<owner>/<repo>/pages -f
+# build_type=workflow`) before the deploy job below can publish anything.
+on:
+  workflow_run:
+    workflows: ["MVP Morning Run", "MVP Pregame Run"]
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# No explicit concurrency.group here — actions/deploy-pages sets its own
+# "github-pages" group automatically; declaring one here would conflict.
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Build dashboard
+        run: >-
+          panthera-mvp pages
+          --run-label ${{ github.event.workflow_run.name == 'MVP Pregame Run' && 'pregame' || github.event.workflow_run.name == 'MVP Morning Run' && 'morning' || 'manual' }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

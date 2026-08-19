@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Panthera — Running Ledger</title>
+<meta name="description" content="A pre-registered, forward paper-traded MLB betting-strategy research ledger. Not a tipster service, not financial advice.">
+<link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-row">
+      <div>
+        <h1>🐆 Project Panthera</h1>
+        <p class="tagline">A pre-registered, forward paper-traded MLB betting-strategy research
+          ledger — every strategy here declared its evaluation bar <em>before</em> seeing results.
+          Paper trades only; not financial advice; not a tipster service.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+        <span id="freshness-badge" class="freshness"><span class="dot"></span><span>Loading…</span></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="sitenav" aria-label="Sections">
+  <div class="wrap">
+    <a href="#strategies">Strategies</a>
+    <a href="#today">Today's slate</a>
+    <a href="#ledger">Full ledger</a>
+    <a href="#charts">Charts</a>
+    <a href="#replay">Retroactive replay</a>
+    <a href="calibration.html">Calibration ↗</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section id="how-to-read-section">
+    <details class="how-to-read">
+      <summary>How to read this ledger — sample sizes are small, read this first</summary>
+      <p id="how-to-read-text">Loading…</p>
+    </details>
+  </section>
+
+  <section id="strategies">
+    <h2>Strategy comparison</h2>
+    <p class="section-sub">Descriptive, not a tournament — strategies share games/sides, so
+      results are correlated. Sorted in registration order, not by ROI. Click a column header to sort.</p>
+    <div class="table-scroll">
+      <table id="comparison-table" class="responsive-stack">
+        <thead><tr>
+          <th>Strategy</th><th>Kind</th><th class="num" data-sortable data-key="graded_n">Graded</th>
+          <th>Record</th><th class="num" data-sortable data-key="profit">P/L</th>
+          <th class="num" data-sortable data-key="roi">ROI (±SE)</th><th>Avg CLV</th>
+          <th class="num">Overlap</th><th class="num" data-sortable data-key="pending">Pending</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody id="comparison-tbody"></tbody>
+      </table>
+    </div>
+    <div id="strategy-cards" style="margin-top:24px;"></div>
+  </section>
+
+  <section id="today">
+    <h2>Today's slate</h2>
+    <p class="section-sub" id="today-sub">Loading…</p>
+    <div class="table-scroll"><table class="responsive-stack" id="today-table">
+      <thead><tr><th>Strategy</th><th>Start (ET)</th><th>Matchup</th><th>Pick</th><th class="num">Price</th><th>Status</th></tr></thead>
+      <tbody id="today-tbody"></tbody>
+    </table></div>
+  </section>
+
+  <section id="ledger">
+    <h2>Full picks ledger</h2>
+    <p class="section-sub">Every recorded pick, across every strategy. <a class="raw-link" href="https://github.com/gitchrisqueen/panthera/blob/main/data/picks/picks.csv" target="_blank" rel="noopener">View raw CSV on GitHub <svg class="icon"><use href="static/icons.svg#icon-external"/></svg></a></p>
+    <div class="ledger-controls">
+      <div id="ledger-strategy-chips"></div>
+      <select id="ledger-status-filter">
+        <option value="">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="win">Win</option>
+        <option value="loss">Loss</option>
+        <option value="push">Push</option>
+        <option value="void">Void</option>
+      </select>
+      <input type="search" id="ledger-search" placeholder="Search matchup…">
+      <input type="date" id="ledger-date-from" title="From date">
+      <input type="date" id="ledger-date-to" title="To date">
+    </div>
+    <div class="table-scroll"><table class="responsive-stack" id="ledger-table">
+      <thead><tr>
+        <th data-sortable data-key="game_date_et">Date</th>
+        <th>Strategy</th><th>Matchup</th><th>Pick</th><th class="num">Price</th>
+        <th>Status</th><th class="num" data-sortable data-key="profit">P/L</th>
+        <th class="num" data-sortable data-key="clv_cents">CLV</th><th>Tier</th>
+      </tr></thead>
+      <tbody id="ledger-tbody"></tbody>
+    </table></div>
+    <div class="pagination" id="ledger-pagination"></div>
+  </section>
+
+  <section id="charts">
+    <h2>Charts</h2>
+    <p class="section-sub">Supporting evidence, not a ranking. Solid lines = strategies with a
+      pre-registered verdict; dashed = SCREEN-only baselines.</p>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Cumulative P/L over time</h3>
+        <p class="section-sub">Flat stakes, graded picks only.</p>
+        <div id="chart-cumulative"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Closing line value (CLV)</h3>
+        <p class="section-sub">A directional price-capture cross-check, not an independent edge test.</p>
+        <div id="chart-clv"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="replay">
+    <h2>Retroactive replay</h2>
+    <div class="callout" id="replay-banner">
+      <svg class="icon"><use href="static/icons.svg#icon-warning-triangle"/></svg>
+      <span>Loading…</span>
+    </div>
+    <div id="replay-body"></div>
+  </section>
+
+  <section id="portfolio-section">
+    <div class="portfolio-strip" id="portfolio-strip">Loading…</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>This ledger refreshes automatically after the morning-grading and pregame-picks runs
+      (GitHub Actions, cron-scheduled — not real-time). Built from
+      <a href="https://github.com/gitchrisqueen/panthera" target="_blank" rel="noopener">gitchrisqueen/panthera</a>
+      by <code>panthera-mvp pages</code>, generated from the same
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md" target="_blank" rel="noopener">picks.csv ledger</a>
+      as the markdown report. All picks are paper trades — no real money is wagered, and nothing
+      here is financial advice.</p>
+  </div>
+</footer>
+
+<script src="static/app.js"></script>
+<noscript>
+  <div class="wrap" style="padding:32px 16px;">
+    <p>This dashboard needs JavaScript to render the ledger from
+      <a href="site_data.json">site_data.json</a>. You can also read the same data as
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md">rendered markdown</a>.</p>
+  </div>
+</noscript>
+</body>
+</html>
