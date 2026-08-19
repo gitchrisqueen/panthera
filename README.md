@@ -28,9 +28,9 @@ the database, markdown is the dashboard.
 | Workflow | When (ET) | What it does |
 |---|---|---|
 | [MVP Morning Run](.github/workflows/mvp-morning.yml) | 10:35 daily | Grades yesterday's picks, takes the opening odds snapshot, picks afternoon games |
-| [MVP Midday Check](.github/workflows/mvp-midday.yml) | 12:05 daily | Midday odds snapshot (the strategy's "12 PM check") |
 | [MVP Pregame Run](.github/workflows/mvp-pregame.yml) | 16:50 daily | Pregame snapshot, picks the evening slate on open→pregame line movement |
-| [MVP Historical Calibration](.github/workflows/mvp-calibrate.yml) | manual | Downloads free historical odds archives and derives the P/V day map + thresholds |
+| [MVP Close Snapshot](.github/workflows/mvp-close.yml) | 18:20 daily | Closing-line-value snapshot only — never a movement endpoint for picks |
+| [MVP Historical Calibration](.github/workflows/mvp-calibrate.yml) | manual | Downloads free historical odds archives and derives strategy thresholds |
 
 Picks are paper trades at a flat $100 stake. The verdict criteria are
 pre-registered in the ledger: after 100 graded picks, ROI > 0% supports the

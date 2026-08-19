@@ -108,9 +108,13 @@ stability-backed prior to confirm live, not proof.
 
 ## Movement measurement honesty
 
-- **Live:** movement = open (10:35 ET) → midday (12:05) → pregame (16:50)
-  snapshots from our own collection. This matches the doc's process
-  (morning line, 12 PM check, final scan).
+- **Live:** movement = open (10:35 ET) → pregame (16:50) snapshots from our
+  own collection. The doc's "12 PM check" (§4) was a manual mid-day glance
+  at already-open lines, not a second pricing anchor any pick actually
+  reads — the `midday` snapshot that mirrored it was retired 2026-08-19
+  (`.github/workflows/CLAUDE.md`) since no scheduled picks run ever
+  selected it as a movement endpoint; `open` → `pregame` is the real signal
+  path.
 - **Backtest:** only open→close exists in free archives — a coarse proxy.
   Hybrid Wednesday is untestable historically (no start times). Both
   limitations are stated in `reports/CALIBRATION.md`; forward paper-trading
