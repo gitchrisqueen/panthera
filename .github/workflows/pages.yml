@@ -13,6 +13,19 @@ name: Deploy Pages
 # the repo's Pages source must be switched to "GitHub Actions" in
 # Settings -> Pages (or `gh api -X PUT repos/<owner>/<repo>/pages -f
 # build_type=workflow`) before the deploy job below can publish anything.
+#
+# CHECKOUT GOTCHA (fixed 2026-08-20, was live ~20h): do NOT pin the checkout
+# to `github.event.workflow_run.head_sha`. For a schedule-triggered run,
+# that field is the commit the run STARTED from, not what it pushed — the
+# triggering workflows (mvp-morning/mvp-pregame) commit their new picks as
+# their OWN last step, so head_sha is always the commit BEFORE that data.
+# Confirmed live: mvp-morning's own headSha was 3f3e205 even though it went
+# on to push eeb717f; the resulting dashboard build's checkout logged
+# "HEAD is now at 3f3e205" and site_data.json silently had zero rows for
+# the day it had just generated. The plain default checkout below resolves
+# to the default branch's CURRENT tip — which, by the time this workflow's
+# job actually runs (after the triggering workflow has fully finished,
+# including its push), already includes that commit.
 on:
   workflow_run:
     workflows: ["MVP Morning Run", "MVP Pregame Run"]
@@ -35,8 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: actions/setup-python@v5
         with:
