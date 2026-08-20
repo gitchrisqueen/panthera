@@ -9,6 +9,7 @@
 | mvp-close | 20 22 * * * | 18:20 | snapshot `close` (3 cr) — **CLV endpoint only**, never a movement endpoint for pick generation; lands after the pregame picks priced and before ~96% of first pitches |
 | mvp-calibrate | manual | — | download archives → calibration sweep → write calibrated config (registry strategies do NOT read it — their params are inlined) |
 | mvp-debug-era | manual | — | probe live statsapi hydrate variants for the dormant probable-pitcher ERA (no commits) |
+| pages | `workflow_run` after mvp-morning/mvp-pregame | — | `panthera-mvp pages` → deploy the public dashboard (gitchrisqueen.github.io/panthera). Plain default checkout — **do not** pin `ref:` to `github.event.workflow_run.head_sha` (see the fixed 2026-08-20 bug in `pages.yml`'s header comment: that field is the triggering run's pre-commit SHA, not what it just pushed) |
 | ci | push/PR | — | ruff + pytest on `tests/` only |
 
 **Retired 2026-08-19: mvp-midday** (`snapshot --label midday`, was 12:05 ET).
