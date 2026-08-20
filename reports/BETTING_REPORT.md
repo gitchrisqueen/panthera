@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-20T15:06:18Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-20T21:13:42Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,7 +27,7 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fav_ml | baseline | 41 | 28-13-0 | $+529.84 | +12.92% ±12.3 | +0.8c (n=8, 62% pos, 17% cov) | 15% | 6 | screen only |
+| fav_ml | baseline | 41 | 28-13-0 | $+529.84 | +12.92% ±12.3 | +0.8c (n=8, 62% pos, 16% cov) | 14% | 9 | screen only |
 | pv_orig | aligned | 0 | — | — | — | — | — | 0 | collecting |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
 | pv_v3 | incumbent | 19 | 6-13-0 | $-664.29 | -34.96% ±23.0 | +2.2c (n=6, 67% pos, 25% cov) | 28% | 6 | collecting (19/100) |
@@ -44,7 +44,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 28-13-0 (0 void)
 - **P/L:** $+529.84 on $4,100 risked
 - **ROI:** +12.92% (±12.3 pts SE, own SD)
-- **Pending:** 6
+- **Pending:** 9
 
 **By rule**
 
@@ -56,9 +56,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-19 | Seattle Mariners @ Milwaukee Brewers | Milwaukee Brewers ML | -124 | B_FAV | loss | $-100.00 |
-| 2026-08-19 | Washington Nationals @ Texas Rangers | Texas Rangers ML | -126 | B_FAV | loss | $-100.00 |
-| 2026-08-19 | Los Angeles Angels @ Houston Astros | Houston Astros ML | -148 | B_FAV | win | $+67.57 |
 | 2026-08-19 | Los Angeles Dodgers @ Colorado Rockies | Los Angeles Dodgers ML | -193 | B_FAV | win | $+51.81 |
 | 2026-08-20 | St. Louis Cardinals @ Cincinnati Reds | St. Louis Cardinals ML | -109 | B_FAV | pending |  |
 | 2026-08-20 | San Francisco Giants @ Cleveland Guardians | Cleveland Guardians ML | -205 | B_FAV | pending |  |
@@ -66,6 +63,9 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-20 | Athletics @ Kansas City Royals | Kansas City Royals ML | -136 | B_FAV | pending |  |
 | 2026-08-20 | Atlanta Braves @ Chicago White Sox | Atlanta Braves ML | -108 | B_FAV | pending |  |
 | 2026-08-20 | Seattle Mariners @ Milwaukee Brewers | Milwaukee Brewers ML | -128 | B_FAV | pending |  |
+| 2026-08-20 | New York Yankees @ Baltimore Orioles | Baltimore Orioles ML | -106 | B_FAV | pending |  |
+| 2026-08-20 | Washington Nationals @ Texas Rangers | Texas Rangers ML | -181 | B_FAV | pending |  |
+| 2026-08-20 | Los Angeles Angels @ Houston Astros | Houston Astros ML | -182 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
