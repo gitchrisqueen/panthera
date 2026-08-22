@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-21T21:10:01Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-22T14:49:35Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,11 +27,11 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fav_ml | baseline | 50 | 34-16-0 | $+669.85 | +13.40% ±11.3 | +0.8c (n=8, 62% pos, 13% cov) | 17% | 14 | screen only |
+| fav_ml | baseline | 64 | 48-16-0 | $+1,616.22 | +25.25% ±9.3 | +0.5c (n=10, 50% pos, 15% cov) | 18% | 2 | screen only |
 | pv_orig | aligned | 0 | — | — | — | — | — | 0 | collecting |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 25 | 9-16-0 | $-694.02 | -27.76% ±20.0 | +2.2c (n=6, 67% pos, 20% cov) | 35% | 6 | collecting (25/100) |
-| _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,470.82 | -8.75% |  |  |  |  |
+| pv_v3 | incumbent | 31 | 13-18-0 | $-630.58 | -20.34% ±17.5 | +2.2c (n=6, 67% pos, 19% cov) | 36% | 2 | collecting (31/100) |
+| _portfolio (informational — not an evaluation target)_ |  |  |  | $-461.01 | -2.45% |  |  |  |  |
 
 ## Strategy: fav_ml
 
@@ -41,31 +41,31 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested.
 
-- **Record:** 34-16-0 (0 void)
-- **P/L:** $+669.85 on $5,000 risked
-- **ROI:** +13.40% (±11.3 pts SE, own SD)
-- **Pending:** 14
+- **Record:** 48-16-0 (0 void)
+- **P/L:** $+1,616.22 on $6,400 risked
+- **ROI:** +25.25% (±9.3 pts SE, own SD)
+- **Pending:** 2
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| B_FAV | 34-16-0 | $+669.85 | +13.40% |
+| B_FAV | 48-16-0 | $+1,616.22 | +25.25% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-21 | Tampa Bay Rays @ Baltimore Orioles | Baltimore Orioles ML | -118 | B_FAV | pending |  |
-| 2026-08-21 | New York Mets @ Chicago White Sox | Chicago White Sox ML | -140 | B_FAV | pending |  |
-| 2026-08-21 | Detroit Tigers @ Kansas City Royals | Kansas City Royals ML | -110 | B_FAV | pending |  |
-| 2026-08-21 | Athletics @ Houston Astros | Houston Astros ML | -177 | B_FAV | pending |  |
-| 2026-08-21 | Los Angeles Angels @ Texas Rangers | Texas Rangers ML | -139 | B_FAV | pending |  |
-| 2026-08-21 | Cleveland Guardians @ Colorado Rockies | Cleveland Guardians ML | -153 | B_FAV | pending |  |
-| 2026-08-21 | Cincinnati Reds @ Arizona Diamondbacks | Arizona Diamondbacks ML | -142 | B_FAV | pending |  |
-| 2026-08-21 | Minnesota Twins @ San Diego Padres | San Diego Padres ML | -116 | B_FAV | pending |  |
-| 2026-08-21 | Pittsburgh Pirates @ Los Angeles Dodgers | Los Angeles Dodgers ML | -229 | B_FAV | pending |  |
-| 2026-08-21 | Chicago Cubs @ Seattle Mariners | Seattle Mariners ML | -108 | B_FAV | pending |  |
+| 2026-08-21 | Detroit Tigers @ Kansas City Royals | Kansas City Royals ML | -110 | B_FAV | win | $+90.91 |
+| 2026-08-21 | Athletics @ Houston Astros | Houston Astros ML | -177 | B_FAV | win | $+56.50 |
+| 2026-08-21 | Los Angeles Angels @ Texas Rangers | Texas Rangers ML | -139 | B_FAV | win | $+71.94 |
+| 2026-08-21 | Cleveland Guardians @ Colorado Rockies | Cleveland Guardians ML | -153 | B_FAV | win | $+65.36 |
+| 2026-08-21 | Cincinnati Reds @ Arizona Diamondbacks | Arizona Diamondbacks ML | -142 | B_FAV | win | $+70.42 |
+| 2026-08-21 | Minnesota Twins @ San Diego Padres | San Diego Padres ML | -116 | B_FAV | win | $+86.21 |
+| 2026-08-21 | Pittsburgh Pirates @ Los Angeles Dodgers | Los Angeles Dodgers ML | -229 | B_FAV | win | $+43.67 |
+| 2026-08-21 | Chicago Cubs @ Seattle Mariners | Seattle Mariners ML | -108 | B_FAV | win | $+92.59 |
+| 2026-08-22 | Toronto Blue Jays @ New York Yankees | New York Yankees ML | -105 | B_FAV | pending |  |
+| 2026-08-22 | Atlanta Braves @ Milwaukee Brewers | Milwaukee Brewers ML | -158 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
@@ -144,59 +144,59 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 **Verdict segment** (config hashes: e7a93ebed7):
 
-**INCONCLUSIVE — collecting data.** 25/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+**INCONCLUSIVE — collecting data.** 31/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
-- **Record:** 9-16-0 (0 void)
-- **P/L:** $-694.02 on $2,500 risked
-- **ROI:** -27.76% (±20.0 pts SE, own SD)
-- **Pending:** 6
+- **Record:** 13-18-0 (0 void)
+- **P/L:** $-630.58 on $3,100 risked
+- **ROI:** -20.34% (±17.5 pts SE, own SD)
+- **Pending:** 2
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| R3 | 0-6-0 | $-600.00 | -100.00% |
-| R3_era | 4-5-0 | $-151.37 | -16.82% |
+| R3 | 1-6-0 | $-515.25 | -73.61% |
+| R3_era | 7-6-0 | $-72.68 | -5.59% |
 | R4 | 1-1-0 | $-40.65 | -20.32% |
 | R5 | 3-4-0 | $-7.00 | -1.00% |
-| R7 | 1-0-0 | $+105.00 | +105.00% |
+| R7 | 1-1-0 | $+5.00 | +2.50% |
 
 **By day type**
 
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
 | HYBRID | 2-4-0 | $-275.29 | -45.88% |
-| P | 3-4-0 | $-129.73 | -18.53% |
+| P | 7-6-0 | $-66.29 | -5.10% |
 | V | 4-8-0 | $-289.00 | -24.08% |
 
 **By slot**
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 5-6-0 | $-205.02 | -18.64% |
+| P | 9-8-0 | $-141.58 | -8.33% |
 | V | 4-10-0 | $-489.00 | -34.93% |
 
 **By market**
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 4-11-0 | $-751.37 | -50.09% |
-| rl | 5-5-0 | $+57.35 | +5.74% |
+| ml | 8-12-0 | $-587.93 | -29.40% |
+| rl | 5-6-0 | $-42.65 | -3.88% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-20 | Toronto Blue Jays @ Tampa Bay Rays | Tampa Bay Rays ML | -161 | R3_era | loss | $-100.00 |
-| 2026-08-20 | Athletics @ Kansas City Royals | Kansas City Royals ML | -136 | R3_era | win | $+73.53 |
 | 2026-08-20 | Atlanta Braves @ Chicago White Sox | Chicago White Sox +1.5 | -176 | R4 | loss | $-100.00 |
 | 2026-08-20 | Seattle Mariners @ Milwaukee Brewers | Seattle Mariners ML | +116 | R3_era | loss | $-100.00 |
-| 2026-08-21 | St. Louis Cardinals @ Philadelphia Phillies | Philadelphia Phillies -1.5 | -126 | R7 | pending |  |
-| 2026-08-21 | Toronto Blue Jays @ New York Yankees | New York Yankees ML | -197 | R3_era | pending |  |
-| 2026-08-21 | San Francisco Giants @ Boston Red Sox | Boston Red Sox ML | -177 | R3_era | pending |  |
-| 2026-08-21 | Washington Nationals @ Miami Marlins | Washington Nationals ML | +130 | R3_era | pending |  |
-| 2026-08-21 | Tampa Bay Rays @ Baltimore Orioles | Baltimore Orioles ML | -118 | R3 | pending |  |
-| 2026-08-21 | New York Mets @ Chicago White Sox | Chicago White Sox ML | -140 | R3_era | pending |  |
+| 2026-08-21 | St. Louis Cardinals @ Philadelphia Phillies | Philadelphia Phillies -1.5 | -126 | R7 | loss | $-100.00 |
+| 2026-08-21 | Toronto Blue Jays @ New York Yankees | New York Yankees ML | -197 | R3_era | win | $+50.76 |
+| 2026-08-21 | San Francisco Giants @ Boston Red Sox | Boston Red Sox ML | -177 | R3_era | win | $+56.50 |
+| 2026-08-21 | Washington Nationals @ Miami Marlins | Washington Nationals ML | +130 | R3_era | loss | $-100.00 |
+| 2026-08-21 | Tampa Bay Rays @ Baltimore Orioles | Baltimore Orioles ML | -118 | R3 | win | $+84.75 |
+| 2026-08-21 | New York Mets @ Chicago White Sox | Chicago White Sox ML | -140 | R3_era | win | $+71.43 |
+| 2026-08-22 | Toronto Blue Jays @ New York Yankees | Toronto Blue Jays ML | -105 | R3_era | pending |  |
+| 2026-08-22 | Atlanta Braves @ Milwaukee Brewers | Milwaukee Brewers ML | -158 | R3_era | pending |  |
 
 ## Retroactive replay (NOT an evaluation — read before citing)
 
