@@ -99,7 +99,20 @@ def _grade(rows: pd.DataFrame, side_col: str) -> tuple[int, int, float]:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--since",
+        default=None,
+        help="Only use splits data from this ET date forward (YYYY-MM-DD) — "
+        "used to scope the rule to the post-fetch-policy window",
+    )
+    args = ap.parse_args()
+
     df = _game_rows()
+    if args.since:
+        df = df[df["game_date_et"] >= args.since]
     n_days = df["game_date_et"].nunique()
     report = [
         "# Splits threshold replay (mechanical volume rule)",

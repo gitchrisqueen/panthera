@@ -13,11 +13,11 @@
 strategy:
   id: fade_public
   engine: fade_public
-  enabled: false                 # enable at registration (see header)
+  enabled: true
   kind: forward_test
   scope: [live]
-  registered_at: null
-  hash_lineage: []
+  registered_at: "2026-08-23"
+  hash_lineage: [256514e8ad]
   hypothesis: >
     Heavily ticketed sides are overpriced by recreational flow; the opposite
     side at the latest lines.csv consensus beats the vig. Forward-test only;
@@ -25,7 +25,7 @@ strategy:
 
 splits_signal:
   market: moneyline
-  min_tickets_pct: 70            # volume-rule output on Aug 1-16 window (docs/proofs/splits-replay.md); re-run on post-fix data before enabling
+  min_tickets_pct: 65            # volume-rule output on the post-fix Aug 17-22 window (docs/proofs/splits-replay.md)
   max_abs_price: 300
   max_staleness_hours: 12
 
