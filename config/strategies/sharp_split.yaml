@@ -24,11 +24,11 @@
 strategy:
   id: sharp_split
   engine: sharp_split
-  enabled: false                 # enable at registration (see header)
+  enabled: true
   kind: forward_test
   scope: [live]
-  registered_at: null            # set when enabled; evaluation clock starts here
-  hash_lineage: []
+  registered_at: "2026-08-23"
+  hash_lineage: [afcd384952]
   hypothesis: >
     A side taking a much larger share of money than of tickets is where
     informed ("sharp") bettors are. Backing that side at the latest lines.csv
@@ -38,7 +38,7 @@ strategy:
 
 splits_signal:
   market: moneyline
-  min_handle_minus_bets: 10      # volume-rule output on Aug 1-16 window (docs/proofs/splits-replay.md); re-run on post-fix data before enabling
+  min_handle_minus_bets: 10      # volume-rule output on the post-fix Aug 17-22 window (docs/proofs/splits-replay.md)
   min_handle_pct: 50
   max_abs_price: 300             # price read from lines.csv consensus, never splits
   max_staleness_hours: 12
