@@ -39,3 +39,20 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-08-22T21:04:50Z,pregame,pv_orig,824316,2026-08-22,"[O1_off_day] saturday is an off day, no big scam"
 2026-08-22T21:04:50Z,pregame,pv_orig,823261,2026-08-22,"[O1_off_day] saturday is an off day, no big scam"
 2026-08-22T21:04:50Z,pregame,pv_v3,823100,2026-08-22,"[R3] no movement signal, no dossier edge"
+2026-08-23T14:51:08Z,morning,fade_public,824799,2026-08-23,[FP_ml] no-divergence: max tickets 55% < 65%
+2026-08-23T14:51:08Z,morning,fade_public,824150,2026-08-23,[FP_ml] no-divergence: max tickets 58% < 65%
+2026-08-23T14:51:08Z,morning,fade_public,824558,2026-08-23,[FP_ml] no-divergence: max tickets 58% < 65%
+2026-08-23T14:51:08Z,morning,fade_public,824315,2026-08-23,[FP_ml] no-divergence: max tickets 60% < 65%
+2026-08-23T14:51:08Z,morning,pv_orig,824799,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,823421,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,823507,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,824071,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,824150,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,824558,2026-08-23,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-08-23T14:51:08Z,morning,pv_orig,822856,2026-08-23,[O4] no natural/scam signal for this slot
+2026-08-23T14:51:08Z,morning,pv_orig,824315,2026-08-23,[O4] no natural/scam signal for this slot
+2026-08-23T14:51:08Z,morning,pv_orig,824720,2026-08-23,[O4] no natural/scam signal for this slot
+2026-08-23T14:51:08Z,morning,sharp_split,823421,2026-08-23,[SS_ml] no-divergence: best gap +8 (need >=10 and handle >=50)
+2026-08-23T14:51:08Z,morning,sharp_split,823507,2026-08-23,[SS_ml] no-divergence: best gap +6 (need >=10 and handle >=50)
+2026-08-23T14:51:08Z,morning,sharp_split,823827,2026-08-23,[SS_ml] no-divergence: best gap +12 (need >=10 and handle >=50)
+2026-08-23T14:51:08Z,morning,sharp_split,822856,2026-08-23,[SS_ml] no-divergence: best gap +8 (need >=10 and handle >=50)
