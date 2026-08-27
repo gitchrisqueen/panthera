@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-26T16:03:56Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-27T00:17:46Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -28,10 +28,10 @@ not a tournament.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fade_public | forward_test | 24 | 9-15-0 | $-383.00 | -15.96% ±22.7 | +2.0c (n=1, 100% pos, 4% cov) | 40% | 1 | screen only |
-| fav_ml | baseline | 114 | 72-42-0 | $+656.09 | +5.76% ±7.7 | +0.7c (n=12, 50% pos, 10% cov) | 22% | 3 | screen only |
+| fav_ml | baseline | 114 | 72-42-0 | $+656.09 | +5.76% ±7.7 | +0.7c (n=12, 50% pos, 10% cov) | 22% | 4 | screen only |
 | pv_orig | aligned | 4 | 1-3-0 | $-167.00 | -41.75% ±58.2 | — | 60% | 1 | collecting (4/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 55 | 29-26-0 | $+221.68 | +4.03% ±13.7 | +2.6c (n=7, 71% pos, 12% cov) | 41% | 3 | collecting (55/100) |
+| pv_v3 | incumbent | 55 | 29-26-0 | $+221.68 | +4.03% ±13.7 | +2.6c (n=7, 71% pos, 12% cov) | 41% | 4 | collecting (55/100) |
 | sharp_split | forward_test | 14 | 9-5-0 | $+489.75 | +34.98% ±28.4 | — | 75% | 2 | screen only |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-629.13 | -2.07% |  |  |  |  |
 
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 72-42-0 (0 void)
 - **P/L:** $+656.09 on $11,400 risked
 - **ROI:** +5.76% (±7.7 pts SE, own SD)
-- **Pending:** 3
+- **Pending:** 4
 
 **By rule**
 
@@ -92,7 +92,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-25 | Baltimore Orioles @ St. Louis Cardinals | St. Louis Cardinals ML | -128 | B_FAV | loss | $-100.00 |
 | 2026-08-25 | Cleveland Guardians @ Los Angeles Angels | Cleveland Guardians ML | -142 | B_FAV | win | $+70.42 |
 | 2026-08-25 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -109 | B_FAV | loss | $-100.00 |
 | 2026-08-25 | Pittsburgh Pirates @ San Diego Padres | San Diego Padres ML | -122 | B_FAV | loss | $-100.00 |
@@ -102,6 +101,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | B_FAV | pending |  |
 | 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | B_FAV | pending |  |
 | 2026-08-26 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -109 | B_FAV | pending |  |
+| 2026-08-26 | Minnesota Twins @ Athletics | Minnesota Twins ML | -132 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
@@ -205,7 +205,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 - **Record:** 29-26-0 (0 void)
 - **P/L:** $+221.68 on $5,500 risked
 - **ROI:** +4.03% (±13.7 pts SE, own SD)
-- **Pending:** 3
+- **Pending:** 4
 
 **By rule**
 
@@ -243,7 +243,6 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-24 | Pittsburgh Pirates @ San Diego Padres | Pittsburgh Pirates ML | +100 | R3 | win | $+100.00 |
 | 2026-08-25 | Tampa Bay Rays @ Detroit Tigers | Tampa Bay Rays -1.5 | +135 | R5 | loss | $-100.00 |
 | 2026-08-25 | Boston Red Sox @ Miami Marlins | Boston Red Sox -1.5 | +118 | R5 | win | $+118.00 |
 | 2026-08-25 | Colorado Rockies @ Washington Nationals | Washington Nationals -1.5 | +135 | R5 | loss | $-100.00 |
@@ -253,6 +252,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | R3_era | pending |  |
 | 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | R3_era | pending |  |
 | 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds +1.5 | +140 | R4 | pending |  |
+| 2026-08-26 | Minnesota Twins @ Athletics | Athletics ML | +120 | R3_era | pending |  |
 
 ## Strategy: sharp_split
 
