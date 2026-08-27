@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-27T00:17:46Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-27T23:52:56Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,13 +27,13 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fade_public | forward_test | 24 | 9-15-0 | $-383.00 | -15.96% ±22.7 | +2.0c (n=1, 100% pos, 4% cov) | 40% | 1 | screen only |
-| fav_ml | baseline | 114 | 72-42-0 | $+656.09 | +5.76% ±7.7 | +0.7c (n=12, 50% pos, 10% cov) | 22% | 4 | screen only |
-| pv_orig | aligned | 4 | 1-3-0 | $-167.00 | -41.75% ±58.2 | — | 60% | 1 | collecting (4/100) |
+| fade_public | forward_test | 25 | 10-15-0 | $-287.76 | -11.51% ±22.2 | +2.0c (n=1, 100% pos, 4% cov) | 40% | 0 | screen only |
+| fav_ml | baseline | 118 | 72-46-0 | $+256.09 | +2.17% ±7.6 | +0.7c (n=12, 50% pos, 10% cov) | 22% | 0 | screen only |
+| pv_orig | aligned | 5 | 1-4-0 | $-267.00 | -53.40% ±46.6 | — | 60% | 0 | collecting (5/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 55 | 29-26-0 | $+221.68 | +4.03% ±13.7 | +2.6c (n=7, 71% pos, 12% cov) | 41% | 4 | collecting (55/100) |
-| sharp_split | forward_test | 14 | 9-5-0 | $+489.75 | +34.98% ±28.4 | — | 75% | 2 | screen only |
-| _portfolio (informational — not an evaluation target)_ |  |  |  | $-629.13 | -2.07% |  |  |  |  |
+| pv_v3 | incumbent | 59 | 32-27-0 | $+476.92 | +8.08% ±13.3 | +2.6c (n=7, 71% pos, 12% cov) | 41% | 0 | collecting (59/100) |
+| sharp_split | forward_test | 16 | 10-6-0 | $+485.90 | +30.37% ±26.5 | — | 75% | 0 | screen only |
+| _portfolio (informational — not an evaluation target)_ |  |  |  | $-782.50 | -2.48% |  |  |  |  |
 
 ## Strategy: fade_public
 
@@ -43,16 +43,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `256514e8ad` — descriptive only, no inferential weight; no threshold is tested.
 
-- **Record:** 9-15-0 (0 void)
-- **P/L:** $-383.00 on $2,400 risked
-- **ROI:** -15.96% (±22.7 pts SE, own SD)
-- **Pending:** 1
+- **Record:** 10-15-0 (0 void)
+- **P/L:** $-287.76 on $2,500 risked
+- **ROI:** -11.51% (±22.2 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| FP_ml | 9-15-0 | $-383.00 | -15.96% |
+| FP_ml | 10-15-0 | $-287.76 | -11.51% |
 
 **Last 10 picks**
 
@@ -67,7 +67,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-25 | Cleveland Guardians @ Los Angeles Angels | Los Angeles Angels ML | +128 | FP_ml | loss | $-100.00 |
 | 2026-08-25 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -109 | FP_ml | loss | $-100.00 |
 | 2026-08-25 | Minnesota Twins @ Athletics | Athletics ML | +135 | FP_ml | win | $+135.00 |
-| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | FP_ml | pending |  |
+| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | FP_ml | win | $+95.24 |
 
 ## Strategy: fav_ml
 
@@ -77,16 +77,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested. checkpoints reached: [100]
 
-- **Record:** 72-42-0 (0 void)
-- **P/L:** $+656.09 on $11,400 risked
-- **ROI:** +5.76% (±7.7 pts SE, own SD)
-- **Pending:** 4
+- **Record:** 72-46-0 (0 void)
+- **P/L:** $+256.09 on $11,800 risked
+- **ROI:** +2.17% (±7.6 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| B_FAV | 72-42-0 | $+656.09 | +5.76% |
+| B_FAV | 72-46-0 | $+256.09 | +2.17% |
 
 **Last 10 picks**
 
@@ -98,10 +98,10 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-25 | Minnesota Twins @ Athletics | Minnesota Twins ML | -150 | B_FAV | loss | $-100.00 |
 | 2026-08-25 | Philadelphia Phillies @ Seattle Mariners | Seattle Mariners ML | -106 | B_FAV | win | $+94.34 |
 | 2026-08-25 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -107 | B_FAV | win | $+93.46 |
-| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | B_FAV | pending |  |
-| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | B_FAV | pending |  |
-| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -109 | B_FAV | pending |  |
-| 2026-08-26 | Minnesota Twins @ Athletics | Minnesota Twins ML | -132 | B_FAV | pending |  |
+| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | B_FAV | loss | $-100.00 |
+| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | B_FAV | loss | $-100.00 |
+| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -109 | B_FAV | loss | $-100.00 |
+| 2026-08-26 | Minnesota Twins @ Athletics | Minnesota Twins ML | -132 | B_FAV | loss | $-100.00 |
 
 ## Strategy: pv_orig
 
@@ -109,17 +109,18 @@ _The source strategy as the recordings actually describe it, not the doc's lossy
 
 **Verdict segment** (config hashes: 3fff5be8ec):
 
-**INCONCLUSIVE — collecting data.** 4/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+**INCONCLUSIVE — collecting data.** 5/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
-- **Record:** 1-3-0 (0 void)
-- **P/L:** $-167.00 on $400 risked
-- **ROI:** -41.75% (±58.2 pts SE, own SD)
-- **Pending:** 1
+- **Record:** 1-4-0 (0 void)
+- **P/L:** $-267.00 on $500 risked
+- **ROI:** -53.40% (±46.6 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
+| O1_big_scam | 0-1-0 | $-100.00 | -100.00% |
 | O3_totals | 0-2-0 | $-200.00 | -100.00% |
 | O4 | 1-1-0 | $+33.00 | +16.50% |
 
@@ -131,7 +132,7 @@ _The source strategy as the recordings actually describe it, not the doc's lossy
 | 2026-08-25 | Colorado Rockies @ Washington Nationals | Colorado Rockies ML | +133 | O4 | win | $+133.00 |
 | 2026-08-25 | Texas Rangers @ Chicago White Sox | under 7.0 | -103 | O3_totals | loss | $-100.00 |
 | 2026-08-25 | Cleveland Guardians @ Los Angeles Angels | under 7.0 | -110 | O3_totals | loss | $-100.00 |
-| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | O1_big_scam | pending |  |
+| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | O1_big_scam | loss | $-100.00 |
 
 ## Strategy: pv_v2
 
@@ -200,20 +201,20 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 **Verdict segment** (config hashes: e7a93ebed7):
 
-**INCONCLUSIVE — collecting data.** 55/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
+**INCONCLUSIVE — collecting data.** 59/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
-- **Record:** 29-26-0 (0 void)
-- **P/L:** $+221.68 on $5,500 risked
-- **ROI:** +4.03% (±13.7 pts SE, own SD)
-- **Pending:** 4
+- **Record:** 32-27-0 (0 void)
+- **P/L:** $+476.92 on $5,900 risked
+- **ROI:** +8.08% (±13.3 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
 | R3 | 5-6-0 | $-95.52 | -8.68% |
-| R3_era | 12-9-0 | $+100.29 | +4.78% |
-| R4 | 2-1-0 | $+18.87 | +6.29% |
+| R3_era | 14-10-0 | $+215.53 | +8.98% |
+| R4 | 3-1-0 | $+158.87 | +39.72% |
 | R5 | 8-8-0 | $+195.00 | +12.19% |
 | R7 | 2-2-0 | $+3.04 | +0.76% |
 
@@ -221,7 +222,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
-| HYBRID | 2-4-0 | $-275.29 | -45.88% |
+| HYBRID | 5-5-0 | $-20.05 | -2.00% |
 | P | 15-10-0 | $+225.97 | +9.04% |
 | V | 12-12-0 | $+271.00 | +11.29% |
 
@@ -229,15 +230,15 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 17-12-0 | $+150.68 | +5.20% |
-| V | 12-14-0 | $+71.00 | +2.73% |
+| P | 19-13-0 | $+285.92 | +8.94% |
+| V | 13-14-0 | $+191.00 | +7.07% |
 
 **By market**
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 17-15-0 | $+4.77 | +0.15% |
-| rl | 12-11-0 | $+216.91 | +9.43% |
+| ml | 19-16-0 | $+120.01 | +3.43% |
+| rl | 13-11-0 | $+356.91 | +14.87% |
 
 **Last 10 picks**
 
@@ -249,10 +250,10 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-08-25 | Houston Astros @ New York Yankees | New York Yankees -1.5 | +143 | R5 | loss | $-100.00 |
 | 2026-08-25 | Kansas City Royals @ Toronto Blue Jays | Kansas City Royals ML | +117 | R3 | win | $+117.00 |
 | 2026-08-25 | Milwaukee Brewers @ New York Mets | New York Mets ML | +141 | R3 | win | $+141.00 |
-| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | R3_era | pending |  |
-| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | R3_era | pending |  |
-| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds +1.5 | +140 | R4 | pending |  |
-| 2026-08-26 | Minnesota Twins @ Athletics | Athletics ML | +120 | R3_era | pending |  |
+| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | R3_era | loss | $-100.00 |
+| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | R3_era | win | $+95.24 |
+| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds +1.5 | +140 | R4 | win | $+140.00 |
+| 2026-08-26 | Minnesota Twins @ Athletics | Athletics ML | +120 | R3_era | win | $+120.00 |
 
 ## Strategy: sharp_split
 
@@ -262,16 +263,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `afcd384952` — descriptive only, no inferential weight; no threshold is tested.
 
-- **Record:** 9-5-0 (0 void)
-- **P/L:** $+489.75 on $1,400 risked
-- **ROI:** +34.98% (±28.4 pts SE, own SD)
-- **Pending:** 2
+- **Record:** 10-6-0 (0 void)
+- **P/L:** $+485.90 on $1,600 risked
+- **ROI:** +30.37% (±26.5 pts SE, own SD)
+- **Pending:** 0
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| SS_ml | 9-5-0 | $+489.75 | +34.98% |
+| SS_ml | 10-6-0 | $+485.90 | +30.37% |
 
 **Last 10 picks**
 
@@ -285,8 +286,8 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-08-25 | Kansas City Royals @ Toronto Blue Jays | Kansas City Royals ML | +117 | SS_ml | win | $+117.00 |
 | 2026-08-25 | Minnesota Twins @ Athletics | Minnesota Twins ML | -150 | SS_ml | loss | $-100.00 |
 | 2026-08-25 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -107 | SS_ml | win | $+93.46 |
-| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | SS_ml | pending |  |
-| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds ML | -104 | SS_ml | pending |  |
+| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | SS_ml | loss | $-100.00 |
+| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds ML | -104 | SS_ml | win | $+96.15 |
 
 ## Retroactive replay (NOT an evaluation — read before citing)
 
