@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-08-27T23:52:56Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-08-28T04:55:30Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,12 +27,12 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fade_public | forward_test | 25 | 10-15-0 | $-287.76 | -11.51% ±22.2 | +2.0c (n=1, 100% pos, 4% cov) | 40% | 0 | screen only |
-| fav_ml | baseline | 118 | 72-46-0 | $+256.09 | +2.17% ±7.6 | +0.7c (n=12, 50% pos, 10% cov) | 22% | 0 | screen only |
+| fade_public | forward_test | 25 | 10-15-0 | $-287.76 | -11.51% ±22.2 | +2.0c (n=1, 100% pos, 3% cov) | 38% | 7 | screen only |
+| fav_ml | baseline | 118 | 72-46-0 | $+256.09 | +2.17% ±7.6 | +0.7c (n=12, 50% pos, 9% cov) | 23% | 12 | screen only |
 | pv_orig | aligned | 5 | 1-4-0 | $-267.00 | -53.40% ±46.6 | — | 60% | 0 | collecting (5/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 59 | 32-27-0 | $+476.92 | +8.08% ±13.3 | +2.6c (n=7, 71% pos, 12% cov) | 41% | 0 | collecting (59/100) |
-| sharp_split | forward_test | 16 | 10-6-0 | $+485.90 | +30.37% ±26.5 | — | 75% | 0 | screen only |
+| pv_v3 | incumbent | 59 | 32-27-0 | $+476.92 | +8.08% ±13.3 | +2.6c (n=7, 71% pos, 11% cov) | 43% | 6 | collecting (59/100) |
+| sharp_split | forward_test | 16 | 10-6-0 | $+485.90 | +30.37% ±26.5 | — | 80% | 4 | screen only |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-782.50 | -2.48% |  |  |  |  |
 
 ## Strategy: fade_public
@@ -46,7 +46,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 10-15-0 (0 void)
 - **P/L:** $-287.76 on $2,500 risked
 - **ROI:** -11.51% (±22.2 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 7
 
 **By rule**
 
@@ -58,16 +58,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-25 | Boston Red Sox @ Miami Marlins | Miami Marlins ML | +131 | FP_ml | loss | $-100.00 |
-| 2026-08-25 | Colorado Rockies @ Washington Nationals | Colorado Rockies ML | +133 | FP_ml | win | $+133.00 |
-| 2026-08-25 | Houston Astros @ New York Yankees | Houston Astros ML | +127 | FP_ml | win | $+127.00 |
-| 2026-08-25 | Milwaukee Brewers @ New York Mets | New York Mets ML | +141 | FP_ml | win | $+141.00 |
-| 2026-08-25 | Los Angeles Dodgers @ Atlanta Braves | Atlanta Braves ML | +136 | FP_ml | win | $+136.00 |
-| 2026-08-25 | Baltimore Orioles @ St. Louis Cardinals | Baltimore Orioles ML | +115 | FP_ml | win | $+115.00 |
-| 2026-08-25 | Cleveland Guardians @ Los Angeles Angels | Los Angeles Angels ML | +128 | FP_ml | loss | $-100.00 |
 | 2026-08-25 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -109 | FP_ml | loss | $-100.00 |
 | 2026-08-25 | Minnesota Twins @ Athletics | Athletics ML | +135 | FP_ml | win | $+135.00 |
 | 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | FP_ml | win | $+95.24 |
+| 2026-08-28 | Cincinnati Reds @ Chicago Cubs | Cincinnati Reds ML | +164 | FP_ml | pending |  |
+| 2026-08-28 | Los Angeles Dodgers @ Detroit Tigers | Detroit Tigers ML | +180 | FP_ml | pending |  |
+| 2026-08-28 | Miami Marlins @ Washington Nationals | Washington Nationals ML | +130 | FP_ml | pending |  |
+| 2026-08-28 | San Diego Padres @ Tampa Bay Rays | San Diego Padres ML | +112 | FP_ml | pending |  |
+| 2026-08-28 | Colorado Rockies @ Atlanta Braves | Colorado Rockies ML | +193 | FP_ml | pending |  |
+| 2026-08-28 | Boston Red Sox @ New York Yankees | Boston Red Sox ML | +140 | FP_ml | pending |  |
+| 2026-08-28 | Texas Rangers @ Milwaukee Brewers | Texas Rangers ML | +152 | FP_ml | pending |  |
 
 ## Strategy: fav_ml
 
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 72-46-0 (0 void)
 - **P/L:** $+256.09 on $11,800 risked
 - **ROI:** +2.17% (±7.6 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 12
 
 **By rule**
 
@@ -92,16 +92,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-25 | Cleveland Guardians @ Los Angeles Angels | Cleveland Guardians ML | -142 | B_FAV | win | $+70.42 |
-| 2026-08-25 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -109 | B_FAV | loss | $-100.00 |
-| 2026-08-25 | Pittsburgh Pirates @ San Diego Padres | San Diego Padres ML | -122 | B_FAV | loss | $-100.00 |
-| 2026-08-25 | Minnesota Twins @ Athletics | Minnesota Twins ML | -150 | B_FAV | loss | $-100.00 |
-| 2026-08-25 | Philadelphia Phillies @ Seattle Mariners | Seattle Mariners ML | -106 | B_FAV | win | $+94.34 |
-| 2026-08-25 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -107 | B_FAV | win | $+93.46 |
-| 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | B_FAV | loss | $-100.00 |
-| 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | B_FAV | loss | $-100.00 |
-| 2026-08-26 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -109 | B_FAV | loss | $-100.00 |
-| 2026-08-26 | Minnesota Twins @ Athletics | Minnesota Twins ML | -132 | B_FAV | loss | $-100.00 |
+| 2026-08-28 | Miami Marlins @ Washington Nationals | Miami Marlins ML | -154 | B_FAV | pending |  |
+| 2026-08-28 | Kansas City Royals @ Cleveland Guardians | Cleveland Guardians ML | -138 | B_FAV | pending |  |
+| 2026-08-28 | Houston Astros @ New York Mets | Houston Astros ML | -126 | B_FAV | pending |  |
+| 2026-08-28 | San Diego Padres @ Tampa Bay Rays | Tampa Bay Rays ML | -132 | B_FAV | pending |  |
+| 2026-08-28 | Colorado Rockies @ Atlanta Braves | Atlanta Braves ML | -225 | B_FAV | pending |  |
+| 2026-08-28 | Boston Red Sox @ New York Yankees | New York Yankees ML | -165 | B_FAV | pending |  |
+| 2026-08-28 | Texas Rangers @ Milwaukee Brewers | Milwaukee Brewers ML | -179 | B_FAV | pending |  |
+| 2026-08-28 | Chicago White Sox @ Minnesota Twins | Minnesota Twins ML | -117 | B_FAV | pending |  |
+| 2026-08-28 | Pittsburgh Pirates @ St. Louis Cardinals | Pittsburgh Pirates ML | -117 | B_FAV | pending |  |
+| 2026-08-28 | Philadelphia Phillies @ Los Angeles Angels | Philadelphia Phillies ML | -137 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
@@ -206,7 +206,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 - **Record:** 32-27-0 (0 void)
 - **P/L:** $+476.92 on $5,900 risked
 - **ROI:** +8.08% (±13.3 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 6
 
 **By rule**
 
@@ -244,16 +244,16 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-25 | Tampa Bay Rays @ Detroit Tigers | Tampa Bay Rays -1.5 | +135 | R5 | loss | $-100.00 |
-| 2026-08-25 | Boston Red Sox @ Miami Marlins | Boston Red Sox -1.5 | +118 | R5 | win | $+118.00 |
-| 2026-08-25 | Colorado Rockies @ Washington Nationals | Washington Nationals -1.5 | +135 | R5 | loss | $-100.00 |
-| 2026-08-25 | Houston Astros @ New York Yankees | New York Yankees -1.5 | +143 | R5 | loss | $-100.00 |
-| 2026-08-25 | Kansas City Royals @ Toronto Blue Jays | Kansas City Royals ML | +117 | R3 | win | $+117.00 |
-| 2026-08-25 | Milwaukee Brewers @ New York Mets | New York Mets ML | +141 | R3 | win | $+141.00 |
 | 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | R3_era | loss | $-100.00 |
 | 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Arizona Diamondbacks ML | -105 | R3_era | win | $+95.24 |
 | 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds +1.5 | +140 | R4 | win | $+140.00 |
 | 2026-08-26 | Minnesota Twins @ Athletics | Athletics ML | +120 | R3_era | win | $+120.00 |
+| 2026-08-28 | Cincinnati Reds @ Chicago Cubs | Cincinnati Reds ML | +164 | R3_era | pending |  |
+| 2026-08-28 | Los Angeles Dodgers @ Detroit Tigers | Los Angeles Dodgers -1.5 | -120 | R7 | pending |  |
+| 2026-08-28 | Miami Marlins @ Washington Nationals | Miami Marlins ML | -154 | R3_era | pending |  |
+| 2026-08-28 | Kansas City Royals @ Cleveland Guardians | Kansas City Royals ML | +119 | R3_era | pending |  |
+| 2026-08-28 | Houston Astros @ New York Mets | Houston Astros ML | -126 | R3_era | pending |  |
+| 2026-08-28 | San Diego Padres @ Tampa Bay Rays | Tampa Bay Rays ML | -132 | R3_era | pending |  |
 
 ## Strategy: sharp_split
 
@@ -266,7 +266,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 10-6-0 (0 void)
 - **P/L:** $+485.90 on $1,600 risked
 - **ROI:** +30.37% (±26.5 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 4
 
 **By rule**
 
@@ -278,16 +278,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-24 | Texas Rangers @ Chicago White Sox | Texas Rangers ML | +116 | SS_ml | win | $+116.00 |
-| 2026-08-24 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -139 | SS_ml | win | $+71.94 |
-| 2026-08-24 | Pittsburgh Pirates @ San Diego Padres | Pittsburgh Pirates ML | +100 | SS_ml | win | $+100.00 |
-| 2026-08-24 | Philadelphia Phillies @ Seattle Mariners | Seattle Mariners ML | -101 | SS_ml | win | $+99.01 |
 | 2026-08-24 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | +142 | SS_ml | win | $+142.00 |
 | 2026-08-25 | Kansas City Royals @ Toronto Blue Jays | Kansas City Royals ML | +117 | SS_ml | win | $+117.00 |
 | 2026-08-25 | Minnesota Twins @ Athletics | Minnesota Twins ML | -150 | SS_ml | loss | $-100.00 |
 | 2026-08-25 | Cincinnati Reds @ San Francisco Giants | San Francisco Giants ML | -107 | SS_ml | win | $+93.46 |
 | 2026-08-26 | Chicago Cubs @ Arizona Diamondbacks | Chicago Cubs ML | -107 | SS_ml | loss | $-100.00 |
 | 2026-08-26 | Cincinnati Reds @ San Francisco Giants | Cincinnati Reds ML | -104 | SS_ml | win | $+96.15 |
+| 2026-08-28 | Miami Marlins @ Washington Nationals | Miami Marlins ML | -154 | SS_ml | pending |  |
+| 2026-08-28 | Kansas City Royals @ Cleveland Guardians | Cleveland Guardians ML | -138 | SS_ml | pending |  |
+| 2026-08-28 | San Diego Padres @ Tampa Bay Rays | Tampa Bay Rays ML | -132 | SS_ml | pending |  |
+| 2026-08-28 | Boston Red Sox @ New York Yankees | Boston Red Sox ML | +140 | SS_ml | pending |  |
 
 ## Retroactive replay (NOT an evaluation — read before citing)
 
