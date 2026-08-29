@@ -152,3 +152,13 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-08-28T04:55:29Z,pregame,sharp_split,823985,2026-08-28,[SS_ml] no-splits: none captured for game
 2026-08-28T04:55:29Z,pregame,sharp_split,824960,2026-08-28,[SS_ml] no-splits: none captured for game
 2026-08-28T04:55:29Z,pregame,sharp_split,823178,2026-08-28,[SS_ml] no-splits: none captured for game
+2026-08-29T17:48:29Z,morning,fade_public,823665,2026-08-29,[FP_ml] status=Live
+2026-08-29T17:48:29Z,morning,fade_public,822770,2026-08-29,[FP_ml] no-divergence: max tickets 63% < 65%
+2026-08-29T17:48:29Z,morning,fav_ml,823665,2026-08-29,[B_FAV] status=Live
+2026-08-29T17:48:29Z,morning,pv_orig,823665,2026-08-29,[O0] status=Live
+2026-08-29T17:48:29Z,morning,pv_orig,823011,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T17:48:29Z,morning,pv_orig,824637,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T17:48:29Z,morning,pv_v3,823665,2026-08-29,[R0] status=Live
+2026-08-29T17:48:29Z,morning,sharp_split,823665,2026-08-29,[SS_ml] status=Live
+2026-08-29T17:48:29Z,morning,sharp_split,823011,2026-08-29,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
+2026-08-29T17:48:29Z,morning,sharp_split,824637,2026-08-29,[SS_ml] no-divergence: best gap +6 (need >=10 and handle >=50)
