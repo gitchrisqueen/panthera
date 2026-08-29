@@ -162,3 +162,17 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-08-29T17:48:29Z,morning,sharp_split,823665,2026-08-29,[SS_ml] status=Live
 2026-08-29T17:48:29Z,morning,sharp_split,823011,2026-08-29,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
 2026-08-29T17:48:29Z,morning,sharp_split,824637,2026-08-29,[SS_ml] no-divergence: best gap +6 (need >=10 and handle >=50)
+2026-08-29T22:49:56Z,pregame,fade_public,823501,2026-08-29,[FP_ml] status=Live
+2026-08-29T22:49:56Z,pregame,fade_public,823176,2026-08-29,[FP_ml] no-splits: none captured for game
+2026-08-29T22:49:56Z,pregame,fav_ml,823501,2026-08-29,[B_FAV] status=Live
+2026-08-29T22:49:56Z,pregame,pv_orig,823501,2026-08-29,[O0] status=Live
+2026-08-29T22:49:56Z,pregame,pv_orig,823176,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T22:49:56Z,pregame,pv_orig,823741,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T22:49:56Z,pregame,pv_orig,824961,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T22:49:56Z,pregame,pv_orig,823986,2026-08-29,"[O1_off_day] saturday is an off day, no big scam"
+2026-08-29T22:49:56Z,pregame,pv_v3,823501,2026-08-29,[R0] status=Live
+2026-08-29T22:49:57Z,pregame,sharp_split,823501,2026-08-29,[SS_ml] status=Live
+2026-08-29T22:49:57Z,pregame,sharp_split,823176,2026-08-29,[SS_ml] no-splits: none captured for game
+2026-08-29T22:49:57Z,pregame,sharp_split,823741,2026-08-29,[SS_ml] no-divergence: best gap +1 (need >=10 and handle >=50)
+2026-08-29T22:49:57Z,pregame,sharp_split,824961,2026-08-29,[SS_ml] no-divergence: best gap +9 (need >=10 and handle >=50)
+2026-08-29T22:49:57Z,pregame,sharp_split,823986,2026-08-29,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
