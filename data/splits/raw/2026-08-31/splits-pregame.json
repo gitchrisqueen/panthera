@@ -1,0 +1,232 @@
+[
+ {
+  "event": {
+   "id": 18758,
+   "name": "New York Yankees @ Los Angeles Angels",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-01T01:38:00Z",
+   "scheduled_start_at": "2026-09-01T01:38:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 72,
+    "name": "Angel Stadium of Anaheim",
+    "city": "Anaheim",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Los_Angeles"
+   }
+  },
+  "splits": {
+   "event_id": 18758,
+   "available": true,
+   "captured_at": "2026-08-31T23:58:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 3,
+      "handle_pct": 3,
+      "price": 153
+     },
+     "away": {
+      "bets_pct": 97,
+      "handle_pct": 97,
+      "price": -186
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 17,
+      "handle_pct": 11,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 83,
+      "handle_pct": 89,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 67,
+      "handle_pct": 56,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 33,
+      "handle_pct": 44,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 3,
+       "handle_pct": 3,
+       "price": 153
+      },
+      "away": {
+       "bets_pct": 97,
+       "handle_pct": 97,
+       "price": -186
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 17,
+       "handle_pct": 11,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 83,
+       "handle_pct": 89,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 67,
+       "handle_pct": 56,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 33,
+       "handle_pct": 44,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 18759,
+   "name": "Philadelphia Phillies @ Arizona Diamondbacks",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-01T01:40:00Z",
+   "scheduled_start_at": "2026-09-01T01:40:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 86,
+    "name": "Chase Field",
+    "city": "Phoenix",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Phoenix"
+   }
+  },
+  "splits": {
+   "event_id": 18759,
+   "available": true,
+   "captured_at": "2026-08-31T23:58:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 16,
+      "handle_pct": 36,
+      "price": 118
+     },
+     "away": {
+      "bets_pct": 84,
+      "handle_pct": 64,
+      "price": -142
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 50,
+      "handle_pct": 0,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 50,
+      "handle_pct": 100,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 67,
+      "handle_pct": 98,
+      "line": 7.5
+     },
+     "under": {
+      "bets_pct": 33,
+      "handle_pct": 2,
+      "line": 7.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 16,
+       "handle_pct": 36,
+       "price": 118
+      },
+      "away": {
+       "bets_pct": 84,
+       "handle_pct": 64,
+       "price": -142
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 0,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 100,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 67,
+       "handle_pct": 98,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 33,
+       "handle_pct": 2,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]
