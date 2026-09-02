@@ -226,3 +226,8 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-09-01T22:51:46Z,pregame,sharp_split,823984,2026-09-01,[SS_ml] no-divergence: best gap +2 (need >=10 and handle >=50)
 2026-09-01T22:51:46Z,pregame,sharp_split,825038,2026-09-01,[SS_ml] no-splits: none captured for game
 2026-09-01T22:51:46Z,pregame,sharp_split,823908,2026-09-01,[SS_ml] no-splits: none captured for game
+2026-09-02T18:00:18Z,morning,pv_orig,822851,2026-09-02,[O4] no natural/scam signal for this slot
+2026-09-02T18:00:18Z,morning,pv_orig,824312,2026-09-02,[O6] public slot price -175 more expensive than -160
+2026-09-02T18:00:18Z,morning,pv_orig,825037,2026-09-02,[O4] no natural/scam signal for this slot
+2026-09-02T18:00:18Z,morning,sharp_split,822851,2026-09-02,[SS_ml] no-divergence: best gap +3 (need >=10 and handle >=50)
+2026-09-02T18:00:18Z,morning,sharp_split,825037,2026-09-02,[SS_ml] no-divergence: best gap +16 (need >=10 and handle >=50)
