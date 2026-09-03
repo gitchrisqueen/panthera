@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-03T17:58:58Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-03T22:51:49Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,12 +27,12 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fade_public | forward_test | 52 | 23-29-0 | $+1.78 | +0.03% ±15.9 | -1.1c (n=10, 20% pos, 19% cov) | 44% | 0 | screen only |
-| fav_ml | baseline | 160 | 94-66-0 | $-267.59 | -1.67% ±6.6 | +1.0c (n=27, 33% pos, 17% cov) | 26% | 0 | screen only |
-| pv_orig | aligned | 7 | 2-5-0 | $+133.00 | +19.00% ±86.6 | — | 57% | 0 | collecting (7/100) |
+| fade_public | forward_test | 52 | 23-29-0 | $+1.78 | +0.03% ±15.9 | -1.1c (n=10, 20% pos, 18% cov) | 44% | 3 | screen only |
+| fav_ml | baseline | 160 | 94-66-0 | $-267.59 | -1.67% ±6.6 | +1.0c (n=27, 33% pos, 16% cov) | 27% | 5 | screen only |
+| pv_orig | aligned | 7 | 2-5-0 | $+133.00 | +19.00% ±86.6 | — | 62% | 1 | collecting (7/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 88 | 48-40-0 | $+1,019.15 | +11.58% ±11.2 | +1.2c (n=15, 40% pos, 17% cov) | 50% | 0 | collecting (88/100) |
-| sharp_split | forward_test | 29 | 14-15-0 | $-64.38 | -2.22% ±19.4 | +0.0c (n=4, 0% pos, 14% cov) | 83% | 0 | screen only |
+| pv_v3 | incumbent | 88 | 48-40-0 | $+1,019.15 | +11.58% ±11.2 | +1.2c (n=15, 40% pos, 16% cov) | 49% | 5 | collecting (88/100) |
+| sharp_split | forward_test | 29 | 14-15-0 | $-64.38 | -2.22% ±19.4 | +0.0c (n=4, 0% pos, 13% cov) | 84% | 2 | screen only |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-624.69 | -1.46% |  |  |  |  |
 
 ## Strategy: fade_public
@@ -46,7 +46,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 23-29-0 (0 void)
 - **P/L:** $+1.78 on $5,200 risked
 - **ROI:** +0.03% (±15.9 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 3
 
 **By rule**
 
@@ -58,9 +58,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-01 | Athletics @ Texas Rangers | Athletics ML | +185 | FP_ml | loss | $-100.00 |
-| 2026-09-01 | Baltimore Orioles @ Colorado Rockies | Colorado Rockies ML | +128 | FP_ml | win | $+128.00 |
-| 2026-09-01 | New York Yankees @ Los Angeles Angels | Los Angeles Angels ML | +154 | FP_ml | loss | $-100.00 |
 | 2026-09-02 | Athletics @ Texas Rangers | Athletics ML | +139 | FP_ml | win | $+139.00 |
 | 2026-09-02 | Baltimore Orioles @ Colorado Rockies | Colorado Rockies ML | +149 | FP_ml | win | $+149.00 |
 | 2026-09-02 | Philadelphia Phillies @ Arizona Diamondbacks | Arizona Diamondbacks ML | +112 | FP_ml | win | $+112.00 |
@@ -68,6 +65,9 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-02 | Milwaukee Brewers @ Chicago Cubs | Chicago Cubs ML | +128 | FP_ml | loss | $-100.00 |
 | 2026-09-02 | Chicago White Sox @ Houston Astros | Chicago White Sox ML | +119 | FP_ml | loss | $-100.00 |
 | 2026-09-02 | St. Louis Cardinals @ Los Angeles Dodgers | St. Louis Cardinals ML | +222 | FP_ml | win | $+222.50 |
+| 2026-09-03 | Miami Marlins @ Kansas City Royals | Miami Marlins ML | +105 | FP_ml | pending |  |
+| 2026-09-03 | Tampa Bay Rays @ Texas Rangers | Texas Rangers ML | +107 | FP_ml | pending |  |
+| 2026-09-03 | Athletics @ Seattle Mariners | Athletics ML | +180 | FP_ml | pending |  |
 
 ## Strategy: fav_ml
 
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 94-66-0 (0 void)
 - **P/L:** $-267.59 on $16,000 risked
 - **ROI:** -1.67% (±6.6 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 5
 
 **By rule**
 
@@ -92,16 +92,16 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-01 | St. Louis Cardinals @ Los Angeles Dodgers | Los Angeles Dodgers ML | -190 | B_FAV | loss | $-100.00 |
-| 2026-09-02 | Athletics @ Texas Rangers | Texas Rangers ML | -162 | B_FAV | loss | $-100.00 |
-| 2026-09-02 | Baltimore Orioles @ Colorado Rockies | Baltimore Orioles ML | -175 | B_FAV | loss | $-100.00 |
-| 2026-09-02 | Philadelphia Phillies @ Arizona Diamondbacks | Philadelphia Phillies ML | -130 | B_FAV | loss | $-100.00 |
-| 2026-09-02 | Detroit Tigers @ Minnesota Twins | Minnesota Twins ML | -116 | B_FAV | loss | $-100.00 |
 | 2026-09-02 | Miami Marlins @ Kansas City Royals | Kansas City Royals ML | -112 | B_FAV | loss | $-100.00 |
 | 2026-09-02 | Milwaukee Brewers @ Chicago Cubs | Milwaukee Brewers ML | -150 | B_FAV | win | $+66.67 |
 | 2026-09-02 | Chicago White Sox @ Houston Astros | Houston Astros ML | -141 | B_FAV | win | $+70.92 |
 | 2026-09-02 | New York Yankees @ Los Angeles Angels | New York Yankees ML | -162 | B_FAV | win | $+61.73 |
 | 2026-09-02 | St. Louis Cardinals @ Los Angeles Dodgers | Los Angeles Dodgers ML | -268 | B_FAV | loss | $-100.00 |
+| 2026-09-03 | Milwaukee Brewers @ Chicago Cubs | Milwaukee Brewers ML | -123 | B_FAV | pending |  |
+| 2026-09-03 | Miami Marlins @ Kansas City Royals | Kansas City Royals ML | -120 | B_FAV | pending |  |
+| 2026-09-03 | Tampa Bay Rays @ Texas Rangers | Tampa Bay Rays ML | -125 | B_FAV | pending |  |
+| 2026-09-03 | Athletics @ Seattle Mariners | Seattle Mariners ML | -215 | B_FAV | pending |  |
+| 2026-09-03 | St. Louis Cardinals @ Los Angeles Dodgers | Los Angeles Dodgers ML | -285 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
@@ -114,7 +114,7 @@ _The source strategy as the recordings actually describe it, not the doc's lossy
 - **Record:** 2-5-0 (0 void)
 - **P/L:** $+133.00 on $700 risked
 - **ROI:** +19.00% (±86.6 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 1
 
 **By rule**
 
@@ -136,6 +136,7 @@ _The source strategy as the recordings actually describe it, not the doc's lossy
 | 2026-08-26 | Tampa Bay Rays @ Detroit Tigers | Detroit Tigers ML | -117 | O1_big_scam | loss | $-100.00 |
 | 2026-08-29 | Seattle Mariners @ Toronto Blue Jays | Seattle Mariners ML | -103 | O1_big_scam | loss | $-100.00 |
 | 2026-09-02 | Detroit Tigers @ Minnesota Twins | Detroit Tigers +1.5 | -20 | O5 | win | $+500.00 |
+| 2026-09-03 | Miami Marlins @ Kansas City Royals | Kansas City Royals ML | -120 | O1_big_scam | pending |  |
 
 ## Strategy: pv_v2
 
@@ -209,7 +210,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 - **Record:** 48-40-0 (0 void)
 - **P/L:** $+1,019.15 on $8,800 risked
 - **ROI:** +11.58% (±11.2 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 5
 
 **By rule**
 
@@ -248,16 +249,16 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-01 | Milwaukee Brewers @ Chicago Cubs | Chicago Cubs -1.5 | +154 | R5 | loss | $-100.00 |
-| 2026-09-01 | Athletics @ Texas Rangers | Texas Rangers -1.5 | +102 | R5 | win | $+102.00 |
-| 2026-09-01 | Chicago White Sox @ Houston Astros | Chicago White Sox -1.5 | +145 | R5 | win | $+145.00 |
-| 2026-09-01 | Baltimore Orioles @ Colorado Rockies | Colorado Rockies ML | +128 | R3 | win | $+128.00 |
-| 2026-09-02 | Athletics @ Texas Rangers | Texas Rangers ML | -162 | R3_era | loss | $-100.00 |
 | 2026-09-02 | Baltimore Orioles @ Colorado Rockies | Baltimore Orioles ML | -175 | R3_era | loss | $-100.00 |
 | 2026-09-02 | Philadelphia Phillies @ Arizona Diamondbacks | Arizona Diamondbacks ML | +112 | R3_era | win | $+112.00 |
 | 2026-09-02 | Detroit Tigers @ Minnesota Twins | Detroit Tigers ML | -102 | R3_era | win | $+98.04 |
 | 2026-09-02 | Miami Marlins @ Kansas City Royals | Miami Marlins ML | -103 | R3_era | win | $+97.09 |
 | 2026-09-02 | Chicago White Sox @ Houston Astros | Houston Astros -1.5 | +150 | R5 | win | $+150.00 |
+| 2026-09-03 | Milwaukee Brewers @ Chicago Cubs | Milwaukee Brewers ML | -123 | R3 | pending |  |
+| 2026-09-03 | Miami Marlins @ Kansas City Royals | Miami Marlins +1.5 | -195 | R4 | pending |  |
+| 2026-09-03 | Tampa Bay Rays @ Texas Rangers | Texas Rangers ML | +107 | R3_era | pending |  |
+| 2026-09-03 | Athletics @ Seattle Mariners | Seattle Mariners -1.5 | +105 | R7 | pending |  |
+| 2026-09-03 | St. Louis Cardinals @ Los Angeles Dodgers | Los Angeles Dodgers -1.5 | -130 | R7 | pending |  |
 
 ## Strategy: sharp_split
 
@@ -270,7 +271,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 14-15-0 (0 void)
 - **P/L:** $-64.38 on $2,900 risked
 - **ROI:** -2.22% (±19.4 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 2
 
 **By rule**
 
@@ -282,8 +283,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-08-28 | Boston Red Sox @ New York Yankees | Boston Red Sox ML | +140 | SS_ml | loss | $-100.00 |
-| 2026-08-29 | Seattle Mariners @ Toronto Blue Jays | Seattle Mariners ML | -103 | SS_ml | loss | $-100.00 |
 | 2026-08-30 | Cincinnati Reds @ Chicago Cubs | Chicago Cubs ML | -156 | SS_ml | loss | $-100.00 |
 | 2026-09-01 | Milwaukee Brewers @ Chicago Cubs | Milwaukee Brewers ML | +105 | SS_ml | win | $+105.00 |
 | 2026-09-01 | Athletics @ Texas Rangers | Athletics ML | +185 | SS_ml | loss | $-100.00 |
@@ -292,6 +291,8 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-02 | Detroit Tigers @ Minnesota Twins | Detroit Tigers ML | -102 | SS_ml | win | $+98.04 |
 | 2026-09-02 | Miami Marlins @ Kansas City Royals | Kansas City Royals ML | -112 | SS_ml | loss | $-100.00 |
 | 2026-09-02 | Chicago White Sox @ Houston Astros | Houston Astros ML | -141 | SS_ml | win | $+70.92 |
+| 2026-09-03 | Milwaukee Brewers @ Chicago Cubs | Milwaukee Brewers ML | -123 | SS_ml | pending |  |
+| 2026-09-03 | Tampa Bay Rays @ Texas Rangers | Tampa Bay Rays ML | -125 | SS_ml | pending |  |
 
 ## Retroactive replay (NOT an evaluation — read before citing)
 
