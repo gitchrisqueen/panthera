@@ -1,0 +1,158 @@
+[
+ {
+  "event": {
+   "id": 19190,
+   "name": "Chicago White Sox @ Houston Astros",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-03T18:10:00Z",
+   "scheduled_start_at": "2026-09-03T18:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 71,
+    "name": "Minute Maid Park",
+    "city": "Houston",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 19190,
+   "available": true,
+   "captured_at": "2026-09-03T17:58:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 74,
+      "handle_pct": 88,
+      "price": -159
+     },
+     "away": {
+      "bets_pct": 26,
+      "handle_pct": 12,
+      "price": 131
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 30,
+      "handle_pct": 46,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 70,
+      "handle_pct": 54,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 46,
+      "handle_pct": 36,
+      "line": 8.5
+     },
+     "under": {
+      "bets_pct": 54,
+      "handle_pct": 64,
+      "line": 8.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 72,
+       "handle_pct": 80,
+       "price": -159
+      },
+      "away": {
+       "bets_pct": 28,
+       "handle_pct": 20,
+       "price": 131
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 59,
+       "handle_pct": 93,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 41,
+       "handle_pct": 7,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 60,
+       "handle_pct": 67,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 40,
+       "handle_pct": 33,
+       "line": 8.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 75,
+       "handle_pct": 95,
+       "price": -160
+      },
+      "away": {
+       "bets_pct": 25,
+       "handle_pct": 5,
+       "price": 148
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 33,
+       "handle_pct": 4,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 67,
+       "handle_pct": 96,
+       "line": 8.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]
