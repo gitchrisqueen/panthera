@@ -183,7 +183,8 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
 
 Criteria are **per-strategy**, declared in each strategy's YAML at
 registration and rendered in every ledger update — no moving goalposts.
-The incumbent pv_v2 keeps its original criteria (pre-registered 2026-07-31):
+pv_orig and pv_v3 carry the original criteria (first pre-registered 2026-07-31
+for the now-retired pv_v2, whose frozen 93-pick segment remains in the ledger):
 after **100 graded picks**, ROI > 0% → supported; ROI < −5% → falsified;
 otherwise keep collecting. Flat $100 stakes.
 

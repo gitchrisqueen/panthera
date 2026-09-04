@@ -17,9 +17,10 @@ A fully automated, zero-cost paper-trading pipeline lives in
 [`src/panthera_mvp`](src/panthera_mvp). GitHub Actions take odds snapshots
 three times a day, generate picks from the registered strategy rules, grade
 them the next morning, and commit a running ledger back to this repo — git is
-the database, markdown is the dashboard. Several strategies paper-trade the
-same slate in parallel, each with its own pre-registered evaluation criteria
-declared in its YAML under [`config/strategies/`](config/strategies).
+the database, markdown is the dashboard. Every enabled live strategy in
+[`config/strategies/`](config/strategies) paper-trades the same slate in
+parallel, each with its evaluation criteria (verdict thresholds or screen
+checkpoints) pre-registered in its YAML.
 
 - 📊 **Live dashboard:** [gitchrisqueen.github.io/panthera](https://gitchrisqueen.github.io/panthera/) — auto-updated 2×/day
 - 📈 **Live results & verdict (markdown source):** [`reports/BETTING_REPORT.md`](reports/BETTING_REPORT.md)
@@ -41,9 +42,11 @@ declared in its YAML under [`config/strategies/`](config/strategies).
 | [MVP Splits Collection](.github/workflows/mvp-splits.yml) | manual | On-demand betting-splits fetch (key check, catch-up runs) |
 
 Picks are paper trades at a flat $100 stake (`staking.flat_stake` in every
-strategy YAML). The three Public-vs-Vegas strategies (`pv_orig`, `pv_v2`,
-`pv_v3`) carry a pre-registered verdict: after 100 graded picks, ROI > 0%
-supports the strategy, ROI < −5% falsifies it. The baseline (`fav_ml`) and
+strategy YAML). The two live Public-vs-Vegas strategies (`pv_orig`, `pv_v3`)
+carry a pre-registered verdict: after 100 graded picks, ROI > 0% supports the
+strategy, ROI < −5% falsifies it. `pv_v2` was retired on 2026-08-16
+(`enabled: false` in its YAML); its verdict segment stays in the ledger frozen
+at 93 graded picks and will not reach 100. The baseline (`fav_ml`) and
 the two splits-based forward tests (`fade_public`, `sharp_split`) have no
 verdict criteria — the ledger reports them as descriptive screens only. Note
 that the ledger's own preamble explains why paper-ROI verdicts at these
