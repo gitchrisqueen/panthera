@@ -1,7 +1,7 @@
 # Project Panthera 🐆
 
 [![CI Build](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml/badge.svg)](https://github.com/gitchrisqueen/panthera/actions/workflows/ci.yml)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![License](https://img.shields.io/badge/license-GPL--3.0-blue)
 [![View Live Dashboard](https://img.shields.io/badge/dashboard-live_results-1a7f37?logo=github)](https://gitchrisqueen.github.io/panthera/)
 
 ### 📊 [**View the live picks & performance dashboard →**](https://gitchrisqueen.github.io/panthera/)
@@ -15,30 +15,39 @@ built on top of it.
 
 A fully automated, zero-cost paper-trading pipeline lives in
 [`src/panthera_mvp`](src/panthera_mvp). GitHub Actions take odds snapshots
-three times a day, generate picks from the documented strategy rules, grade
+three times a day, generate picks from the registered strategy rules, grade
 them the next morning, and commit a running ledger back to this repo — git is
-the database, markdown is the dashboard.
+the database, markdown is the dashboard. Several strategies paper-trade the
+same slate in parallel, each with its own pre-registered evaluation criteria
+declared in its YAML under [`config/strategies/`](config/strategies).
 
 - 📊 **Live dashboard:** [gitchrisqueen.github.io/panthera](https://gitchrisqueen.github.io/panthera/) — auto-updated 2×/day
 - 📈 **Live results & verdict (markdown source):** [`reports/BETTING_REPORT.md`](reports/BETTING_REPORT.md)
 - 📅 **Daily pick reports:** [`reports/daily/`](reports/daily)
 - 🔬 **Design & rule formalization:** [`docs/mvp-design.md`](docs/mvp-design.md)
 - 📖 **The strategy itself:** [`docs/sports_betting_process.md`](docs/sports_betting_process.md)
-- ⚙️ **Strategy parameters:** [`config/strategy.yaml`](config/strategy.yaml)
+- ⚙️ **Strategy parameters:** [`config/strategy.yaml`](config/strategy.yaml) plus one YAML per strategy in [`config/strategies/`](config/strategies)
 - 🗄️ **Historical calibration:** [`reports/CALIBRATION.md`](reports/CALIBRATION.md)
 
 ### How it works
 
 | Workflow | When (ET) | What it does |
 |---|---|---|
-| [MVP Morning Run](.github/workflows/mvp-morning.yml) | 10:35 daily | Grades yesterday's picks, takes the opening odds snapshot, picks afternoon games |
-| [MVP Pregame Run](.github/workflows/mvp-pregame.yml) | 16:50 daily | Pregame snapshot, picks the evening slate on open→pregame line movement |
+| [MVP Morning Run](.github/workflows/mvp-morning.yml) | 10:35 daily | Grades yesterday's picks, takes the opening odds snapshot, collects morning betting splits, picks afternoon games, regenerates reports |
+| [MVP Pregame Run](.github/workflows/mvp-pregame.yml) | 16:50 daily | Pregame snapshot, collects pregame betting splits, picks the evening slate on open→pregame line movement, regenerates reports |
 | [MVP Close Snapshot](.github/workflows/mvp-close.yml) | 18:20 daily | Closing-line-value snapshot only — never a movement endpoint for picks |
 | [MVP Historical Calibration](.github/workflows/mvp-calibrate.yml) | manual | Downloads free historical odds archives and derives strategy thresholds |
+| [Deploy Pages](.github/workflows/pages.yml) | after each morning and pregame run | Rebuilds and publishes the GitHub Pages dashboard |
+| [MVP Splits Collection](.github/workflows/mvp-splits.yml) | manual | On-demand betting-splits fetch (key check, catch-up runs) |
 
-Picks are paper trades at a flat $100 stake. The verdict criteria are
-pre-registered in the ledger: after 100 graded picks, ROI > 0% supports the
-strategy, ROI < −5% falsifies it.
+Picks are paper trades at a flat $100 stake (`staking.flat_stake` in every
+strategy YAML). The three Public-vs-Vegas strategies (`pv_orig`, `pv_v2`,
+`pv_v3`) carry a pre-registered verdict: after 100 graded picks, ROI > 0%
+supports the strategy, ROI < −5% falsifies it. The baseline (`fav_ml`) and
+the two splits-based forward tests (`fade_public`, `sharp_split`) have no
+verdict criteria — the ledger reports them as descriptive screens only. Note
+that the ledger's own preamble explains why paper-ROI verdicts at these
+sample sizes are screens rather than proof.
 
 ### Data sources (all free)
 
@@ -52,7 +61,7 @@ strategy, ROI < −5% falsifies it.
 Repo Actions secrets (Settings → Secrets and variables → Actions):
 
 - `ODDS_API_KEY` — required. Free at [the-odds-api.com](https://the-odds-api.com) (500 credits/month).
-- `LUMIFY_API_KEY` — optional. Free at [lumify.ai/api-keys](https://lumify.ai/api-keys) (1,000 non-expiring credits). Enables public **betting-splits** collection in the pregame run — a direct measurement of the strategy's Public-vs-Vegas premise. If unset, splits collection skips silently and everything else still works.
+- `LUMIFY_API_KEY` — optional. Free at [lumify.ai/api-keys](https://lumify.ai/api-keys) (1,000 non-expiring credits). Enables public **betting-splits** collection in the morning and pregame runs — a direct measurement of the Public-vs-Vegas premise. If unset, splits collection skips silently; the odds pipeline and the P/V strategies still run, but the two splits-based strategies (`fade_public`, `sharp_split`) pass every game.
 
 Everything else is keyless; workflows commit with the built-in `GITHUB_TOKEN`.
 
@@ -107,7 +116,7 @@ For business inquiries, please contact [Chris Queen](mailto:chris@christopherque
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 📧 Contact
 

@@ -14,7 +14,7 @@ below were verified 2026-08-01; re-check before integrating (tiers drift).
 | [The Odds API](https://the-odds-api.com) | `ODDS_API_KEY` | ML/run-line/totals snapshots 3×/day | Free 500 credits/mo; 3 credits/snapshot; guard in `clients/odds.py` |
 | [ESPN scoreboard API](https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard) | none | Backup finals for grading | Unofficial; can change without notice. Client: `clients/espn.py` |
 | [Sportsbook Reviews Online archives](https://www.sportsbookreviewsonline.com/scoresoddsarchives/) | none | Historical open/close odds (2014–2021) for calibration | Files committed to `data/historical/raw/`; publication stopped after ~2021 |
-| [Lumify](https://lumify.ai) | `LUMIFY_API_KEY` (optional) | Public betting splits, collected in the pregame run (observational) | Free 1,000 non-expiring credits; guard in `clients/lumify.py`; skips silently without the key |
+| [Lumify](https://lumify.ai) | `LUMIFY_API_KEY` (optional) | Public betting splits, collected in the morning and pregame runs | Free 1,000 non-expiring credits; guard in `clients/lumify.py`; skips silently without the key |
 
 ## The key fact for NFL/NBA expansion
 
@@ -64,7 +64,7 @@ service; `statsapi.mlb.com` supersedes it. SuredBits is HTTP-only — excluded.
 ## Suggested integration order
 
 1. ~~**Lumify betting splits (MLB)**~~ — **DONE**: `clients/lumify.py`
-   collects splits in the pregame run; the daily report shows measured splits
+   collects splits in the morning and pregame runs; the daily report shows measured splits
    next to the movement-inferred pick.
 2. **TheRundown historical movement** — re-run calibration with real intraday
    movement instead of the open→close proxy; this addresses the weakest part
