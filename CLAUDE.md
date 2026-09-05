@@ -43,8 +43,10 @@ panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
   Always use `--dry-run` (fixture odds) during development; the credit guard
   in `clients/odds.py` refuses live calls below the configured reserve.
 - `LUMIFY_API_KEY` (repo Actions secret, optional) — Lumify betting splits,
-  **1,000 non-expiring credits total**; one slate ≈ 16 calls, pregame-only.
-  Splits are observational (never change picks). Missing key = silent skip.
+  **1,000 non-expiring credits total**; one slate ≈ 16 calls, collected in
+  the morning and pregame runs. Splits never change the P/V strategies'
+  picks; `fade_public` and `sharp_split` are built on them. Missing key =
+  silent skip.
 - MLB Stats API and ESPN endpoints are keyless. `GITHUB_TOKEN` is built-in.
 
 ## Gotchas
