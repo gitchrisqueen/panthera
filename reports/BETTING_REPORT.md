@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-06T17:16:45Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-06T22:27:50Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -28,7 +28,7 @@ not a tournament.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fade_public | forward_test | 70 | 28-42-0 | $-604.22 | -8.63% ±13.7 | -0.7c (n=13, 23% pos, 18% cov) | 44% | 3 | screen only |
-| fav_ml | baseline | 188 | 108-80-0 | $-747.68 | -3.98% ±6.1 | +0.4c (n=31, 29% pos, 16% cov) | 30% | 6 | screen only |
+| fav_ml | baseline | 188 | 108-80-0 | $-747.68 | -3.98% ±6.1 | +0.4c (n=31, 29% pos, 16% cov) | 30% | 7 | screen only |
 | pv_orig | aligned | 11 | 4-7-0 | $+85.30 | +7.75% ±56.3 | — | 73% | 0 | collecting (11/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
 | pv_v3 | incumbent | 105 | 58-47-0 | $+1,144.40 | +10.90% ±10.0 | +1.2c (n=15, 40% pos, 14% cov) | 50% | 6 | SUPPORTED* |
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 108-80-0 (0 void)
 - **P/L:** $-747.68 on $18,800 risked
 - **ROI:** -3.98% (±6.1 pts SE, own SD)
-- **Pending:** 6
+- **Pending:** 7
 
 **By rule**
 
@@ -92,7 +92,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-05 | New York Yankees @ San Diego Padres | San Diego Padres ML | -128 | B_FAV | loss | $-100.00 |
 | 2026-09-05 | St. Louis Cardinals @ Colorado Rockies | St. Louis Cardinals ML | -124 | B_FAV | loss | $-100.00 |
 | 2026-09-05 | Washington Nationals @ Los Angeles Dodgers | Los Angeles Dodgers ML | -205 | B_FAV | win | $+48.78 |
 | 2026-09-05 | Athletics @ Seattle Mariners | Seattle Mariners ML | -240 | B_FAV | loss | $-100.00 |
@@ -102,6 +101,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-06 | Toronto Blue Jays @ Kansas City Royals | Toronto Blue Jays ML | -122 | B_FAV | pending |  |
 | 2026-09-06 | Tampa Bay Rays @ Texas Rangers | Texas Rangers ML | -108 | B_FAV | pending |  |
 | 2026-09-06 | St. Louis Cardinals @ Colorado Rockies | St. Louis Cardinals ML | -135 | B_FAV | pending |  |
+| 2026-09-06 | Washington Nationals @ Los Angeles Dodgers | Los Angeles Dodgers ML | -200 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
