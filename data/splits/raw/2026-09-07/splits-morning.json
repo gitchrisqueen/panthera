@@ -1,0 +1,158 @@
+[
+ {
+  "event": {
+   "id": 19409,
+   "name": "Minnesota Twins @ Detroit Tigers",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-07T19:10:00Z",
+   "scheduled_start_at": "2026-09-07T19:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 68,
+    "name": "Comerica Park",
+    "city": "Detroit",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Detroit"
+   }
+  },
+  "splits": {
+   "event_id": 19409,
+   "available": true,
+   "captured_at": "2026-09-07T18:48:18Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 66,
+      "handle_pct": 72,
+      "price": -123
+     },
+     "away": {
+      "bets_pct": 34,
+      "handle_pct": 28,
+      "price": 102
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 54,
+      "handle_pct": 69,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 46,
+      "handle_pct": 31,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 82,
+      "handle_pct": 68,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 18,
+      "handle_pct": 32,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 64,
+       "handle_pct": 48,
+       "price": -123
+      },
+      "away": {
+       "bets_pct": 36,
+       "handle_pct": 52,
+       "price": 102
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 57,
+       "handle_pct": 88,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 43,
+       "handle_pct": 12,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 65,
+       "handle_pct": 36,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 35,
+       "handle_pct": 64,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 96,
+       "price": -115
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 4,
+       "price": 105
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ }
+]
