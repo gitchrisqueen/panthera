@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-10T22:49:23Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-11T17:50:55Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,13 +27,13 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fade_public | forward_test | 82 | 34-48-0 | $-452.63 | -5.52% ±12.7 | -0.7c (n=13, 23% pos, 16% cov) | 48% | 0 | screen only |
-| fav_ml | baseline | 214 | 121-93-0 | $-1,296.90 | -6.06% ±5.7 | +0.1c (n=32, 28% pos, 15% cov) | 31% | 1 | screen only |
+| fade_public | forward_test | 82 | 34-48-0 | $-452.63 | -5.52% ±12.7 | -0.7c (n=13, 23% pos, 16% cov) | 47% | 1 | screen only |
+| fav_ml | baseline | 215 | 121-94-0 | $-1,396.90 | -6.50% ±5.7 | +0.1c (n=32, 28% pos, 15% cov) | 31% | 1 | screen only |
 | pv_orig | aligned | 14 | 4-10-0 | $-214.70 | -15.34% ±45.5 | — | 79% | 0 | collecting (14/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 126 | 68-58-0 | $+1,090.76 | +8.66% ±9.2 | +1.5c (n=16, 44% pos, 13% cov) | 52% | 1 | SUPPORTED* |
+| pv_v3 | incumbent | 127 | 68-59-0 | $+990.76 | +7.80% ±9.2 | +1.5c (n=16, 44% pos, 13% cov) | 52% | 1 | SUPPORTED* |
 | sharp_split | forward_test | 51 | 31-20-0 | $+992.39 | +19.46% ±13.8 | +0.0c (n=4, 0% pos, 8% cov) | 86% | 0 | screen only |
-| _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,327.73 | -2.29% |  |  |  |  |
+| _portfolio (informational — not an evaluation target)_ |  |  |  | $-1,527.73 | -2.62% |  |  |  |  |
 
 ## Strategy: fade_public
 
@@ -46,7 +46,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 34-48-0 (0 void)
 - **P/L:** $-452.63 on $8,200 risked
 - **ROI:** -5.52% (±12.7 pts SE, own SD)
-- **Pending:** 0
+- **Pending:** 1
 
 **By rule**
 
@@ -58,7 +58,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-06 | St. Louis Cardinals @ Colorado Rockies | Colorado Rockies ML | +117 | FP_ml | loss | $-100.00 |
 | 2026-09-07 | Cincinnati Reds @ Los Angeles Dodgers | Cincinnati Reds ML | +152 | FP_ml | loss | $-100.00 |
 | 2026-09-07 | Toronto Blue Jays @ Athletics | Athletics ML | +177 | FP_ml | win | $+177.00 |
 | 2026-09-08 | Pittsburgh Pirates @ Chicago White Sox | Pittsburgh Pirates ML | +122 | FP_ml | win | $+122.00 |
@@ -68,6 +67,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-09 | Toronto Blue Jays @ Athletics | Athletics ML | +138 | FP_ml | win | $+138.00 |
 | 2026-09-09 | St. Louis Cardinals @ San Francisco Giants | San Francisco Giants ML | +101 | FP_ml | win | $+101.00 |
 | 2026-09-09 | Colorado Rockies @ New York Yankees | Colorado Rockies ML | +203 | FP_ml | loss | $-100.00 |
+| 2026-09-11 | Pittsburgh Pirates @ Chicago Cubs | Pittsburgh Pirates ML | +162 | FP_ml | pending |  |
 
 ## Strategy: fav_ml
 
@@ -77,22 +77,21 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested. checkpoints reached: [100, 200]
 
-- **Record:** 121-93-0 (0 void)
-- **P/L:** $-1,296.90 on $21,400 risked
-- **ROI:** -6.06% (±5.7 pts SE, own SD)
+- **Record:** 121-94-0 (0 void)
+- **P/L:** $-1,396.90 on $21,500 risked
+- **ROI:** -6.50% (±5.7 pts SE, own SD)
 - **Pending:** 1
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| B_FAV | 121-93-0 | $-1,296.90 | -6.06% |
+| B_FAV | 121-94-0 | $-1,396.90 | -6.50% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-08 | Cincinnati Reds @ Los Angeles Dodgers | Los Angeles Dodgers ML | -310 | B_FAV | win | $+32.26 |
 | 2026-09-09 | Toronto Blue Jays @ Athletics | Toronto Blue Jays ML | -160 | B_FAV | loss | $-100.00 |
 | 2026-09-09 | St. Louis Cardinals @ San Francisco Giants | St. Louis Cardinals ML | -117 | B_FAV | loss | $-100.00 |
 | 2026-09-09 | Colorado Rockies @ New York Yankees | New York Yankees ML | -245 | B_FAV | win | $+40.82 |
@@ -101,7 +100,8 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-09 | Pittsburgh Pirates @ Chicago White Sox | Chicago White Sox ML | -132 | B_FAV | loss | $-100.00 |
 | 2026-09-09 | Chicago Cubs @ Milwaukee Brewers | Milwaukee Brewers ML | -133 | B_FAV | win | $+75.19 |
 | 2026-09-09 | Cincinnati Reds @ Los Angeles Dodgers | Los Angeles Dodgers ML | -280 | B_FAV | win | $+35.71 |
-| 2026-09-10 | Pittsburgh Pirates @ Chicago White Sox | Chicago White Sox ML | -115 | B_FAV | pending |  |
+| 2026-09-10 | Pittsburgh Pirates @ Chicago White Sox | Chicago White Sox ML | -115 | B_FAV | loss | $-100.00 |
+| 2026-09-11 | Pittsburgh Pirates @ Chicago Cubs | Chicago Cubs ML | -190 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
@@ -207,18 +207,18 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 **Verdict segment** (config hashes: e7a93ebed7):
 
-**SUPPORTED** — ROI +8.66% over 126 graded picks. (Screen-grade evidence; see 'How to read this report'.)
+**SUPPORTED** — ROI +7.80% over 127 graded picks. (Screen-grade evidence; see 'How to read this report'.)
 
-- **Record:** 68-58-0 (0 void)
-- **P/L:** $+1,090.76 on $12,600 risked
-- **ROI:** +8.66% (±9.2 pts SE, own SD)
+- **Record:** 68-59-0 (0 void)
+- **P/L:** $+990.76 on $12,700 risked
+- **ROI:** +7.80% (±9.2 pts SE, own SD)
 - **Pending:** 1
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| R3 | 13-9-0 | $+394.46 | +17.93% |
+| R3 | 13-10-0 | $+294.46 | +12.80% |
 | R3_era | 34-29-0 | $+351.86 | +5.59% |
 | R3_series | 0-1-0 | $-100.00 | -100.00% |
 | R4 | 5-3-0 | $+172.69 | +21.59% |
@@ -230,28 +230,27 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
 | HYBRID | 12-10-0 | $+238.83 | +10.86% |
-| P | 35-27-0 | $+428.59 | +6.91% |
+| P | 35-28-0 | $+328.59 | +5.22% |
 | V | 21-21-0 | $+423.34 | +10.08% |
 
 **By slot**
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 40-34-0 | $+200.54 | +2.71% |
+| P | 40-35-0 | $+100.54 | +1.34% |
 | V | 28-24-0 | $+890.22 | +17.12% |
 
 **By market**
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 47-39-0 | $+646.32 | +7.52% |
+| ml | 47-40-0 | $+546.32 | +6.28% |
 | rl | 21-19-0 | $+444.44 | +11.11% |
 
 **Last 10 picks**
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-08 | Washington Nationals @ San Diego Padres | Washington Nationals ML | +160 | R3_era | loss | $-100.00 |
 | 2026-09-08 | Texas Rangers @ Seattle Mariners | Texas Rangers ML | +112 | R3 | win | $+112.00 |
 | 2026-09-08 | Toronto Blue Jays @ Athletics | Toronto Blue Jays -1.5 | -115 | R5 | win | $+86.96 |
 | 2026-09-09 | Toronto Blue Jays @ Athletics | Toronto Blue Jays ML | -160 | R3_era | loss | $-100.00 |
@@ -260,7 +259,8 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-09-09 | Tampa Bay Rays @ Atlanta Braves | Atlanta Braves -1.5 | +164 | R5 | loss | $-100.00 |
 | 2026-09-09 | Arizona Diamondbacks @ Kansas City Royals | Kansas City Royals ML | +102 | R3_era | win | $+102.00 |
 | 2026-09-09 | Pittsburgh Pirates @ Chicago White Sox | Pittsburgh Pirates ML | +115 | R3_era | win | $+115.00 |
-| 2026-09-10 | Pittsburgh Pirates @ Chicago White Sox | Chicago White Sox ML | -115 | R3 | pending |  |
+| 2026-09-10 | Pittsburgh Pirates @ Chicago White Sox | Chicago White Sox ML | -115 | R3 | loss | $-100.00 |
+| 2026-09-11 | Pittsburgh Pirates @ Chicago Cubs | Chicago Cubs ML | -190 | R3_era | pending |  |
 
 ## Strategy: sharp_split
 
