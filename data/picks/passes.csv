@@ -410,3 +410,36 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-09-10T22:49:22Z,pregame,sharp_split,824550,2026-09-10,[SS_ml] no-divergence: best gap +10 (need >=10 and handle >=50)
 2026-09-11T17:50:54Z,morning,pv_orig,824631,2026-09-11,[O4] no natural/scam signal for this slot
 2026-09-11T17:50:55Z,morning,sharp_split,824631,2026-09-11,[SS_ml] no-divergence: best gap +9 (need >=10 and handle >=50)
+2026-09-11T22:49:59Z,pregame,fade_public,823498,2026-09-11,[FP_ml] status=Live
+2026-09-11T22:49:59Z,pregame,fade_public,822767,2026-09-11,[FP_ml] status=Live
+2026-09-11T22:49:59Z,pregame,fade_public,824711,2026-09-11,[FP_ml] status=Live
+2026-09-11T22:49:59Z,pregame,fade_public,823817,2026-09-11,[FP_ml] status=Live
+2026-09-11T22:49:59Z,pregame,fade_public,823659,2026-09-11,[FP_ml] no-splits: none captured for game
+2026-09-11T22:49:59Z,pregame,fade_public,823012,2026-09-11,[FP_ml] no-divergence: max tickets 60% < 65%
+2026-09-11T22:49:59Z,pregame,fade_public,825036,2026-09-11,[FP_ml] no-divergence: max tickets 57% < 65%
+2026-09-11T22:49:59Z,pregame,fav_ml,823498,2026-09-11,[B_FAV] status=Live
+2026-09-11T22:49:59Z,pregame,fav_ml,822767,2026-09-11,[B_FAV] status=Live
+2026-09-11T22:49:59Z,pregame,fav_ml,824711,2026-09-11,[B_FAV] status=Live
+2026-09-11T22:49:59Z,pregame,fav_ml,823817,2026-09-11,[B_FAV] status=Live
+2026-09-11T22:49:59Z,pregame,pv_orig,823498,2026-09-11,[O0] status=Live
+2026-09-11T22:49:59Z,pregame,pv_orig,822767,2026-09-11,[O0] status=Live
+2026-09-11T22:49:59Z,pregame,pv_orig,824711,2026-09-11,[O0] status=Live
+2026-09-11T22:49:59Z,pregame,pv_orig,822930,2026-09-11,[O4] no natural/scam signal for this slot
+2026-09-11T22:49:59Z,pregame,pv_orig,823817,2026-09-11,[O0] status=Live
+2026-09-11T22:49:59Z,pregame,pv_orig,824873,2026-09-11,[O6] public slot price -184 more expensive than -160
+2026-09-11T22:49:59Z,pregame,pv_orig,823736,2026-09-11,[O7] heavy favorite -200
+2026-09-11T22:49:59Z,pregame,pv_orig,823659,2026-09-11,[O4] no natural/scam signal for this slot
+2026-09-11T22:49:59Z,pregame,pv_orig,823012,2026-09-11,[O4] no natural/scam signal for this slot
+2026-09-11T22:49:59Z,pregame,pv_orig,825036,2026-09-11,[O4] no natural/scam signal for this slot
+2026-09-11T22:50:00Z,pregame,pv_v3,823498,2026-09-11,[R0] status=Live
+2026-09-11T22:50:00Z,pregame,pv_v3,822767,2026-09-11,[R0] status=Live
+2026-09-11T22:50:00Z,pregame,pv_v3,824711,2026-09-11,[R0] status=Live
+2026-09-11T22:50:00Z,pregame,pv_v3,823817,2026-09-11,[R0] status=Live
+2026-09-11T22:50:00Z,pregame,sharp_split,823498,2026-09-11,[SS_ml] status=Live
+2026-09-11T22:50:00Z,pregame,sharp_split,822767,2026-09-11,[SS_ml] status=Live
+2026-09-11T22:50:00Z,pregame,sharp_split,824711,2026-09-11,[SS_ml] status=Live
+2026-09-11T22:50:00Z,pregame,sharp_split,822930,2026-09-11,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
+2026-09-11T22:50:00Z,pregame,sharp_split,823817,2026-09-11,[SS_ml] status=Live
+2026-09-11T22:50:00Z,pregame,sharp_split,824873,2026-09-11,[SS_ml] no-divergence: best gap +9 (need >=10 and handle >=50)
+2026-09-11T22:50:00Z,pregame,sharp_split,823736,2026-09-11,[SS_ml] no-divergence: best gap +5 (need >=10 and handle >=50)
+2026-09-11T22:50:00Z,pregame,sharp_split,823659,2026-09-11,[SS_ml] no-splits: none captured for game

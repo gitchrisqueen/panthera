@@ -7043,3 +7043,127 @@ fetched_ts_utc,game_date_et,lumify_event_id,event_name,starts_at_utc,captured_at
 2026-09-11T17:50:08Z,2026-09-11,19529,Pittsburgh Pirates @ Chicago Cubs,2026-09-11T18:20:00Z,2026-09-11T17:48:21Z,824631,total.over.handle_pct,66.0,morning
 2026-09-11T17:50:08Z,2026-09-11,19529,Pittsburgh Pirates @ Chicago Cubs,2026-09-11T18:20:00Z,2026-09-11T17:48:21Z,824631,total.under.bets_pct,28.0,morning
 2026-09-11T17:50:08Z,2026-09-11,19529,Pittsburgh Pirates @ Chicago Cubs,2026-09-11T18:20:00Z,2026-09-11T17:48:21Z,824631,total.under.handle_pct,34.0,morning
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,moneyline.home.bets_pct,68.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,moneyline.home.handle_pct,64.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,moneyline.away.bets_pct,32.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,moneyline.away.handle_pct,36.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,spread.home.bets_pct,69.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,spread.home.handle_pct,84.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,spread.away.bets_pct,31.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,spread.away.handle_pct,16.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,total.over.bets_pct,81.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,total.over.handle_pct,86.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,total.under.bets_pct,19.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19532,New York Mets @ New York Yankees,2026-09-11T23:05:00Z,2026-09-11T22:48:24Z,823498,total.under.handle_pct,14.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,moneyline.home.bets_pct,60.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,moneyline.home.handle_pct,51.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,moneyline.away.bets_pct,40.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,moneyline.away.handle_pct,49.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,spread.home.bets_pct,68.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,spread.home.handle_pct,58.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,spread.away.bets_pct,32.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,spread.away.handle_pct,42.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,total.over.bets_pct,70.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,total.over.handle_pct,56.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,total.under.bets_pct,30.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19533,Baltimore Orioles @ Toronto Blue Jays,2026-09-11T23:07:00Z,2026-09-11T22:48:24Z,822767,total.under.handle_pct,44.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,moneyline.home.bets_pct,82.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,moneyline.home.handle_pct,94.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,moneyline.away.bets_pct,18.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,moneyline.away.handle_pct,6.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,spread.home.bets_pct,89.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,spread.home.handle_pct,99.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,spread.away.bets_pct,11.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,spread.away.handle_pct,1.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,total.over.bets_pct,58.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,total.over.handle_pct,72.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,total.under.bets_pct,42.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19534,Kansas City Royals @ Boston Red Sox,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,824711,total.under.handle_pct,28.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,moneyline.home.bets_pct,66.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,moneyline.home.handle_pct,70.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,moneyline.away.bets_pct,34.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,moneyline.away.handle_pct,30.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,spread.home.bets_pct,69.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,spread.home.handle_pct,64.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,spread.away.bets_pct,31.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,spread.away.handle_pct,36.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,total.over.bets_pct,90.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,total.over.handle_pct,96.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,total.under.bets_pct,10.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19535,Houston Astros @ Tampa Bay Rays,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,822930,total.under.handle_pct,4.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,moneyline.home.bets_pct,27.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,moneyline.home.handle_pct,30.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,moneyline.away.bets_pct,73.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,moneyline.away.handle_pct,70.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,spread.home.bets_pct,12.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,spread.home.handle_pct,5.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,spread.away.bets_pct,88.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,spread.away.handle_pct,95.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,total.over.bets_pct,89.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,total.over.handle_pct,77.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,total.under.bets_pct,11.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19536,Los Angeles Dodgers @ Miami Marlins,2026-09-11T23:10:00Z,2026-09-11T22:48:24Z,823817,total.under.handle_pct,23.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,moneyline.home.bets_pct,76.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,moneyline.home.handle_pct,85.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,moneyline.away.bets_pct,24.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,moneyline.away.handle_pct,15.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,spread.home.bets_pct,60.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,spread.home.handle_pct,90.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,spread.away.bets_pct,40.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,spread.away.handle_pct,10.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,total.over.bets_pct,56.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,total.over.handle_pct,12.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,total.under.bets_pct,44.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19537,Philadelphia Phillies @ Atlanta Braves,2026-09-11T23:15:00Z,2026-09-11T22:48:24Z,824873,total.under.handle_pct,88.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,moneyline.home.bets_pct,76.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,moneyline.home.handle_pct,71.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,moneyline.away.bets_pct,24.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,moneyline.away.handle_pct,29.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,spread.home.bets_pct,86.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,spread.home.handle_pct,63.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,spread.away.bets_pct,14.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,spread.away.handle_pct,37.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,total.over.bets_pct,89.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,total.over.handle_pct,98.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,total.under.bets_pct,11.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19538,Cincinnati Reds @ Milwaukee Brewers,2026-09-11T23:45:00Z,2026-09-11T22:48:24Z,823736,total.under.handle_pct,2.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,moneyline.home.bets_pct,60.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,moneyline.home.handle_pct,40.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,moneyline.away.bets_pct,40.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,moneyline.away.handle_pct,60.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,spread.home.bets_pct,0.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,spread.home.handle_pct,0.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,spread.away.bets_pct,100.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,spread.away.handle_pct,100.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,total.over.bets_pct,50.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,total.over.handle_pct,7.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,total.under.bets_pct,50.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19540,Chicago White Sox @ St. Louis Cardinals,2026-09-12T00:15:00Z,2026-09-11T22:48:24Z,823012,total.under.handle_pct,93.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,moneyline.home.bets_pct,26.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,moneyline.home.handle_pct,90.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,moneyline.away.bets_pct,74.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,moneyline.away.handle_pct,10.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,total.over.bets_pct,67.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,total.over.handle_pct,99.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,total.under.bets_pct,33.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19541,Seattle Mariners @ Athletics,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,824954,total.under.handle_pct,1.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,moneyline.home.bets_pct,43.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,moneyline.home.handle_pct,54.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,moneyline.away.bets_pct,57.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,moneyline.away.handle_pct,46.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,spread.home.bets_pct,33.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,spread.home.handle_pct,92.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,spread.away.bets_pct,67.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,spread.away.handle_pct,8.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,total.over.bets_pct,100.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,total.over.handle_pct,100.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,total.under.bets_pct,0.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19542,Texas Rangers @ Arizona Diamondbacks,2026-09-12T01:40:00Z,2026-09-11T22:48:24Z,825036,total.under.handle_pct,0.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,moneyline.home.bets_pct,28.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,moneyline.home.handle_pct,13.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,moneyline.away.bets_pct,72.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,moneyline.away.handle_pct,87.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,total.over.bets_pct,40.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,total.over.handle_pct,0.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,total.under.bets_pct,60.0,pregame
+2026-09-11T22:49:09Z,2026-09-11,19543,San Diego Padres @ San Francisco Giants,2026-09-12T02:15:00Z,2026-09-11T22:48:24Z,823173,total.under.handle_pct,100.0,pregame
