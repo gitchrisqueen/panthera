@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-13T14:39:40Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-13T20:54:56Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -28,7 +28,7 @@ not a tournament.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fade_public | forward_test | 92 | 36-56-0 | $-1,021.04 | -11.10% ±11.8 | -1.2c (n=14, 21% pos, 14% cov) | 45% | 7 | screen only |
-| fav_ml | baseline | 234 | 137-97-0 | $-602.94 | -2.58% ±5.4 | +0.2c (n=34, 29% pos, 14% cov) | 35% | 12 | screen only |
+| fav_ml | baseline | 234 | 137-97-0 | $-602.94 | -2.58% ±5.4 | +0.2c (n=34, 29% pos, 14% cov) | 34% | 13 | screen only |
 | pv_orig | aligned | 17 | 6-11-0 | $-112.81 | -6.64% ±38.9 | — | 83% | 1 | collecting (17/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
 | pv_v3 | incumbent | 139 | 77-62-0 | $+1,345.55 | +9.68% ±8.6 | +13.4c (n=17, 47% pos, 12% cov) | 57% | 6 | SUPPORTED* |
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 137-97-0 (0 void)
 - **P/L:** $-602.94 on $23,400 risked
 - **ROI:** -2.58% (±5.4 pts SE, own SD)
-- **Pending:** 12
+- **Pending:** 13
 
 **By rule**
 
@@ -92,7 +92,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-13 | Philadelphia Phillies @ Atlanta Braves | Atlanta Braves ML | -128 | B_FAV | pending |  |
 | 2026-09-13 | New York Mets @ New York Yankees | New York Yankees ML | -179 | B_FAV | pending |  |
 | 2026-09-13 | Baltimore Orioles @ Toronto Blue Jays | Toronto Blue Jays ML | -150 | B_FAV | pending |  |
 | 2026-09-13 | Houston Astros @ Tampa Bay Rays | Tampa Bay Rays ML | -134 | B_FAV | pending |  |
@@ -102,6 +101,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-13 | Chicago White Sox @ St. Louis Cardinals | Chicago White Sox ML | -126 | B_FAV | pending |  |
 | 2026-09-13 | Pittsburgh Pirates @ Chicago Cubs | Chicago Cubs ML | -154 | B_FAV | pending |  |
 | 2026-09-13 | Kansas City Royals @ Boston Red Sox | Boston Red Sox ML | -181 | B_FAV | pending |  |
+| 2026-09-13 | San Diego Padres @ San Francisco Giants | San Diego Padres ML | -141 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
