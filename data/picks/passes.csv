@@ -463,3 +463,25 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-09-12T20:55:12Z,pregame,sharp_split,823737,2026-09-12,[SS_ml] no-divergence: best gap +23 (need >=10 and handle >=50)
 2026-09-12T20:55:12Z,pregame,sharp_split,823009,2026-09-12,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
 2026-09-12T20:55:12Z,pregame,sharp_split,825035,2026-09-12,[SS_ml] no-splits: none captured for game
+2026-09-13T14:39:39Z,morning,fade_public,822682,2026-09-13,[FP_ml] no-divergence: max tickets 60% < 65%
+2026-09-13T14:39:39Z,morning,fade_public,824869,2026-09-13,[FP_ml] no-divergence: max tickets 63% < 65%
+2026-09-13T14:39:39Z,morning,fade_public,822928,2026-09-13,[FP_ml] no-divergence: max tickets 54% < 65%
+2026-09-13T14:39:39Z,morning,fade_public,823815,2026-09-13,[FP_ml] no-divergence: max tickets 57% < 65%
+2026-09-13T14:39:39Z,morning,fade_public,823734,2026-09-13,[FP_ml] no-divergence: max tickets 56% < 65%
+2026-09-13T14:39:39Z,morning,pv_orig,824225,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,822682,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,824869,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,823495,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,822764,2026-09-13,[O4] no natural/scam signal for this slot
+2026-09-13T14:39:39Z,morning,pv_orig,822928,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,823815,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,823658,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,823734,2026-09-13,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-13T14:39:39Z,morning,pv_orig,823008,2026-09-13,[O4] no natural/scam signal for this slot
+2026-09-13T14:39:39Z,morning,pv_orig,824628,2026-09-13,[O4] no natural/scam signal for this slot
+2026-09-13T14:39:39Z,morning,pv_v3,823008,2026-09-13,"[R3] no movement signal, no dossier edge"
+2026-09-13T14:39:39Z,morning,sharp_split,824869,2026-09-13,[SS_ml] no-divergence: best gap +7 (need >=10 and handle >=50)
+2026-09-13T14:39:39Z,morning,sharp_split,823495,2026-09-13,[SS_ml] no-divergence: best gap +7 (need >=10 and handle >=50)
+2026-09-13T14:39:39Z,morning,sharp_split,823658,2026-09-13,[SS_ml] no-divergence: best gap +12 (need >=10 and handle >=50)
+2026-09-13T14:39:39Z,morning,sharp_split,824628,2026-09-13,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
+2026-09-13T14:39:39Z,morning,sharp_split,824708,2026-09-13,[SS_ml] no-divergence: best gap +1 (need >=10 and handle >=50)
