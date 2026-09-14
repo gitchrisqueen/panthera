@@ -25,6 +25,7 @@ import pandas as pd
 
 from . import paths, store
 from .config import StrategyConfigError, load_strategy_configs
+from .glossary import glossary_markdown_section
 from .timeutil import now_utc, utc_iso
 
 HOW_TO_READ = """\
@@ -144,6 +145,36 @@ def _clv_cell(picks: pd.DataFrame, launch_ts: str | None) -> str:
     pos = 100 * float((covered["clv_cents"] > 0).mean())
     coverage = 100 * len(covered) / denom if denom else 0
     return f"{avg:+.1f}c (n={len(covered)}, {pos:.0f}% pos, {coverage:.0f}% cov)"
+
+
+def clv_parts(picks: pd.DataFrame, launch_ts: str | None) -> dict | None:
+    """Structured twin of _clv_cell — the same numbers, computed the same way,
+    not re-derived by parsing its formatted string.
+
+    The dashboard needs the components separately: rendered as one 34-character
+    string the CLV cell wrapped to four lines and drove 143px-tall rows in the
+    10-column comparison table. _clv_cell itself is left untouched so the
+    markdown ledger stays byte-identical.
+    """
+    if "clv_cents" not in picks.columns:
+        return None
+    covered = picks[picks["clv_cents"].notna()]
+    if covered.empty:
+        return None
+    eligible = (
+        picks[picks["created_ts_utc"].astype(str) >= launch_ts]
+        if launch_ts
+        else covered
+    )
+    denom = max(len(eligible), len(covered))
+    avg = float(covered["clv_cents"].mean())
+    return {
+        "avg_cents": round(avg, 1),
+        "avg_cents_fmt": f"{avg:+.1f}c",
+        "n": len(covered),
+        "pos_pct": round(100 * float((covered["clv_cents"] > 0).mean())),
+        "coverage_pct": round(100 * len(covered) / denom) if denom else 0,
+    }
 
 
 def _verdict_text(criteria: dict, stats: dict, n_graded: int) -> str:
@@ -303,6 +334,7 @@ def write_ledger_report(cfg: dict) -> Path:
 
     if picks.empty:
         body = ["_No picks recorded yet. The daily workflows will populate this ledger._"]
+        body += glossary_markdown_section()
         path.write_text("\n".join(header + body) + "\n")
         return path
 
@@ -413,6 +445,7 @@ def write_ledger_report(cfg: dict) -> Path:
             body.append("")
 
     body += _shadow_section()
+    body += glossary_markdown_section()
 
     path.write_text("\n".join(header + body) + "\n")
     return path

@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-14T14:44:08Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-14T16:03:53Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -321,3 +321,131 @@ strategy's verdict, portfolio total, or the tables above._
 | O3_totals | 6-5-0 | $-31.98 | -2.91% |
 | O4 | 0-1-0 | $-100.00 | -100.00% |
 
+
+## Glossary
+
+Plain-language definitions for every column, badge and rule id above. Also published at <https://gitchrisqueen.github.io/panthera/glossary.html>.
+
+### Table columns
+
+| Term | Definition |
+|---|---|
+| Avg CLV | Average closing line value in cents, with the number of covered picks, the share that were positive, and coverage. |
+| CLV | This pick's closing line value in cents: how much better (or worse) its price was than the last price before the game started. |
+| Config | A parameter combination from the calibration sweep, named after its own values — e.g. m10-e110-h250. |
+| Date | The game's calendar date in US/Eastern. All game-day logic uses Eastern time regardless of where the game is played. |
+| Day type | Whether the whole day is classified Public (P), Vegas (V), or HYBRID. Wednesday is the hybrid day. |
+| Graded | How many of this strategy's picks have a final result yet. Pending picks are not counted. |
+| Kind | What role a strategy plays: baseline (a control), incumbent, aligned, or forward_test. |
+| Market | Which bet type was taken: ml (moneyline), rl (run line), or total. |
+| Matchup | The game, written away team @ home team. |
+| N (valid) | How many bets this config placed over the validation seasons — the ones it was not tuned on. |
+| Overlap | Share of this strategy's picks where another strategy backed the same side of the same game that day — correlated results, not independent evidence. |
+| P/L | Profit or loss in dollars over the graded picks, at flat paper stakes. Positive is a gain. |
+| P/L (valid) | Profit or loss in dollars over the validation seasons, at flat stakes. |
+| Pending | Picks recorded but not yet graded — the game has not finished, or its result has not been collected yet. |
+| Pick | The side and market backed — e.g. 'Detroit Tigers ML' for a moneyline, or 'Chicago Cubs +1.5' for a run line. |
+| Price | The American odds the pick was recorded at. Negative is the favorite (risk that much to win $100); positive is the underdog (win that much on $100). |
+| Record | Wins–losses–pushes over the graded picks, in that order. |
+| ROI (valid) | ROI over the validation seasons only. The training-season ROI is not shown here because a config was chosen partly by it. |
+| ROI (±SE) | ROI with its standard error: the ± figure is how much this ROI estimate would typically wobble from sampling noise alone. |
+| Rule | Which sub-rule of the strategy produced this pick. The by-rule breakdown is the falsification instrument — it shows which parts carry the strategy. |
+| Slot | The P or V classification of the specific start-time slot this game sits in, which need not match the day's own type. |
+| Start (ET) | Scheduled first pitch in US/Eastern. |
+| Status | Where this strategy stands against its own pre-registered bar: collecting, SUPPORTED, FALSIFIED, INCONCLUSIVE, screen only, or not live. |
+| Status | How a pick settled: pending, win, loss, push, or void. |
+| Strategy | The named hypothesis that produced this pick. Each strategy is evaluated separately against its own pre-registered bar. |
+| Tier | How much evidential weight a pick carries: VERDICT picks count toward a pre-registered test; SCREEN picks are descriptive only. |
+
+### Verdict & trust badges
+
+| Term | Definition |
+|---|---|
+| COLLECTING | Not enough graded picks yet to apply this strategy's pre-registered test. The counter shows progress toward the threshold. |
+| COLLECTING — closed | A superseded strategy whose counter stopped short of its threshold. It will never reach a verdict, by design. |
+| FALSIFIED | This strategy reached its pre-registered sample size and finished below its pre-registered failure line. |
+| INCONCLUSIVE | Enough picks to test, but the result landed between the support and falsification lines — neither bar was crossed. |
+| REPLAY | A retroactive replay: these picks were computed after every outcome in them was already known, so they carry no evidential weight. |
+| SCREEN | Descriptive only — this pick carries no inferential weight, because no pre-registered threshold is being tested against it. |
+| SUPPORTED | This strategy reached its pre-registered sample size and cleared its pre-registered ROI bar. Screen-grade evidence, not proof. |
+| VERDICT | This pick counts toward its strategy's pre-registered test, because it ran under a configuration in that strategy's declared lineage. |
+
+### Metrics
+
+| Term | Definition |
+|---|---|
+| Coverage (cov) | The share of picks that have a closing price on file. Picks made before closing-price collection started are excluded, not counted as misses. |
+| ROI | Return on investment: profit divided by the total amount risked, as a percent. |
+
+### Bet types
+
+| Term | Definition |
+|---|---|
+| Moneyline (ML) | A bet on which team wins the game outright, with no handicap. Priced in American odds. |
+| Run line (RL) | Baseball's spread, almost always ±1.5 runs: the favorite must win by 2+, or the underdog must win or lose by exactly 1. |
+| Total | A bet on the combined runs scored by both teams, over or under a posted number. |
+
+### Concepts
+
+| Term | Definition |
+|---|---|
+| Backtest | Replaying a strategy over completed historical seasons. Cheap and fast, but only possible where historical data for every input exists. |
+| Betting splits | The share of tickets (bet count) versus handle (money) on each side. A large gap between them is the signal the splits strategies read. |
+| Calibration | A parameter sweep that picks a strategy's thresholds on training seasons and reports them on separate validation seasons. |
+| Checkpoint | A pick count at which a SCREEN segment's running numbers are noted. Checkpoints are reporting milestones, not tests to pass. |
+| Closing line | The last price recorded before a game starts — the market's final word, and the benchmark CLV measures against. |
+| Config hash | A fingerprint of the exact configuration a pick ran under. If the behaviour changes, the hash changes. |
+| ERA | Earned run average — runs a pitcher allows per nine innings. Lower is better. Used as a tiebreaker input where prices alone do not decide. |
+| Evenly matched | A game where both sides are priced close to even, inside a configured threshold — the setup some rules treat specially. |
+| evenly_matched_max_abs_ml | The price threshold below which two teams count as evenly matched — e.g. 120 means both sides priced inside ±120. |
+| Favorite | The side the market expects to win, shown at a negative American price. |
+| First meeting | The first game of the season between two teams, where no head-to-head form exists yet. Some rules restrict what may be played. |
+| Flat stake | Every pick risks the same fixed amount. No progressive staking, no bet sizing by confidence — so results reflect the picks, not a staking scheme. |
+| Forward test | Testing a strategy on games that have not happened yet. The only honest test for rules whose inputs have no historical record. |
+| Hash lineage | The list of config hashes a strategy declared at registration. Only picks under those hashes count toward its verdict. |
+| Heavy favorite | A favorite priced at or beyond a configured threshold (typically −200), where the payout no longer justifies the moneyline. |
+| heavy_fav_abs_ml | The price at or beyond which a favorite counts as 'heavy' and gets special handling — converted to a run line, or passed entirely. |
+| Line movement | How a price changed between the first snapshot of the day and the latest one. The direction and size of that move is a signal input. |
+| min_move_cents | How many cents a price must move before the engine treats it as a real line-movement signal rather than noise. |
+| Natural vs scam movement | Whether a price move is justified by the team's recent merit (natural) or moves against what merit would predict (scam). |
+| Paper trade | A recorded hypothetical bet. No money is wagered, nothing here is placed at a book, and nothing here is financial advice. |
+| Portfolio totals | All strategies' results added together. Informational and descriptive only — never an evaluation target, because the strategies overlap. |
+| Pre-registration | Each strategy declares its sample size and its pass/fail ROI bars before seeing any results, and those numbers are never changed afterwards. |
+| Public day (P) | A day classified as driven by recreational money, where the strategy backs the public side. |
+| Push | A tie against the number — the stake is returned. Pushes appear in the record but move neither profit nor loss. |
+| Segment | A group of a strategy's picks sharing one config hash. Segments are reported separately so results from different behaviour are never silently pooled. |
+| Slate | All of a single day's games. |
+| Underdog | The side the market expects to lose, shown at a positive American price. |
+| Vegas day (V) | A day classified as driven by the book, where the strategy backs the side the public is not on. |
+| Vig (juice) | The book's built-in margin: the reason the two sides of a game add up to more than 100% and a coin-flip bettor loses money over time. |
+
+### Rule ids
+
+| Term | Definition |
+|---|---|
+| B_DOG | The underdog-moneyline control, backtest only. Together with B_FAV it brackets the vig band. |
+| B_FAV | The favorite-moneyline control: backs the favorite in every game, all slate. Measures the book's hold rather than testing an idea. |
+| FP_ml | Fade-the-public moneyline: backs the side opposite a heavily ticketed favorite, on the theory recreational flow overprices it. |
+| O0 | Eligibility gate for the aligned engine: regular season, not yet started, priced, and a slot could be assigned. |
+| O1_big_scam | The exception that reopens an off day: a price move large enough to qualify as an outlier against recent merit. |
+| O1_off_day | Thursday and Saturday are off by default in the aligned engine — no play unless the day offers an outlier mispricing. |
+| O1_wed_second_half | Wednesday's second half is playable only on an outlier mispricing, matching the off-day rule. |
+| O2_outrageous_scam | The override to slot discipline: a mispricing extreme enough to be worth playing even in the wrong slot. |
+| O2_slot_mismatch | Slot discipline: passes a game whose slot type does not match what the day permits — Vegas days play Vegas slots only. |
+| O3_first_meeting | Never play a total on the first meeting of the season between two teams — there is no head-to-head form to read yet. |
+| O3_totals | Tuesdays and Sundays play the total rather than a side, per the source strategy's day policy. |
+| O4 | The aligned engine's base pick: classify the move as natural or scam, then ride it in a public slot or fade it in a Vegas slot. |
+| O5 | Evenly-matched game in a public slot: back the underdog's run line at +1.5. |
+| O6 | Public-slot price filter: only plays prices of −160 or cheaper, passing anything more expensive. |
+| O7 | Heavy favorite at −200 or shorter: the aligned engine passes outright rather than converting to a run line. |
+| R0 | Eligibility gate: skips spring training, non-regular-season games, games already under way, and games with no matched odds. |
+| R1 | Day and slot classification — assigns the game a P, V, or hybrid-Wednesday type. Passes if a hybrid day has no start time. |
+| R3 | The base pick: a P slot backs the public side, a V slot backs the Vegas side, decided by which way the favorite's moneyline moved. |
+| R3_era | R3's first fallback when the line did not move decisively: pick the side with the starting-pitcher ERA edge. |
+| R3_form | R3's second fallback: with no movement signal and no ERA edge, pick the side with better last-10 form. |
+| R3_series | R3's last fallback: with no movement, ERA or form edge, pick the side leading the season series. Otherwise pass. |
+| R4 | Evenly-matched public slot: take the underdog's run line at +1.5 instead of the moneyline. |
+| R5 | Vegas-slot favorite: take the favorite's run line at −1.5 instead of the moneyline. |
+| R7 | Heavy favorite (−200 or shorter): convert the pick to a run line, or pass, depending on the strategy's configuration. |
+| R8_veto | Sanity veto: cancels a pick when the line movement is contradicted by a recent blowout loss plus an ERA gap. |
+| SS_ml | Sharp-split moneyline: backs the side taking a much larger share of money than of tickets, on the theory that is where informed money sits. |

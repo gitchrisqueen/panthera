@@ -22,6 +22,12 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.5",
 ]
+# Browser-geometry audit for the Pages dashboard (scripts/site_audit.py).
+# Deliberately NOT in `dev`: `pip install -e ".[dev]"` — what CI's test job and
+# every local checkout run — must stay Playwright-free (~200MB of browser).
+audit = [
+    "playwright>=1.47",
+]
 
 [project.scripts]
 panthera-mvp = "panthera_mvp.cli:main"

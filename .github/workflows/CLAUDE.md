@@ -11,6 +11,7 @@
 | mvp-debug-era | manual | — | probe live statsapi hydrate variants for the dormant probable-pitcher ERA (no commits) |
 | pages | `workflow_run` after mvp-morning/mvp-pregame | — | `panthera-mvp pages` → deploy the public dashboard (gitchrisqueen.github.io/panthera). Plain default checkout — **do not** pin `ref:` to `github.event.workflow_run.head_sha` (see the fixed 2026-08-20 bug in `pages.yml`'s header comment: that field is the triggering run's pre-commit SHA, not what it just pushed) |
 | ci | push/PR | — | ruff + pytest on `tests/` only |
+| site-audit | push/PR touching `dashboard_static/**`, `dashboard.py`, `glossary.py`, `config/glossary.yaml` or the script | — | `scripts/site_audit.py` — headless-Chromium geometry audit of the built site at 375–1440px in both themes. Catches what pytest cannot: overlapping boxes, content clipped with no way to scroll to it, unlabeled columns, tables needing horizontal scroll above their stack point, markdown leaking into rendered text, undefined glossary terms. Own file, not a job in `ci.yml`, because `paths:` is only valid under `on:` |
 
 **Retired 2026-08-19: mvp-midday** (`snapshot --label midday`, was 12:05 ET).
 No scheduled picks run ever selected it as a movement endpoint
