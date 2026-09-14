@@ -27,6 +27,14 @@
   `splits_signal.py` (Lumify splits engines).
 - `grading.py` — settles picks (ML/RL/total, pushes, voids).
 - `report.py` — regenerates all markdown from `picks.csv`.
+- `glossary.py` — loads `config/glossary.yaml` (the one source of truth for
+  every acronym, column header, badge and rule id the public surfaces name)
+  and renders it two ways: `site/glossary.json` for the dashboard's
+  `glossary.html` and its `[data-term]` affordances, and the `## Glossary`
+  section of `BETTING_REPORT.md`. A missing/invalid file is a hard error —
+  a term-less build ships dead `#fragment` links. `tests/test_glossary.py`
+  scans the engines for rule ids and the dashboard source for wired terms,
+  so a new column or rule cannot ship undefined.
 - `backtest/` — `loader.py` (sbro-format archives), `engine.py` (replays the
   same `generate_pick`), `calibrate.py` (parameter sweep).
 

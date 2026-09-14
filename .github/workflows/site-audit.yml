@@ -1,0 +1,88 @@
+# Browser-geometry audit for the GitHub Pages dashboard.
+#
+# Separate from ci.yml on purpose: GitHub has no job-level `paths:` filter
+# (`paths:` is only valid under `on:`), and ci.yml deliberately runs on almost
+# every push. Keeping this in its own file means the Playwright download and
+# browser run only happen when something that can actually change the rendered
+# page has changed.
+#
+# What it catches that pytest cannot: overlapping boxes, content clipped with no
+# way to scroll to it, unlabeled columns, tables that need horizontal scroll
+# above their designed stack point, and markdown leaking into rendered text.
+# See scripts/site_audit.py for the full invariant list.
+
+name: Site Audit
+
+on:
+  pull_request:
+    paths:
+      - "src/panthera_mvp/dashboard_static/**"
+      - "src/panthera_mvp/dashboard.py"
+      - "src/panthera_mvp/glossary.py"
+      - "config/glossary.yaml"
+      - "scripts/site_audit.py"
+      - ".github/workflows/site-audit.yml"
+  push:
+    branches: [main, dev]
+    paths:
+      - "src/panthera_mvp/dashboard_static/**"
+      - "src/panthera_mvp/dashboard.py"
+      - "src/panthera_mvp/glossary.py"
+      - "config/glossary.yaml"
+      - "scripts/site_audit.py"
+      - ".github/workflows/site-audit.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package + audit extra
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[audit]" ruff
+
+      - name: Lint the audit script
+        # scripts/ sits in ruff's extend-exclude, but an explicitly passed path
+        # is still checked.
+        run: ruff check scripts/site_audit.py
+
+      - name: Cache the Playwright browser
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+
+      # Split: the apt system libraries are never cached (~25s either way),
+      # while the ~100MB browser download is skipped on a cache hit.
+      - name: Install browser system dependencies
+        run: python -m playwright install-deps chromium
+
+      - name: Install Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install chromium
+
+      - name: Audit
+        run: python scripts/site_audit.py --check-contrast --out artifacts/site-audit
+
+      - name: Upload report and annotated screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-audit
+          path: artifacts/site-audit
+          retention-days: 14
+
+      - name: Job summary
+        if: always()
+        run: cat artifacts/site-audit/report.md >> "$GITHUB_STEP_SUMMARY" || true

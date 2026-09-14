@@ -1,0 +1,759 @@
+# Public vocabulary — one source of truth, three renderings.
+#
+# Every acronym, column header, badge and rule id that the public dashboard or
+# reports/BETTING_REPORT.md puts in front of a reader is defined here, exactly
+# once. This file feeds:
+#   - site/glossary.json  -> glossary.html and the [data-term] info affordances
+#                            attached to every table header and badge
+#   - the "## Glossary" section of reports/BETTING_REPORT.md
+# The site and the markdown therefore cannot drift: they read this file, not
+# two copies of the same prose. See src/panthera_mvp/glossary.py.
+#
+# Editing rules (enforced by tests/test_glossary.py, not just convention):
+#   - slug (the key) is a URL fragment: ^[a-z0-9_]+$, and is permanent once
+#     published — glossary.html#<slug> links live in the rendered site.
+#   - `short` is one plain-text line, <= 200 chars, no markdown. It is what
+#     shows in the hover tooltip, so it must stand alone.
+#   - `long` is optional prose for the glossary page and may use **bold**.
+#   - `see_also` entries must resolve to other slugs in this file.
+#   - `group` must be one of: column, metric, badge, rule, concept, market.
+#
+# Rule ids are NOT listed in the `columns`/`badges` indexes below: they are
+# derived (slug = "rule_" + rule_id.lower()) and their coverage is asserted by
+# scanning src/panthera_mvp/strategy/*.py for the ids actually stamped on
+# picks. Add a rule id to the engine, and the test tells you to define it here.
+
+version: 1
+
+terms:
+
+  # ---------------------------------------------------------------- columns
+  strategy_id:
+    label: "Strategy"
+    group: column
+    short: "The named hypothesis that produced this pick. Each strategy is evaluated separately against its own pre-registered bar."
+    long: >
+      Every strategy is a separate, independently registered experiment with its
+      own rules, its own evaluation criteria, and its own counter. Strategies are
+      never pooled and never ranked against each other — they share games and
+      often share sides, so their results are correlated.
+    see_also: [strategy_kind, pre_registration, overlap]
+
+  strategy_kind:
+    label: "Kind"
+    group: column
+    short: "What role a strategy plays: baseline (a control), incumbent, aligned, or forward_test."
+    long: >
+      **baseline** — a control, not a strategy: it exists to measure something
+      known (fav_ml measures the book's hold on favorites) or to catch grading
+      bugs. **incumbent** — the current production reading of the documented
+      strategy. **aligned** — an engine built to follow the source recordings
+      literally rather than the summarised rules. **forward_test** — a
+      hypothesis that cannot be backtested (no historical data exists for its
+      inputs) and can only be tested going forward.
+    see_also: [strategy_id, backtest, forward_test]
+
+  graded_n:
+    label: "Graded"
+    group: column
+    short: "How many of this strategy's picks have a final result yet. Pending picks are not counted."
+    see_also: [pending, pick_status]
+
+  record:
+    label: "Record"
+    group: column
+    short: "Wins–losses–pushes over the graded picks, in that order."
+    see_also: [graded_n, pick_status, push]
+
+  profit_loss:
+    label: "P/L"
+    group: column
+    short: "Profit or loss in dollars over the graded picks, at flat paper stakes. Positive is a gain."
+    long: >
+      All stakes are flat and identical (see the strategy's YAML), and no real
+      money is wagered — this is a paper ledger. P/L is the raw dollar result;
+      ROI is the same number expressed against the amount risked, which is the
+      comparable figure across strategies with different pick counts.
+    see_also: [roi, flat_stake, paper_trade]
+
+  roi:
+    label: "ROI"
+    group: metric
+    short: "Return on investment: profit divided by the total amount risked, as a percent."
+    long: >
+      ROI is the comparable figure across strategies, because it normalises for
+      how many picks each one made. At these sample sizes it is very noisy —
+      always read it next to its standard error.
+    see_also: [roi_se, profit_loss]
+
+  roi_se:
+    label: "ROI (±SE)"
+    group: column
+    short: "ROI with its standard error: the ± figure is how much this ROI estimate would typically wobble from sampling noise alone."
+    long: >
+      The standard error is computed from each strategy's **own** realised
+      per-bet profit distribution, never a global constant. At flat stakes on
+      near-even MLB prices, SE(ROI) is roughly 10.5 percentage points at 100
+      graded picks and 6.1 at 300. An ROI of +9% with an SE of ±8 is not
+      meaningfully different from zero. This is why verdicts here are described
+      as screens rather than proof.
+    see_also: [roi, verdict_supported, pre_registration]
+
+  clv:
+    label: "Avg CLV"
+    group: column
+    short: "Average closing line value in cents, with the number of covered picks, the share that were positive, and coverage."
+    long: >
+      Reads as `+17.6c (n=23, 48% pos, 100% cov)`: the average price improvement
+      in cents, over 23 picks that had a closing price on file, 48% of which
+      moved in the pick's favour, covering 100% of the picks eligible to have a
+      closing price. **CLV is a directional price-capture cross-check, not an
+      independent test of edge** — it says the pick was taken at a better number
+      than the market closed at, not that the pick was right.
+    see_also: [clv_cents, closing_line, coverage]
+
+  clv_cents:
+    label: "CLV"
+    group: column
+    short: "This pick's closing line value in cents: how much better (or worse) its price was than the last price before the game started."
+    see_also: [clv, closing_line]
+
+  overlap:
+    label: "Overlap"
+    group: column
+    short: "Share of this strategy's picks where another strategy backed the same side of the same game that day — correlated results, not independent evidence."
+    long: >
+      Two strategies that pick the same side of the same game will win or lose
+      together. A high overlap means their results are **not** independent
+      confirmations of each other, and the comparison table must be read as a
+      description of one correlated portfolio rather than as a tournament with
+      independent entrants.
+    see_also: [strategy_id, portfolio]
+
+  pending:
+    label: "Pending"
+    group: column
+    short: "Picks recorded but not yet graded — the game has not finished, or its result has not been collected yet."
+    see_also: [graded_n, pick_status]
+
+  status_short:
+    label: "Status"
+    group: column
+    short: "Where this strategy stands against its own pre-registered bar: collecting, SUPPORTED, FALSIFIED, INCONCLUSIVE, screen only, or not live."
+    see_also: [verdict_supported, verdict_falsified, verdict_collecting, tier_screen]
+
+  game_date_et:
+    label: "Date"
+    group: column
+    short: "The game's calendar date in US/Eastern. All game-day logic uses Eastern time regardless of where the game is played."
+    see_also: [start_time_et]
+
+  start_time_et:
+    label: "Start (ET)"
+    group: column
+    short: "Scheduled first pitch in US/Eastern."
+    see_also: [game_date_et, slot_type]
+
+  matchup:
+    label: "Matchup"
+    group: column
+    short: "The game, written away team @ home team."
+
+  pick:
+    label: "Pick"
+    group: column
+    short: "The side and market backed — e.g. 'Detroit Tigers ML' for a moneyline, or 'Chicago Cubs +1.5' for a run line."
+    see_also: [market, moneyline, run_line]
+
+  price_american:
+    label: "Price"
+    group: column
+    short: "The American odds the pick was recorded at. Negative is the favorite (risk that much to win $100); positive is the underdog (win that much on $100)."
+    long: >
+      −150 means a $150 stake returns $100 profit if it wins. +130 means a $100
+      stake returns $130 profit. The price recorded here is the one available
+      when the pick was made and is never rewritten afterwards.
+    see_also: [favorite, underdog, vig, closing_line]
+
+  pick_status:
+    label: "Status"
+    group: column
+    short: "How a pick settled: pending, win, loss, push, or void."
+    long: >
+      **pending** — not graded yet. **win** / **loss** — settled against the
+      final score. **push** — a tie on the number, stake returned, counted in
+      the record but not in profit. **void** — the game did not count (e.g.
+      postponed); the pick is removed from the sample entirely.
+    see_also: [push, graded_n, pending]
+
+  trust_tier:
+    label: "Tier"
+    group: column
+    short: "How much evidential weight a pick carries: VERDICT picks count toward a pre-registered test; SCREEN picks are descriptive only."
+    see_also: [tier_verdict, tier_screen, tier_replay, config_hash]
+
+  # ------------------------------------------------- breakdown-table columns
+  rule_id:
+    label: "Rule"
+    group: column
+    short: "Which sub-rule of the strategy produced this pick. The by-rule breakdown is the falsification instrument — it shows which parts carry the strategy."
+    long: >
+      Every pick (and every deliberate pass) records the rule that decided it,
+      so a strategy that is profitable overall can still be shown to be carried
+      by one rule and dragged by another. Rule ids are listed individually
+      further down this glossary.
+    see_also: [tier_verdict]
+
+  day_type:
+    label: "Day type"
+    group: column
+    short: "Whether the whole day is classified Public (P), Vegas (V), or HYBRID. Wednesday is the hybrid day."
+    long: >
+      The core of the documented strategy: on a **P** (public) day the market is
+      read as driven by recreational money and the play is with the public side;
+      on a **V** (Vegas) day the play is against it. **HYBRID** days start as one
+      type and switch at a configured hour. Historical backtests skip hybrid days
+      because the archives carry no start times, so only forward paper-trading
+      tests them.
+    see_also: [slot_type, public_day, vegas_day]
+
+  slot_type:
+    label: "Slot"
+    group: column
+    short: "The P or V classification of the specific start-time slot this game sits in, which need not match the day's own type."
+    long: >
+      Games sharing a start time form a slot. Depending on the engine, a slot can
+      invert the day's type — the first slot of the day, the last slot, and slots
+      with several simultaneous games are all treated specially.
+    see_also: [day_type, start_time_et]
+
+  market:
+    label: "Market"
+    group: column
+    short: "Which bet type was taken: ml (moneyline), rl (run line), or total."
+    see_also: [moneyline, run_line, total]
+
+  # ------------------------------------------------------- calibration page
+  config_id:
+    label: "Config"
+    group: column
+    short: "A parameter combination from the calibration sweep, named after its own values — e.g. m10-e110-h250."
+    long: >
+      Reads as: **m**in_move_cents 10, **e**venly_matched_max_abs_ml 110,
+      **h**eavy_fav_abs_ml 250. Each config is one point in the parameter sweep;
+      the chosen config is the one carried into the strategy YAMLs.
+    see_also: [min_move_cents, evenly_matched_max_abs_ml, heavy_fav_abs_ml, calibration]
+
+  n_bets:
+    label: "N (valid)"
+    group: column
+    short: "How many bets this config placed over the validation seasons — the ones it was not tuned on."
+    see_also: [calibration, roi_valid]
+
+  roi_valid:
+    label: "ROI (valid)"
+    group: column
+    short: "ROI over the validation seasons only. The training-season ROI is not shown here because a config was chosen partly by it."
+    see_also: [calibration, roi, n_bets]
+
+  profit_valid:
+    label: "P/L (valid)"
+    group: column
+    short: "Profit or loss in dollars over the validation seasons, at flat stakes."
+    see_also: [profit_loss, calibration]
+
+  min_move_cents:
+    label: "min_move_cents"
+    group: concept
+    short: "How many cents a price must move before the engine treats it as a real line-movement signal rather than noise."
+    see_also: [config_id, movement]
+
+  evenly_matched_max_abs_ml:
+    label: "evenly_matched_max_abs_ml"
+    group: concept
+    short: "The price threshold below which two teams count as evenly matched — e.g. 120 means both sides priced inside ±120."
+    see_also: [config_id, evenly_matched]
+
+  heavy_fav_abs_ml:
+    label: "heavy_fav_abs_ml"
+    group: concept
+    short: "The price at or beyond which a favorite counts as 'heavy' and gets special handling — converted to a run line, or passed entirely."
+    see_also: [config_id, heavy_favorite]
+
+  # ------------------------------------------------------ verdict & tier badges
+  verdict_supported:
+    label: "SUPPORTED"
+    group: badge
+    short: "This strategy reached its pre-registered sample size and cleared its pre-registered ROI bar. Screen-grade evidence, not proof."
+    long: >
+      SUPPORTED means only that a bar declared **before** any results were seen
+      has now been cleared. It is deliberately a weak claim: at these sample
+      sizes a strategy with no edge at all clears a 0% bar about half the time.
+      Read it as "worth continuing to test", never as "this works".
+    see_also: [verdict_falsified, verdict_inconclusive, pre_registration, roi_se]
+
+  verdict_falsified:
+    label: "FALSIFIED"
+    group: badge
+    short: "This strategy reached its pre-registered sample size and finished below its pre-registered failure line."
+    long: >
+      The strongest result this ledger can produce, and still a screen: a
+      strategy that merely pays the vig and has no skill crosses a −5%
+      falsification line roughly half the time at 100 picks.
+    see_also: [verdict_supported, pre_registration, vig]
+
+  verdict_collecting:
+    label: "COLLECTING"
+    group: badge
+    short: "Not enough graded picks yet to apply this strategy's pre-registered test. The counter shows progress toward the threshold."
+    see_also: [verdict_supported, verdict_frozen, pre_registration]
+
+  verdict_inconclusive:
+    label: "INCONCLUSIVE"
+    group: badge
+    short: "Enough picks to test, but the result landed between the support and falsification lines — neither bar was crossed."
+    see_also: [verdict_supported, verdict_falsified]
+
+  verdict_frozen:
+    label: "COLLECTING — closed"
+    group: badge
+    short: "A superseded strategy whose counter stopped short of its threshold. It will never reach a verdict, by design."
+    long: >
+      When a strategy's behaviour changes it must ship under a **new** id with a
+      fresh counter, so the retired id is left frozen wherever it stood. Its bar
+      is not lowered to match what it achieved — that would be moving the
+      goalposts after seeing the results.
+    see_also: [verdict_collecting, config_hash, hash_lineage]
+
+  tier_verdict:
+    label: "VERDICT"
+    group: badge
+    short: "This pick counts toward its strategy's pre-registered test, because it ran under a configuration in that strategy's declared lineage."
+    see_also: [tier_screen, hash_lineage, config_hash]
+
+  tier_screen:
+    label: "SCREEN"
+    group: badge
+    short: "Descriptive only — this pick carries no inferential weight, because no pre-registered threshold is being tested against it."
+    long: >
+      A pick is SCREEN either because its strategy declared no verdict criteria
+      at all (a baseline or an exploratory run), or because it ran under a
+      configuration outside the strategy's declared lineage. The second case is
+      the important one: it is what stops a mid-experiment behaviour change from
+      silently extending a verdict's sample.
+    see_also: [tier_verdict, config_hash, hash_lineage]
+
+  tier_replay:
+    label: "REPLAY"
+    group: badge
+    short: "A retroactive replay: these picks were computed after every outcome in them was already known, so they carry no evidential weight."
+    long: >
+      Replay results are shown because an early descriptive read is still
+      informative, and hidden from everything else because they are not
+      predictions. They are never pooled into any verdict, any strategy segment,
+      or the portfolio totals.
+    see_also: [tier_verdict, tier_screen, forward_test]
+
+  # ------------------------------------------------------------ betting terms
+  moneyline:
+    label: "Moneyline (ML)"
+    group: market
+    short: "A bet on which team wins the game outright, with no handicap. Priced in American odds."
+    see_also: [run_line, price_american, market]
+
+  run_line:
+    label: "Run line (RL)"
+    group: market
+    short: "Baseball's spread, almost always ±1.5 runs: the favorite must win by 2+, or the underdog must win or lose by exactly 1."
+    see_also: [moneyline, market]
+
+  total:
+    label: "Total"
+    group: market
+    short: "A bet on the combined runs scored by both teams, over or under a posted number."
+    see_also: [market]
+
+  favorite:
+    label: "Favorite"
+    group: concept
+    short: "The side the market expects to win, shown at a negative American price."
+    see_also: [underdog, price_american, heavy_favorite]
+
+  underdog:
+    label: "Underdog"
+    group: concept
+    short: "The side the market expects to lose, shown at a positive American price."
+    see_also: [favorite, price_american]
+
+  heavy_favorite:
+    label: "Heavy favorite"
+    group: concept
+    short: "A favorite priced at or beyond a configured threshold (typically −200), where the payout no longer justifies the moneyline."
+    see_also: [favorite, heavy_fav_abs_ml, rule_r7, rule_o7]
+
+  evenly_matched:
+    label: "Evenly matched"
+    group: concept
+    short: "A game where both sides are priced close to even, inside a configured threshold — the setup some rules treat specially."
+    see_also: [evenly_matched_max_abs_ml, rule_r4, rule_o5]
+
+  vig:
+    label: "Vig (juice)"
+    group: concept
+    short: "The book's built-in margin: the reason the two sides of a game add up to more than 100% and a coin-flip bettor loses money over time."
+    long: >
+      Vig is why "no edge" does not mean "break even". A bettor with genuinely no
+      skill, paying typical MLB prices, loses roughly 4.5% of what they risk over
+      time. That figure is the second null hypothesis this ledger tests against —
+      a strategy has to beat losing, not just beat zero.
+    see_also: [verdict_falsified, price_american, strategy_kind]
+
+  closing_line:
+    label: "Closing line"
+    group: concept
+    short: "The last price recorded before a game starts — the market's final word, and the benchmark CLV measures against."
+    see_also: [clv, clv_cents, coverage]
+
+  coverage:
+    label: "Coverage (cov)"
+    group: metric
+    short: "The share of picks that have a closing price on file. Picks made before closing-price collection started are excluded, not counted as misses."
+    see_also: [clv, closing_line]
+
+  push:
+    label: "Push"
+    group: concept
+    short: "A tie against the number — the stake is returned. Pushes appear in the record but move neither profit nor loss."
+    see_also: [pick_status, record]
+
+  flat_stake:
+    label: "Flat stake"
+    group: concept
+    short: "Every pick risks the same fixed amount. No progressive staking, no bet sizing by confidence — so results reflect the picks, not a staking scheme."
+    see_also: [profit_loss, paper_trade]
+
+  paper_trade:
+    label: "Paper trade"
+    group: concept
+    short: "A recorded hypothetical bet. No money is wagered, nothing here is placed at a book, and nothing here is financial advice."
+    see_also: [flat_stake, forward_test]
+
+  slate:
+    label: "Slate"
+    group: concept
+    short: "All of a single day's games."
+    see_also: [game_date_et]
+
+  # ---------------------------------------------------------- protocol terms
+  pre_registration:
+    label: "Pre-registration"
+    group: concept
+    short: "Each strategy declares its sample size and its pass/fail ROI bars before seeing any results, and those numbers are never changed afterwards."
+    long: >
+      Pre-registration is what makes a weak result honest. Deciding the bar after
+      seeing the data lets you draw a target around wherever the arrow landed; a
+      bar fixed in advance cannot be moved. If a strategy's evaluation needs to
+      change, protocol requires a **new** strategy id with a fresh counter rather
+      than an edit to the live one.
+    see_also: [verdict_supported, verdict_frozen, config_hash, hash_lineage]
+
+  config_hash:
+    label: "Config hash"
+    group: concept
+    short: "A fingerprint of the exact configuration a pick ran under. If the behaviour changes, the hash changes."
+    long: >
+      The hash is stamped on every pick as it is created. It is the mechanism
+      behind the VERDICT/SCREEN split: picks made under a different configuration
+      are a different experiment and are pooled separately, whether or not anyone
+      remembers to say so.
+    see_also: [hash_lineage, tier_verdict, tier_screen, pre_registration]
+
+  hash_lineage:
+    label: "Hash lineage"
+    group: concept
+    short: "The list of config hashes a strategy declared at registration. Only picks under those hashes count toward its verdict."
+    long: >
+      The lineage is fixed at registration and must never be extended to absorb a
+      behavioural change — doing so would silently grow a verdict's sample with
+      picks from a different experiment. A change in behaviour requires a new
+      strategy id instead.
+    see_also: [config_hash, tier_verdict, verdict_frozen]
+
+  segment:
+    label: "Segment"
+    group: concept
+    short: "A group of a strategy's picks sharing one config hash. Segments are reported separately so results from different behaviour are never silently pooled."
+    see_also: [config_hash, hash_lineage, tier_screen]
+
+  checkpoint:
+    label: "Checkpoint"
+    group: concept
+    short: "A pick count at which a SCREEN segment's running numbers are noted. Checkpoints are reporting milestones, not tests to pass."
+    see_also: [tier_screen, pre_registration]
+
+  forward_test:
+    label: "Forward test"
+    group: concept
+    short: "Testing a strategy on games that have not happened yet. The only honest test for rules whose inputs have no historical record."
+    see_also: [backtest, paper_trade, tier_replay]
+
+  backtest:
+    label: "Backtest"
+    group: concept
+    short: "Replaying a strategy over completed historical seasons. Cheap and fast, but only possible where historical data for every input exists."
+    see_also: [forward_test, calibration]
+
+  calibration:
+    label: "Calibration"
+    group: concept
+    short: "A parameter sweep that picks a strategy's thresholds on training seasons and reports them on separate validation seasons."
+    long: >
+      Splitting train from validate is what keeps a sweep from simply finding the
+      luckiest parameters. The numbers worth reading are the validation ones; the
+      training result is contaminated by having chosen the config with it.
+    see_also: [config_id, backtest, roi_valid]
+
+  portfolio:
+    label: "Portfolio totals"
+    group: concept
+    short: "All strategies' results added together. Informational and descriptive only — never an evaluation target, because the strategies overlap."
+    see_also: [overlap, tier_verdict]
+
+  movement:
+    label: "Line movement"
+    group: concept
+    short: "How a price changed between the first snapshot of the day and the latest one. The direction and size of that move is a signal input."
+    see_also: [min_move_cents, closing_line, natural_vs_scam]
+
+  natural_vs_scam:
+    label: "Natural vs scam movement"
+    group: concept
+    short: "Whether a price move is justified by the team's recent merit (natural) or moves against what merit would predict (scam)."
+    long: >
+      The aligned engine does not read movement direction alone. It asks whether
+      the move makes sense given recent form, opponent strength and ERA, then
+      reads the answer oppositely by slot: a public slot rides natural movement,
+      a Vegas slot fades a scam.
+    see_also: [movement, public_day, vegas_day, rule_o4]
+
+  public_day:
+    label: "Public day (P)"
+    group: concept
+    short: "A day classified as driven by recreational money, where the strategy backs the public side."
+    see_also: [vegas_day, day_type, slot_type]
+
+  vegas_day:
+    label: "Vegas day (V)"
+    group: concept
+    short: "A day classified as driven by the book, where the strategy backs the side the public is not on."
+    see_also: [public_day, day_type, slot_type]
+
+  era:
+    label: "ERA"
+    group: concept
+    short: "Earned run average — runs a pitcher allows per nine innings. Lower is better. Used as a tiebreaker input where prices alone do not decide."
+    see_also: [rule_r3_era, rule_r8_veto]
+
+  first_meeting:
+    label: "First meeting"
+    group: concept
+    short: "The first game of the season between two teams, where no head-to-head form exists yet. Some rules restrict what may be played."
+    see_also: [rule_o3_first_meeting, rule_r3_series]
+
+  # ------------------------------------------------------------- rule ids
+  # Incumbent P/V engine (pv_v2 / pv_v3) — src/panthera_mvp/strategy/rules.py
+  rule_r0:
+    label: "R0"
+    group: rule
+    short: "Eligibility gate: skips spring training, non-regular-season games, games already under way, and games with no matched odds."
+    see_also: [rule_id]
+
+  rule_r1:
+    label: "R1"
+    group: rule
+    short: "Day and slot classification — assigns the game a P, V, or hybrid-Wednesday type. Passes if a hybrid day has no start time."
+    see_also: [day_type, slot_type]
+
+  rule_r3:
+    label: "R3"
+    group: rule
+    short: "The base pick: a P slot backs the public side, a V slot backs the Vegas side, decided by which way the favorite's moneyline moved."
+    see_also: [rule_r3_era, rule_r3_form, rule_r3_series, movement]
+
+  rule_r3_era:
+    label: "R3_era"
+    group: rule
+    short: "R3's first fallback when the line did not move decisively: pick the side with the starting-pitcher ERA edge."
+    see_also: [rule_r3, era]
+
+  rule_r3_form:
+    label: "R3_form"
+    group: rule
+    short: "R3's second fallback: with no movement signal and no ERA edge, pick the side with better last-10 form."
+    see_also: [rule_r3, rule_r3_era]
+
+  rule_r3_series:
+    label: "R3_series"
+    group: rule
+    short: "R3's last fallback: with no movement, ERA or form edge, pick the side leading the season series. Otherwise pass."
+    see_also: [rule_r3, first_meeting]
+
+  rule_r4:
+    label: "R4"
+    group: rule
+    short: "Evenly-matched public slot: take the underdog's run line at +1.5 instead of the moneyline."
+    see_also: [evenly_matched, run_line, rule_o5]
+
+  rule_r5:
+    label: "R5"
+    group: rule
+    short: "Vegas-slot favorite: take the favorite's run line at −1.5 instead of the moneyline."
+    see_also: [run_line, vegas_day]
+
+  rule_r7:
+    label: "R7"
+    group: rule
+    short: "Heavy favorite (−200 or shorter): convert the pick to a run line, or pass, depending on the strategy's configuration."
+    see_also: [heavy_favorite, run_line, heavy_fav_abs_ml]
+
+  rule_r8_veto:
+    label: "R8_veto"
+    group: rule
+    short: "Sanity veto: cancels a pick when the line movement is contradicted by a recent blowout loss plus an ERA gap."
+    see_also: [era, movement]
+
+  # Aligned engine (pv_orig) — src/panthera_mvp/strategy/orig_rules.py
+  rule_o0:
+    label: "O0"
+    group: rule
+    short: "Eligibility gate for the aligned engine: regular season, not yet started, priced, and a slot could be assigned."
+    see_also: [rule_r0]
+
+  rule_o1_off_day:
+    label: "O1_off_day"
+    group: rule
+    short: "Thursday and Saturday are off by default in the aligned engine — no play unless the day offers an outlier mispricing."
+    see_also: [rule_o1_big_scam, natural_vs_scam]
+
+  rule_o1_big_scam:
+    label: "O1_big_scam"
+    group: rule
+    short: "The exception that reopens an off day: a price move large enough to qualify as an outlier against recent merit."
+    see_also: [rule_o1_off_day, natural_vs_scam]
+
+  rule_o1_wed_second_half:
+    label: "O1_wed_second_half"
+    group: rule
+    short: "Wednesday's second half is playable only on an outlier mispricing, matching the off-day rule."
+    see_also: [rule_o1_big_scam, day_type]
+
+  rule_o2_slot_mismatch:
+    label: "O2_slot_mismatch"
+    group: rule
+    short: "Slot discipline: passes a game whose slot type does not match what the day permits — Vegas days play Vegas slots only."
+    see_also: [slot_type, rule_o2_outrageous_scam]
+
+  rule_o2_outrageous_scam:
+    label: "O2_outrageous_scam"
+    group: rule
+    short: "The override to slot discipline: a mispricing extreme enough to be worth playing even in the wrong slot."
+    see_also: [rule_o2_slot_mismatch, natural_vs_scam]
+
+  rule_o3_totals:
+    label: "O3_totals"
+    group: rule
+    short: "Tuesdays and Sundays play the total rather than a side, per the source strategy's day policy."
+    see_also: [total, rule_o3_first_meeting]
+
+  rule_o3_first_meeting:
+    label: "O3_first_meeting"
+    group: rule
+    short: "Never play a total on the first meeting of the season between two teams — there is no head-to-head form to read yet."
+    see_also: [first_meeting, total, rule_o3_totals]
+
+  rule_o4:
+    label: "O4"
+    group: rule
+    short: "The aligned engine's base pick: classify the move as natural or scam, then ride it in a public slot or fade it in a Vegas slot."
+    see_also: [natural_vs_scam, rule_r3]
+
+  rule_o5:
+    label: "O5"
+    group: rule
+    short: "Evenly-matched game in a public slot: back the underdog's run line at +1.5."
+    see_also: [evenly_matched, run_line, rule_r4]
+
+  rule_o6:
+    label: "O6"
+    group: rule
+    short: "Public-slot price filter: only plays prices of −160 or cheaper, passing anything more expensive."
+    see_also: [price_american, public_day]
+
+  rule_o7:
+    label: "O7"
+    group: rule
+    short: "Heavy favorite at −200 or shorter: the aligned engine passes outright rather than converting to a run line."
+    see_also: [heavy_favorite, rule_r7]
+
+  # Baselines and splits engines
+  rule_b_fav:
+    label: "B_FAV"
+    group: rule
+    short: "The favorite-moneyline control: backs the favorite in every game, all slate. Measures the book's hold rather than testing an idea."
+    see_also: [strategy_kind, vig, rule_b_dog]
+
+  rule_b_dog:
+    label: "B_DOG"
+    group: rule
+    short: "The underdog-moneyline control, backtest only. Together with B_FAV it brackets the vig band."
+    see_also: [rule_b_fav, vig]
+
+  rule_ss_ml:
+    label: "SS_ml"
+    group: rule
+    short: "Sharp-split moneyline: backs the side taking a much larger share of money than of tickets, on the theory that is where informed money sits."
+    see_also: [betting_splits, rule_fp_ml]
+
+  rule_fp_ml:
+    label: "FP_ml"
+    group: rule
+    short: "Fade-the-public moneyline: backs the side opposite a heavily ticketed favorite, on the theory recreational flow overprices it."
+    see_also: [betting_splits, rule_ss_ml]
+
+  betting_splits:
+    label: "Betting splits"
+    group: concept
+    short: "The share of tickets (bet count) versus handle (money) on each side. A large gap between them is the signal the splits strategies read."
+    long: >
+      A side with 29% of tickets but 86% of the money is being backed by a few
+      large bets rather than many small ones. Splits have no historical archive,
+      so strategies built on them can only be forward-tested.
+    see_also: [rule_ss_ml, rule_fp_ml, forward_test]
+
+# ---------------------------------------------------------------------------
+# Coverage index — the contract tests/test_glossary.py enforces against the
+# rendered UI. Every slug here must resolve above, and every [data-term] in the
+# dashboard's static source must appear here.
+# ---------------------------------------------------------------------------
+columns:
+  comparison: [strategy_id, strategy_kind, graded_n, record, profit_loss, roi_se,
+               clv, overlap, pending, status_short]
+  today: [strategy_id, start_time_et, matchup, pick, price_american, pick_status]
+  ledger: [game_date_et, strategy_id, matchup, pick, price_american, pick_status,
+           profit_loss, clv_cents, trust_tier]
+  breakdown: [rule_id, day_type, slot_type, market, record, profit_loss, roi]
+  calibration_top_configs: [config_id, n_bets, roi_valid, profit_valid]
+
+badges: [verdict_supported, verdict_falsified, verdict_collecting,
+         verdict_inconclusive, verdict_frozen, tier_screen, tier_verdict,
+         tier_replay]
+
+# Order the glossary page renders its sections in. Every `group` used above
+# must appear here.
+groups:
+  - {id: column, title: "Table columns"}
+  - {id: badge, title: "Verdict & trust badges"}
+  - {id: metric, title: "Metrics"}
+  - {id: market, title: "Bet types"}
+  - {id: concept, title: "Concepts"}
+  - {id: rule, title: "Rule ids"}

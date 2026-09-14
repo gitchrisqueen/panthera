@@ -182,9 +182,10 @@ def test_write_site_produces_expected_files(tmp_root, cfg):
     out = write_site(generated_by_run="morning")
     assert out == paths.site_dir()
     for name in (
-        "index.html", "calibration.html", "site_data.json",
-        "calibration_data.json", ".nojekyll",
-        "static/app.css", "static/app.js", "static/icons.svg",
+        "index.html", "calibration.html", "glossary.html",
+        "site_data.json", "calibration_data.json", "glossary.json", ".nojekyll",
+        "static/app.css", "static/app.js", "static/common.js",
+        "static/calibration.js", "static/glossary.js", "static/icons.svg",
     ):
         assert (out / name).exists(), f"missing {name}"
     data = json.loads((out / "site_data.json").read_text())

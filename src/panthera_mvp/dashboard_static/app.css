@@ -12,6 +12,10 @@
   --radius: 6px; --radius-lg: 10px;
   --row-h: 38px;
   --max-w: 1120px;
+  /* Height of the sticky nav. Anchor offsets and the ledger's max-height
+     are derived from it; scripts/site_audit.py asserts it still matches
+     the nav's measured height, so it cannot drift silently. */
+  --nav-h: 48px;
 
   /* Fonts */
   --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -153,15 +157,30 @@ nav.sitenav {
   position: sticky; top: 0; z-index: 20;
   background: var(--bg); border-bottom: 1px solid var(--border);
 }
-nav.sitenav .wrap { display: flex; gap: var(--space-4); overflow-x: auto; padding-top: var(--space-2); padding-bottom: var(--space-2); }
+nav.sitenav .wrap {
+  display: flex; gap: var(--space-4); overflow-x: auto;
+  padding-top: var(--space-2); padding-bottom: var(--space-2);
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+nav.sitenav .wrap::-webkit-scrollbar { display: none; }
 nav.sitenav a { color: var(--fg-muted); text-decoration: none; font-size: 14px; white-space: nowrap; padding: var(--space-1) 0; border-bottom: 2px solid transparent; }
 nav.sitenav a:hover { color: var(--fg); border-color: var(--border-strong); }
+/* Active section (app.js's IntersectionObserver sets aria-current) and active
+   page (hard-coded aria-current="page" on glossary/calibration). */
+nav.sitenav a[aria-current] { color: var(--fg); font-weight: 600; border-bottom-color: var(--focus-ring); }
 
 /* ---- Sections ---- */
 section { padding: var(--space-8) 0; border-bottom: 1px solid var(--border); }
 section:last-of-type { border-bottom: none; }
 section > h2 { font-size: 18px; margin: 0 0 var(--space-1); }
 .section-sub { color: var(--fg-muted); font-size: 14px; margin: 0 0 var(--space-4); }
+
+/* The nav is sticky at z-index 20, so a raw #anchor jump lands underneath it.
+   Needed by the nav links, the comparison table's #strategy-<id> links, and
+   every glossary.html#<slug> deep link. */
+section[id], article.strategy-card[id], .gloss-entry[id] {
+  scroll-margin-top: calc(var(--nav-h) + var(--space-3));
+}
 
 /* ---- How to read (progressive disclosure) ---- */
 details.how-to-read {
@@ -175,14 +194,38 @@ details.how-to-read[open] summary::before { transform: rotate(90deg); }
 details.how-to-read p { color: var(--fg-muted); font-size: 14px; margin: var(--space-3) 0 0; max-width: 76ch; }
 
 /* ---- Tables ---- */
-.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.table-scroll {
+  overflow-x: auto;
+  /* A table cannot shrink below its own min-content, so as a bare grid/flex
+     item it overflows its track and paints over the next one. min-width:0 lets
+     this wrapper shrink and absorb the overflow as a scroll instead. */
+  min-width: 0;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+/* A bounded height is what the sticky rule below was always missing: per spec
+   overflow-x:auto resolves overflow-y to auto too, making .table-scroll the
+   sticky containing block — but with auto height it never scrolls vertically,
+   so `position:sticky; top:0` had nothing to stick to. Applied only to the long
+   ledger; the other tables are short enough not to need a nested scroller. */
+.table-scroll.is-tall { max-height: calc(100vh - var(--nav-h) - var(--space-12)); }
+@supports (height: 100dvh) {
+  .table-scroll.is-tall { max-height: calc(100dvh - var(--nav-h) - var(--space-12)); }
+}
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 thead th {
-  position: sticky; top: 0; background: var(--bg-raised);
+  background: var(--bg-raised);
   text-align: left; font-weight: 600; color: var(--fg-muted);
-  padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  /* Not border-bottom: under border-collapse:collapse the border belongs to the
+     table, not the cell, so it scrolls out from under a sticky th. An inset
+     shadow is painted by the cell and travels with it. */
+  border-bottom: 0; box-shadow: inset 0 -1px 0 var(--border);
   white-space: nowrap;
 }
+/* top:0 is correct — the scroll container already sits below the sticky nav in
+   flow, so a --nav-h offset would push the header into the table body. */
+.table-scroll.is-tall thead th { position: sticky; top: 0; z-index: 1; }
 th[data-sortable] { cursor: pointer; user-select: none; }
 th[data-sortable]:hover { color: var(--fg); }
 th .sort-arrow { opacity: 0.5; font-size: 11px; margin-left: 2px; }
@@ -195,6 +238,17 @@ td.num, th.num { text-align: right; }
 /* Strategy comparison table gets a colored left rule per row, matching the
    identity color used everywhere else for that strategy. */
 tr[data-strategy] td:first-child { border-left: 3px solid var(--row-accent, transparent); }
+
+/* The markdown ledger's one-line CLV string ("+17.6c (n=23, 48% pos, 100% cov)")
+   wrapped to four lines in a 10-column table and drove 143px rows at 768px and
+   59px at 1280px. Split into a headline plus a muted detail, both nowrap. */
+.clv-cell { white-space: nowrap; }
+.clv-cell .clv-main { display: block; }
+.clv-cell .clv-sub { display: block; font-size: 11px; font-weight: 400; color: var(--fg-faint); white-space: nowrap; }
+#comparison-table td[data-label="Record"],
+#comparison-table td[data-label="ROI (±SE)"],
+#comparison-table td[data-label="Status"] { white-space: nowrap; }
+.verdict-text { color: var(--fg-muted); font-size: 13px; }
 
 /* ---- Badges (trust tier + verdict status) ---- */
 .badge {
@@ -218,6 +272,11 @@ tr[data-strategy] td:first-child { border-left: 3px solid var(--row-accent, tran
   color: var(--replay-fg); border: 1.5px solid var(--replay-border);
 }
 
+.badge-sm { padding: 1px 7px; font-size: 11.5px; }
+.badge-tier-verdict {
+  background: transparent; color: var(--fg-faint); padding: 1px 4px;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+}
 .tier-tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fg-faint); }
 
 /* ---- Progress bar (verdict N / threshold) ---- */
@@ -236,17 +295,52 @@ tr[data-strategy] td:first-child { border-left: 3px solid var(--row-accent, tran
 .strategy-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dot-color, var(--clr-default)); flex: none; }
 .strategy-card .hypothesis { color: var(--fg-muted); font-size: 13.5px; margin: 0 0 var(--space-3); max-width: 78ch; }
 .verdict-line { font-size: 14px; margin: var(--space-2) 0; }
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-3); margin: var(--space-3) 0; }
-.stat-grid .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fg-faint); }
-.stat-grid .stat-value { font-size: 16px; font-weight: 600; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: var(--space-3); margin: var(--space-3) 0; }
+/* Two independent causes of the EVENLY_MATCHED_MAX_ABS_ML / HEAVY_FAV_ABS_ML
+   collision on the calibration page, and both need fixing:
+     1. a grid item's default min-width is auto (= min-content), so the item
+        refused to shrink into its track and spilled into the next one;
+     2. an ALL_CAPS_UNDERSCORE token offers no break opportunity, so even a
+        shrinkable item had a min-content as wide as the whole word.
+   overflow-wrap:anywhere (unlike break-word) also LOWERS min-content, which is
+   what actually lets the track win. */
+.stat-grid > * { min-width: 0; }
+.stat-grid .stat-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fg-faint);
+  overflow-wrap: anywhere; line-height: 1.35;
+}
+.stat-grid .stat-value { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+.stat-grid .stat-value-sm { font-size: 14px; }
 .callout {
   border: 1px solid var(--replay-border); background: var(--replay-bg); color: var(--replay-fg);
   border-radius: var(--radius); padding: var(--space-2) var(--space-3); font-size: 13px;
   display: flex; gap: var(--space-2); align-items: flex-start; margin: var(--space-2) 0;
 }
 .callout .icon { margin-top: 2px; }
-.breakdowns { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-top: var(--space-3); }
+/* One column on phones, two above 560px — never three or four. --max-w caps a
+   strategy card's content at ~1054px while four breakdown tables need
+   ~1150-1300px of min-content, so a 4-across row was never achievable: the old
+   repeat(auto-fit, minmax(220px,1fr)) only "fit" four 251px tracks because a
+   <table> cannot shrink below min-content and simply overflowed into its
+   neighbour (measured: 51px of overlap at 1280px). Explicit tracks +
+   minmax(0,1fr) + min-width:0 make that structurally impossible, and
+   .table-scroll absorbs whatever still does not fit. */
+.breakdowns { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-top: var(--space-3); }
+/* 880px, not an arbitrary small number: a breakdown table's min-content runs to
+   ~390px, and a card's content is (viewport - 32 wrap - 32 card) wide, so two
+   tracks only clear 400px each from 880px up. Below that a second column just
+   means two tiny horizontal scrollers side by side. */
+@media (min-width: 880px) { .breakdowns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.breakdowns > .breakdown { min-width: 0; }
+/* auto-fit used to collapse the three empty tracks and hand a lone "By rule"
+   table the full 1054px, spreading four short columns across the whole card.
+   Explicit tracks already halve that; the cap finishes the job. */
+.breakdowns > .breakdown:only-child { max-width: 520px; }
 .breakdowns h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fg-faint); margin: 0 0 var(--space-1); }
+/* Let the key column absorb the slack so P/L and ROI hug the right edge
+   instead of floating mid-track. */
+.breakdown-table th:first-child, .breakdown-table td:first-child { width: 99%; }
+.breakdown-table th.num, .breakdown-table td.num { white-space: nowrap; }
 
 /* ---- Picks ledger controls ---- */
 .ledger-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-3); }
@@ -298,21 +392,149 @@ footer { padding: var(--space-6) 0 var(--space-12); color: var(--fg-muted); font
 footer .wrap > p { max-width: 68ch; }
 footer a { color: var(--fg-muted); }
 
-/* ---- Responsive tables → stacked cards below 640px ---- */
+/* ---- Responsive tables → stacked cards -----------------------------------
+ * Three thresholds, because the tables have genuinely different min-content
+ * widths (measured): comparison 929px, ledger 780px, today 535px. Giving them
+ * one breakpoint would either leave a horizontal-scroll band or stack tables
+ * that still had room to be tables.
+ *
+ *   .responsive-stack             <= 640px   today, breakdowns, calibration
+ *   .responsive-stack.stack-mid   <= 900px   #ledger-table (9 columns)
+ *   .responsive-stack.stack-wide  <= 1080px  #comparison-table (10 columns)
+ *
+ * 1080 for the comparison table because its min-content rises to ~1000px once
+ * .clv-cell stops wrapping, so anything lower reintroduces the 641-860px
+ * squeeze zone (measured there: 929px of content in a 719px box, rows 143px
+ * tall). 900 for the ledger so it stays a real table on a 1024px tablet.
+ *
+ * CSS cannot parameterise a media query, so the three rule bodies below are
+ * identical apart from the selector prefix. KEEP THEM IN SYNC.
+ * ------------------------------------------------------------------------- */
 @media (max-width: 640px) {
   .table-scroll table.responsive-stack thead { display: none; }
-  .table-scroll table.responsive-stack, .table-scroll table.responsive-stack tbody, .table-scroll table.responsive-stack tr, .table-scroll table.responsive-stack td {
-    display: block; width: 100%;
-  }
+  .table-scroll table.responsive-stack,
+  .table-scroll table.responsive-stack tbody,
+  .table-scroll table.responsive-stack tr,
+  .table-scroll table.responsive-stack td { display: block; width: 100%; }
   .table-scroll table.responsive-stack tr { border-bottom: 1px solid var(--border); padding: var(--space-2) var(--space-3); }
   .table-scroll table.responsive-stack td { border: none; padding: 2px 0; display: flex; justify-content: space-between; gap: var(--space-3); }
-  .table-scroll table.responsive-stack td::before { content: attr(data-label); color: var(--fg-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .table-scroll table.responsive-stack td::before { content: attr(data-label); color: var(--fg-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; flex: none; }
   .table-scroll table.responsive-stack td.num { text-align: left; }
-  /* Strategy-color accent rule moves from the first cell to the whole
-     stacked card, matching the row-as-card treatment. */
+  .table-scroll table.responsive-stack td:empty { display: none; }
+  /* The strategy-color accent moves from the first cell to the whole card. */
   .table-scroll table.responsive-stack tr[data-strategy] { border-left: 3px solid var(--row-accent, transparent); padding-left: calc(var(--space-3) - 3px); }
   .table-scroll table.responsive-stack tr[data-strategy] td:first-child { border-left: none; }
+  /* A nested vertical scroller inside a phone page is a scroll trap, and a
+     stacked table has no thead left to stick anyway. */
+  .table-scroll.is-tall { max-height: none; }
   nav.sitenav .wrap { gap: var(--space-3); }
 }
+
+@media (min-width: 641px) and (max-width: 900px) {
+  .table-scroll table.responsive-stack.stack-mid thead { display: none; }
+  .table-scroll table.responsive-stack.stack-mid,
+  .table-scroll table.responsive-stack.stack-mid tbody,
+  .table-scroll table.responsive-stack.stack-mid tr,
+  .table-scroll table.responsive-stack.stack-mid td { display: block; width: 100%; }
+  .table-scroll table.responsive-stack.stack-mid tr { border-bottom: 1px solid var(--border); padding: var(--space-2) var(--space-3); }
+  .table-scroll table.responsive-stack.stack-mid td { border: none; padding: 2px 0; display: flex; justify-content: space-between; gap: var(--space-3); }
+  .table-scroll table.responsive-stack.stack-mid td::before { content: attr(data-label); color: var(--fg-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; flex: none; }
+  .table-scroll table.responsive-stack.stack-mid td.num { text-align: left; }
+  .table-scroll table.responsive-stack.stack-mid td:empty { display: none; }
+  /* The strategy-color accent moves from the first cell to the whole card. */
+  .table-scroll table.responsive-stack.stack-mid tr[data-strategy] { border-left: 3px solid var(--row-accent, transparent); padding-left: calc(var(--space-3) - 3px); }
+  .table-scroll table.responsive-stack.stack-mid tr[data-strategy] td:first-child { border-left: none; }
+  .table-scroll.is-tall { max-height: none; }
+}
+
+@media (min-width: 641px) and (max-width: 1080px) {
+  .table-scroll table.responsive-stack.stack-wide thead { display: none; }
+  .table-scroll table.responsive-stack.stack-wide,
+  .table-scroll table.responsive-stack.stack-wide tbody,
+  .table-scroll table.responsive-stack.stack-wide tr,
+  .table-scroll table.responsive-stack.stack-wide td { display: block; width: 100%; }
+  .table-scroll table.responsive-stack.stack-wide tr { border-bottom: 1px solid var(--border); padding: var(--space-2) var(--space-3); }
+  .table-scroll table.responsive-stack.stack-wide td { border: none; padding: 2px 0; display: flex; justify-content: space-between; gap: var(--space-3); }
+  .table-scroll table.responsive-stack.stack-wide td::before { content: attr(data-label); color: var(--fg-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; flex: none; }
+  .table-scroll table.responsive-stack.stack-wide td.num { text-align: left; }
+  .table-scroll table.responsive-stack.stack-wide td:empty { display: none; }
+  /* The strategy-color accent moves from the first cell to the whole card. */
+  .table-scroll table.responsive-stack.stack-wide tr[data-strategy] { border-left: 3px solid var(--row-accent, transparent); padding-left: calc(var(--space-3) - 3px); }
+  .table-scroll table.responsive-stack.stack-wide tr[data-strategy] td:first-child { border-left: none; }
+}
+
+/* ---- Glossary affordances ------------------------------------------------
+ * A 24x24 hit area (WCAG 2.5.8 minimum) carrying a 13px icon. These sit inside
+ * sortable <th>s, so app.js's sort handlers bail on .gloss-link clicks.
+ */
+.gloss-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; margin: -2px -4px -2px 2px; flex: none;
+  border-radius: 50%; color: var(--fg-faint); text-decoration: none; vertical-align: middle;
+}
+.gloss-link:hover, .gloss-link:focus-visible { color: var(--link); background: var(--bg-sunken); }
+.gloss-link .icon { width: 13px; height: 13px; }
+@media (max-width: 640px) {
+  .gloss-link { width: 28px; height: 28px; }
+  /* Badges and in-cell links are ~21px tall from line-height alone, under the
+     24px minimum once they are the tap target on a phone. */
+  a.badge, .table-scroll table.responsive-stack td > a {
+    min-height: 24px; display: inline-flex; align-items: center;
+  }
+}
+/* Badges link to their own definition rather than growing an affordance. */
+a.badge { text-decoration: none; cursor: help; }
+a.badge:hover { filter: brightness(0.97); }
+th .gloss-link { vertical-align: -0.2em; }
+/* The wide tables carry ten and nine headers, and a 24px affordance on each
+   added 240px of min-content — enough on its own to push the comparison table
+   (929px -> 1166px) past the 1088px --max-w cap and clip its Status column at
+   every desktop width. Both tables stack into cards below 1080/900px, so their
+   headers only ever render on a pointer device and can use a compact target;
+   every header a touch device can actually see keeps the full 24px. */
+#comparison-table thead .gloss-link,
+#ledger-table thead .gloss-link {
+  width: 16px; height: 16px; margin: -2px -3px -2px 0;
+}
+#comparison-table thead .gloss-link .icon,
+#ledger-table thead .gloss-link .icon { width: 12px; height: 12px; }
+#comparison-table thead th,
+#ledger-table thead th { padding-left: var(--space-2); padding-right: var(--space-2); }
+/* Ten columns plus ten affordances do not fit the 1088px --max-w measure at the
+   default 12px gutters, and the column that fell off the end was Status. Tighter
+   gutters on this one table keep every column visible at every desktop width. */
+#comparison-table thead th, #comparison-table tbody td {
+  padding-left: var(--space-1); padding-right: var(--space-1);
+}
+#comparison-table tbody td:first-child, #comparison-table thead th:first-child {
+  padding-left: var(--space-3);
+}
+
+/* ---- Glossary page ---- */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.gloss-search {
+  font: inherit; font-size: 14px; padding: 7px 10px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg); color: var(--fg);
+  width: 100%; max-width: 380px; margin-bottom: var(--space-3);
+}
+.gloss-jump { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
+.gloss-jump a {
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
+  font-size: 13px; color: var(--fg-muted); text-decoration: none;
+}
+.gloss-jump a:hover { color: var(--fg); border-color: var(--border-strong); }
+.gloss-group { margin-top: var(--space-8); scroll-margin-top: calc(var(--nav-h) + var(--space-3)); }
+.gloss-group > h2 { font-size: 16px; margin: 0 0 var(--space-2); }
+.gloss-entry { border-top: 1px solid var(--border); padding: var(--space-3); }
+.gloss-entry:target { background: var(--collecting-bg); border-radius: var(--radius); }
+.gloss-entry h3 { margin: 0 0 var(--space-1); font-size: 15px; display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.gloss-entry .gloss-slug { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-faint); font-weight: 400; }
+.gloss-entry p { margin: 0 0 var(--space-1); color: var(--fg-muted); font-size: 14px; max-width: 76ch; }
+.gloss-entry .gloss-long { color: var(--fg-faint); }
+.gloss-entry .see-also { font-size: 12.5px; color: var(--fg-faint); }
+.section-gap { margin-top: var(--space-8); }
 
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

@@ -32,6 +32,7 @@ from pathlib import Path
 import pandas as pd
 
 from . import paths, store
+from .glossary import glossary_payload
 from .report import (
     GRADED_STATUSES,
     HOW_TO_READ,
@@ -43,6 +44,7 @@ from .report import (
     _roi_se,
     _status_summary,
     _verdict_text,
+    clv_parts,
 )
 from .timeutil import now_utc, utc_iso
 
@@ -161,6 +163,9 @@ def _strategy_payload(
         "hash_lineage": list(meta.get("hash_lineage") or []) if scfg else [],
         "status_short": _status_summary(scfg, mine) if scfg else "retired",
         "clv": _clv_cell(mine, launch_ts),
+        # Structured twin of the same numbers, so the comparison table can
+        # render a two-line cell instead of one long wrapping string.
+        "clv_parts": clv_parts(mine, launch_ts),
         "overlap_pct": _overlap_pct(picks, sid),
         "pending": int(len(pending)),
         "graded_n": 0,
@@ -365,10 +370,14 @@ def write_site(generated_by_run: str = "manual") -> Path:
     site_data = build_site_data(generated_by_run=generated_by_run)
     (out / "site_data.json").write_text(json.dumps(site_data, indent=None))
     (out / "calibration_data.json").write_text(json.dumps(build_calibration_data(), indent=None))
+    (out / "glossary.json").write_text(json.dumps(glossary_payload(), indent=None))
 
     static_out = out / "static"
     shutil.copytree(STATIC_SRC, static_out)
-    for html_file in ("index.html", "calibration.html"):
+    # Any new static/*.js ships automatically via the copytree above; only new
+    # top-level HTML pages need adding here, or they stay under site/static/
+    # and their relative asset paths break.
+    for html_file in ("index.html", "calibration.html", "glossary.html"):
         shutil.move(str(static_out / html_file), str(out / html_file))
     (out / ".nojekyll").write_text("")
 

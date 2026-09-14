@@ -58,6 +58,10 @@ def tmp_root(tmp_path, monkeypatch) -> Path:
     monkeypatch.setenv("PANTHERA_ROOT", str(tmp_path))
     (tmp_path / "config").mkdir()
     shutil.copy(REPO / "config" / "strategy.yaml", tmp_path / "config" / "strategy.yaml")
+    # Both write_ledger_report() and write_site() render definitions from the
+    # glossary and treat a missing one as a hard error, so it belongs in every
+    # isolated root, not just the glossary tests'.
+    shutil.copy(REPO / "config" / "glossary.yaml", tmp_path / "config" / "glossary.yaml")
     sdir = tmp_path / "config" / "strategies"
     sdir.mkdir()
     (sdir / "pv_v2.yaml").write_text(MINIMAL_PV_V2)

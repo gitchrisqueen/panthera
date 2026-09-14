@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Panthera — Glossary</title>
+<meta name="description" content="Plain-language definitions for every column, badge, metric and rule id in the Project Panthera betting-strategy research ledger.">
+<link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-row">
+      <div>
+        <h1>🐆 Glossary</h1>
+        <p class="tagline">Plain-language definitions for every column, badge, metric and
+          rule id used in this ledger. Every term links back from the table it appears in —
+          look for the <svg class="icon" aria-hidden="true"><use href="static/icons.svg#icon-info"/></svg>
+          beside a column header.</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+    </div>
+  </div>
+</header>
+
+<nav class="sitenav" aria-label="Sections">
+  <div class="wrap">
+    <a href="index.html">← Back to ledger</a>
+    <a href="glossary.html" aria-current="page">Glossary</a>
+    <a href="calibration.html">Calibration ↗</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section id="glossary-section">
+    <label class="visually-hidden" for="gloss-search">Filter terms</label>
+    <input class="gloss-search" type="search" id="gloss-search"
+           placeholder="Filter terms — e.g. CLV, run line, SUPPORTED…"
+           autocomplete="off" spellcheck="false">
+    <p class="section-sub" id="gloss-status" role="status">Loading…</p>
+    <nav class="gloss-jump" id="gloss-jump" aria-label="Glossary sections"></nav>
+    <div id="gloss-body"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Definitions are generated from
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/config/glossary.yaml" target="_blank" rel="noopener">config/glossary.yaml</a>,
+      the same source the
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md" target="_blank" rel="noopener">markdown ledger</a>
+      renders its glossary from — the two cannot drift. Part of the
+      <a href="https://github.com/gitchrisqueen/panthera" target="_blank" rel="noopener">Project Panthera</a>
+      research pipeline. Paper trades only — not financial advice.</p>
+  </div>
+</footer>
+
+<script src="static/common.js"></script>
+<script src="static/glossary.js"></script>
+<noscript>
+  <div class="wrap" style="padding:32px 16px;">
+    <p>This page needs JavaScript to render definitions from
+      <a href="glossary.json">glossary.json</a>. The same definitions are in
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/config/glossary.yaml">config/glossary.yaml</a>
+      and at the end of the
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/BETTING_REPORT.md">markdown ledger</a>.</p>
+  </div>
+</noscript>
+</body>
+</html>

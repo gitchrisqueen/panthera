@@ -9,14 +9,13 @@
   "use strict";
 
   const GRADED = new Set(["win", "loss", "push", "void"]);
-  const ICON_SPRITE = "static/icons.svg";
 
   // ---------------------------------------------------------------- utils
-  function esc(s) {
-    const d = document.createElement("div");
-    d.textContent = s == null ? "" : String(s);
-    return d.innerHTML;
-  }
+  // esc/escAttr/mdInline/icon/cssVar/theme/glossary all live in common.js so
+  // index, calibration and glossary share one copy.
+  const P = window.Panthera;
+  const { esc, escAttr, mdInline, icon, cssVar } = P;
+
   function money(x) {
     if (x == null) return "—";
     const sign = x >= 0 ? "+" : "";
@@ -32,12 +31,6 @@
     const sign = x >= 0 ? "+" : "";
     return `${sign}${Math.round(x)}`;
   }
-  function icon(name, cls) {
-    return `<svg class="icon ${cls || ""}"><use href="${ICON_SPRITE}#icon-${name}"/></svg>`;
-  }
-  function cssVar(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
   const STRATEGY_COLOR_VAR = {
     fav_ml: "--clr-fav_ml", pv_orig: "--clr-pv_orig", pv_v2: "--clr-pv_v2",
     pv_v3: "--clr-pv_v3", dog_ml: "--clr-dog_ml", sharp_split: "--clr-sharp_split",
@@ -50,30 +43,6 @@
     if (row.market === "ml") return `${row.selection} ML`;
     if (row.market === "rl") return `${row.selection} ${row.line >= 0 ? "+" : ""}${row.line}`;
     return `${row.selection} ${row.line == null ? "" : row.line}`;
-  }
-
-  // --------------------------------------------------------------- theme
-  function currentIsDark() {
-    const t = document.documentElement.getAttribute("data-theme");
-    if (t) return t === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-  function initTheme() {
-    const saved = localStorage.getItem("panthera-theme");
-    if (saved) document.documentElement.setAttribute("data-theme", saved);
-    const btn = document.getElementById("theme-toggle");
-    const paint = () => {
-      const dark = currentIsDark();
-      btn.innerHTML = `${icon(dark ? "sun" : "moon")} ${dark ? "Light" : "Dark"}`;
-    };
-    paint();
-    btn.addEventListener("click", () => {
-      const next = currentIsDark() ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("panthera-theme", next);
-      paint();
-      renderCharts(window.__panthera.data); // colors read from CSS vars, dark swap needs a repaint
-    });
   }
 
   // ----------------------------------------------------------- freshness
@@ -91,25 +60,35 @@
   }
 
   // --------------------------------------------------------- verdict/tier
+  // Every badge links to its glossary entry: these labels (SUPPORTED, SCREEN,
+  // "COLLECTING — closed") are the densest jargon on the page.
   function verdictBadge(strategy) {
     const seg = strategy.verdict_segment;
     if (!seg) {
-      return `<span class="badge badge-screen">${icon("eye")}SCREEN</span>`;
+      return P.glossBadge("tier_screen", "badge-screen", `${icon("eye")}SCREEN`);
     }
     if (seg.n_graded < seg.min_graded) {
-      const frozen = !strategy.enabled;
-      return frozen
-        ? `<span class="badge badge-frozen" title="Segment closed by design (superseded strategy) — will not reach its threshold">${icon("pause")}COLLECTING — closed</span>`
-        : `<span class="badge badge-collecting">${icon("hourglass")}COLLECTING ${seg.n_graded}/${seg.min_graded}</span>`;
+      return !strategy.enabled
+        ? P.glossBadge("verdict_frozen", "badge-frozen",
+            `${icon("pause")}COLLECTING — closed`)
+        : P.glossBadge("verdict_collecting", "badge-collecting",
+            `${icon("hourglass")}COLLECTING ${seg.n_graded}/${seg.min_graded}`);
     }
-    if (seg.roi > seg.supported_roi) return `<span class="badge badge-supported">${icon("check-circle")}SUPPORTED</span>`;
-    if (seg.roi < seg.falsified_roi) return `<span class="badge badge-falsified">${icon("x-circle")}FALSIFIED</span>`;
-    return `<span class="badge badge-collecting">${icon("hourglass")}INCONCLUSIVE</span>`;
+    if (seg.roi > seg.supported_roi) {
+      return P.glossBadge("verdict_supported", "badge-supported",
+        `${icon("check-circle")}SUPPORTED`);
+    }
+    if (seg.roi < seg.falsified_roi) {
+      return P.glossBadge("verdict_falsified", "badge-falsified",
+        `${icon("x-circle")}FALSIFIED`);
+    }
+    return P.glossBadge("verdict_inconclusive", "badge-collecting",
+      `${icon("hourglass")}INCONCLUSIVE`);
   }
   function tierBadgeSmall(kind) {
     return kind === "verdict"
-      ? `<span class="tier-tag">VERDICT</span>`
-      : `<span class="badge badge-screen" style="padding:1px 7px;">${icon("eye")}SCREEN</span>`;
+      ? P.glossBadge("tier_verdict", "badge-tier-verdict", "VERDICT")
+      : P.glossBadge("tier_screen", "badge-screen badge-sm", `${icon("eye")}SCREEN`);
   }
 
   // ------------------------------------------------------- comparison tbl
@@ -131,16 +110,30 @@
         <td data-label="Record">${record}</td>
         <td data-label="P/L" class="num">${money(s.profit)}</td>
         <td data-label="ROI (±SE)" class="num">${roiTxt}</td>
-        <td data-label="Avg CLV">${esc(s.clv)}</td>
+        <td data-label="Avg CLV" class="clv-cell" title="${escAttr(s.clv)}">${clvCell(s)}</td>
         <td data-label="Overlap" class="num">${esc(s.overlap_pct)}</td>
         <td data-label="Pending" class="num">${s.pending}</td>
         <td data-label="Status">${esc(s.status_short)}</td>
       </tr>`;
     }).join("");
   }
+  /* One long string ("+17.6c (n=23, 48% pos, 100% cov)") wrapped to four lines
+     in a 10-column table and drove 143px-tall rows. Split into a headline and a
+     muted detail line, both nowrap. Falls back to the preformatted string so a
+     stale site_data.json without clv_parts still renders. */
+  function clvCell(s) {
+    const p = s.clv_parts;
+    if (!p) return esc(s.clv);
+    return `<span class="clv-main num">${esc(p.avg_cents_fmt)}</span>` +
+      `<span class="clv-sub">n=${p.n} · ${p.pos_pct}% pos · ${p.coverage_pct}% cov</span>`;
+  }
+
   function wireComparisonSort() {
     document.querySelectorAll("#comparison-table th[data-sortable]").forEach((th) => {
-      th.addEventListener("click", () => {
+      th.addEventListener("click", (e) => {
+        // The glossary affordance lives inside the sortable <th> — let the link
+        // navigate instead of silently re-sorting on the way out.
+        if (e.target.closest(".gloss-link")) return;
         const key = th.dataset.key;
         const dir = compareSort && compareSort.key === key && compareSort.dir === -1 ? 1 : -1;
         compareSort = { key, dir };
@@ -150,12 +143,34 @@
   }
 
   // ------------------------------------------------------- strategy cards
-  function breakdownTable(title, rows) {
+  /* keyLabel names the first column (and its mobile data-label); keyTerm is the
+     glossary slug its info affordance links to.
+     These tables previously shipped a bare <tbody>: four unlabeled columns, no
+     .table-scroll (so the table overflowed its grid track and painted over the
+     next breakdown), and no data-label (so the mobile card-stacking rules never
+     applied and it bled past the strategy card). */
+  function breakdownTable(title, rows, keyLabel, keyTerm) {
     if (!rows || !rows.length) return "";
-    return `<div><h4>${esc(title)}</h4><table><tbody>${rows.map((r) => `
-      <tr><td>${esc(r.key)}</td><td>${r.record.wins}-${r.record.losses}-${r.record.pushes}</td>
-      <td class="num">${money(r.profit)}</td><td class="num">${pct(r.roi)}</td></tr>`).join("")}
-      </tbody></table></div>`;
+    const kl = keyLabel || "Key";
+    return `<div class="breakdown">
+      <h4>${esc(title)}</h4>
+      <div class="table-scroll"><table class="breakdown-table responsive-stack">
+        <thead><tr>
+          <th data-term="${escAttr(keyTerm || "")}">${esc(kl)}</th>
+          <th data-term="record">Record</th>
+          <th class="num" data-term="profit_loss">P/L</th>
+          <th class="num" data-term="roi">ROI</th>
+        </tr></thead>
+        <tbody>${rows.map((r) => `
+          <tr>
+            <td data-label="${escAttr(kl)}">${esc(r.key)}</td>
+            <td data-label="Record">${r.record.wins}-${r.record.losses}-${r.record.pushes}</td>
+            <td class="num" data-label="P/L">${money(r.profit)}</td>
+            <td class="num" data-label="ROI">${pct(r.roi)}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table></div>
+    </div>`;
   }
   function strategyCard(s) {
     const seg = s.verdict_segment;
@@ -164,11 +179,11 @@
       const frozen = !s.enabled && seg.n_graded < seg.min_graded;
       const frac = Math.min(100, (seg.n_graded / Math.max(seg.min_graded, 1)) * 100);
       verdictBlock = `
-        <div class="verdict-line">${verdictBadge(s)} <span style="color:var(--fg-muted);font-size:13px;">${esc(seg.verdict_text)}</span></div>
+        <div class="verdict-line">${verdictBadge(s)} <span class="verdict-text">${mdInline(seg.verdict_text)}</span></div>
         <div class="progress" data-frozen="${frozen}"><span style="width:${frac}%"></span></div>
         <div style="font-size:12px;color:var(--fg-faint);margin-top:4px;">config hash${seg.config_hashes.length === 1 ? "" : "es"}: ${seg.config_hashes.map((h) => `<code>${esc(h)}</code>`).join(", ") || "all"}</div>`;
     } else {
-      verdictBlock = `<div class="verdict-line">${verdictBadge(s)} <span style="color:var(--fg-muted);font-size:13px;">Descriptive only — no threshold is tested.</span></div>`;
+      verdictBlock = `<div class="verdict-line">${verdictBadge(s)} <span class="verdict-text">Descriptive only — no threshold is tested.</span></div>`;
     }
     const screenBlocks = (s.screen_segments || []).map((seg2) => `
       <div class="callout" style="border-color:var(--border);background:var(--bg-sunken);color:var(--fg-muted);">
@@ -182,7 +197,7 @@
         <h3><span class="strategy-dot" style="--dot-color:${strategyColor(s.id)}"></span>${esc(s.id)} <span style="color:var(--fg-faint);font-weight:400;font-size:13px;">· ${esc(s.kind)}</span></h3>
         <span style="font-size:12px;color:var(--fg-faint);">${s.registered_at ? "registered " + esc(s.registered_at) : ""}</span>
       </div>
-      ${s.hypothesis ? `<p class="hypothesis">${esc(s.hypothesis)}</p>` : ""}
+      ${s.hypothesis ? `<p class="hypothesis">${mdInline(s.hypothesis)}</p>` : ""}
       ${verdictBlock}
       ${screenBlocks}
       ${s.graded_n ? `<div class="stat-grid">
@@ -193,15 +208,16 @@
         <div><div class="stat-label">Avg CLV</div><div class="stat-value" style="font-size:13px;">${esc(s.clv)}</div></div>
       </div>` : `<p class="section-sub">No graded picks yet (${s.pending} pending).</p>`}
       ${(b.by_rule || b.by_day_type) ? `<div class="breakdowns">
-        ${breakdownTable("By rule", b.by_rule)}
-        ${breakdownTable("By day type", b.by_day_type)}
-        ${breakdownTable("By slot", b.by_slot)}
-        ${breakdownTable("By market", b.by_market)}
+        ${breakdownTable("By rule", b.by_rule, "Rule", "rule_id")}
+        ${breakdownTable("By day type", b.by_day_type, "Day type", "day_type")}
+        ${breakdownTable("By slot", b.by_slot, "Slot", "slot_type")}
+        ${breakdownTable("By market", b.by_market, "Market", "market")}
       </div>` : ""}
     </article>`;
   }
   function renderStrategyCards(data) {
     document.getElementById("strategy-cards").innerHTML = data.strategies.map(strategyCard).join("");
+    P.glossaryDecorate(document.getElementById("strategy-cards"));
   }
 
   // ------------------------------------------------------------- today
@@ -296,7 +312,8 @@
     document.getElementById("ledger-date-from").addEventListener("change", (e) => { ledgerState.from = e.target.value; ledgerState.page = 0; renderLedger(data); });
     document.getElementById("ledger-date-to").addEventListener("change", (e) => { ledgerState.to = e.target.value; ledgerState.page = 0; renderLedger(data); });
     document.querySelectorAll("#ledger-table th[data-sortable]").forEach((th) => {
-      th.addEventListener("click", () => {
+      th.addEventListener("click", (e) => {
+        if (e.target.closest(".gloss-link")) return;
         const key = th.dataset.key;
         const dir = ledgerState.sort.key === key && ledgerState.sort.dir === -1 ? 1 : -1;
         ledgerState.sort = { key, dir };
@@ -368,7 +385,11 @@
   // ------------------------------------------------------------- replay
   function renderReplay(data) {
     const r = data.retroactive_replay;
-    document.querySelector("#replay-banner span:last-child").textContent = r.banner;
+    // The REPLAY tier is the strongest caveat on the page — give it the same
+    // linked badge treatment as VERDICT and SCREEN rather than prose alone.
+    document.querySelector("#replay-banner span:last-child").innerHTML =
+      P.glossBadge("tier_replay", "badge-replay badge-sm", "REPLAY") +
+      " " + mdInline(r.banner);
     if (!r.strategies.length) {
       document.getElementById("replay-body").innerHTML = `<p class="section-sub">No retroactive replays on file.</p>`;
       return;
@@ -377,9 +398,10 @@
       <article class="strategy-card">
         <h3 style="margin:0 0 8px;">${esc(s.id)} <span style="font-weight:400;color:var(--fg-faint);font-size:13px;">(retroactive)</span></h3>
         ${s.graded_n ? `<p>Record ${s.record.wins}-${s.record.losses}-${s.record.pushes}, P/L ${money(s.profit)}, ROI ${pct(s.roi)} (${s.graded_n} graded, descriptive only).</p>
-          <div class="breakdowns">${breakdownTable("By rule", s.by_rule)}</div>`
+          <div class="breakdowns">${breakdownTable("By rule", s.by_rule, "Rule", "rule_id")}</div>`
         : `<p class="section-sub">${s.n_picks} pick(s), none graded yet.</p>`}
       </article>`).join("");
+    P.glossaryDecorate(document.getElementById("replay-body"));
   }
 
   // ----------------------------------------------------------- portfolio
@@ -387,23 +409,57 @@
     const p = data.portfolio_totals;
     const el = document.getElementById("portfolio-strip");
     if (!p) { el.textContent = "No graded picks yet."; return; }
-    el.innerHTML = `<strong>Portfolio (all strategies): </strong>${money(p.profit)} on $${p.risked.toLocaleString()} risked (${pct(p.roi)}). ${esc(p.note)}`;
+    el.innerHTML = `<strong>Portfolio (all strategies): </strong>${money(p.profit)} on $${p.risked.toLocaleString()} risked (${pct(p.roi)}). ${mdInline(p.note)}`;
   }
 
   // ----------------------------------------------------------- how-to-read
   function renderHowToRead(data) {
-    document.getElementById("how-to-read-text").textContent = data.how_to_read.replace(/\*\*/g, "").replace(/\n/g, " ");
+    // mdInline instead of flattening: HOW_TO_READ bolds "zero-edge",
+    // "no-skill-pays-vig" and its closing caveat deliberately.
+    document.getElementById("how-to-read-text").innerHTML =
+      mdInline(String(data.how_to_read).replace(/\n/g, " "));
+  }
+
+  // ------------------------------------------------------------- site nav
+  /* Marks the section currently in view, and — on a phone, where the nav is a
+     horizontal scroller — scrolls the NAV's own box (never the page) so the
+     active link stays visible. */
+  function wireNavActive() {
+    const wrap = document.querySelector("nav.sitenav .wrap");
+    const links = [...document.querySelectorAll("nav.sitenav a[href^='#']")];
+    if (!wrap || !links.length || !window.IntersectionObserver) return;
+    const byId = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+    const sections = [...byId.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+    if (!sections.length) return;
+    const navH = parseInt(cssVar("--nav-h"), 10) || 48;
+    const visible = new Set();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id)));
+      links.forEach((a) => a.removeAttribute("aria-current"));
+      const first = sections.find((sec) => visible.has(sec.id));
+      if (!first) return;
+      const link = byId.get(first.id);
+      link.setAttribute("aria-current", "true");
+      if (wrap.scrollWidth > wrap.clientWidth + 1) {
+        wrap.scrollTo({ left: Math.max(0, link.offsetLeft - 16), behavior: "smooth" });
+      }
+    }, { rootMargin: `-${navH}px 0px -55% 0px`, threshold: 0 });
+    sections.forEach((sec) => io.observe(sec));
   }
 
   // --------------------------------------------------------------- init
   async function init() {
-    initTheme();
+    P.initTheme(() => renderCharts(window.__panthera.data));
     let data;
     try {
-      const res = await fetch("site_data.json", { cache: "no-store" });
+      const [res] = await Promise.all([
+        fetch("site_data.json", { cache: "no-store" }),
+        P.loadGlossary(),
+      ]);
       data = await res.json();
     } catch (e) {
       document.getElementById("freshness-badge").textContent = "Failed to load site_data.json";
+      document.body.dataset.ready = "1";
       return;
     }
     window.__panthera = { data };
@@ -419,6 +475,11 @@
     renderCharts(data);
     renderReplay(data);
     renderPortfolio(data);
+    wireNavActive();
+    P.glossaryDecorate(document);
+    // Deterministic readiness hook for scripts/site_audit.py — without it the
+    // audit would measure a half-rendered page.
+    document.body.dataset.ready = "1";
   }
 
   document.addEventListener("DOMContentLoaded", init);

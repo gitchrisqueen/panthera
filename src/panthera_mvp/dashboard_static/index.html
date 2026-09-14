@@ -32,6 +32,7 @@
     <a href="#ledger">Full ledger</a>
     <a href="#charts">Charts</a>
     <a href="#replay">Retroactive replay</a>
+    <a href="glossary.html">Glossary ↗</a>
     <a href="calibration.html">Calibration ↗</a>
   </div>
 </nav>
@@ -49,13 +50,18 @@
     <p class="section-sub">Descriptive, not a tournament — strategies share games/sides, so
       results are correlated. Sorted in registration order, not by ROI. Click a column header to sort.</p>
     <div class="table-scroll">
-      <table id="comparison-table" class="responsive-stack">
+      <table id="comparison-table" class="responsive-stack stack-wide">
         <thead><tr>
-          <th>Strategy</th><th>Kind</th><th class="num" data-sortable data-key="graded_n">Graded</th>
-          <th>Record</th><th class="num" data-sortable data-key="profit">P/L</th>
-          <th class="num" data-sortable data-key="roi">ROI (±SE)</th><th>Avg CLV</th>
-          <th class="num">Overlap</th><th class="num" data-sortable data-key="pending">Pending</th>
-          <th>Status</th>
+          <th data-term="strategy_id">Strategy</th>
+          <th data-term="strategy_kind">Kind</th>
+          <th class="num" data-sortable data-key="graded_n" data-term="graded_n">Graded</th>
+          <th data-term="record">Record</th>
+          <th class="num" data-sortable data-key="profit" data-term="profit_loss">P/L</th>
+          <th class="num" data-sortable data-key="roi" data-term="roi_se">ROI (±SE)</th>
+          <th data-term="clv">Avg CLV</th>
+          <th class="num" data-term="overlap">Overlap</th>
+          <th class="num" data-sortable data-key="pending" data-term="pending">Pending</th>
+          <th data-term="status_short">Status</th>
         </tr></thead>
         <tbody id="comparison-tbody"></tbody>
       </table>
@@ -67,7 +73,12 @@
     <h2>Today's slate</h2>
     <p class="section-sub" id="today-sub">Loading…</p>
     <div class="table-scroll"><table class="responsive-stack" id="today-table">
-      <thead><tr><th>Strategy</th><th>Start (ET)</th><th>Matchup</th><th>Pick</th><th class="num">Price</th><th>Status</th></tr></thead>
+      <thead><tr>
+        <th data-term="strategy_id">Strategy</th><th data-term="start_time_et">Start (ET)</th>
+        <th data-term="matchup">Matchup</th><th data-term="pick">Pick</th>
+        <th class="num" data-term="price_american">Price</th>
+        <th data-term="pick_status">Status</th>
+      </tr></thead>
       <tbody id="today-tbody"></tbody>
     </table></div>
   </section>
@@ -89,12 +100,17 @@
       <input type="date" id="ledger-date-from" title="From date">
       <input type="date" id="ledger-date-to" title="To date">
     </div>
-    <div class="table-scroll"><table class="responsive-stack" id="ledger-table">
+    <div class="table-scroll is-tall"><table class="responsive-stack stack-mid" id="ledger-table">
       <thead><tr>
-        <th data-sortable data-key="game_date_et">Date</th>
-        <th>Strategy</th><th>Matchup</th><th>Pick</th><th class="num">Price</th>
-        <th>Status</th><th class="num" data-sortable data-key="profit">P/L</th>
-        <th class="num" data-sortable data-key="clv_cents">CLV</th><th>Tier</th>
+        <th data-sortable data-key="game_date_et" data-term="game_date_et">Date</th>
+        <th data-term="strategy_id">Strategy</th>
+        <th data-term="matchup">Matchup</th>
+        <th data-term="pick">Pick</th>
+        <th class="num" data-term="price_american">Price</th>
+        <th data-term="pick_status">Status</th>
+        <th class="num" data-sortable data-key="profit" data-term="profit_loss">P/L</th>
+        <th class="num" data-sortable data-key="clv_cents" data-term="clv_cents">CLV</th>
+        <th data-term="trust_tier">Tier</th>
       </tr></thead>
       <tbody id="ledger-tbody"></tbody>
     </table></div>
@@ -145,6 +161,7 @@
   </div>
 </footer>
 
+<script src="static/common.js"></script>
 <script src="static/app.js"></script>
 <noscript>
   <div class="wrap" style="padding:32px 16px;">
