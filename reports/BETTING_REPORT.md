@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-09-20T14:40:12Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-09-20T20:55:11Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -27,8 +27,8 @@ not a tournament.
 
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| fade_public | forward_test | 134 | 57-77-0 | $-650.37 | -4.85% ±9.7 | -0.7c (n=20, 30% pos, 14% cov) | 43% | 7 | screen only |
-| fav_ml | baseline | 323 | 191-132-0 | $-570.56 | -1.77% ±4.6 | +0.5c (n=47, 38% pos, 14% cov) | 35% | 10 | screen only |
+| fade_public | forward_test | 134 | 57-77-0 | $-650.37 | -4.85% ±9.7 | -0.7c (n=20, 30% pos, 14% cov) | 42% | 8 | screen only |
+| fav_ml | baseline | 323 | 191-132-0 | $-570.56 | -1.77% ±4.6 | +0.5c (n=47, 38% pos, 14% cov) | 35% | 11 | screen only |
 | pv_orig | aligned | 25 | 8-17-0 | $-545.80 | -21.83% ±28.1 | — | 80% | 0 | collecting (25/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
 | pv_v3 | incumbent | 181 | 103-78-0 | $+2,065.80 | +11.41% ±7.4 | +10.5c (n=22, 50% pos, 12% cov) | 57% | 6 | SUPPORTED* |
@@ -46,7 +46,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 57-77-0 (0 void)
 - **P/L:** $-650.37 on $13,400 risked
 - **ROI:** -4.85% (±9.7 pts SE, own SD)
-- **Pending:** 7
+- **Pending:** 8
 
 **By rule**
 
@@ -58,7 +58,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-19 | Kansas City Royals @ Pittsburgh Pirates | Kansas City Royals ML | +101 | FP_ml | loss | $-100.00 |
 | 2026-09-19 | New York Yankees @ Arizona Diamondbacks | Arizona Diamondbacks ML | +140 | FP_ml | win | $+140.00 |
 | 2026-09-19 | Minnesota Twins @ Los Angeles Angels | Los Angeles Angels ML | -110 | FP_ml | win | $+90.91 |
 | 2026-09-20 | Philadelphia Phillies @ New York Mets | New York Mets ML | +135 | FP_ml | pending |  |
@@ -68,6 +67,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-20 | Atlanta Braves @ Houston Astros | Houston Astros ML | -146 | FP_ml | pending |  |
 | 2026-09-20 | Detroit Tigers @ Chicago White Sox | Chicago White Sox ML | -115 | FP_ml | pending |  |
 | 2026-09-20 | Seattle Mariners @ Colorado Rockies | Colorado Rockies ML | +135 | FP_ml | pending |  |
+| 2026-09-20 | Milwaukee Brewers @ Baltimore Orioles | Baltimore Orioles ML | +176 | FP_ml | pending |  |
 
 ## Strategy: fav_ml
 
@@ -80,7 +80,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 - **Record:** 191-132-0 (0 void)
 - **P/L:** $-570.56 on $32,300 risked
 - **ROI:** -1.77% (±4.6 pts SE, own SD)
-- **Pending:** 10
+- **Pending:** 11
 
 **By rule**
 
@@ -92,7 +92,6 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 | Date | Matchup | Pick | Price | Rule | Status | P/L |
 |---|---|---|---|---|---|---|
-| 2026-09-20 | Philadelphia Phillies @ New York Mets | Philadelphia Phillies ML | -159 | B_FAV | pending |  |
 | 2026-09-20 | Kansas City Royals @ Pittsburgh Pirates | Pittsburgh Pirates ML | -116 | B_FAV | pending |  |
 | 2026-09-20 | Chicago Cubs @ Cincinnati Reds | Chicago Cubs ML | -155 | B_FAV | pending |  |
 | 2026-09-20 | Athletics @ Cleveland Guardians | Cleveland Guardians ML | -237 | B_FAV | pending |  |
@@ -102,6 +101,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-20 | Washington Nationals @ St. Louis Cardinals | St. Louis Cardinals ML | -132 | B_FAV | pending |  |
 | 2026-09-20 | Toronto Blue Jays @ Texas Rangers | Texas Rangers ML | -164 | B_FAV | pending |  |
 | 2026-09-20 | Seattle Mariners @ Colorado Rockies | Seattle Mariners ML | -159 | B_FAV | pending |  |
+| 2026-09-20 | Milwaukee Brewers @ Baltimore Orioles | Milwaukee Brewers ML | -210 | B_FAV | pending |  |
 
 ## Strategy: pv_orig
 
