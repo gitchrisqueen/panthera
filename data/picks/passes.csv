@@ -680,3 +680,38 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-09-22T14:44:48Z,morning,fade_public,823543,2026-09-22,[FP_ml] no-splits: none captured for game
 2026-09-22T14:44:48Z,morning,pv_orig,823543,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
 2026-09-22T14:44:48Z,morning,sharp_split,823543,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,823328,2026-09-22,[FP_ml] no-divergence: max tickets 62% < 65%
+2026-09-22T20:55:39Z,pregame,fade_public,824709,2026-09-22,[FP_ml] no-divergence: max tickets 54% < 65%
+2026-09-22T20:55:39Z,pregame,fade_public,822840,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,824302,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,824953,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,823089,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,823166,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,823897,2026-09-22,[FP_ml] no-splits: none captured for game
+2026-09-22T20:55:39Z,pregame,fade_public,824785,2026-09-22,[FP_ml] status=Final
+2026-09-22T20:55:39Z,pregame,fav_ml,824785,2026-09-22,[B_FAV] status=Final
+2026-09-22T20:55:39Z,pregame,pv_orig,824222,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,823328,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,823412,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,824867,2026-09-22,[O4] no natural/scam signal for this slot
+2026-09-22T20:55:39Z,pregame,pv_orig,824061,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,824624,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,822840,2026-09-22,[O3_first_meeting] no totals on a season-first meeting
+2026-09-22T20:55:39Z,pregame,pv_orig,824302,2026-09-22,[O4] no natural/scam signal for this slot
+2026-09-22T20:55:39Z,pregame,pv_orig,824953,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,823089,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,823166,2026-09-22,[O4] no natural/scam signal for this slot
+2026-09-22T20:55:39Z,pregame,pv_orig,823897,2026-09-22,"[O2_slot_mismatch] V day, P slot -- no outrageous scam"
+2026-09-22T20:55:39Z,pregame,pv_orig,824785,2026-09-22,[O0] status=Final
+2026-09-22T20:55:40Z,pregame,pv_v3,824785,2026-09-22,[R0] status=Final
+2026-09-22T20:55:40Z,pregame,sharp_split,823328,2026-09-22,[SS_ml] no-divergence: best gap +4 (need >=10 and handle >=50)
+2026-09-22T20:55:40Z,pregame,sharp_split,824709,2026-09-22,[SS_ml] no-divergence: best gap +5 (need >=10 and handle >=50)
+2026-09-22T20:55:40Z,pregame,sharp_split,824867,2026-09-22,[SS_ml] no-divergence: best gap +17 (need >=10 and handle >=50)
+2026-09-22T20:55:40Z,pregame,sharp_split,824624,2026-09-22,[SS_ml] no-divergence: best gap +0 (need >=10 and handle >=50)
+2026-09-22T20:55:40Z,pregame,sharp_split,822840,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,824302,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,824953,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,823089,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,823166,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,823897,2026-09-22,[SS_ml] no-splits: none captured for game
+2026-09-22T20:55:40Z,pregame,sharp_split,824785,2026-09-22,[SS_ml] status=Final
