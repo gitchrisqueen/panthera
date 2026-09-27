@@ -20,6 +20,9 @@ database.
   framework: several strategies paper-trade the same slate in parallel, each
   with its own pre-registered evaluation — see `docs/mvp-design.md`).
 - **The per-strategy verdicts live in** `reports/BETTING_REPORT.md`.
+- **Importing an outside strategy** (e.g. one living in someone's ChatGPT
+  chat): send them the prompt in `docs/strategy-intake/EXPORT_PROMPT.md`;
+  the same file lists the intake steps for the YAML it returns.
 
 ## Commands
 
