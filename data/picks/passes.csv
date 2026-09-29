@@ -861,3 +861,8 @@ ts_utc,run_label,strategy_id,game_pk,game_date_et,reason
 2026-09-27T14:41:38Z,morning,sharp_split,823246,2026-09-27,[SS_ml] no-divergence: best gap +2 (need >=10 and handle >=50)
 2026-09-27T14:41:38Z,morning,sharp_split,823650,2026-09-27,[SS_ml] no-divergence: best gap +9 (need >=10 and handle >=50)
 2026-09-27T14:41:38Z,morning,sharp_split,823731,2026-09-27,[SS_ml] no-divergence: best gap +25 (need >=10 and handle >=50)
+2026-09-29T14:46:44Z,morning,fade_public,849845,2026-09-29,[FP_ml] game_type=F
+2026-09-29T14:46:44Z,morning,fav_ml,849845,2026-09-29,[B_FAV] game_type=F
+2026-09-29T14:46:44Z,morning,pv_orig,849845,2026-09-29,[O0] game_type=F
+2026-09-29T14:46:44Z,morning,pv_v3,849845,2026-09-29,[R0] game_type=F
+2026-09-29T14:46:44Z,morning,sharp_split,849845,2026-09-29,[SS_ml] game_type=F
