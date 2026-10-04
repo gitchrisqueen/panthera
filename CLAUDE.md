@@ -40,6 +40,9 @@ panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
 panthera-mvp ncaaf games --date 2026-10-03       # college football plumbing
 panthera-mvp ncaaf snapshot --label open --dry-run   # PANTHERA_NCAAF_ODDS_FIXTURE
 panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
+panthera-mvp ncaabase games --date 2026-05-01    # NCAA D1 baseball (--force off-season)
+panthera-mvp ncaabase snapshot --label open --dry-run  # PANTHERA_NCAABASE_ODDS_FIXTURE
+panthera-mvp ncaabase grade | status
 ```
 
 ## Secrets & credits
@@ -57,6 +60,10 @@ panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
   key for NCAAF history/metrics; `ncaaf cfbd-pull` caches every response.
   NCAAF odds snapshots share the Odds API pool (reserve 60 in
   `config/ncaaf.yaml`, so MLB keeps priority).
+- College baseball (`ncaabase`) is keyless: ncaa-api.henrygd.me (public demo
+  host, 5 req/s/IP — self-host if it proves flaky) + ESPN fallback. Its
+  `baseball_ncaa` odds snapshot shares the Odds API pool and is **off by
+  default** (`odds_api.enabled` in `config/ncaabase.yaml`, reserve 90).
 - MLB Stats API, ESPN and Open-Meteo endpoints are keyless. `GITHUB_TOKEN` is built-in.
 
 ## Gotchas
@@ -69,6 +76,10 @@ panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
   times a day. Don't hand-edit; see `data/CLAUDE.md` and `reports/CLAUDE.md`.
 - All times are stored UTC; all game-day/slot logic is US/Eastern via
   `timeutil.py`. Never use naive datetimes.
+- College baseball runs Feb–Jun: `ncaabase` commands no-op outside
+  `season` in `config/ncaabase.yaml` (`--force` for backfills). The sandbox
+  also blocks ncaa-api.henrygd.me; its fixtures are synthetic until the
+  manual `ncaabase-capture` workflow records real ones.
 - Wednesday is a HYBRID day; historical backtests skip it (no start times in
   the archives) — only forward paper-trading tests hybrid slots.
 

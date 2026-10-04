@@ -98,6 +98,24 @@ def main(argv: list[str] | None = None) -> None:
     c_cfbd.add_argument("--refresh", action="store_true")
     cfb.add_parser("status", help="NCAAF row counts and credit balance")
 
+    # --- NCAA D1 college baseball (issue #52) ---
+    p_cbb = sub.add_parser(
+        "ncaabase", help="NCAA D1 college baseball plumbing (games, finals, odds, grading)"
+    )
+    cbb = p_cbb.add_subparsers(dest="ncaabase_command", required=True)
+    b_games = cbb.add_parser("games", help="Ingest ncaa-api D1 games for an ET date")
+    b_games.add_argument("--date", default=None, help="ET date (default: today)")
+    b_games.add_argument("--force", action="store_true", help="Ignore the season window")
+    b_snap = cbb.add_parser("snapshot", help="Take a college baseball odds snapshot")
+    b_snap.add_argument("--label", required=True, choices=["open", "pregame", "close"])
+    b_snap.add_argument("--dry-run", action="store_true")
+    b_snap.add_argument(
+        "--force", action="store_true", help="Ignore odds_api.enabled and the season window"
+    )
+    b_grade = cbb.add_parser("grade", help="Refresh unsettled finals; settle pending picks")
+    b_grade.add_argument("--date", default=None, help="Only refresh this ET date")
+    cbb.add_parser("status", help="College baseball row counts and credit balance")
+
     args = parser.parse_args(argv)
 
     # Imports deferred so `--help` stays fast and dependency-light.
@@ -150,6 +168,17 @@ def main(argv: list[str] | None = None) -> None:
             ncaaf.cmd_cfbd_pull(args.seasons, refresh=args.refresh)
         elif args.ncaaf_command == "status":
             ncaaf.cmd_status()
+    elif args.command == "ncaabase":
+        from .ncaabase import pipeline as ncaabase
+
+        if args.ncaabase_command == "games":
+            ncaabase.cmd_games(args.date, force=args.force)
+        elif args.ncaabase_command == "snapshot":
+            ncaabase.cmd_snapshot(args.label, dry_run=args.dry_run, force=args.force)
+        elif args.ncaabase_command == "grade":
+            ncaabase.cmd_grade(args.date)
+        elif args.ncaabase_command == "status":
+            ncaabase.cmd_status()
     elif args.command == "replay":
         from .replay import cmd_replay
 

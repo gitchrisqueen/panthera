@@ -98,3 +98,24 @@ Separate tree so nothing NCAAF reaches the MLB ledger/report/dashboard.
   per endpoint+params); completed seasons never change.
 - NCAAF live snapshots log to the shared `odds/credit_log.csv` with labels
   `ncaaf_<label>` — one credit pool for both sports.
+
+## ncaabase/ (NCAA D1 college baseball — `panthera-mvp ncaabase ...`)
+
+Separate tree, same reason as ncaaf/.
+- `ncaabase/games/games.csv` (upsert by `game_id` = NCAA gameID):
+  `game_id, game_date_et, start_time_utc, start_time_tba, home_team,
+  away_team, home_seo, away_seo, home_char6, away_char6, home_rank,
+  away_rank, home_conference, away_conference, status, current_period,
+  home_score, away_score, score_source, espn_event_id`. Team names are
+  NCAA `names.short` ("Florida St."). `status` ∈ Scheduled | InProgress |
+  Final | Postponed | Canceled | Suspended. **Finals are sticky**: a
+  non-final refresh never replaces a stored Final; an ncaa-api Final
+  overwrites an ESPN one. `score_source` = `ncaa` | `espn` (fallback, with
+  `espn_event_id`). `start_time_tba` rows carry ET midnight as their start.
+- `ncaabase/odds/lines.csv`: MLB lines schema with `game_pk` replaced by
+  `game_id` (null = unmatched); same dedupe key. Raw responses in
+  `ncaabase/odds/raw/YYYY-MM-DD/{label}.json`; live snapshots log to the
+  shared `odds/credit_log.csv` as `ncaabase_<label>`.
+- `ncaabase/picks/picks.csv`: single-bet ledger (append-once by `pick_id`,
+  settled in place by `ncaabase grade`; market ∈ ml | rl | total); schema in
+  `src/panthera_mvp/ncaabase/store.py`. Empty until a strategy exists.

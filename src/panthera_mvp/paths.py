@@ -114,3 +114,28 @@ def ncaaf_cfbd_dir() -> Path:
     """Cached CollegeFootballData.com responses (games, lines, ratings,
     venues) — the historical backtest's inputs."""
     return ncaaf_dir() / "cfbd"
+
+
+# --- NCAA D1 college baseball ----------------------------------------------
+# Own tree for the same reason as NCAAF: no college rows in the MLB ledger,
+# reports or dashboard.
+
+
+def ncaabase_dir() -> Path:
+    return data_dir() / "ncaabase"
+
+
+def ncaabase_games_csv() -> Path:
+    return ncaabase_dir() / "games" / "games.csv"
+
+
+def ncaabase_lines_csv() -> Path:
+    return ncaabase_dir() / "odds" / "lines.csv"
+
+
+def ncaabase_raw_odds_dir(date_et: str) -> Path:
+    return ncaabase_dir() / "odds" / "raw" / date_et
+
+
+def ncaabase_picks_csv() -> Path:
+    return ncaabase_dir() / "picks" / "picks.csv"

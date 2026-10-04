@@ -1,0 +1,128 @@
+name: NCAA Baseball Capture
+
+# Manual-only college-baseball plumbing run (no cron until a college baseball
+# strategy is registered). Proves the clients against the live hosts this
+# repo's dev sandboxes can't reach (ncaa-api.henrygd.me, ESPN, The Odds API)
+# and records raw payloads to replace the synthetic fixtures in
+# tests/fixtures/college_baseball/.
+#
+#   odds = none     ncaa-api games + ESPN fallback only — 0 Odds credits
+#   odds = dry_run  snapshot reads the synthetic fixture; nothing committed
+#   odds = live     real `baseball_ncaa` snapshot (3 credits; --force bypasses
+#                   odds_api.enabled so coverage can be measured before
+#                   enabling it), committed to data/ncaabase/
+#
+# The date input should be an in-season ET date (e.g. 2026-05-01) for useful
+# fixtures; `games --force` ingests it even outside the season window. A live
+# odds snapshot only prices what The Odds API lists today — off-season it
+# returns no events, which the snapshot reports as "no priced events".
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "ET date for games (YYYY-MM-DD; blank = today)"
+        type: string
+        default: ""
+      odds:
+        description: "Odds snapshot mode"
+        type: choice
+        options: [none, dry_run, live]
+        default: none
+
+permissions:
+  contents: write
+
+concurrency:
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      # Fixture material. The month-only scoreboard path is recorded to settle
+      # what ncaa-api returns for it (the client only uses the daily path).
+      # Failures here are recorded, not fatal: the CLI step below is the test.
+      - name: Record raw payloads
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          D="${{ inputs.date }}"; D="${D:-$(TZ=America/New_York date +%F)}"
+          Y="${D:0:4}"; M="${D:5:2}"; DD="${D:8:2}"
+          mkdir -p capture
+          NCAA=https://ncaa-api.henrygd.me
+          curl -sS "$NCAA/scoreboard/baseball/d1/$Y/$M/$DD/all-conf" -o "capture/ncaa_scoreboard_${D}.json" -w "ncaa daily %{http_code}\n" || true
+          sleep 1
+          curl -sS "$NCAA/scoreboard/baseball/d1/$Y/$M/all-conf" -o "capture/ncaa_scoreboard_month_${Y}-${M}.json" -w "ncaa month %{http_code}\n" || true
+          sleep 1
+          curl -sS "$NCAA/schedule/baseball/d1/$Y/$M" -o "capture/ncaa_schedule_${Y}-${M}.json" -w "ncaa schedule %{http_code}\n" || true
+          curl -sS "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/scoreboard?dates=${D//-/}&limit=500" \
+            -o "capture/espn_college_baseball_${D}.json" -w "espn %{http_code}\n" || true
+          # /v4/sports costs 0 credits: is baseball_ncaa listed/active?
+          if [ -n "$ODDS_API_KEY" ]; then
+            curl -sS "https://api.the-odds-api.com/v4/sports?apiKey=${ODDS_API_KEY}" \
+              | python -c "import json,sys; print(json.dumps([s for s in json.load(sys.stdin) if 'baseball' in s['key']], indent=1))" \
+              > capture/odds_sports_baseball.json || true
+          fi
+          python - <<'EOF'
+          import json, pathlib
+          for p in sorted(pathlib.Path("capture").glob("*.json")):
+              try:
+                  data = json.loads(p.read_text())
+              except ValueError:
+                  print(f"{p.name}: not JSON"); continue
+              n = len(data.get("games") or data.get("events") or []) if isinstance(data, dict) else len(data)
+              print(f"{p.name}: {n} games/events")
+          EOF
+
+      - name: Games (+ ESPN finals fallback)
+        run: panthera-mvp ncaabase games --force ${{ inputs.date && format('--date {0}', inputs.date) || '' }}
+
+      - name: Odds snapshot
+        if: inputs.odds != 'none'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          PANTHERA_NCAABASE_ODDS_FIXTURE: tests/fixtures/college_baseball/odds_ncaabase_snapshot.json
+        run: |
+          if [ "${{ inputs.odds }}" = "live" ]; then
+            panthera-mvp ncaabase snapshot --label open --force
+            cp -r data/ncaabase/odds/raw capture/odds_raw 2>/dev/null || true
+          else
+            panthera-mvp ncaabase snapshot --label open --dry-run --force
+          fi
+
+      - name: Status
+        run: panthera-mvp ncaabase status
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ncaabase-capture
+          path: |
+            capture
+            data/ncaabase
+
+      # Dry runs stamp synthetic fixture rows with today's date — never commit
+      # them. Live and none-mode runs commit real data only.
+      - name: Commit & push
+        if: inputs.odds != 'dry_run'
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/ncaabase data/odds/credit_log.csv
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: ncaabase capture $(date -u +%FT%TZ) [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

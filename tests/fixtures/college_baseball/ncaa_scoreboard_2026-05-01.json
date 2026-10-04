@@ -1,0 +1,399 @@
+{
+ "inputMD5Sum": "synthetic",
+ "instanceId": "synthetic",
+ "updated_at": "2026-05-02 03:00:00",
+ "games": [
+  {
+   "game": {
+    "gameID": "6600001",
+    "away": {
+     "score": "5",
+     "names": {
+      "char6": "TXAM",
+      "short": "Texas A&M",
+      "seo": "texas-am",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "home": {
+     "score": "7",
+     "names": {
+      "char6": "LSU",
+      "short": "LSU",
+      "seo": "lsu",
+      "full": ""
+     },
+     "winner": true,
+     "seed": "",
+     "description": "",
+     "rank": "3",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "finalMessage": "FINAL",
+    "title": "Texas A&M LSU",
+    "url": "/game/6600001",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "6:00PM ET",
+    "startTimeEpoch": "1777672800",
+    "gameState": "final",
+    "startDate": "05/01/2026",
+    "currentPeriod": "FINAL",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600002",
+    "away": {
+     "score": "3",
+     "names": {
+      "char6": "FSU",
+      "short": "Florida St.",
+      "seo": "florida-st",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "12",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "home": {
+     "score": "4",
+     "names": {
+      "char6": "MIAMI",
+      "short": "Miami (FL)",
+      "seo": "miami-fl",
+      "full": ""
+     },
+     "winner": true,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "finalMessage": "FINAL",
+    "title": "Florida St. Miami (FL)",
+    "url": "/game/6600002",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "1:00PM ET",
+    "startTimeEpoch": "1777654800",
+    "gameState": "final",
+    "startDate": "05/01/2026",
+    "currentPeriod": "FINAL",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600003",
+    "away": {
+     "score": "",
+     "names": {
+      "char6": "FSU",
+      "short": "Florida St.",
+      "seo": "florida-st",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "12",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "home": {
+     "score": "",
+     "names": {
+      "char6": "MIAMI",
+      "short": "Miami (FL)",
+      "seo": "miami-fl",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "finalMessage": "",
+    "title": "Florida St. Miami (FL)",
+    "url": "/game/6600003",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "5:00PM ET",
+    "startTimeEpoch": "1777669200",
+    "gameState": "pre",
+    "startDate": "05/01/2026",
+    "currentPeriod": "",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600004",
+    "away": {
+     "score": "",
+     "names": {
+      "char6": "OLEMIS",
+      "short": "Ole Miss",
+      "seo": "ole-miss",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "home": {
+     "score": "",
+     "names": {
+      "char6": "MSST",
+      "short": "Mississippi St.",
+      "seo": "mississippi-st",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "finalMessage": "Postponed",
+    "title": "Ole Miss Mississippi St.",
+    "url": "/game/6600004",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "7:00PM ET",
+    "startTimeEpoch": "1777676400",
+    "gameState": "pre",
+    "startDate": "05/01/2026",
+    "currentPeriod": "PPD",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600005",
+    "away": {
+     "score": "12",
+     "names": {
+      "char6": "NCST",
+      "short": "N.C. State",
+      "seo": "nc-state",
+      "full": ""
+     },
+     "winner": true,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "home": {
+     "score": "2",
+     "names": {
+      "char6": "WAKE",
+      "short": "Wake Forest",
+      "seo": "wake-forest",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "acc"
+      }
+     ]
+    },
+    "finalMessage": "FINAL/7",
+    "title": "N.C. State Wake Forest",
+    "url": "/game/6600005",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "6:00PM ET",
+    "startTimeEpoch": "",
+    "gameState": "final",
+    "startDate": "05/01/2026",
+    "currentPeriod": "FINAL/7",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600006",
+    "away": {
+     "score": "",
+     "names": {
+      "char6": "TEXAS",
+      "short": "Texas",
+      "seo": "texas",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "home": {
+     "score": "",
+     "names": {
+      "char6": "ARK",
+      "short": "Arkansas",
+      "seo": "arkansas",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "sec"
+      }
+     ]
+    },
+    "finalMessage": "",
+    "title": "Texas Arkansas",
+    "url": "/game/6600006",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "TBA",
+    "startTimeEpoch": "",
+    "gameState": "pre",
+    "startDate": "05/01/2026",
+    "currentPeriod": "",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  },
+  {
+   "game": {
+    "gameID": "6600007",
+    "away": {
+     "score": "",
+     "names": {
+      "char6": "ORST",
+      "short": "Oregon St.",
+      "seo": "oregon-st",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "pac-12"
+      }
+     ]
+    },
+    "home": {
+     "score": "",
+     "names": {
+      "char6": "OREGON",
+      "short": "Oregon",
+      "seo": "oregon",
+      "full": ""
+     },
+     "winner": false,
+     "seed": "",
+     "description": "",
+     "rank": "",
+     "conferences": [
+      {
+       "conferenceName": "",
+       "conferenceSeo": "big-ten"
+      }
+     ]
+    },
+    "finalMessage": "",
+    "title": "Oregon St. Oregon",
+    "url": "/game/6600007",
+    "network": "",
+    "liveVideoEnabled": false,
+    "startTime": "4:00PM ET",
+    "startTimeEpoch": "1777752000",
+    "gameState": "pre",
+    "startDate": "05/02/2026",
+    "currentPeriod": "",
+    "contestClock": "0:00",
+    "bracketId": "",
+    "bracketRound": ""
+   }
+  }
+ ]
+}

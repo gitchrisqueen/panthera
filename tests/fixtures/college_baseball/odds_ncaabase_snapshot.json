@@ -1,0 +1,152 @@
+[
+ {
+  "id": "cbb-tamu-lsu",
+  "sport_key": "baseball_ncaa",
+  "commence_time": "2026-05-01T22:05:00Z",
+  "home_team": "LSU Tigers",
+  "away_team": "Texas A&M Aggies",
+  "bookmakers": [
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "LSU Tigers",
+        "price": -150
+       },
+       {
+        "name": "Texas A&M Aggies",
+        "price": 125
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "outcomes": [
+       {
+        "name": "LSU Tigers",
+        "price": 110,
+        "point": -1.5
+       },
+       {
+        "name": "Texas A&M Aggies",
+        "price": -135,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 11.5
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 11.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cbb-fsu-mia-g1",
+  "sport_key": "baseball_ncaa",
+  "commence_time": "2026-05-01T17:00:00Z",
+  "home_team": "Miami Hurricanes",
+  "away_team": "Florida State Seminoles",
+  "bookmakers": [
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Miami Hurricanes",
+        "price": -120
+       },
+       {
+        "name": "Florida State Seminoles",
+        "price": 100
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cbb-fsu-mia-g2",
+  "sport_key": "baseball_ncaa",
+  "commence_time": "2026-05-01T21:00:00Z",
+  "home_team": "Miami Hurricanes",
+  "away_team": "Florida State Seminoles",
+  "bookmakers": [
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Miami Hurricanes",
+        "price": -110
+       },
+       {
+        "name": "Florida State Seminoles",
+        "price": -110
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cbb-unmatched",
+  "sport_key": "baseball_ncaa",
+  "commence_time": "2026-05-01T23:00:00Z",
+  "home_team": "Nowhere State Owls",
+  "away_team": "Somewhere Tech Comets",
+  "bookmakers": [
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "markets": [
+     {
+      "key": "h2h",
+      "outcomes": [
+       {
+        "name": "Nowhere State Owls",
+        "price": -130
+       },
+       {
+        "name": "Somewhere Tech Comets",
+        "price": 110
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cbb-unpriced",
+  "sport_key": "baseball_ncaa",
+  "commence_time": "2026-05-01T23:00:00Z",
+  "home_team": "Arkansas Razorbacks",
+  "away_team": "Texas Longhorns",
+  "bookmakers": []
+ }
+]

@@ -24,6 +24,15 @@
   (`data/ncaaf/`), name-normalized odds↔ESPN matching, and a parlay-ticket
   ledger (`grading.py`: spread/total/moneyline legs; push/void legs drop out
   and the ticket price is re-figured). No pick engine yet.
+- `clients/college_baseball.py` + `ncaabase/` — NCAA D1 college baseball
+  (issue #52): ncaa-api (henrygd wrapper over NCAA.com; daily scoreboard,
+  NCAA `gameID` = game key) with ESPN's college-baseball scoreboard as the
+  finals fallback, both keyless. Own config (`config/ncaabase.yaml`: season
+  window, hosts, aliases; odds snapshot off by default), own data tree
+  (`data/ncaabase/`). `matching.py` fits mascot-suffixed outside names onto
+  NCAA short names and splits doubleheaders by start time (ambiguous =
+  skipped, never guessed); `store.py` keeps finals sticky; `grading.py`
+  settles single ml/rl/total picks. No strategy yet.
 - `matching.py` — odds event ↔ MLB gamePk; alias table + commence-time
   proximity for doubleheaders; unmatched events are logged, never guessed.
 - `store.py` — CSV datastore with dedupe keys (lines) / upsert (games) /

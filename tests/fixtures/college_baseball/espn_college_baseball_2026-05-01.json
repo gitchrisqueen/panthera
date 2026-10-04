@@ -1,0 +1,214 @@
+{
+ "events": [
+  {
+   "id": "401700001",
+   "date": "2026-05-01T22:00Z",
+   "competitions": [
+    {
+     "id": "401700001",
+     "date": "2026-05-01T22:00Z",
+     "status": {
+      "type": {
+       "name": "STATUS_FINAL",
+       "completed": true
+      }
+     },
+     "competitors": [
+      {
+       "id": "85",
+       "homeAway": "home",
+       "score": "7",
+       "team": {
+        "id": "85",
+        "location": "LSU",
+        "displayName": "LSU Tigers",
+        "shortDisplayName": "LSU",
+        "abbreviation": "LSU"
+       }
+      },
+      {
+       "id": "123",
+       "homeAway": "away",
+       "score": "5",
+       "team": {
+        "id": "123",
+        "location": "Texas A&M",
+        "displayName": "Texas A&M Aggies",
+        "shortDisplayName": "Texas A&M",
+        "abbreviation": "TA&M"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401700002",
+   "date": "2026-05-01T17:00Z",
+   "competitions": [
+    {
+     "id": "401700002",
+     "date": "2026-05-01T17:00Z",
+     "status": {
+      "type": {
+       "name": "STATUS_FINAL",
+       "completed": true
+      }
+     },
+     "competitors": [
+      {
+       "id": "176",
+       "homeAway": "home",
+       "score": "4",
+       "team": {
+        "id": "176",
+        "location": "Miami",
+        "displayName": "Miami Hurricanes",
+        "shortDisplayName": "Miami",
+        "abbreviation": "MIA"
+       }
+      },
+      {
+       "id": "72",
+       "homeAway": "away",
+       "score": "3",
+       "team": {
+        "id": "72",
+        "location": "Florida State",
+        "displayName": "Florida State Seminoles",
+        "shortDisplayName": "Florida St",
+        "abbreviation": "FSU"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401700003",
+   "date": "2026-05-01T21:05Z",
+   "competitions": [
+    {
+     "id": "401700003",
+     "date": "2026-05-01T21:05Z",
+     "status": {
+      "type": {
+       "name": "STATUS_FINAL",
+       "completed": true
+      }
+     },
+     "competitors": [
+      {
+       "id": "176",
+       "homeAway": "home",
+       "score": "6",
+       "team": {
+        "id": "176",
+        "location": "Miami",
+        "displayName": "Miami Hurricanes",
+        "shortDisplayName": "Miami",
+        "abbreviation": "MIA"
+       }
+      },
+      {
+       "id": "72",
+       "homeAway": "away",
+       "score": "2",
+       "team": {
+        "id": "72",
+        "location": "Florida State",
+        "displayName": "Florida State Seminoles",
+        "shortDisplayName": "Florida St",
+        "abbreviation": "FSU"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401700004",
+   "date": "2026-05-01T23:00Z",
+   "competitions": [
+    {
+     "id": "401700004",
+     "date": "2026-05-01T23:00Z",
+     "status": {
+      "type": {
+       "name": "STATUS_POSTPONED",
+       "completed": false
+      }
+     },
+     "competitors": [
+      {
+       "id": "150",
+       "homeAway": "home",
+       "score": "0",
+       "team": {
+        "id": "150",
+        "location": "Mississippi State",
+        "displayName": "Mississippi State Bulldogs",
+        "shortDisplayName": "Mississippi St",
+        "abbreviation": "MSST"
+       }
+      },
+      {
+       "id": "92",
+       "homeAway": "away",
+       "score": "0",
+       "team": {
+        "id": "92",
+        "location": "Ole Miss",
+        "displayName": "Ole Miss Rebels",
+        "shortDisplayName": "Ole Miss",
+        "abbreviation": "MISS"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401700005",
+   "date": "2026-05-01T23:00Z",
+   "competitions": [
+    {
+     "id": "401700005",
+     "date": "2026-05-01T23:00Z",
+     "status": {
+      "type": {
+       "name": "STATUS_SCHEDULED",
+       "completed": false
+      }
+     },
+     "competitors": [
+      {
+       "id": "58",
+       "homeAway": "home",
+       "score": "0",
+       "team": {
+        "id": "58",
+        "location": "Arkansas",
+        "displayName": "Arkansas Razorbacks",
+        "shortDisplayName": "Arkansas",
+        "abbreviation": "ARK"
+       }
+      },
+      {
+       "id": "126",
+       "homeAway": "away",
+       "score": "0",
+       "team": {
+        "id": "126",
+        "location": "Texas",
+        "displayName": "Texas Longhorns",
+        "shortDisplayName": "Texas",
+        "abbreviation": "TEX"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
