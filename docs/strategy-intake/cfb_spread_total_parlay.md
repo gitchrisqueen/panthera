@@ -74,8 +74,14 @@ as one. Ask why it wasn't placed, because that answer is a skip rule.
 ## Round 2: getting the answers
 
 The answers live in the author's head, not in the chat history, so the
-assistant can't fill them in alone. There are two ways to get them.
-**Option A is recommended.**
+assistant can't fill them in alone.
+
+**In use (2026-10-04):** the author's assistant is Muse, not ChatGPT. The
+full questionnaire, interview rules and answer template are posted as a
+public issue Muse can read directly:
+[#55](https://github.com/gitchrisqueen/panthera/issues/55). Answers come back
+as a comment on #55 or privately to Christopher. The two options below are
+fallbacks. **Option A is recommended** if the issue route stalls.
 
 ### Option A: send the author the questions directly
 
