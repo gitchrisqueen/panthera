@@ -18,6 +18,11 @@ and paper-trade. Written 2026-09-27 to replace a lost earlier version.
    - Check `unanswered_questions` and every `UNKNOWN` and `discretionary: true`
      item. Get each one resolved or replaced by a mechanical proxy before
      registering. An engine can't run a rule that reads "use your gut".
+     If nearly every field is `UNKNOWN`, the assistant skipped the interview.
+     Don't send a follow-up that says both "ask me first" and "output only
+     YAML", because the assistant obeys the second part. Ask the person
+     directly, or use a two-step prompt where YAML is forbidden until every
+     answer is in (see `cfb_spread_total_parlay.md`, Round 2).
    - Map each `inputs[]` entry to a field Panthera already has (see the table
      in the prompt). Anything marked `available_in_panthera: no` needs a new
      client plus fixtures, or the rule is dropped. Record which one you chose.
