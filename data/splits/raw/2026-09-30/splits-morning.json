@@ -1,0 +1,198 @@
+[
+ {
+  "event": {
+   "id": 20973,
+   "name": "Philadelphia Phillies @ Atlanta Braves",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-30T18:00:00Z",
+   "scheduled_start_at": "2026-09-30T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "NL Wild Card Series Game 1",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 76,
+    "name": "Truist Park",
+    "city": "Cumberland",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 20973,
+   "available": true,
+   "captured_at": "2026-09-30T14:38:22Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 37,
+      "handle_pct": 23,
+      "price": -103
+     },
+     "away": {
+      "bets_pct": 64,
+      "handle_pct": 77,
+      "price": -117
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 64,
+      "handle_pct": 60,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 36,
+      "handle_pct": 40,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 70,
+      "handle_pct": 88,
+      "line": 7.0
+     },
+     "under": {
+      "bets_pct": 30,
+      "handle_pct": 12,
+      "line": 7.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 33,
+       "handle_pct": 27,
+       "price": -103
+      },
+      "away": {
+       "bets_pct": 67,
+       "handle_pct": 73,
+       "price": -117
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 66,
+       "handle_pct": 21,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 34,
+       "handle_pct": 79,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 81,
+       "handle_pct": 84,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 19,
+       "handle_pct": 16,
+       "line": 7.0
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 39,
+       "handle_pct": null,
+       "price": -105
+      },
+      "away": {
+       "bets_pct": 61,
+       "handle_pct": null,
+       "price": -115
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 58,
+       "handle_pct": null,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 42,
+       "handle_pct": null,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 72,
+       "handle_pct": null,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 28,
+       "handle_pct": null,
+       "line": 7.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 38,
+       "handle_pct": 19,
+       "price": 102
+      },
+      "away": {
+       "bets_pct": 63,
+       "handle_pct": 81,
+       "price": -112
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 99,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 1,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 57,
+       "handle_pct": 93,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 43,
+       "handle_pct": 7,
+       "line": 7.0
+      }
+     }
+    }
+   ]
+  }
+ }
+]
