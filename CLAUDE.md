@@ -38,7 +38,8 @@ panthera-mvp status
 panthera-mvp backtest --seasons 2014-2023 [--strategy pv_v2]
 panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
 panthera-mvp ncaaf games --date 2026-10-03       # college football plumbing
-panthera-mvp ncaaf snapshot --label open --dry-run   # PANTHERA_NCAAF_ODDS_FIXTURE
+panthera-mvp ncaaf games --week 5 --year 2026    # whole CFB week (CFBD + ESPN)
+panthera-mvp ncaaf snapshot --label open --dry-run [--week 5]  # PANTHERA_NCAAF_ODDS_FIXTURE
 panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
 ```
 
@@ -54,10 +55,13 @@ panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
   picks; `fade_public` and `sharp_split` are built on them. Missing key =
   silent skip.
 - `CFBD_API_KEY` (repo Actions secret, optional) — free CollegeFootballData.com
-  key for NCAAF history/metrics; `ncaaf cfbd-pull` caches every response.
-  NCAAF odds snapshots share the Odds API pool (reserve 60 in
-  `config/ncaaf.yaml`, so MLB keeps priority).
-- MLB Stats API, ESPN and Open-Meteo endpoints are keyless. `GITHUB_TOKEN` is built-in.
+  key for NCAAF history/metrics and the primary week schedule/lines source
+  (`ncaaf games --week`); `ncaaf cfbd-pull` caches every response. Missing
+  key = ESPN-only. NCAAF odds snapshots share the Odds API pool (reserve 60
+  in `config/ncaaf.yaml`, so MLB keeps priority); one snapshot covers the
+  whole week, so NCAAF runs weekly (~6 credits/week), not daily.
+- MLB Stats API, ESPN, ncaa-api.henrygd.me (NCAAF finals fallback, 5 req/s)
+  and Open-Meteo endpoints are keyless. `GITHUB_TOKEN` is built-in.
 
 ## Gotchas
 

@@ -94,6 +94,10 @@ def ncaaf_lines_csv() -> Path:
     return ncaaf_dir() / "odds" / "lines.csv"
 
 
+def ncaaf_cfbd_lines_csv() -> Path:
+    return ncaaf_dir() / "odds" / "cfbd_lines.csv"
+
+
 def ncaaf_raw_odds_dir(date_et: str) -> Path:
     return ncaaf_dir() / "odds" / "raw" / date_et
 

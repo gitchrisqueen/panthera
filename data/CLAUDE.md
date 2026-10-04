@@ -84,17 +84,33 @@ regenerate it (`panthera-mvp report`), don't edit markdown.
 ## ncaaf/ (college football — `panthera-mvp ncaaf ...`)
 
 Separate tree so nothing NCAAF reaches the MLB ledger/report/dashboard.
-- `ncaaf/games/games.csv` (upsert by `event_id` = ESPN event id):
-  `event_id, game_date_et, start_time_utc, home_team, away_team, home_rank,
-  away_rank, neutral_site, conference_game, venue, indoor, status,
-  home_score, away_score`
+- `ncaaf/games/games.csv` (upsert by `event_id` = ESPN event id, which is
+  also CFBD's game id): `event_id, game_date_et, start_time_utc, home_team,
+  away_team, home_rank, away_rank, neutral_site, conference_game, venue,
+  indoor, status, home_score, away_score, season, season_type, week,
+  home_school, away_school, score_source` (the last six arrived with week
+  ingest; older rows are null there). Team names are ESPN display names
+  ("Miami Hurricanes"); CFBD-only games get "School Mascot" from
+  /teams/fbs. `*_school` = ESPN team.location / CFBD school. `score_source`
+  = espn | cfbd | ncaa_api. A stored Final is never downgraded by a later
+  lagging refresh.
 - `ncaaf/odds/lines.csv`: MLB lines schema with `game_pk` replaced by
-  `event_id` (null = unmatched, e.g. FCS); same dedupe key.
+  `event_id` (null = unmatched, e.g. FCS); same dedupe key. Odds API rows
+  only — the priced time series.
+- `ncaaf/odds/cfbd_lines.csv` (upsert by `event_id, provider`):
+  `fetched_ts_utc, event_id, season, season_type, week, home_team,
+  away_team, provider, spread, spread_open, total, total_open,
+  home_moneyline, away_moneyline` — CFBD's per-provider week lines from
+  `ncaaf games|snapshot --week`. Unpriced numbers, kept apart from
+  lines.csv. `spread` is signed from this row's `home_team` (CFBD's home,
+  which may differ from games.csv on neutral sites). A re-pull replaces the
+  current number; the opener stays in `*_open`.
 - `ncaaf/odds/raw/YYYY-MM-DD/{label}.json`: raw Odds API responses.
 - `ncaaf/tickets/tickets.csv` + `ticket_legs.csv`: paper parlay tickets
   (append-once, settled in place by `ncaaf grade`); schemas in
   `src/panthera_mvp/ncaaf/store.py`.
 - `ncaaf/cfbd/*.json`: cached CollegeFootballData.com responses (one file
-  per endpoint+params); completed seasons never change.
+  per endpoint+params); completed seasons never change. Week pulls
+  (`games`/`lines` with a `week` param) are re-fetched on every run.
 - NCAAF live snapshots log to the shared `odds/credit_log.csv` with labels
   `ncaaf_<label>` — one credit pool for both sports.

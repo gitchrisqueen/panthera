@@ -1,5 +1,6 @@
-"""NCAAF CSV datastore: games (upsert), lines (append, dedupe), parlay
-tickets + legs (append-once, settle in place).
+"""NCAAF CSV datastore: games (upsert), Odds API lines (append, dedupe),
+CFBD week lines (upsert), parlay tickets + legs (append-once, settle in
+place).
 
 A ticket is one paper bet: N legs, one stake, one combined price. Legs are
 stored separately so each leg grades on its own game; the ticket settles
@@ -16,6 +17,8 @@ GAMES_COLUMNS = [
     "event_id", "game_date_et", "start_time_utc", "home_team", "away_team",
     "home_rank", "away_rank", "neutral_site", "conference_game", "venue",
     "indoor", "status", "home_score", "away_score",
+    # Added with week ingest; rows written before then carry nulls here.
+    "season", "season_type", "week", "home_school", "away_school", "score_source",
 ]
 
 LINES_KEY = ["game_date_et", "snapshot_label", "odds_event_id", "bookmaker", "market", "outcome"]
@@ -51,11 +54,16 @@ def load_games() -> pd.DataFrame:
 
 
 def upsert_games(df: pd.DataFrame) -> None:
+    """Replace rows by event_id — except that a stored Final is never
+    downgraded: a lagging feed (or a refresh after a fallback filled the
+    score) must not reopen a settled game."""
     if df.empty:
         return
     df = df.reindex(columns=GAMES_COLUMNS).astype({"event_id": str})
     existing = load_games()
     if not existing.empty:
+        finals = set(existing.loc[existing["status"] == "Final", "event_id"])
+        df = df[~(df["event_id"].isin(finals) & (df["status"] != "Final"))]
         existing = existing[~existing["event_id"].isin(df["event_id"])]
         df = pd.concat([existing, df], ignore_index=True)
     _write(df.sort_values(["game_date_et", "start_time_utc", "event_id"]), paths.ncaaf_games_csv())
@@ -80,6 +88,31 @@ def append_lines(df: pd.DataFrame) -> int:
         combined = df
     _write(combined, paths.ncaaf_lines_csv())
     return len(df)
+
+
+CFBD_LINES_KEY = ["event_id", "provider"]
+
+
+def load_cfbd_lines() -> pd.DataFrame:
+    path = paths.ncaaf_cfbd_lines_csv()
+    return pd.read_csv(path, dtype={"event_id": str}) if path.exists() else pd.DataFrame()
+
+
+def upsert_cfbd_lines(df: pd.DataFrame) -> int:
+    """CFBD's per-provider week lines, upserted by (event_id, provider): a
+    re-pull replaces the current number (the opener stays in *_open). The
+    Odds API snapshots in lines.csv remain the priced time series."""
+    if df.empty:
+        return 0
+    df = df.astype({"event_id": str})
+    n = len(df)
+    existing = load_cfbd_lines()
+    if not existing.empty:
+        new_keys = set(map(tuple, df[CFBD_LINES_KEY].astype(str).values))
+        keep = [tuple(map(str, r)) not in new_keys for r in existing[CFBD_LINES_KEY].values]
+        df = pd.concat([existing[keep], df], ignore_index=True)
+    _write(df.sort_values(CFBD_LINES_KEY), paths.ncaaf_cfbd_lines_csv())
+    return n
 
 
 def load_tickets() -> pd.DataFrame:
