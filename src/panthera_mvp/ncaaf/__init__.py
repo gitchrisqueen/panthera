@@ -8,6 +8,8 @@ generates picks yet — the engine waits on the author's follow-up answers.
 
 - `config.py`   — loads config/ncaaf.yaml.
 - `matching.py` — Odds API event <-> ESPN event id, by normalized names.
+- `sources.py`  — week ingest (CFBD + ESPN merge) and the finals fallback
+                  chain (ESPN -> CFBD -> ncaa-api).
 - `store.py`    — games / lines / tickets / ticket_legs CSVs.
 - `grading.py`  — spread/total/moneyline legs and parlay tickets.
 - `pipeline.py` — `panthera-mvp ncaaf ...` commands.

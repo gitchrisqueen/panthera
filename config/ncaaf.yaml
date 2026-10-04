@@ -17,6 +17,11 @@ odds_api:
   # Higher floor than MLB's 30: the monthly pool is shared, and MLB is the
   # incumbent test. NCAAF snapshots stop first when credits run low.
   min_credits_reserve: 60
+  # Cadence is WEEKLY: one call returns every upcoming FBS event of the
+  # week, so a full slate costs 3 credits (3 markets x 1 region), not 3 per
+  # game day. Two snapshots a week (open early in the week + pregame
+  # Saturday) = 6 credits/week ~= 26/month; MLB's 3/day ~= 270/month, so
+  # both fit the 500 free tier with room for the reserve.
 
 espn:
   # FBS only (ESPN group 80). FCS games appear on the Odds API feed rarely
@@ -42,6 +47,15 @@ cfbd:
   # Consensus first, then books in preference order, when a game has several
   # providers' lines.
   line_providers: [consensus, Bovada, DraftKings, ESPN Bet, William Hill (New Jersey)]
+
+ncaa_api:
+  # Last finals fallback (ncaa-api.henrygd.me, keyless, 5 req/s; used only
+  # when ESPN errors). Matched by ET date + both schools; NCAA.com's "St."
+  # is expanded to "State" automatically. NCAA.com short name -> ESPN school
+  # (team.location) for the rest; add entries as `ncaaf grade` logs games it
+  # could not fill. Not yet verified against the live feed.
+  school_aliases:
+    "Miami (FL)": Miami
 
 grading:
   flat_stake: 100

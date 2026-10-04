@@ -1,0 +1,27 @@
+{
+  "inputMD5Sum": "synthetic",
+  "updated_at": "10-04-2026 08:00:00",
+  "hideRank": false,
+  "games": [
+    {"game": {"gameID": "6400001", "title": "TCU BYU", "url": "/game/6400001", "gameState": "final",
+      "startDate": "10-03-2026", "startTime": "07:30PM ET", "startTimeEpoch": "1791070200", "finalMessage": "FINAL",
+      "home": {"score": "31", "winner": true, "rank": "18", "names": {"char6": "BYU", "short": "BYU", "seo": "byu", "full": "Brigham Young University"}},
+      "away": {"score": "21", "winner": false, "rank": "", "names": {"char6": "TCU", "short": "TCU", "seo": "tcu", "full": "Texas Christian University"}}}},
+    {"game": {"gameID": "6400002", "title": "Clemson Miami (FL)", "url": "/game/6400002", "gameState": "final",
+      "startDate": "10-03-2026", "startTime": "03:30PM ET", "startTimeEpoch": "1791055800", "finalMessage": "FINAL",
+      "home": {"score": "38", "winner": true, "rank": "6", "names": {"char6": "MIAMI", "short": "Miami (FL)", "seo": "miami-fl", "full": "University of Miami"}},
+      "away": {"score": "17", "winner": false, "rank": "", "names": {"char6": "CLEM", "short": "Clemson", "seo": "clemson", "full": "Clemson University"}}}},
+    {"game": {"gameID": "6400003", "title": "Colorado Texas Tech", "url": "/game/6400003", "gameState": "final",
+      "startDate": "10-03-2026", "startTime": "08:00PM ET", "startTimeEpoch": "1791072000", "finalMessage": "FINAL",
+      "home": {"score": "41", "winner": true, "rank": "12", "names": {"char6": "TXTECH", "short": "Texas Tech", "seo": "texas-tech", "full": "Texas Tech University"}},
+      "away": {"score": "24", "winner": false, "rank": "", "names": {"char6": "COLO", "short": "Colorado", "seo": "colorado", "full": "University of Colorado"}}}},
+    {"game": {"gameID": "6400004", "title": "Hawaii San Jose St.", "url": "/game/6400004", "gameState": "final",
+      "startDate": "10-03-2026", "startTime": "12:00PM ET", "startTimeEpoch": "1791043200", "finalMessage": "FINAL",
+      "home": {"score": "24", "winner": false, "rank": "", "names": {"char6": "SJSU", "short": "San Jose St.", "seo": "san-jose-st", "full": "San Jose State University"}},
+      "away": {"score": "27", "winner": true, "rank": "", "names": {"char6": "HAWAII", "short": "Hawaii", "seo": "hawaii", "full": "University of Hawaii"}}}},
+    {"game": {"gameID": "6400005", "title": "Georgia Southern App State", "url": "/game/6400005", "gameState": "pre",
+      "startDate": "10-03-2026", "startTime": "01:00PM ET", "startTimeEpoch": "1791046800", "finalMessage": "",
+      "home": {"score": "", "winner": false, "rank": "", "names": {"char6": "APPST", "short": "App State", "seo": "appalachian-st", "full": "Appalachian State University"}},
+      "away": {"score": "", "winner": false, "rank": "", "names": {"char6": "GASO", "short": "Ga. Southern", "seo": "ga-southern", "full": "Georgia Southern University"}}}}
+  ]
+}

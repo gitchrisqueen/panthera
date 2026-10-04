@@ -11,6 +11,19 @@ the cfb_spread_total_parlay export's five inputs:
   /ratings/sp   SP+ team ratings (offense/defense) — "advanced metrics"
   /venues       coordinates + dome flag — the weather angle's lookup key
 
+plus the weekly-ingest and context endpoints:
+
+  /teams/fbs    school -> mascot, so CFBD's school-only names ("Miami")
+                can be shown as ESPN-style display names ("Miami Hurricanes")
+  /rankings     weekly polls (AP, Coaches, CFP) per (season, week)
+  /stats/season season-to-date team stats, long format (statName/statValue)
+
+Game ids: CFBD's game `id` is ESPN's event id for the same game (CFBD sources
+its schedule from ESPN; cfbfastR joins the two feeds on it). The NCAAF store
+therefore keys CFBD games by `event_id = str(id)` with no name matching; the
+merge in `ncaaf/sources.py` still cross-checks school names on every shared
+id and logs a disagreement instead of trusting it.
+
 Injury reports are not in CFBD; that input stays unavailable. Every parser
 here is a pure function over the JSON payload so fixtures cover it offline.
 """
@@ -89,7 +102,7 @@ GAMES_COLUMNS = [
     "cfbd_game_id", "season", "week", "season_type", "start_time_utc",
     "neutral_site", "conference_game", "venue_id", "home_team",
     "home_conference", "away_team", "away_conference", "home_points",
-    "away_points", "completed",
+    "away_points", "completed", "venue",
 ]
 
 
@@ -113,6 +126,7 @@ def parse_games(payload: list[dict]) -> pd.DataFrame:
             "home_points": _pick(g, "homePoints", "home_points"),
             "away_points": _pick(g, "awayPoints", "away_points"),
             "completed": bool(_pick(g, "completed", default=False)),
+            "venue": _pick(g, "venue"),
         }
         for g in payload
     ]
@@ -198,3 +212,77 @@ def parse_venues(payload: list[dict]) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows, columns=VENUE_COLUMNS)
+
+
+TEAM_COLUMNS = ["team_id", "school", "mascot", "abbreviation", "conference", "display_name"]
+
+
+def parse_teams(payload: list[dict]) -> pd.DataFrame:
+    """/teams/fbs. `display_name` = "School Mascot", ESPN's displayName form
+    (falls back to the bare school when CFBD has no mascot)."""
+    rows = []
+    for t in payload:
+        school = _pick(t, "school")
+        if not school:
+            continue
+        mascot = _pick(t, "mascot")
+        rows.append(
+            {
+                "team_id": _pick(t, "id"),
+                "school": school,
+                "mascot": mascot,
+                "abbreviation": _pick(t, "abbreviation"),
+                "conference": _pick(t, "conference"),
+                "display_name": f"{school} {mascot}" if mascot else school,
+            }
+        )
+    return pd.DataFrame(rows, columns=TEAM_COLUMNS)
+
+
+RANKING_COLUMNS = [
+    "season", "season_type", "week", "poll", "rank", "school", "conference",
+    "first_place_votes", "points",
+]
+
+
+def parse_rankings(payload: list[dict]) -> pd.DataFrame:
+    """/rankings: one row per (season, week, poll, team)."""
+    rows = []
+    for wk in payload:
+        for poll in _pick(wk, "polls", default=[]) or []:
+            for r in _pick(poll, "ranks", default=[]) or []:
+                rows.append(
+                    {
+                        "season": _pick(wk, "season"),
+                        "season_type": _pick(wk, "seasonType", "season_type"),
+                        "week": _pick(wk, "week"),
+                        "poll": _pick(poll, "poll"),
+                        "rank": _pick(r, "rank"),
+                        "school": _pick(r, "school"),
+                        "conference": _pick(r, "conference"),
+                        "first_place_votes": _pick(r, "firstPlaceVotes", "first_place_votes"),
+                        "points": _pick(r, "points"),
+                    }
+                )
+    return pd.DataFrame(rows, columns=RANKING_COLUMNS)
+
+
+STAT_COLUMNS = ["season", "team", "conference", "stat", "value"]
+
+
+def parse_season_stats(payload: list[dict]) -> pd.DataFrame:
+    """/stats/season: long format, one row per (team, stat). Values are
+    numeric; pivot on `stat` for a wide team table."""
+    rows = [
+        {
+            "season": _pick(r, "season"),
+            "team": _pick(r, "team"),
+            "conference": _pick(r, "conference"),
+            "stat": _pick(r, "statName", "stat_name"),
+            "value": _pick(r, "statValue", "stat_value"),
+        }
+        for r in payload
+    ]
+    df = pd.DataFrame(rows, columns=STAT_COLUMNS)
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    return df

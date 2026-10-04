@@ -86,11 +86,18 @@ def main(argv: list[str] | None = None) -> None:
         "ncaaf", help="College football data plumbing (games, odds, parlay grading)"
     )
     cfb = p_cfb.add_subparsers(dest="ncaaf_command", required=True)
-    c_games = cfb.add_parser("games", help="Refresh ESPN FBS games for an ET date")
+    def week_args(p, help_week: str) -> None:
+        p.add_argument("--week", type=int, default=None, help=help_week)
+        p.add_argument("--year", type=int, default=None, help="Season (default: current)")
+        p.add_argument("--season-type", default="regular", choices=["regular", "postseason"])
+
+    c_games = cfb.add_parser("games", help="Refresh FBS games for an ET date or a CFB week")
     c_games.add_argument("--date", default=None, help="ET date (default: today)")
-    c_snap = cfb.add_parser("snapshot", help="Take an NCAAF odds snapshot")
+    week_args(c_games, "Ingest a whole CFB week instead of one date (CFBD + ESPN)")
+    c_snap = cfb.add_parser("snapshot", help="Take an NCAAF odds snapshot (weekly cadence)")
     c_snap.add_argument("--label", required=True, choices=["open", "pregame", "close"])
     c_snap.add_argument("--dry-run", action="store_true")
+    week_args(c_snap, "Ingest this CFB week first and match odds against it")
     c_grade = cfb.add_parser("grade", help="Settle pending parlay tickets")
     c_grade.add_argument("--date", default=None, help="Only refresh this ET date")
     c_cfbd = cfb.add_parser("cfbd-pull", help="Cache CFBD history for backtests")
@@ -159,9 +166,14 @@ def main(argv: list[str] | None = None) -> None:
         from .ncaaf import pipeline as ncaaf
 
         if args.ncaaf_command == "games":
-            ncaaf.cmd_games(args.date)
+            if args.date and args.week is not None:
+                parser.error("ncaaf games: use --date or --week, not both")
+            ncaaf.cmd_games(args.date, args.week, args.year, args.season_type)
         elif args.ncaaf_command == "snapshot":
-            ncaaf.cmd_snapshot(args.label, dry_run=args.dry_run)
+            ncaaf.cmd_snapshot(
+                args.label, dry_run=args.dry_run, week=args.week,
+                season=args.year, season_type=args.season_type,
+            )
         elif args.ncaaf_command == "grade":
             ncaaf.cmd_grade(args.date)
         elif args.ncaaf_command == "cfbd-pull":
