@@ -79,3 +79,38 @@ def site_dir() -> Path:
     from data/picks/picks.csv, never committed (unlike reports/, which is
     bot-owned committed markdown history)."""
     return repo_root() / "site"
+
+
+# --- NCAAF (college football) -------------------------------------------
+# A separate tree so the MLB ledger, reports and dashboard never see college
+# rows. Same conventions: bot-owned, UTC timestamps, ET game dates.
+
+
+def ncaaf_dir() -> Path:
+    return data_dir() / "ncaaf"
+
+
+def ncaaf_lines_csv() -> Path:
+    return ncaaf_dir() / "odds" / "lines.csv"
+
+
+def ncaaf_raw_odds_dir(date_et: str) -> Path:
+    return ncaaf_dir() / "odds" / "raw" / date_et
+
+
+def ncaaf_games_csv() -> Path:
+    return ncaaf_dir() / "games" / "games.csv"
+
+
+def ncaaf_tickets_csv() -> Path:
+    return ncaaf_dir() / "tickets" / "tickets.csv"
+
+
+def ncaaf_ticket_legs_csv() -> Path:
+    return ncaaf_dir() / "tickets" / "ticket_legs.csv"
+
+
+def ncaaf_cfbd_dir() -> Path:
+    """Cached CollegeFootballData.com responses (games, lines, ratings,
+    venues) — the historical backtest's inputs."""
+    return ncaaf_dir() / "cfbd"

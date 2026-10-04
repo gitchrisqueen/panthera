@@ -82,6 +82,22 @@ def main(argv: list[str] | None = None) -> None:
     p_replay.add_argument("--from", dest="from_et", default=None, help="ET date, e.g. 2026-07-31")
     p_replay.add_argument("--to", dest="to_et", default=None, help="ET date, e.g. 2026-08-19")
 
+    p_cfb = sub.add_parser(
+        "ncaaf", help="College football data plumbing (games, odds, parlay grading)"
+    )
+    cfb = p_cfb.add_subparsers(dest="ncaaf_command", required=True)
+    c_games = cfb.add_parser("games", help="Refresh ESPN FBS games for an ET date")
+    c_games.add_argument("--date", default=None, help="ET date (default: today)")
+    c_snap = cfb.add_parser("snapshot", help="Take an NCAAF odds snapshot")
+    c_snap.add_argument("--label", required=True, choices=["open", "pregame", "close"])
+    c_snap.add_argument("--dry-run", action="store_true")
+    c_grade = cfb.add_parser("grade", help="Settle pending parlay tickets")
+    c_grade.add_argument("--date", default=None, help="Only refresh this ET date")
+    c_cfbd = cfb.add_parser("cfbd-pull", help="Cache CFBD history for backtests")
+    c_cfbd.add_argument("--seasons", required=True, help="e.g. 2015-2025")
+    c_cfbd.add_argument("--refresh", action="store_true")
+    cfb.add_parser("status", help="NCAAF row counts and credit balance")
+
     args = parser.parse_args(argv)
 
     # Imports deferred so `--help` stays fast and dependency-light.
@@ -121,6 +137,19 @@ def main(argv: list[str] | None = None) -> None:
         from .backtest.calibrate import cmd_calibrate
 
         cmd_calibrate(args.train, args.validate, args.write_config)
+    elif args.command == "ncaaf":
+        from .ncaaf import pipeline as ncaaf
+
+        if args.ncaaf_command == "games":
+            ncaaf.cmd_games(args.date)
+        elif args.ncaaf_command == "snapshot":
+            ncaaf.cmd_snapshot(args.label, dry_run=args.dry_run)
+        elif args.ncaaf_command == "grade":
+            ncaaf.cmd_grade(args.date)
+        elif args.ncaaf_command == "cfbd-pull":
+            ncaaf.cmd_cfbd_pull(args.seasons, refresh=args.refresh)
+        elif args.ncaaf_command == "status":
+            ncaaf.cmd_status()
     elif args.command == "replay":
         from .replay import cmd_replay
 

@@ -13,7 +13,17 @@
 - `paths.py` — all file locations; honors `PANTHERA_ROOT` (tests point it at
   a tmp dir).
 - `clients/` — `mlb.py` (schedule/ERA/finals, keyless), `odds.py` (The Odds
-  API + credit guard), `espn.py` (backup finals).
+  API + credit guard; `sport_key` selects MLB or NCAAF, one shared credit
+  pool), `espn.py` (backup finals), `espn_cfb.py` (NCAAF FBS schedule +
+  finals, keyless), `cfbd.py` (CollegeFootballData.com: games, open/close
+  lines, SP+, venues; `CFBD_API_KEY`), `weather.py` (Open-Meteo kickoff-hour
+  wind/temp, keyless; forecast + archive).
+- `ncaaf/` — college-football plumbing for the `cfb_spread_total_parlay`
+  intake: own config (`config/ncaaf.yaml`, deliberately outside
+  `strategy.yaml` so MLB config hashes don't move), own data tree
+  (`data/ncaaf/`), name-normalized odds↔ESPN matching, and a parlay-ticket
+  ledger (`grading.py`: spread/total/moneyline legs; push/void legs drop out
+  and the ticket price is re-figured). No pick engine yet.
 - `matching.py` — odds event ↔ MLB gamePk; alias table + commence-time
   proximity for doubleheaders; unmatched events are logged, never guessed.
 - `store.py` — CSV datastore with dedupe keys (lines) / upsert (games) /

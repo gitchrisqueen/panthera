@@ -80,3 +80,21 @@ mvp-calibrate); `historical/normalized/mlb_odds_all.csv` is loader output;
 
 Reports are derived from `picks.csv` — to change what a report says,
 regenerate it (`panthera-mvp report`), don't edit markdown.
+
+## ncaaf/ (college football — `panthera-mvp ncaaf ...`)
+
+Separate tree so nothing NCAAF reaches the MLB ledger/report/dashboard.
+- `ncaaf/games/games.csv` (upsert by `event_id` = ESPN event id):
+  `event_id, game_date_et, start_time_utc, home_team, away_team, home_rank,
+  away_rank, neutral_site, conference_game, venue, indoor, status,
+  home_score, away_score`
+- `ncaaf/odds/lines.csv`: MLB lines schema with `game_pk` replaced by
+  `event_id` (null = unmatched, e.g. FCS); same dedupe key.
+- `ncaaf/odds/raw/YYYY-MM-DD/{label}.json`: raw Odds API responses.
+- `ncaaf/tickets/tickets.csv` + `ticket_legs.csv`: paper parlay tickets
+  (append-once, settled in place by `ncaaf grade`); schemas in
+  `src/panthera_mvp/ncaaf/store.py`.
+- `ncaaf/cfbd/*.json`: cached CollegeFootballData.com responses (one file
+  per endpoint+params); completed seasons never change.
+- NCAAF live snapshots log to the shared `odds/credit_log.csv` with labels
+  `ncaaf_<label>` — one credit pool for both sports.

@@ -1,0 +1,47 @@
+# NCAAF (college football) data plumbing — config for `panthera-mvp ncaaf`.
+#
+# Deliberately a separate file from config/strategy.yaml: strategy.yaml is
+# hashed into every MLB pick's config_hash, so NCAAF knobs living there would
+# fragment the MLB ledgers. Nothing here is a strategy parameter; the
+# cfb_spread_total_parlay engine's thresholds will live in its own
+# config/strategies/ YAML once the author's follow-up answers land (see
+# docs/strategy-intake/cfb_spread_total_parlay.md).
+
+odds_api:
+  sport_key: americanfootball_ncaaf
+  regions: us
+  # h2h is needed only for the export's R1 moneyline-leg exception. Each
+  # market costs 1 credit per region per snapshot, so this is 3 credits —
+  # drop h2h (2 credits) if the author rejects R1.
+  markets: [spreads, totals, h2h]
+  # Higher floor than MLB's 30: the monthly pool is shared, and MLB is the
+  # incumbent test. NCAAF snapshots stop first when credits run low.
+  min_credits_reserve: 60
+
+espn:
+  # FBS only (ESPN group 80). FCS games appear on the Odds API feed rarely
+  # and are logged as unmatched, never guessed.
+  group: "80"
+
+matching:
+  # Odds API commence_time vs ESPN kickoff tolerance.
+  window_hours: 4
+  # Odds API name -> ESPN displayName, for the handful that don't normalize
+  # to the same string. Add entries as `ncaaf snapshot` logs unmatched events.
+  team_aliases: {}
+  # Names are compared after normalization (case, accents, apostrophes,
+  # periods, "&" -> "and"), so "Hawai'i" == "Hawaii". Not yet verified
+  # against a live feed — the ncaaf-capture workflow's first run will list
+  # any real mismatches.
+
+cfbd:
+  # CollegeFootballData.com — free key in the CFBD_API_KEY secret. Seasons
+  # pulled by `ncaaf cfbd-pull`; completed seasons are cached forever.
+  season_type: regular
+  classification: fbs
+  # Consensus first, then books in preference order, when a game has several
+  # providers' lines.
+  line_providers: [consensus, Bovada, DraftKings, ESPN Bet, William Hill (New Jersey)]
+
+grading:
+  flat_stake: 100

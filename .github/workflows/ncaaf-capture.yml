@@ -1,0 +1,111 @@
+name: NCAAF Capture
+
+# Manual-only NCAAF plumbing run (no cron until cfb_spread_total_parlay is
+# registered). Proves the college-football clients against the live hosts
+# this repo's dev sandboxes can't reach, and records raw payloads to replace
+# the synthetic fixtures in tests/fixtures/ncaaf/.
+#
+#   odds = none     ESPN games (+ optional CFBD pull) only — 0 Odds credits
+#   odds = dry_run  snapshot reads the synthetic fixture; nothing committed
+#   odds = live     real NCAAF snapshot (3 credits: spreads, totals, h2h),
+#                   committed to data/ncaaf/
+#
+# CFBD needs the CFBD_API_KEY secret (free key from collegefootballdata.com);
+# without it the cfbd step is skipped.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "ET date for ESPN games (YYYY-MM-DD; blank = today)"
+        type: string
+        default: ""
+      odds:
+        description: "Odds snapshot mode"
+        type: choice
+        options: [none, dry_run, live]
+        default: none
+      cfbd_seasons:
+        description: "CFBD seasons to cache, e.g. 2015-2025 (blank = skip)"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Record raw ESPN scoreboard (fixture material)
+        run: |
+          D="${{ inputs.date }}"; D="${D:-$(TZ=America/New_York date +%F)}"
+          mkdir -p capture
+          curl -sS --fail "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${D//-/}&groups=80&limit=300" \
+            -o "capture/espn_cfb_${D}.json"
+
+      - name: ESPN games
+        run: panthera-mvp ncaaf games ${{ inputs.date && format('--date {0}', inputs.date) || '' }}
+
+      - name: Odds snapshot
+        if: inputs.odds != 'none'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          PANTHERA_NCAAF_ODDS_FIXTURE: tests/fixtures/ncaaf/odds_ncaaf_snapshot.json
+        run: |
+          if [ "${{ inputs.odds }}" = "live" ]; then
+            panthera-mvp ncaaf snapshot --label open
+            cp -r data/ncaaf/odds/raw capture/odds_raw
+          else
+            panthera-mvp ncaaf snapshot --label open --dry-run
+          fi
+
+      - name: CFBD pull
+        if: inputs.cfbd_seasons != ''
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: |
+          if [ -z "$CFBD_API_KEY" ]; then
+            echo "CFBD_API_KEY not set; skipping."
+            exit 0
+          fi
+          panthera-mvp ncaaf cfbd-pull --seasons "${{ inputs.cfbd_seasons }}"
+
+      - name: Status
+        run: panthera-mvp ncaaf status
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ncaaf-capture
+          path: |
+            capture
+            data/ncaaf
+
+      # Dry runs stamp synthetic fixture rows with today's date — never commit
+      # them. Live and none-mode runs commit real data only.
+      - name: Commit & push
+        if: inputs.odds != 'dry_run'
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/ncaaf data/odds/credit_log.csv
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: ncaaf capture $(date -u +%FT%TZ) [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

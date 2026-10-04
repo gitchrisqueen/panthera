@@ -19,7 +19,10 @@ import requests
 from .. import paths
 from ..timeutil import now_utc, utc_iso
 
-BASE = "https://api.the-odds-api.com/v4/sports/baseball_mlb/odds"
+SPORTS_URL = "https://api.the-odds-api.com/v4/sports/{sport_key}/odds"
+MLB_SPORT_KEY = "baseball_mlb"
+NCAAF_SPORT_KEY = "americanfootball_ncaaf"
+BASE = SPORTS_URL.format(sport_key=MLB_SPORT_KEY)
 TIMEOUT = 30
 
 
@@ -77,7 +80,10 @@ def fetch_snapshot(
     markets: str = "h2h,spreads,totals",
     min_credits_reserve: int = 30,
     session: requests.Session | None = None,
+    sport_key: str = MLB_SPORT_KEY,
 ) -> tuple[list[dict], CreditInfo]:
+    """Fetch one odds snapshot. Every sport draws on the same monthly credit
+    pool, so the guard reads the one shared credit log regardless of sport."""
     remaining = last_known_remaining()
     if remaining is not None and remaining <= min_credits_reserve:
         raise CreditGuardError(
@@ -86,7 +92,7 @@ def fetch_snapshot(
         )
     sess = session or requests.Session()
     resp = sess.get(
-        BASE,
+        SPORTS_URL.format(sport_key=sport_key),
         params={
             "apiKey": api_key,
             "regions": regions,
