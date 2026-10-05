@@ -9,6 +9,9 @@ name: Deploy Pages
 # calls `panthera-mvp report`, so there is no new ledger data to publish
 # after it runs.
 #
+# Also dispatched (workflow_dispatch, run label "manual") by ncaaf.yml after
+# any NCAAF run that pushed data, so football.html updates within minutes.
+#
 # One-time manual step this workflow depends on (not done by this file):
 # the repo's Pages source must be switched to "GitHub Actions" in
 # Settings -> Pages (or `gh api -X PUT repos/<owner>/<repo>/pages -f

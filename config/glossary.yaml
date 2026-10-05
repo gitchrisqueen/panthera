@@ -730,6 +730,132 @@ terms:
       so strategies built on them can only be forward-tested.
     see_also: [rule_ss_ml, rule_fp_ml, forward_test]
 
+  # ------------------------------------------------- sports, levels, football
+  sport:
+    label: "Sport"
+    group: concept
+    short: "Each sport has its own page (Baseball, Football). The tabs at the top switch between them."
+    see_also: [level]
+
+  level:
+    label: "Level"
+    group: concept
+    short: "Professional, College or Other (minor, international and semi-pro leagues). A sport page shows one level at a time; grayed levels have no strategy yet."
+    see_also: [sport]
+
+  parlay:
+    label: "Parlay"
+    group: market
+    short: "One bet made of several legs. It wins only if every leg wins; a pushed leg drops out and the price is re-figured from the rest."
+    see_also: [ticket, leg]
+
+  ticket:
+    label: "Ticket"
+    group: concept
+    short: "One paper parlay bet: a set of legs, one flat stake, one combined price."
+    see_also: [parlay, leg, ticket_legs]
+
+  leg:
+    label: "Leg"
+    group: concept
+    short: "One selection inside a parlay ticket, such as a team's spread or a game's total."
+    see_also: [ticket, qualifying_leg]
+
+  qualifying_leg:
+    label: "Qualifying leg"
+    group: concept
+    short: "A game the strategy's rules picked on a decision day, whether or not it made the ticket. Graded on its own as evidence for each signal."
+    long: >
+      Only the top legs go on the day's ticket, but every qualifying leg is
+      graded at its best available line and counted under each signal that
+      picked it. A single leg at -110 breaks even at 52.4%, so this table says
+      sooner than the tickets whether an angle carries any edge.
+    see_also: [signal, vs_breakeven]
+
+  ticket_legs:
+    label: "Legs"
+    group: column
+    short: "The selections on the ticket, each with its line and its own result."
+    see_also: [leg, ticket]
+
+  ticket_status:
+    label: "Ticket status"
+    group: column
+    short: "pending until every leg settles; loss as soon as any leg loses; win if the rest all win; push if every leg pushed."
+    see_also: [ticket, push]
+
+  signal:
+    label: "Signal"
+    group: column
+    short: "The rule (angle) that picked a leg, S1 to S6. Click one for its definition."
+    see_also: [signal_s1, signal_s2, signal_s3, signal_s4, signal_s5, signal_s6]
+
+  qualifying_legs:
+    label: "Qualifying legs"
+    group: column
+    short: "How many qualifying legs this signal picked, on a ticket or not."
+    see_also: [qualifying_leg]
+
+  win_pct:
+    label: "Win %"
+    group: metric
+    short: "Wins divided by wins plus losses; pushes are left out."
+    see_also: [vs_breakeven]
+
+  vs_breakeven:
+    label: "vs 52.4%"
+    group: metric
+    short: "Win % minus 52.4%, the hit rate a -110 bet needs to break even, in percentage points. Positive means beating the vig so far."
+    see_also: [win_pct, vig]
+
+  decision:
+    label: "Decision"
+    group: column
+    short: "What the strategy did that day: ticket, no_ticket (too few qualifying legs) or skip (a daily rule, such as the day after a loss)."
+    see_also: [decision_reason]
+
+  decision_reason:
+    label: "Reason"
+    group: column
+    short: "Why the day's decision came out the way it did, as recorded at decision time."
+    see_also: [decision]
+
+  signal_s1:
+    label: "S1 — spread move"
+    group: concept
+    short: "The spread moved 1.5+ points between the first snapshot and decision time; bet the side it moved toward."
+    see_also: [signal, movement]
+
+  signal_s2:
+    label: "S2 — total move"
+    group: concept
+    short: "The total moved 2+ points between the first snapshot and decision time; bet over if it rose, under if it fell."
+    see_also: [signal, movement]
+
+  signal_s3:
+    label: "S3 — letdown"
+    group: concept
+    short: "A team that beat a ranked opponent in its last game and is now favored by 10+; bet the other side's spread."
+    see_also: [signal, signal_s4]
+
+  signal_s4:
+    label: "S4 — look-ahead"
+    group: concept
+    short: "A team favored by 10+ that plays a ranked opponent in its next game; bet the other side's spread."
+    see_also: [signal, signal_s3]
+
+  signal_s5:
+    label: "S5 — wind under"
+    group: concept
+    short: "An outdoor game with wind of 15+ mph forecast at kickoff; bet the under."
+    see_also: [signal]
+
+  signal_s6:
+    label: "S6 — SP+ edge"
+    group: concept
+    short: "SP+ ratings (plus 2.5 points home field) disagree with the spread by 4+ points; bet the side SP+ favors."
+    see_also: [signal]
+
 # ---------------------------------------------------------------------------
 # Coverage index — the contract tests/test_glossary.py enforces against the
 # rendered UI. Every slug here must resolve above, and every [data-term] in the
@@ -743,6 +869,9 @@ columns:
            profit_loss, clv_cents, trust_tier]
   breakdown: [rule_id, day_type, slot_type, market, record, profit_loss, roi]
   calibration_top_configs: [config_id, n_bets, roi_valid, profit_valid]
+  football_tickets: [game_date_et, ticket_legs, price_american, ticket_status, profit_loss]
+  football_signals: [signal, qualifying_legs, record, win_pct, vs_breakeven]
+  football_decisions: [game_date_et, decision, decision_reason]
 
 badges: [verdict_supported, verdict_falsified, verdict_collecting,
          verdict_inconclusive, verdict_frozen, tier_screen, tier_verdict,

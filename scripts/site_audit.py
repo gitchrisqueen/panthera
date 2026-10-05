@@ -36,7 +36,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 DEFAULT_VIEWPORTS = [375, 640, 641, 768, 900, 901, 1080, 1081, 1280, 1440]
-DEFAULT_PAGES = ["index.html", "calibration.html", "glossary.html"]
+# A sport page at a level that has no strategy falls back to its default
+# level; the two ?level= entries audit that fallback path.
+DEFAULT_PAGES = [
+    "index.html", "index.html?level=college", "football.html",
+    "football.html?level=pro", "calibration.html", "glossary.html",
+]
+# Seeded football payload: the live NCAAF ledger may still be empty, and an
+# empty football page would pass every geometry check vacuously.
+NCAAF_FIXTURE = REPO_ROOT / "tests" / "fixtures" / "ncaaf" / "site_ncaaf_data.json"
 VIEWPORT_HEIGHT = 900
 
 # Checks that are meaningless below/above a width are gated here rather than
@@ -425,8 +433,20 @@ def build_site() -> Path:
     return write_site(generated_by_run="manual")
 
 
+def seed_ncaaf(site: Path) -> None:
+    """Swap in the seeded football payload when the built one has no tickets."""
+    target = site / "ncaaf_data.json"
+    built = json.loads(target.read_text()) if target.exists() else {}
+    if not built.get("tickets"):
+        target.write_text(NCAAF_FIXTURE.read_text())
+        print(f"[site_audit] ncaaf_data.json had no tickets; using {NCAAF_FIXTURE.name}")
+
+
 def check_site_has_data(site: Path) -> None:
     """An empty build makes every geometry check pass vacuously — refuse it."""
+    ncaaf = site / "ncaaf_data.json"
+    if not ncaaf.exists() or not json.loads(ncaaf.read_text()).get("tickets"):
+        raise HarnessError("ncaaf_data.json has no tickets — football.html would audit empty")
     data_file = site / "site_data.json"
     if not data_file.exists():
         raise HarnessError(f"{data_file} does not exist — did the build run?")
@@ -536,7 +556,7 @@ class Auditor:
                             })
 
             if ("sticky_thead_works" in self.checks
-                    and page_name == "index.html" and viewport >= 901):
+                    and page_name.split("?")[0] == "index.html" and viewport >= 901):
                 raw += self.check_sticky(page)
             if "anchors_clear_nav" in self.checks:
                 raw += self.check_anchors(page)
@@ -623,7 +643,9 @@ class Auditor:
         if mode == "failures" and not findings:
             return
         self.shots_dir.mkdir(parents=True, exist_ok=True)
-        stem = f"{Path(page_name).stem}-{viewport}-{theme}"
+        path, _, query = page_name.partition("?")
+        variant = "-" + query.replace("=", "-").replace("&", "-") if query else ""
+        stem = f"{Path(path).stem}{variant}-{viewport}-{theme}"
         boxed = [f for f in findings if f.get("rects")]
         if boxed:
             page.evaluate(
@@ -663,6 +685,7 @@ class Auditor:
                 site = build_site()
             elif site is None:
                 site = REPO_ROOT / "site"
+            seed_ncaaf(site)
             check_site_has_data(site)
             httpd, base = serve(site)
 

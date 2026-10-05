@@ -37,6 +37,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # dispatch pages.yml after a real push (see the last step)
 
 concurrency:
   group: panthera-data
@@ -107,6 +108,7 @@ jobs:
           fi
 
       - name: Commit & push
+        id: commit
         if: inputs.dry_run != true
         run: |
           git config user.name "panthera-bot"
@@ -122,3 +124,14 @@ jobs:
           git commit -m "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      # Football results reach the site within minutes instead of waiting for
+      # the next MLB morning/pregame run (pages.yml's workflow_run triggers).
+      # Only after a real push, so the hourly no-op runs never deploy.
+      # GITHUB_TOKEN-dispatched runs do start (only pushes are suppressed).
+      - name: Deploy dashboard
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref "${GITHUB_REF_NAME}"

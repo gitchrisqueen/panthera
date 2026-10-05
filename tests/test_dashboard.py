@@ -182,9 +182,10 @@ def test_write_site_produces_expected_files(tmp_root, cfg):
     out = write_site(generated_by_run="morning")
     assert out == paths.site_dir()
     for name in (
-        "index.html", "calibration.html", "glossary.html",
-        "site_data.json", "calibration_data.json", "glossary.json", ".nojekyll",
-        "static/app.css", "static/app.js", "static/common.js",
+        "index.html", "football.html", "calibration.html", "glossary.html",
+        "site_data.json", "ncaaf_data.json", "calibration_data.json", "glossary.json",
+        ".nojekyll",
+        "static/app.css", "static/app.js", "static/common.js", "static/football.js",
         "static/calibration.js", "static/glossary.js", "static/icons.svg",
     ):
         assert (out / name).exists(), f"missing {name}"
@@ -196,3 +197,108 @@ def test_write_site_is_idempotent_and_gitignored_dir(tmp_root, cfg):
     write_site()
     write_site()  # must not error on a pre-existing site/ dir
     assert (paths.site_dir() / "site_data.json").exists()
+
+
+# ------------------------------------------------------------------ NCAAF
+def _seed_ncaaf(root):
+    """One settled in-lineage ticket, one ticket under another hash, two
+    decisions and three graded qualifying legs."""
+    import shutil
+
+    from conftest import REPO
+    from panthera_mvp.ncaaf import store as nstore
+
+    sdir = root / "config" / "ncaaf_strategies"
+    sdir.mkdir(parents=True, exist_ok=True)
+    shutil.copy(REPO / "config/ncaaf_strategies/cfb_spread_total_parlay.yaml", sdir)
+    sid, lineage = "cfb_spread_total_parlay", "e96612a177"
+
+    def leg(tid, n, sel, line, status):
+        return {"ticket_id": tid, "leg_no": n, "event_id": str(n), "matchup": f"A{n} @ B{n}",
+                "start_time_utc": "2026-10-03T19:00:00Z", "market": "spread",
+                "selection": sel, "line": line, "price_american": -110,
+                "price_decimal": 1.9091, "bookmaker": "dk", "status": status}
+
+    nstore.append_ticket(
+        {"ticket_id": "t1", "strategy_id": sid, "game_date_et": "2026-10-03", "n_legs": 2,
+         "price_american": 264, "price_decimal": 3.6447, "stake": 100, "config_hash": lineage,
+         "status": "win", "profit": 264.47},
+        [leg("t1", 1, "BYU Cougars", -6.5, "win"), leg("t1", 2, "Miami Hurricanes", -15.5, "win")],
+    )
+    nstore.append_ticket(
+        {"ticket_id": "t2", "strategy_id": sid, "game_date_et": "2026-10-04", "n_legs": 1,
+         "price_american": -110, "price_decimal": 1.9091, "stake": 100,
+         "config_hash": "0000000000", "status": "loss", "profit": -100.0},
+        [leg("t2", 3, "Iowa Hawkeyes", 14.5, "loss")],
+    )
+    for day, status, quals in (
+        ("2026-10-03", "ticket", [("S6", "win"), ("S1+S6", "win")]),
+        ("2026-10-04", "no_ticket", [("S1", "loss")]),
+    ):
+        nstore.append_decision(
+            {"strategy_id": sid, "game_date_et": day, "status": status,
+             "reason": "test", "n_qualifiers": len(quals)},
+            [{"strategy_id": sid, "game_date_et": day, "event_id": f"{day}-{i}",
+              "matchup": "A @ B", "market": "spread", "selection": "A", "line": -3.0,
+              "signal_ids": sigs, "on_ticket": True, "status": st}
+             for i, (sigs, st) in enumerate(quals)],
+        )
+
+
+def test_ncaaf_payload_empty_without_strategies(tmp_root):
+    from panthera_mvp.dashboard import build_ncaaf_data
+
+    data = build_ncaaf_data()
+    assert data["sport"] == "football" and data["level"] == "college"
+    assert data["strategies"] == [] and data["tickets"] == []
+
+
+def test_ncaaf_payload_matches_markdown_report(tmp_root):
+    from panthera_mvp.dashboard import build_ncaaf_data
+    from panthera_mvp.ncaaf.report import write_report
+
+    _seed_ncaaf(tmp_root)
+    data = build_ncaaf_data()
+    md = open(write_report()).read()
+    (s,) = data["strategies"]
+
+    t = s["tickets"]  # in lineage only
+    assert (t["n"], t["record"], t["pending"]) == (1, {"wins": 1, "losses": 0, "pushes": 0}, 0)
+    assert "- Tickets: 1 (1-0-0 W-L-P, 0 pending)" in md
+    assert f"profit ${t['profit']:+,.2f}, ROI {t['roi']:+.1f}%" in md
+    (seg,) = s["screen_segments"]
+    assert seg["config_hash"] == "0000000000" and seg["profit"] == -100.0
+    assert "**SCREEN segment 0000000000**" in md
+
+    rows = {r["signal"]: r for r in s["signals"]}
+    assert set(rows) == {"S1", "S6"}
+    for r in rows.values():
+        rec = r["record"]
+        line = (f"| {r['signal']} | {r['legs']} | {rec['wins']}-{rec['losses']}-{rec['pushes']} "
+                f"| {r['win_pct']:.1f}% | {r['vs_breakeven']:+.1f} pts |")
+        assert line in md, line
+    assert s["decisions"]["counts"] == {"ticket": 1, "no_ticket": 1}
+    assert [d["game_date_et"] for d in s["decisions"]["recent"]] == ["2026-10-04", "2026-10-03"]
+
+    ticket_ids = [x["ticket_id"] for x in data["tickets"]]
+    assert ticket_ids == ["t2", "t1"]  # newest first
+    assert [lg["selection"] for lg in data["tickets"][1]["legs"]] == [
+        "BYU Cougars", "Miami Hurricanes"
+    ]
+    assert data["tickets"][0]["in_lineage"] is False
+
+
+def test_audit_ncaaf_fixture_matches_payload_shape(tmp_root):
+    """scripts/site_audit.py swaps tests/fixtures/ncaaf/site_ncaaf_data.json in
+    when the live ledger is empty; it must keep the real payload's shape."""
+    from conftest import FIXTURES
+    from panthera_mvp.dashboard import build_ncaaf_data
+
+    _seed_ncaaf(tmp_root)
+    real = build_ncaaf_data()
+    fixture = json.loads((FIXTURES / "ncaaf" / "site_ncaaf_data.json").read_text())
+    assert set(fixture) == set(real)
+    assert set(fixture["strategies"][0]) == set(real["strategies"][0])
+    assert set(fixture["tickets"][0]) == set(real["tickets"][0])
+    assert set(fixture["tickets"][0]["legs"][0]) == set(real["tickets"][0]["legs"][0])
+    assert fixture["tickets"], "the audit fixture must carry tickets"

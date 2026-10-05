@@ -10,8 +10,9 @@ math — that is the mechanism that guarantees the dashboard can never drift
 from or contradict the markdown ledger. See reports/CLAUDE.md: this is a
 second consumer of those helpers, not a fork of them.
 
-Emits one JSON data file (`site/site_data.json`) plus a `calibration_data
-.json`; the HTML/CSS/JS is static, tracked source under
+Emits `site/site_data.json` (Baseball · Professional, the MLB ledger),
+`ncaaf_data.json` (Football · College, the NCAAF parlay ledger) and
+`calibration_data.json`; the HTML/CSS/JS is static, tracked source under
 `dashboard_static/`, copied verbatim into `site/` — no Jinja2, no
 server-side chart rendering. All interactivity (sort/filter/charts) reads
 `site_data.json` client-side. The single hard rule the JSON encodes
@@ -357,6 +358,127 @@ def build_calibration_data() -> dict:
     return data
 
 
+# ---------------------------------------------------------------- NCAAF
+# Football · College. The numbers are computed here from the NCAAF ledgers
+# (data/ncaaf/tickets/) with the same definitions as ncaaf/report.py —
+# tests/test_dashboard.py asserts the two agree — rather than by refactoring
+# that module, whose markdown only regenerates when NCAAF data changes.
+
+
+def _ncaaf_record(statuses: pd.Series) -> dict:
+    return {
+        "wins": int((statuses == "win").sum()),
+        "losses": int((statuses == "loss").sum()),
+        "pushes": int((statuses == "push").sum()),
+    }
+
+
+def _ncaaf_ticket_stats(t: pd.DataFrame) -> dict:
+    settled = t[t["status"].isin(["win", "loss", "push"])]
+    staked = float(settled["stake"].astype(float).sum())
+    profit = round(float(settled["profit"].astype(float).sum()), 2)
+    return {
+        "n": int(len(t)),
+        "record": _ncaaf_record(settled["status"]),
+        "pending": int((t["status"] == "pending").sum()),
+        "staked": staked,
+        "profit": profit,
+        "roi": round(100 * profit / staked, 2) if staked else None,
+    }
+
+
+def _ncaaf_signal_rows(quals: pd.DataFrame) -> list[dict]:
+    from .ncaaf.report import LEG_BREAKEVEN
+
+    if quals.empty:
+        return []
+    exploded = quals.assign(
+        signal=quals["signal_ids"].astype(str).str.split("+")
+    ).explode("signal")
+    rows = []
+    for sig, g in sorted(exploded.groupby("signal"), key=lambda kv: kv[0]):
+        rec = _ncaaf_record(g["status"])
+        n = rec["wins"] + rec["losses"]
+        rows.append({
+            "signal": sig,
+            "legs": int(len(g)),
+            "record": rec,
+            "win_pct": round(100 * rec["wins"] / n, 1) if n else None,
+            "vs_breakeven": round(100 * (rec["wins"] / n - LEG_BREAKEVEN), 1) if n else None,
+        })
+    return rows
+
+
+def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
+    """Payload for football.html (Football · College). Always returns the
+    full shape — with no NCAAF strategy or no data yet, the lists are empty
+    and the page renders its empty states."""
+    from .ncaaf import store as nstore
+    from .ncaaf.config import load_ncaaf_strategies
+
+    strategies = load_ncaaf_strategies()
+    tickets, legs = nstore.load_tickets(), nstore.load_legs()
+    quals, decisions = nstore.load_qualifiers(), nstore.load_decisions()
+    out_strategies, out_tickets = [], []
+    for sid, cfg in strategies.items():
+        meta = cfg["strategy"]
+        lineage = [str(h) for h in meta.get("hash_lineage") or []]
+        t = tickets[tickets["strategy_id"] == sid]
+        in_lineage = t["config_hash"].astype(str).isin(lineage)
+        d = decisions[decisions["strategy_id"] == sid].sort_values(
+            "game_date_et", ascending=False
+        )
+        out_strategies.append({
+            "id": sid,
+            "kind": meta.get("kind"),
+            "enabled": bool(meta.get("enabled")),
+            "registered_at": meta.get("registered_at"),
+            "hypothesis": " ".join(str(meta.get("hypothesis", "")).split()),
+            "hash_lineage": lineage,
+            "verdict": cfg.get("verdict"),
+            "screen": cfg.get("screen") or {},
+            "tickets": _ncaaf_ticket_stats(t[in_lineage]),
+            "screen_segments": [
+                {"config_hash": h, **_ncaaf_ticket_stats(seg)}
+                for h, seg in t[~in_lineage].groupby(t["config_hash"].astype(str))
+            ],
+            "signals": _ncaaf_signal_rows(quals[quals["strategy_id"] == sid]),
+            "decisions": {
+                "counts": {k: int(v) for k, v in d["status"].value_counts().items()},
+                "recent": [
+                    {"game_date_et": r["game_date_et"], "status": r["status"],
+                     "reason": _n(r["reason"])}
+                    for r in d.head(14).to_dict("records")
+                ],
+            },
+        })
+        for r in t.sort_values("game_date_et", ascending=False).to_dict("records"):
+            tl = legs[legs["ticket_id"].astype(str) == str(r["ticket_id"])].sort_values("leg_no")
+            out_tickets.append({
+                "strategy_id": sid,
+                "ticket_id": str(r["ticket_id"]),
+                "game_date_et": r["game_date_et"],
+                "price_american": _n(r["price_american"]),
+                "status": r["status"],
+                "profit": _n(r["profit"]),
+                "in_lineage": str(r["config_hash"]) in lineage,
+                "legs": [
+                    {"selection": lg["selection"], "market": lg["market"],
+                     "line": _n(lg["line"]), "matchup": lg["matchup"],
+                     "status": lg["status"]}
+                    for lg in tl.to_dict("records")
+                ],
+            })
+    return {
+        "generated_at_utc": utc_iso(now_utc()),
+        "generated_by_run": generated_by_run,
+        "sport": "football",
+        "level": "college",
+        "strategies": out_strategies,
+        "tickets": out_tickets,
+    }
+
+
 def write_site(generated_by_run: str = "manual") -> Path:
     """Build the full static dashboard into paths.site_dir(). Called by
     `panthera-mvp pages` (pipeline.cmd_pages). Fully regenerated every run —
@@ -371,13 +493,16 @@ def write_site(generated_by_run: str = "manual") -> Path:
     (out / "site_data.json").write_text(json.dumps(site_data, indent=None))
     (out / "calibration_data.json").write_text(json.dumps(build_calibration_data(), indent=None))
     (out / "glossary.json").write_text(json.dumps(glossary_payload(), indent=None))
+    (out / "ncaaf_data.json").write_text(
+        json.dumps(build_ncaaf_data(generated_by_run=generated_by_run), indent=None)
+    )
 
     static_out = out / "static"
     shutil.copytree(STATIC_SRC, static_out)
     # Any new static/*.js ships automatically via the copytree above; only new
     # top-level HTML pages need adding here, or they stay under site/static/
     # and their relative asset paths break.
-    for html_file in ("index.html", "calibration.html", "glossary.html"):
+    for html_file in ("index.html", "football.html", "calibration.html", "glossary.html"):
         shutil.move(str(static_out / html_file), str(out / html_file))
     (out / ".nojekyll").write_text("")
 

@@ -1,0 +1,237 @@
+{
+ "generated_at_utc": "2026-10-17T15:00:00Z",
+ "generated_by_run": "manual",
+ "sport": "football",
+ "level": "college",
+ "strategies": [
+  {
+   "id": "cfb_spread_total_parlay",
+   "kind": "forward_test",
+   "enabled": true,
+   "registered_at": "2026-10-05",
+   "hypothesis": "An outside author's NCAAF parlay method beats the parlay vig: one 3-leg spread/total ticket per game day, legs chosen when any one of six mechanical angles fires (line move with the market, letdown and look-ahead fades of 10+ favorites, wind unders, SP+ disagreeing with the spread) and no angle contradicts it. Injury and rivalry inputs the author uses are NOT observable here and are dropped, and leg count, leg selection and same-game policy are Panthera proxies \u2014 so this tests the mechanical core of the method, not the author's full judgment.",
+   "hash_lineage": [
+    "e96612a177"
+   ],
+   "verdict": null,
+   "screen": {
+    "checkpoints": [
+     25,
+     50
+    ],
+    "leg_checkpoints": [
+     100,
+     300
+    ]
+   },
+   "tickets": {
+    "n": 3,
+    "record": {
+     "wins": 1,
+     "losses": 1,
+     "pushes": 0
+    },
+    "pending": 1,
+    "staked": 200.0,
+    "profit": 495.8,
+    "roi": 247.9
+   },
+   "screen_segments": [],
+   "signals": [
+    {
+     "signal": "S1",
+     "legs": 3,
+     "record": {
+      "wins": 2,
+      "losses": 1,
+      "pushes": 0
+     },
+     "win_pct": 66.7,
+     "vs_breakeven": 19.0
+    },
+    {
+     "signal": "S2",
+     "legs": 2,
+     "record": {
+      "wins": 1,
+      "losses": 1,
+      "pushes": 0
+     },
+     "win_pct": 50.0,
+     "vs_breakeven": 2.4
+    },
+    {
+     "signal": "S3",
+     "legs": 1,
+     "record": {
+      "wins": 1,
+      "losses": 0,
+      "pushes": 0
+     },
+     "win_pct": 100.0,
+     "vs_breakeven": 52.4
+    },
+    {
+     "signal": "S4",
+     "legs": 1,
+     "record": {
+      "wins": 0,
+      "losses": 1,
+      "pushes": 0
+     },
+     "win_pct": 0.0,
+     "vs_breakeven": -47.6
+    },
+    {
+     "signal": "S5",
+     "legs": 2,
+     "record": {
+      "wins": 1,
+      "losses": 1,
+      "pushes": 0
+     },
+     "win_pct": 50.0,
+     "vs_breakeven": 2.4
+    },
+    {
+     "signal": "S6",
+     "legs": 3,
+     "record": {
+      "wins": 3,
+      "losses": 0,
+      "pushes": 0
+     },
+     "win_pct": 100.0,
+     "vs_breakeven": 52.4
+    }
+   ],
+   "decisions": {
+    "counts": {
+     "ticket": 2,
+     "no_ticket": 1,
+     "skip": 1
+    },
+    "recent": [
+     {
+      "game_date_et": "2026-10-10",
+      "status": "ticket",
+      "reason": "5 qualifying leg(s); top 3 taken"
+     },
+     {
+      "game_date_et": "2026-10-08",
+      "status": "ticket",
+      "reason": "4 qualifying leg(s); top 3 taken"
+     },
+     {
+      "game_date_et": "2026-10-07",
+      "status": "no_ticket",
+      "reason": "1 qualifying leg(s); a ticket needs 3"
+     },
+     {
+      "game_date_et": "2026-10-06",
+      "status": "skip",
+      "reason": "previous day's ticket lost (skip-day rule)"
+     }
+    ]
+   }
+  }
+ ],
+ "tickets": [
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "ticket_id": "cfb_spread_total_parlay-2026-10-17",
+   "game_date_et": "2026-10-17",
+   "price_american": 596,
+   "status": "pending",
+   "profit": null,
+   "in_lineage": true,
+   "legs": [
+    {
+     "selection": "Louisiana Ragin' Cajuns",
+     "market": "spread",
+     "line": 14.5,
+     "matchup": "Away @ Home",
+     "status": "win"
+    },
+    {
+     "selection": "Under",
+     "market": "total",
+     "line": 47.5,
+     "matchup": "Away @ Home",
+     "status": "pending"
+    },
+    {
+     "selection": "Massachusetts Minutemen",
+     "market": "spread",
+     "line": 21.0,
+     "matchup": "Away @ Home",
+     "status": "pending"
+    }
+   ]
+  },
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "ticket_id": "cfb_spread_total_parlay-2026-10-10",
+   "game_date_et": "2026-10-10",
+   "price_american": 636,
+   "status": "loss",
+   "profit": -100.0,
+   "in_lineage": true,
+   "legs": [
+    {
+     "selection": "Texas Tech Red Raiders",
+     "market": "spread",
+     "line": -13.5,
+     "matchup": "Away @ Home",
+     "status": "win"
+    },
+    {
+     "selection": "Miami Hurricanes",
+     "market": "spread",
+     "line": -15.5,
+     "matchup": "Away @ Home",
+     "status": "loss"
+    },
+    {
+     "selection": "Over",
+     "market": "total",
+     "line": 61.0,
+     "matchup": "Away @ Home",
+     "status": "win"
+    }
+   ]
+  },
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "ticket_id": "cfb_spread_total_parlay-2026-10-08",
+   "game_date_et": "2026-10-08",
+   "price_american": 596,
+   "status": "win",
+   "profit": 595.8,
+   "in_lineage": true,
+   "legs": [
+    {
+     "selection": "Sam Houston Bearkats",
+     "market": "spread",
+     "line": 3.5,
+     "matchup": "Away @ Home",
+     "status": "win"
+    },
+    {
+     "selection": "Liberty Flames",
+     "market": "spread",
+     "line": -7.0,
+     "matchup": "Away @ Home",
+     "status": "win"
+    },
+    {
+     "selection": "Western Kentucky Hilltoppers",
+     "market": "spread",
+     "line": -2.5,
+     "matchup": "Away @ Home",
+     "status": "win"
+    }
+   ]
+  }
+ ]
+}

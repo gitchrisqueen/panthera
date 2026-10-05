@@ -133,6 +133,32 @@ a { color: var(--link); }
 .masthead .tagline { color: var(--fg-muted); margin: 0 0 var(--space-4); max-width: 62ch; }
 .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
 
+/* ---- Sport tabs + level chips (masthead) ----
+ * One page per sport; the level is a filter on the page (common.js
+ * renderSportTabs / levelChips). Deliberately NOT sticky: the sticky
+ * nav.sitenav below owns --nav-h and every anchor offset. */
+nav.sporttabs {
+  display: flex; gap: var(--space-1); overflow-x: auto; scrollbar-width: none;
+  margin: 0 0 var(--space-3); border-bottom: 1px solid var(--border);
+}
+nav.sporttabs::-webkit-scrollbar { display: none; }
+nav.sporttabs a {
+  color: var(--fg-muted); text-decoration: none; font-size: 15px; font-weight: 500;
+  white-space: nowrap; padding: var(--space-2) var(--space-3);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+nav.sporttabs a:hover { color: var(--fg); border-bottom-color: var(--border-strong); }
+nav.sporttabs a[aria-current="page"] { color: var(--fg); font-weight: 650; border-bottom-color: var(--focus-ring); }
+.levelchips { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+/* inline-flex + min-height: the glossary info link inside is a 28px tap target. */
+.levelchips .level-label {
+  display: inline-flex; align-items: center; min-height: 28px;
+  font-size: 12px; color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.04em;
+}
+.levelchips .level-league { opacity: 0.8; font-size: 12px; }
+.levelchips .level-note { font-size: 12px; color: var(--fg-faint); }
+.chip[disabled] { cursor: not-allowed; opacity: 0.45; }
+
 .freshness {
   display: inline-flex; align-items: center; gap: var(--space-2);
   font-size: 13px; color: var(--fg-muted);
@@ -351,6 +377,11 @@ tr[data-strategy] td:first-child { border-left: 3px solid var(--row-accent, tran
 }
 .chip[aria-pressed="true"] { color: var(--bg); border-color: transparent; background: var(--chip-color, var(--fg)); }
 .chip .swatch { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+/* Football tickets: one leg per line inside the Legs cell. */
+.ticket-legs { list-style: none; margin: 0; padding: 0; }
+.ticket-legs li { white-space: nowrap; }
+/* Signal ids link to their glossary entry; keep them a 24px tap target. */
+a.signal-link { display: inline-block; min-width: 24px; min-height: 24px; line-height: 24px; }
 .ledger-controls input[type="search"], .ledger-controls select, .ledger-controls input[type="date"] {
   font: inherit; font-size: 13px; padding: 5px 8px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--bg); color: var(--fg);
@@ -486,6 +517,8 @@ footer a { color: var(--fg-muted); }
 a.badge { text-decoration: none; cursor: help; }
 a.badge:hover { filter: brightness(0.97); }
 th .gloss-link { vertical-align: -0.2em; }
+/* The level label is a plain flex item, not a padded <th>: no negative margin. */
+.levelchips .level-label .gloss-link { margin: 0 0 0 2px; }
 /* The wide tables carry ten and nine headers, and a 24px affordance on each
    added 240px of min-content — enough on its own to push the comparison table
    (929px -> 1166px) past the 1088px --max-w cap and clip its Status column at
