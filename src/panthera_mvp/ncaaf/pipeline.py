@@ -173,7 +173,8 @@ def cmd_snapshot(
     week: int | None = None,
     season: int | None = None,
     season_type: str = "regular",
-) -> None:
+) -> str | None:
+    """Returns the snapshot timestamp, or None when nothing was stored."""
     cfg = load_ncaaf_config()
     ocfg = cfg["odds_api"]
     d = _today_et()
@@ -203,7 +204,7 @@ def cmd_snapshot(
             )
         except odds.CreditGuardError as exc:
             print(f"[ncaaf snapshot] SKIPPED: {exc}")
-            return
+            return None
         odds.record_credits(f"ncaaf_{label}", info)
         raw = paths.ncaaf_raw_odds_dir(d)
         raw.mkdir(parents=True, exist_ok=True)
@@ -217,7 +218,7 @@ def cmd_snapshot(
     df = odds.normalize(events, ts, label)
     if df.empty:
         print("[ncaaf snapshot] no priced events")
-        return
+        return None
 
     # The Odds API NCAAF feed spans the whole week. Week mode matches against
     # that week's ingest; otherwise each event's own ET kickoff date is
@@ -243,12 +244,19 @@ def cmd_snapshot(
         f"[ncaaf snapshot] appended {added} line rows ({label}); "
         f"{len(matched)} matched, {len(unmatched)} unmatched"
     )
+    return ts
 
 
 def cmd_grade(date_et: str | None = None) -> None:
     cfg = load_ncaaf_config()
-    legs = store.load_legs()
-    pending = legs[legs["status"] == "pending"]
+    legs, quals = store.load_legs(), store.load_qualifiers()
+    pending = pd.concat(
+        [
+            legs.loc[legs["status"] == "pending", ["event_id", "start_time_utc"]],
+            quals.loc[quals["status"] == "pending", ["event_id", "start_time_utc"]],
+        ],
+        ignore_index=True,
+    )
     if pending.empty:
         print("[ncaaf grade] no pending legs")
         return
@@ -269,8 +277,10 @@ def cmd_grade(date_et: str | None = None) -> None:
             failed.append(d)
     if failed:
         fill_finals_fallback(failed, set(pending["event_id"].astype(str)), cfg)
-    settled = grading.grade_pending(cfg["matching"].get("team_aliases") or {})
-    print(f"[ncaaf grade] settled {len(settled)} ticket(s)")
+    aliases = cfg["matching"].get("team_aliases") or {}
+    settled = grading.grade_pending(aliases)
+    n_q = grading.grade_qualifiers(aliases)
+    print(f"[ncaaf grade] settled {len(settled)} ticket(s), {n_q} qualifying leg(s)")
 
 
 def fill_finals_fallback(dates: list[str], event_ids: set[str], cfg: dict) -> int:
@@ -363,4 +373,6 @@ def cmd_status() -> None:
     )
     if not tickets.empty:
         print(tickets["status"].value_counts().to_string())
+    decisions, quals = store.load_decisions(), store.load_qualifiers()
+    print(f"[ncaaf] decisions: {len(decisions)}  qualifying legs: {len(quals)}")
     print(f"[ncaaf] odds credits remaining (shared with MLB): {odds.last_known_remaining()}")

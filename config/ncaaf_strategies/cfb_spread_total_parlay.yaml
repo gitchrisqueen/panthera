@@ -1,0 +1,113 @@
+# cfb_spread_total_parlay — an outside author's college-football parlay
+# strategy, paper-traded as a forward test. Intake record and every answer
+# behind these numbers: docs/strategy-intake/cfb_spread_total_parlay.md
+# (export 2026-10-04, follow-up answered via the author's assistant on issue
+# #55's questionnaire).
+#
+# Lives in config/ncaaf_strategies/, not config/strategies/: that directory
+# is the MLB registry, and its loader hard-errors on an engine it doesn't
+# know. Same conventions otherwise — `strategy`/`verdict`/`screen`/`meta`
+# are excluded from config_hash; everything else is behavior, and a
+# behavioral change under this id is a protocol violation (new id instead).
+#
+# Every key below is tagged AUTHOR (the author's own answer, usually an
+# ACCEPT of a proposal on #55) or PROXY (the author said UNKNOWN, or Panthera
+# can't observe what the author uses; the value is Panthera's stand-in and
+# the hypothesis is only as faithful as these).
+strategy:
+  id: cfb_spread_total_parlay
+  engine: cfb_parlay
+  enabled: true
+  kind: forward_test
+  scope: [live]
+  registered_at: "2026-10-05"
+  # Filled with this file's config_hash at registration; tickets under any
+  # other hash render as a separate SCREEN segment.
+  hash_lineage: [e96612a177]
+  hypothesis: >
+    An outside author's NCAAF parlay method beats the parlay vig: one
+    3-leg spread/total ticket per game day, legs chosen when any one of six
+    mechanical angles fires (line move with the market, letdown and
+    look-ahead fades of 10+ favorites, wind unders, SP+ disagreeing with the
+    spread) and no angle contradicts it. Injury and rivalry inputs the author
+    uses are NOT observable here and are dropped, and leg count, leg
+    selection and same-game policy are Panthera proxies — so this tests the
+    mechanical core of the method, not the author's full judgment.
+
+decision:
+  # AUTHOR: "60 minutes before earliest leg kickoff", any day with games.
+  minutes_before_first_kickoff: 60
+  # PROXY: games starting sooner than this at decision time are not eligible
+  # (a delayed run must not bet a game that is about to kick off).
+  min_lead_minutes: 15
+  # AUTHOR: "best available" line. PROXY detail: best among the US books in
+  # the Odds API snapshot, signals read the median (consensus) line.
+  leg_pricing: best_available
+  signal_line: consensus_median
+
+signals:
+  # S1/S2 AUTHOR (ACCEPT): move from open to decision, bet with the move.
+  # PROXY: "open" = the first Panthera snapshot that priced the game.
+  line_move_spread: {enabled: true, min_points: 1.5}
+  line_move_total: {enabled: true, min_points: 2.0}
+  # S3 AUTHOR (ACCEPT): beat a ranked opponent (or rival) last game and
+  # favored by 10+ now -> take the opponent's spread. PROXY: rivalries are
+  # not in any feed here, so only the ranked-opponent half can fire;
+  # "last week" = the team's previous game within max_gap_days.
+  letdown: {enabled: true, min_fav_points: 10.0, max_rank: 25, max_gap_days: 15}
+  # S4 AUTHOR (ACCEPT): next opponent ranked and favored by 10+ now -> take
+  # the opponent's spread. PROXY: "next week" = the team's next scheduled
+  # game within max_gap_days; rank = that game's listed AP/CFP rank.
+  look_ahead: {enabled: true, min_fav_points: 10.0, max_rank: 25, max_gap_days: 15}
+  # S5 AUTHOR (ACCEPT): outdoor stadium, wind >= 15 mph at kickoff -> under.
+  # Rain/cold were not named, so they are not used.
+  weather_wind_under: {enabled: true, min_wind_mph: 15.0}
+  # S6 AUTHOR (ACCEPT): SP+ expected margin (home field ~2.5, none at a
+  # neutral site) disagrees with the spread by 4+ -> the side SP+ favors.
+  sp_plus_edge: {enabled: true, min_edge_points: 4.0, home_field_points: 2.5}
+  # S7 AUTHOR (ACCEPT): starting QB out -> skip the game. PROXY: no free,
+  # structured injury feed exists, so this filter cannot run (disabled, not
+  # silently assumed).
+  qb_out_skip: {enabled: false}
+
+legs:
+  # AUTHOR: one angle is enough; angles pointing opposite ways on the same
+  # game -> skip the game.
+  min_signals: 1
+  conflict: skip_game
+  # PROXY (author: UNKNOWN): one leg per game. When a game qualifies in both
+  # markets, the market with more signals wins; tie -> spread.
+  same_game_legs: false
+  # AUTHOR (ACCEPT, replaces_spread_leg: false): moneyline legs at -300 to
+  # -150 are allowed on a spread leg's team. PROXY: the author gave no rule
+  # for WHEN to add one, so the engine never does.
+  moneyline_legs: false
+
+ticket:
+  # PROXY (author: UNKNOWN): exactly 3 legs — the size of both cards the
+  # author has shown. Fewer than 3 qualifying legs -> no ticket that day.
+  legs_per_ticket: 3
+  # PROXY (author: UNKNOWN which legs to keep): most agreeing signals first,
+  # then earliest kickoff.
+  selection: [n_signals_desc, kickoff_asc]
+  # AUTHOR target band; PROXY: a target, not a filter (three -110 legs are
+  # +596, just under it). Recorded on every ticket as in_band.
+  price_band_american: [600, 1000]
+  price_band_is_hard_rule: false
+
+bet_limits:
+  # AUTHOR: one ticket per day; skip the day after a losing ticket.
+  max_tickets_per_day: 1
+  skip_day_after_loss: true
+
+staking:
+  # AUTHOR: flat $50-$100 per ticket. PROXY: $100, the ledger's convention.
+  flat_stake: 100
+
+# Pre-registered 2026-10-05, before the first ticket. Parlays at ~+600 carry
+# a per-ticket SD near 2.3x the stake, so no ROI verdict is reachable this
+# season (SE(ROI) is still ~33 points at 50 tickets): verdict null, SCREEN
+# only. The report also grades every qualifying leg (on a ticket or not) by
+# signal against the -110 breakeven of 52.4% — the faster, if partial, read.
+verdict: null
+screen: {checkpoints: [25, 50], leg_checkpoints: [100, 300]}

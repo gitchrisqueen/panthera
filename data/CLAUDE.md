@@ -109,6 +109,16 @@ Separate tree so nothing NCAAF reaches the MLB ledger/report/dashboard.
 - `ncaaf/tickets/tickets.csv` + `ticket_legs.csv`: paper parlay tickets
   (append-once, settled in place by `ncaaf grade`); schemas in
   `src/panthera_mvp/ncaaf/store.py`.
+- `ncaaf/tickets/decisions.csv`: one row per (strategy, ET day) from
+  `ncaaf picks` — `ticket`, `no_ticket` or `skip`, with the reason. A day
+  with a row is never re-decided.
+- `ncaaf/tickets/qualifiers.csv`: every leg a decision found qualifying
+  (`on_ticket` true or false), with its signal ids; graded in place by
+  `ncaaf grade` — the per-signal evidence in `reports/NCAAF_REPORT.md`.
+- Snapshot labels in `ncaaf/odds/lines.csv`: `open` (prep, Sun + Wed; the
+  dedupe key keeps the first-seen row, so it is the movement baseline) and
+  `decision-YYYY-MM-DD` (one per game day, so an earlier day's decision
+  snapshot can't dedupe away a later day's rows).
 - `ncaaf/cfbd/*.json`: cached CollegeFootballData.com responses (one file
   per endpoint+params); completed seasons never change. Week pulls
   (`games`/`lines` with a `week` param) are re-fetched on every run.

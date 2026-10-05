@@ -114,6 +114,21 @@ def ncaaf_ticket_legs_csv() -> Path:
     return ncaaf_dir() / "tickets" / "ticket_legs.csv"
 
 
+def ncaaf_qualifiers_csv() -> Path:
+    """Every leg a strategy found qualifying on a decision run, on the day's
+    ticket or not — graded like legs, reported per signal."""
+    return ncaaf_dir() / "tickets" / "qualifiers.csv"
+
+
+def ncaaf_decisions_csv() -> Path:
+    """One row per (strategy, ET day) decision: ticket, no_ticket or skip."""
+    return ncaaf_dir() / "tickets" / "decisions.csv"
+
+
+def ncaaf_report_md() -> Path:
+    return reports_dir() / "NCAAF_REPORT.md"
+
+
 def ncaaf_cfbd_dir() -> Path:
     """Cached CollegeFootballData.com responses (games, lines, ratings,
     venues) — the historical backtest's inputs."""

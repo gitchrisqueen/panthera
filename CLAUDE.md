@@ -23,6 +23,10 @@ database.
 - **Importing an outside strategy** (e.g. one living in someone's ChatGPT
   chat): send them the prompt in `docs/strategy-intake/EXPORT_PROMPT.md`;
   the same file lists the intake steps for the YAML it returns.
+- **NCAAF strategies** (first: `cfb_spread_total_parlay`, an outside
+  author's parlay method) register in `config/ncaaf_strategies/`, not
+  `config/strategies/` (the MLB registry), and report to
+  `reports/NCAAF_REPORT.md`.
 
 ## Commands
 
@@ -40,7 +44,9 @@ panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
 panthera-mvp ncaaf games --date 2026-10-03       # college football plumbing
 panthera-mvp ncaaf games --week 5 --year 2026    # whole CFB week (CFBD + ESPN)
 panthera-mvp ncaaf snapshot --label open --dry-run [--week 5]  # PANTHERA_NCAAF_ODDS_FIXTURE
-panthera-mvp ncaaf grade | status | cfbd-pull --seasons 2015-2025
+panthera-mvp ncaaf grade | status | report | cfbd-pull --seasons 2015-2025
+panthera-mvp ncaaf prep --odds dry_run           # weekly context for NCAAF strategies
+panthera-mvp ncaaf picks --dry-run [--auto]      # decide today's cfb_spread_total_parlay ticket
 panthera-mvp ncaabase games --date 2026-05-01    # NCAA D1 baseball (--force off-season)
 panthera-mvp ncaabase snapshot --label open --dry-run  # PANTHERA_NCAABASE_ODDS_FIXTURE
 panthera-mvp ncaabase grade | status

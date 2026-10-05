@@ -238,6 +238,15 @@ ERA-active), `pv_orig` (aligned engine, registered 2026-08-19 — see
 baseline, uncapped by design), `dog_ml` (backtest-only baseline),
 `sharp_split` + `fade_public` (splits forward-tests, disabled until their
 volume-rule thresholds are set on post-fetch-fix data — see their YAMLs).
+**Registered beyond the launch set (budget: 1 of 2 used for 2026):**
+`cfb_spread_total_parlay` (2026-10-05) — an outside author's NCAAF parlay
+method, the first non-MLB strategy. Its YAML is
+`config/ncaaf_strategies/cfb_spread_total_parlay.yaml` (outside the MLB
+registry), its ledger `data/ncaaf/tickets/`, its report
+`reports/NCAAF_REPORT.md`. SCREEN only (`verdict: null`): ~+600 parlays
+put SE(ROI) near 33 points even at 50 tickets, so the per-signal grading of
+every qualifying leg is the faster read. Intake, the author's answers and
+every proxy: `docs/strategy-intake/cfb_spread_total_parlay.md`.
 Explicitly rejected: registering any further sweep-derived P/V *day-map*
 variant as a "winner" for the `pv_rules` engine (that sweep is retired; the
 day map is now a documented constant, not a calibrated unknown — see

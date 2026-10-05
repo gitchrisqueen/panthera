@@ -127,3 +127,24 @@ def grade_pending(aliases: dict[str, str] | None = None) -> pd.DataFrame:
     store.save_legs(legs)
     store.save_tickets(tickets)
     return pd.DataFrame(settled)
+
+
+def grade_qualifiers(aliases: dict[str, str] | None = None) -> int:
+    """Grade every pending qualifying leg with a result — the per-signal
+    evidence the report reads. Returns how many settled."""
+    q, games = store.load_qualifiers(), store.load_games()
+    if q.empty:
+        return 0
+    q = q.astype({"status": object, "final_score": object})
+    games_by_id = {str(r["event_id"]): r for r in games.to_dict("records")}
+    n = 0
+    for i, row in q[q["status"] == "pending"].iterrows():
+        game = games_by_id.get(str(row["event_id"]))
+        if game is None:
+            continue
+        out = grade_leg(row["market"], row["selection"], row["line"], game, aliases)
+        if out is not None:
+            q.at[i, "status"], q.at[i, "final_score"] = out
+            n += 1
+    store.save_qualifiers(q)
+    return n

@@ -1,0 +1,124 @@
+name: NCAAF Strategy
+
+# Live paper-trading for config/ncaaf_strategies/ (cfb_spread_total_parlay).
+# One workflow, three crons, told apart by github.event.schedule:
+#
+#   5 13-23,0-4 * * *  hourly 9:05-00:05 ET (EDT): `ncaaf picks --auto`.
+#                      A no-op (no network, no credits, no commit) unless the
+#                      day's first unstarted kickoff is 30-90 min away; then
+#                      it takes one decision-<date> snapshot (3 cr) and
+#                      decides the day. :05 keeps it clear of the MLB runs
+#                      (:35, :50, :20) that share the panthera-data group.
+#   10 23 * * 0,3      Sun + Wed 19:10 ET: `ncaaf prep` — ESPN games 8 days
+#                      back / 14 ahead (after Sunday's AP poll), an "open"
+#                      snapshot (3 cr; skipped when nothing is upcoming),
+#                      CFBD SP+ + venues when CFBD_API_KEY is set
+#   15 13 * * *        daily 9:15 ET: `ncaaf grade` (tickets + qualifying
+#                      legs) and the report
+#
+# Credits: ~2 open + ~4 game-day decision snapshots/week ≈ 78/month on top of
+# MLB's ≈ 270 (500 free; NCAAF reserve 60 so MLB keeps priority).
+on:
+  schedule:
+    - cron: "5 13-23,0-4 * * *"
+    - cron: "10 23 * * 0,3"
+    - cron: "15 13 * * *"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "picks = decide today now (ignores the window); prep; grade"
+        type: choice
+        options: [picks, prep, grade]
+        default: prep
+      dry_run:
+        description: "Fixture odds, 0 credits, nothing committed"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Which task
+        id: task
+        run: |
+          case "${{ github.event.schedule }}" in
+            "5 13-23,0-4 * * *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
+            "10 23 * * 0,3")     echo "task=prep" >> "$GITHUB_OUTPUT" ;;
+            "15 13 * * *")       echo "task=grade" >> "$GITHUB_OUTPUT" ;;
+            *)                   echo "task=${{ inputs.task }}" >> "$GITHUB_OUTPUT" ;;
+          esac
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "dry=--dry-run" >> "$GITHUB_OUTPUT"; echo "odds=dry_run" >> "$GITHUB_OUTPUT"
+          else
+            echo "dry=" >> "$GITHUB_OUTPUT"; echo "odds=live" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decide (hourly, window-gated)
+        if: steps.task.outputs.task == 'auto'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: panthera-mvp ncaaf picks --auto
+
+      - name: Decide now (manual)
+        if: steps.task.outputs.task == 'picks'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          PANTHERA_NCAAF_ODDS_FIXTURE: tests/fixtures/ncaaf/odds_ncaaf_snapshot.json
+        run: panthera-mvp ncaaf picks ${{ steps.task.outputs.dry }}
+
+      - name: Prep the week
+        if: steps.task.outputs.task == 'prep'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+          PANTHERA_NCAAF_ODDS_FIXTURE: tests/fixtures/ncaaf/odds_ncaaf_snapshot.json
+        run: panthera-mvp ncaaf prep --odds ${{ steps.task.outputs.odds }}
+
+      - name: Grade
+        if: steps.task.outputs.task == 'grade'
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: panthera-mvp ncaaf grade
+
+      # The report carries a timestamp, so it is regenerated only when the
+      # NCAAF data changed — the hourly no-op must not commit.
+      - name: Report
+        run: |
+          if [ -n "$(git status --porcelain -- data/ncaaf)" ]; then
+            panthera-mvp ncaaf report
+          fi
+
+      - name: Commit & push
+        if: inputs.dry_run != true
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          # One path at a time: a missing path would fail the whole `git add`.
+          for p in data/ncaaf data/odds/credit_log.csv reports/NCAAF_REPORT.md; do
+            if [ -e "$p" ]; then git add "$p"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

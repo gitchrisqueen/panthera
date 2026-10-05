@@ -1,13 +1,15 @@
 # Intake: `cfb_spread_total_parlay` (college football)
 
-**Status:** not registered. Export received 2026-10-04. Panthera can't
-register it yet because both rules are `discretionary: true` and timing,
-staking and limits are all `UNKNOWN`. The follow-up came back the same day
-with **no answers** (see "Follow-up round 1" below). The NCAAF data plumbing
-is built so the engine can be written as soon as real answers arrive.
+**Status:** **registered 2026-10-05** as a SCREEN-only forward test
+(`config/ncaaf_strategies/cfb_spread_total_parlay.yaml`, engine
+`src/panthera_mvp/ncaaf/parlay.py`, runs in `.github/workflows/ncaaf.yml`,
+reports to `reports/NCAAF_REPORT.md`). Live once the PR merges to `main`.
+The author's round-2 answers (via their assistant, Muse, on issue #55's
+questionnaire) are mapped below; four ticket-building answers are still
+`UNKNOWN` and run on labelled proxies.
 
-The raw export is **not committed**. The author hasn't yet agreed to it
-going into this public repo (step 3 of `EXPORT_PROMPT.md`).
+The raw exports are **not committed**; the numbers they contain are, in the
+strategy YAML.
 
 ## What the export says (summary)
 
@@ -34,23 +36,40 @@ going into this public repo (step 3 of `EXPORT_PROMPT.md`).
 | advanced_metrics | CFBD SP+ (overall / offense / defense) | yes | yes |
 | injury_report | none found that is free and structured | no | no |
 
-## Path to registration
+## Round 2 answers (2026-10-04) -> the strategy YAML
 
-1. Get real answers using Round 2 below (option A, the direct questionnaire,
-   is recommended). Paste the reply into the session.
-2. Turn each answered threshold into a field in
-   `config/strategies/cfb_spread_total_parlay.yaml`. Drop or replace any rule
-   that stays judgment-only. Note which inputs were dropped (injuries and
-   splits are likely candidates).
-3. Write the engine in `src/panthera_mvp/strategy/` (inputs: game, lines,
-   SP+, schedule context, weather; output: zero or more tickets). Every
-   worked example must reproduce the author's ticket.
-4. Backtest on CFBD seasons (`ncaaf cfbd-pull --seasons 2015-2025`). Price
-   each leg at -110 unless the history has prices. Then pre-register the
-   verdict and screen thresholds, set `kind: forward_test`, and run the
-   remaining 2026 Saturdays.
-5. Budget: this uses 1 of the 2 new forward-test slots allowed per season
-   (`docs/mvp-design.md`).
+| Author's answer | In the YAML | Status |
+|---|---|---|
+| Any day with games; decide 60 min before the earliest leg's kickoff | `decision.minutes_before_first_kickoff: 60`; hourly cron with a ±30 min window | AUTHOR |
+| Best available line | best point, then price, among the snapshot's US books; signals read the median line | AUTHOR + proxy detail |
+| S1 spread move ≥ 1.5, with the move | `signals.line_move_spread`; "open" = the first Panthera snapshot that priced the game | AUTHOR (ACCEPT) |
+| S2 total move ≥ 2, with the move | `signals.line_move_total` | AUTHOR (ACCEPT) |
+| S3 letdown: beat a ranked team **or rival**, favored by 10+ → other side | `signals.letdown`; "last week" = the previous game within 15 days | AUTHOR; **rival half dropped** (no data) |
+| S4 look-ahead: ranked opponent next, favored by 10+ → other side | `signals.look_ahead` | AUTHOR (ACCEPT) |
+| S5 outdoor, wind ≥ 15 mph at kickoff → under | `signals.weather_wind_under` (Open-Meteo at CFBD venue coordinates) | AUTHOR (ACCEPT); needs `CFBD_API_KEY` |
+| S6 SP+ vs spread ≥ 4 (HFA 2.5) → SP+ side | `signals.sp_plus_edge` | AUTHOR (ACCEPT); needs `CFBD_API_KEY` |
+| S7 starting QB out → skip game | `signals.qb_out_skip: {enabled: false}` | **dropped** (no free injury feed) |
+| One angle is enough; opposite angles → skip the game | `legs.min_signals: 1`, `legs.conflict: skip_game` | AUTHOR |
+| Moneyline legs -300 to -150, alongside the spread leg | `legs.moneyline_legs: false` | AUTHOR accepted, but gave no trigger for *when* → never added |
+| Min/max legs | `ticket.legs_per_ticket: 3` | **PROXY** (UNKNOWN; both cards shown were 3 legs) |
+| +600 to +1000 hard or target | target, recorded as `in_band` | **PROXY** (UNKNOWN) |
+| Which legs when too many qualify | most signals, then earliest kickoff | **PROXY** (UNKNOWN) |
+| Two legs from one game | no (`legs.same_game_legs: false`) | **PROXY** (UNKNOWN) |
+| Flat $50–100 per ticket | `staking.flat_stake: 100` | AUTHOR range; $100 ledger convention |
+| Max 1 ticket a day; skip the day after a loss | `bet_limits` | AUTHOR |
+
+Still unknown and worth asking the author: the four proxies above, why the
+Oct 3 morning card wasn't placed, and which angle picked each leg of the
+two known cards. Their past tickets can't be replayed through the engine
+until those are known. Changing any behavioral value after the first live
+ticket needs a new strategy id (protocol), so answers that change a proxy
+should land **before** the PR merges.
+
+**What the forward test measures.** Tickets are SCREEN only: at ~+600 the
+per-ticket SD is ~2.3× the stake, so SE(ROI) is still ~33 points at 50
+tickets. Every qualifying leg (on the ticket or not) is graded and reported
+per signal against the -110 breakeven (52.4%); that is the faster, partial
+read on which angles carry the method.
 
 ---
 
@@ -71,7 +90,7 @@ The one new fact is a second card from 2026-10-03, built in the morning but
 -6.5 also appears on the placed ticket. It isn't a bet, so it can't be graded
 as one. Ask why it wasn't placed, because that answer is a skip rule.
 
-## Round 2: getting the answers
+## Round 2: how the answers were collected
 
 The answers live in the author's head, not in the chat history, so the
 assistant can't fill them in alone.

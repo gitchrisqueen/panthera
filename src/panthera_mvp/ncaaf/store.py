@@ -1,6 +1,7 @@
 """NCAAF CSV datastore: games (upsert), Odds API lines (append, dedupe),
 CFBD week lines (upsert), parlay tickets + legs (append-once, settle in
-place).
+place), and a strategy's qualifying legs + per-day decisions (append-once;
+qualifiers settle in place like legs).
 
 A ticket is one paper bet: N legs, one stake, one combined price. Legs are
 stored separately so each leg grades on its own game; the ticket settles
@@ -147,3 +148,49 @@ def save_tickets(df: pd.DataFrame) -> None:
 
 def save_legs(df: pd.DataFrame) -> None:
     _write(df.reindex(columns=LEGS_COLUMNS), paths.ncaaf_ticket_legs_csv())
+
+
+QUALIFIERS_COLUMNS = [
+    "strategy_id", "game_date_et", "event_id", "matchup", "start_time_utc",
+    "market", "selection", "line", "consensus_line", "price_american",
+    "price_decimal", "bookmaker", "signal_ids", "signal_detail", "on_ticket",
+    "config_hash", "status", "final_score",
+]
+
+DECISIONS_COLUMNS = [
+    "strategy_id", "game_date_et", "decided_ts_utc", "snapshot_ts_utc", "status",
+    "reason", "n_qualifiers", "ticket_id", "config_hash", "notes",
+]
+
+
+def load_qualifiers() -> pd.DataFrame:
+    return _load(paths.ncaaf_qualifiers_csv(), QUALIFIERS_COLUMNS)
+
+
+def save_qualifiers(df: pd.DataFrame) -> None:
+    _write(df.reindex(columns=QUALIFIERS_COLUMNS), paths.ncaaf_qualifiers_csv())
+
+
+def load_decisions() -> pd.DataFrame:
+    return _load(paths.ncaaf_decisions_csv(), DECISIONS_COLUMNS)
+
+
+def decided(strategy_id: str, game_date_et: str) -> bool:
+    d = load_decisions()
+    return bool(((d["strategy_id"] == strategy_id) & (d["game_date_et"] == game_date_et)).any())
+
+
+def append_decision(decision: dict, qualifiers: list[dict]) -> bool:
+    """Record one (strategy, day) decision and its qualifying legs. A day
+    already decided is a no-op: one decision per strategy per ET day."""
+    if decided(decision["strategy_id"], decision["game_date_et"]):
+        return False
+    d = load_decisions()
+    row = pd.DataFrame([decision]).reindex(columns=DECISIONS_COLUMNS)
+    _write(row if d.empty else pd.concat([d, row], ignore_index=True), paths.ncaaf_decisions_csv())
+    if qualifiers:
+        q = pd.DataFrame(qualifiers).reindex(columns=QUALIFIERS_COLUMNS)
+        q["status"] = q["status"].fillna("pending")
+        old = load_qualifiers()
+        save_qualifiers(q if old.empty else pd.concat([old, q], ignore_index=True))
+    return True

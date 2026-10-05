@@ -104,6 +104,18 @@ def main(argv: list[str] | None = None) -> None:
     c_cfbd.add_argument("--seasons", required=True, help="e.g. 2015-2025")
     c_cfbd.add_argument("--refresh", action="store_true")
     cfb.add_parser("status", help="NCAAF row counts and credit balance")
+    c_prep = cfb.add_parser(
+        "prep", help="Weekly context: games back/ahead, open snapshot, CFBD SP+ + venues"
+    )
+    c_prep.add_argument("--odds", default="live", choices=["live", "dry_run", "none"])
+    c_picks = cfb.add_parser("picks", help="Decide today's ticket for an NCAAF strategy")
+    c_picks.add_argument("--strategy", default="cfb_spread_total_parlay")
+    c_picks.add_argument(
+        "--auto", action="store_true",
+        help="Only decide inside the decision window (the hourly cron)",
+    )
+    c_picks.add_argument("--dry-run", action="store_true", help="Fixture odds, no credits")
+    cfb.add_parser("report", help="Regenerate reports/NCAAF_REPORT.md")
 
     # --- NCAA D1 college baseball (issue #52) ---
     p_cbb = sub.add_parser(
@@ -180,6 +192,18 @@ def main(argv: list[str] | None = None) -> None:
             ncaaf.cmd_cfbd_pull(args.seasons, refresh=args.refresh)
         elif args.ncaaf_command == "status":
             ncaaf.cmd_status()
+        elif args.ncaaf_command == "prep":
+            from .ncaaf.picks import cmd_prep
+
+            cmd_prep(args.odds)
+        elif args.ncaaf_command == "picks":
+            from .ncaaf.picks import cmd_picks
+
+            cmd_picks(args.strategy, auto=args.auto, dry_run=args.dry_run)
+        elif args.ncaaf_command == "report":
+            from .ncaaf.report import write_report
+
+            print(f"[ncaaf report] wrote {write_report()}")
     elif args.command == "ncaabase":
         from .ncaabase import pipeline as ncaabase
 

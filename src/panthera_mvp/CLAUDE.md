@@ -28,8 +28,14 @@
   ingest = CFBD /games merged with ESPN's week scoreboard by game id; finals
   fallback chain ESPN → CFBD → ncaa-api, filling only unsettled games), and
   a parlay-ticket ledger (`grading.py`: spread/total/moneyline legs;
-  push/void legs drop out and the ticket price is re-figured). No pick
-  engine yet.
+  push/void legs drop out and the ticket price is re-figured).
+  `parlay.py` is the `cfb_spread_total_parlay` engine (pure: GameViews +
+  schedule context + SP+ + kickoff wind -> one day's qualifying legs and
+  ticket; signal ids S1-S7 in its docstring), `picks.py` runs it
+  (`ncaaf prep` / `ncaaf picks [--auto]`), `report.py` writes
+  `reports/NCAAF_REPORT.md`. NCAAF strategies are YAMLs in
+  `config/ncaaf_strategies/` loaded by `ncaaf/config.py`, never by the MLB
+  registry; same `config_hash` / `hash_lineage` protocol.
 - `clients/college_baseball.py` + `ncaabase/` — NCAA D1 college baseball
   (issue #52): ncaa-api (henrygd wrapper over NCAA.com; daily scoreboard,
   NCAA `gameID` = game key) with ESPN's college-baseball scoreboard as the

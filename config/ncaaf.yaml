@@ -3,24 +3,25 @@
 # Deliberately a separate file from config/strategy.yaml: strategy.yaml is
 # hashed into every MLB pick's config_hash, so NCAAF knobs living there would
 # fragment the MLB ledgers. Nothing here is a strategy parameter; the
-# cfb_spread_total_parlay engine's thresholds will live in its own
-# config/strategies/ YAML once the author's follow-up answers land (see
-# docs/strategy-intake/cfb_spread_total_parlay.md).
+# cfb_spread_total_parlay engine's thresholds live in
+# config/ncaaf_strategies/cfb_spread_total_parlay.yaml.
 
 odds_api:
   sport_key: americanfootball_ncaaf
   regions: us
-  # h2h is needed only for the export's R1 moneyline-leg exception. Each
-  # market costs 1 credit per region per snapshot, so this is 3 credits —
-  # drop h2h (2 credits) if the author rejects R1.
+  # h2h serves only the moneyline-leg exception, which the author accepted
+  # but gave no trigger for, so cfb_spread_total_parlay never adds one. It
+  # is kept so a successor can; each market costs 1 credit per region per
+  # snapshot (3 here, 2 without h2h).
   markets: [spreads, totals, h2h]
   # Higher floor than MLB's 30: the monthly pool is shared, and MLB is the
   # incumbent test. NCAAF snapshots stop first when credits run low.
   min_credits_reserve: 60
-  # Cadence is WEEKLY: one call returns every upcoming FBS event of the
-  # week, so a full slate costs 3 credits (3 markets x 1 region), not 3 per
-  # game day. Two snapshots a week (open early in the week + pregame
-  # Saturday) = 6 credits/week ~= 26/month; MLB's 3/day ~= 270/month, so
+  # One call returns every upcoming FBS event, so a snapshot costs 3
+  # credits however many games it covers. Cadence (.github/workflows/
+  # ncaaf.yml): `prep` takes an "open" snapshot Sunday and Wednesday, and
+  # `picks` one "decision" snapshot per game day (Tue-Sat in season, ~4).
+  # About 6 snapshots = 18 credits/week ~= 78/month; MLB's 9/day ~= 270, so
   # both fit the 500 free tier with room for the reserve.
 
 espn:
@@ -59,3 +60,16 @@ ncaa_api:
 
 grading:
   flat_stake: 100
+
+schedule:
+  # Plumbing for `ncaaf picks --auto` (the strategy's own decision time is
+  # decision.minutes_before_first_kickoff in its YAML). The hourly cron
+  # decides when the day's first unstarted kickoff is within this many
+  # minutes either side of that target; a 60-minute-wide window means
+  # exactly one hourly run lands in it.
+  decision_window_halfwidth_minutes: 30
+  # `ncaaf prep` refreshes ESPN games for this many ET days back (last
+  # game's result + rank: the letdown angle) and ahead (next opponent's
+  # rank: the look-ahead angle; the week's kickoff times: the cron).
+  prep_days_back: 8
+  prep_days_ahead: 14
