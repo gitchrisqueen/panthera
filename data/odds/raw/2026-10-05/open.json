@@ -1,0 +1,1934 @@
+[
+ {
+  "id": "ccd487a87bb73145e3f12dd3a765ad47",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-05T21:10:00Z",
+  "home_team": "Cleveland Guardians",
+  "away_team": "Chicago White Sox",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 128
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -152
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -188,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 155,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 123
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -149
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -191,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 157,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -104,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-05T14:46:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 125
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -190,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 154,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-05T14:47:53Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 127
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 154,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -116,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-05T14:47:10Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 135
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -149
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 154,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -118,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 103,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 135
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -149
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 153,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -120,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 100,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-05T14:47:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 128
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -153
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -180,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 155,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 143
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -175
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -165,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 135,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -117,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-05T14:47:07Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": 132
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": -147
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Chicago White Sox",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Cleveland Guardians",
+        "price": 152,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "4be245ad03895bcafcdc42d7d926b675",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-06T00:00:00Z",
+  "home_team": "Tampa Bay Rays",
+  "away_team": "New York Yankees",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -124
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 106
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 146,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -178,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -118,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -104,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -127
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 142,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -172,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -112,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -107,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-05T14:46:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -125
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 145,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -180,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-05T14:47:10Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -120
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 109
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 154,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -175,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -104,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -120
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 109
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 153,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -175,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -113,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -107,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -129
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 108
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 145,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -180,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -106,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-05T14:47:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -123
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 103
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 150,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -175,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-05T14:47:07Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -122
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 111
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 147,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -168,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-05T14:47:53Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": -125
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 106
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "New York Yankees",
+        "price": 150,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -170,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -106,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "1bc3bf1d3034010bdfb31d928a71177a",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-06T22:00:00Z",
+  "home_team": "Atlanta Braves",
+  "away_team": "Los Angeles Dodgers",
+  "bookmakers": [
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -109
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -110
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 160,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -116,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -104,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -108
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -108
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -215,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 176,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -102,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-05T14:46:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -110
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -110
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -105
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 170,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -118,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -102,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-05T14:47:10Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -105
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 171,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -116,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": 101,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-05T14:47:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -110
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -110
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -200,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 170,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -120,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": 100,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -114
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -215,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 170,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -104,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -118,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-05T14:47:53Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -113
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -104
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -187,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 159,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -119,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -103,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-05T14:47:07Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -105
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": -105
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Atlanta Braves",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "Los Angeles Dodgers",
+        "price": 168,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -120,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": 100,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "62d8e1c18355ab6b3913d7a28fa677c2",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-07T01:30:00Z",
+  "home_team": "San Diego Padres",
+  "away_team": "Milwaukee Brewers",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 116
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -134
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -194,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 158,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 110,
+        "point": 7.5
+       },
+       {
+        "name": "Under",
+        "price": -134,
+        "point": 7.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-05T14:46:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 115
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -140
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -190,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 155,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:46:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -120,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": 100,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-05T14:47:36Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 113
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -136
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -201,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 164,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:36Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -109,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -111,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-05T14:47:12Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 117
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -140
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 165,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:12Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -120,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": 100,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-05T14:47:53Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 115
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -135
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -185,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 163,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:53Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -106,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 125
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -180,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 148,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -117,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-05T14:47:23Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 121
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 170,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:23Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-05T14:47:10Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 121
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 171,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:10Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -113,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -102,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-05T14:47:07Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 121
+       },
+       {
+        "name": "San Diego Padres",
+        "price": -133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -195,
+        "point": 1.5
+       },
+       {
+        "name": "San Diego Padres",
+        "price": 168,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-05T14:47:07Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]
