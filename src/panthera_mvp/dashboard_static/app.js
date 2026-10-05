@@ -463,6 +463,8 @@
       return;
     }
     window.__panthera = { data };
+    P.renderSportTabs("baseball");
+    P.levelChips("baseball");
     renderFreshness(data);
     renderHowToRead(data);
     renderComparison(data);

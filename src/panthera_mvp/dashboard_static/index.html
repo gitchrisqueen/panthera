@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project Panthera — Running Ledger</title>
+<title>Project Panthera — Baseball</title>
 <meta name="description" content="A pre-registered, forward paper-traded MLB betting-strategy research ledger. Not a tipster service, not financial advice.">
 <link rel="stylesheet" href="static/app.css">
 </head>
@@ -22,6 +22,8 @@
         <span id="freshness-badge" class="freshness"><span class="dot"></span><span>Loading…</span></span>
       </div>
     </div>
+    <nav class="sporttabs" aria-label="Sports"><a href="index.html" aria-current="page">Baseball</a><a href="football.html">Football</a><a href="glossary.html">Glossary</a></nav>
+    <div class="levelchips" id="level-chips" role="group" aria-label="Level"></div>
   </div>
 </header>
 
@@ -38,6 +40,10 @@
 </nav>
 
 <main class="wrap">
+  <!-- Baseball · Professional (MLB). Every section below belongs to this
+       level; common.js levelChips() hides it, and the section-nav links into
+       it, when another level is selected. -->
+  <div data-level="pro">
   <section id="how-to-read-section">
     <details class="how-to-read">
       <summary>How to read this ledger — sample sizes are small, read this first</summary>
@@ -147,6 +153,7 @@
   <section id="portfolio-section">
     <div class="portfolio-strip" id="portfolio-strip">Loading…</div>
   </section>
+  </div>
 </main>
 
 <footer>

@@ -29,7 +29,10 @@ from panthera_mvp.report import write_ledger_report
 
 STATIC = Path(__file__).resolve().parents[1] / "src" / "panthera_mvp" / "dashboard_static"
 #: Every file that can put a [data-term] or a glossBadge() on screen.
-UI_SOURCES = ["index.html", "calibration.html", "app.js", "calibration.js"]
+UI_SOURCES = [
+    "index.html", "football.html", "calibration.html",
+    "app.js", "football.js", "calibration.js", "common.js",
+]
 
 
 def ui_text() -> str:

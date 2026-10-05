@@ -36,6 +36,26 @@ strategy YAML.
 | advanced_metrics | CFBD SP+ (overall / offense / defense) | yes | yes |
 | injury_report | none found that is free and structured | no | no |
 
+## Round 3 (sent 2026-10-05): remaining questions
+
+Posted at the top of issue #55, which is now locked: comments are closed, so
+nobody can post instructions the author's assistant might follow. Rounds 1–2
+are collapsed and marked answered. The 12 questions cover the four ticket
+proxies, rivals, injuries beyond QB-out, the moneyline trigger, stake and
+sportsbook, why the Oct 3 card wasn't placed, which angle picked each Oct 3
+leg, more history, and best days.
+
+Each question is asked open-ended first; Panthera's proxy is shown only
+after the author answers, and a bare "accept" is recorded as `ECHO` (round 1
+failed by echoing the suggested numbers back as answers). Answers come back
+privately to Christopher (template `schema_version: "1.0-round3"`).
+
+**Pre-committed decision, 2026-10-18.** Whether to register
+`cfb_spread_total_parlay_v2` is decided on that date from the round-3 answers
+alone, never from how v1's live tickets are doing (deciding after watching
+results is peeking). A v2 uses the last forward-test slot of the 2026 budget
+(`docs/mvp-design.md`). v1 keeps running unchanged either way.
+
 ## Round 2 answers (2026-10-04) -> the strategy YAML
 
 | Author's answer | In the YAML | Status |

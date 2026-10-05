@@ -85,6 +85,7 @@
 
   async function init() {
     P.initTheme();
+    P.renderSportTabs("glossary");
     const data = await P.loadGlossary();
     if (!data.terms || !Object.keys(data.terms).length) {
       document.getElementById("gloss-status").textContent =

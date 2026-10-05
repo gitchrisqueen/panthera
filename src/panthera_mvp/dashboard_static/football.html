@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Panthera — Football</title>
+<meta name="description" content="Paper-traded college football parlay strategies: tickets, qualifying legs by signal, and every daily decision. Not a tipster service, not financial advice.">
+<link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="masthead-row">
+      <div>
+        <h1>🐆 Project Panthera</h1>
+        <p class="tagline">Football strategies, paper-traded automatically. Each one declared how
+          it would be judged <em>before</em> its first ticket. Paper trades only; not financial
+          advice; not a tipster service.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+        <span id="freshness-badge" class="freshness"><span class="dot"></span><span>Loading…</span></span>
+      </div>
+    </div>
+    <nav class="sporttabs" aria-label="Sports"><a href="index.html">Baseball</a><a href="football.html" aria-current="page">Football</a><a href="glossary.html">Glossary</a></nav>
+    <div class="levelchips" id="level-chips" role="group" aria-label="Level"></div>
+  </div>
+</header>
+
+<nav class="sitenav" aria-label="Sections">
+  <div class="wrap">
+    <a href="#strategies">Strategies</a>
+    <a href="#tickets">Tickets</a>
+    <a href="#signals">Signals</a>
+    <a href="#decisions">Decisions</a>
+    <a href="glossary.html">Glossary ↗</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <!-- Football · College (NCAAF FBS). common.js levelChips() hides this
+       block, and the section-nav links into it, at any other level. -->
+  <div data-level="college">
+  <section id="strategies">
+    <h2>Strategies</h2>
+    <p class="section-sub">Parlays at around +600 can't support a profit verdict this season, so
+      each strategy here is a SCREEN: descriptive only. The per-signal table below is the
+      faster read.</p>
+    <div id="strategy-cards"><p class="empty-note">Loading…</p></div>
+  </section>
+
+  <section id="tickets">
+    <h2>Tickets</h2>
+    <p class="section-sub">Every paper ticket, newest first. A 3-leg ticket at -110 per leg pays
+      +596, so tickets break even at a 14.4% hit rate.
+      <a class="raw-link" href="https://github.com/gitchrisqueen/panthera/blob/main/data/ncaaf/tickets/tickets.csv" target="_blank" rel="noopener">View raw CSV on GitHub <svg class="icon"><use href="static/icons.svg#icon-external"/></svg></a></p>
+    <div class="table-scroll"><table class="responsive-stack" id="tickets-table">
+      <thead><tr>
+        <th data-term="game_date_et">Date</th>
+        <th data-term="ticket_legs">Legs</th>
+        <th class="num" data-term="price_american">Price</th>
+        <th data-term="ticket_status">Status</th>
+        <th class="num" data-term="profit_loss">P/L</th>
+      </tr></thead>
+      <tbody id="tickets-tbody"></tbody>
+    </table></div>
+  </section>
+
+  <section id="signals">
+    <h2>Qualifying legs by signal</h2>
+    <p class="section-sub">Every leg the strategy found qualifying, on a ticket or not, graded at
+      its best available line. A leg picked by two signals counts under each. Single legs at
+      -110 break even at 52.4%.</p>
+    <div class="table-scroll"><table class="responsive-stack" id="signals-table">
+      <thead><tr>
+        <th data-term="signal">Signal</th>
+        <th class="num" data-term="qualifying_legs">Legs</th>
+        <th data-term="record">Record</th>
+        <th class="num" data-term="win_pct">Win %</th>
+        <th class="num" data-term="vs_breakeven">vs 52.4%</th>
+      </tr></thead>
+      <tbody id="signals-tbody"></tbody>
+    </table></div>
+  </section>
+
+  <section id="decisions">
+    <h2>Decisions</h2>
+    <p class="section-sub" id="decisions-sub">One decision per game day, about an hour before the
+      first kickoff: a ticket, no ticket (too few qualifying legs), or a skip.</p>
+    <div class="table-scroll"><table class="responsive-stack" id="decisions-table">
+      <thead><tr>
+        <th data-term="game_date_et">Date</th>
+        <th data-term="decision">Decision</th>
+        <th data-term="decision_reason">Reason</th>
+      </tr></thead>
+      <tbody id="decisions-tbody"></tbody>
+    </table></div>
+  </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Refreshes automatically after each football decision and the morning grading run
+      (GitHub Actions, cron-scheduled — not real-time). Built from
+      <a href="https://github.com/gitchrisqueen/panthera" target="_blank" rel="noopener">gitchrisqueen/panthera</a>
+      by <code>panthera-mvp pages</code>, from the same ledger as
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/NCAAF_REPORT.md" target="_blank" rel="noopener">NCAAF_REPORT.md</a>.
+      All tickets are paper trades — no real money is wagered, and nothing here is financial advice.</p>
+  </div>
+</footer>
+
+<script src="static/common.js"></script>
+<script src="static/football.js"></script>
+<noscript>
+  <div class="wrap" style="padding:32px 16px;">
+    <p>This page needs JavaScript to render from
+      <a href="ncaaf_data.json">ncaaf_data.json</a>. The same data is in
+      <a href="https://github.com/gitchrisqueen/panthera/blob/main/reports/NCAAF_REPORT.md">NCAAF_REPORT.md</a>.</p>
+  </div>
+</noscript>
+</body>
+</html>

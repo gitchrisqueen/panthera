@@ -21,6 +21,7 @@ on:
       - "src/panthera_mvp/glossary.py"
       - "config/glossary.yaml"
       - "scripts/site_audit.py"
+      - "tests/fixtures/ncaaf/site_ncaaf_data.json"
       - ".github/workflows/site-audit.yml"
   push:
     branches: [main, dev]
@@ -30,6 +31,7 @@ on:
       - "src/panthera_mvp/glossary.py"
       - "config/glossary.yaml"
       - "scripts/site_audit.py"
+      - "tests/fixtures/ncaaf/site_ncaaf_data.json"
       - ".github/workflows/site-audit.yml"
   workflow_dispatch:
 

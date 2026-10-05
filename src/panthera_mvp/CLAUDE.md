@@ -58,6 +58,15 @@
   `splits_signal.py` (Lumify splits engines).
 - `grading.py` — settles picks (ML/RL/total, pushes, voids).
 - `report.py` — regenerates all markdown from `picks.csv`.
+- `dashboard.py` — builds the public site: `site_data.json` (Baseball ·
+  Professional, from `picks.csv` via report.py's helpers),
+  `ncaaf_data.json` (Football · College, from `data/ncaaf/tickets/`, same
+  definitions as `ncaaf/report.py`, parity-tested) and the static pages in
+  `dashboard_static/`. One page per sport (`index.html` = Baseball,
+  `football.html`); `common.js` holds the sport tabs and the
+  Professional/College/Other level chips (`SPORTS` constant: add a sport =
+  add a page + an entry). New top-level pages go in `write_site`'s move list
+  and `scripts/site_audit.py`'s `DEFAULT_PAGES`.
 - `glossary.py` — loads `config/glossary.yaml` (the one source of truth for
   every acronym, column header, badge and rule id the public surfaces name)
   and renders it two ways: `site/glossary.json` for the dashboard's

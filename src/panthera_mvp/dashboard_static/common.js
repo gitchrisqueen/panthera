@@ -1,8 +1,9 @@
 /* Project Panthera — shared dashboard runtime (window.Panthera).
  *
- * Loaded first by every page (index, calibration, glossary). Holds the things
- * all three need: escaping, the theme toggle, and the glossary runtime that
- * attaches a definition to every [data-term] in the document.
+ * Loaded first by every page (index, football, calibration, glossary). Holds
+ * what they all need: escaping, the theme toggle, the sport tabs and level
+ * chips, and the glossary runtime that attaches a definition to every
+ * [data-term] in the document.
  *
  * `panthera-mvp pages` copies dashboard_static/ wholesale, so a new file under
  * static/ ships with no Python change — only new top-level HTML pages have to
@@ -127,9 +128,106 @@
     return `<a class="badge ${cls}" href="${glossHref(slug)}" title="${tip}">${inner}</a>`;
   }
 
+  // ------------------------------------------------- sport tabs + levels
+  /* One page per sport; the level (Professional / College / Other) is a
+     filter on that page. Kept as a constant rather than generated: every
+     sport needs its own hand-written page anyway. `live` = a registered
+     strategy reports at that level. A level that isn't live shows as a
+     disabled chip and is never selectable, so `?level=` for it falls back to
+     the page's default. Add a sport = add a page + an entry here. */
+  const LEVELS = [
+    ["pro", "Professional"],
+    ["college", "College"],
+    ["other", "Other"],
+  ];
+  const SPORTS = [
+    {
+      id: "baseball", label: "Baseball", href: "index.html", defaultLevel: "pro",
+      levels: {
+        pro: { league: "MLB", live: true },
+        college: { league: "NCAA D1", live: false },
+        other: { league: "minor & international leagues", live: false },
+      },
+    },
+    {
+      id: "football", label: "Football", href: "football.html", defaultLevel: "college",
+      levels: {
+        pro: { league: "NFL", live: false },
+        college: { league: "NCAAF FBS", live: true },
+        other: { league: "CFL, UFL & others", live: false },
+      },
+    },
+  ];
+
+  /* Fills <nav class="sporttabs"> in the masthead. `current` is a sport id,
+     or "glossary". Not sticky on purpose: the sticky section nav owns
+     --nav-h and the anchor offsets. */
+  function renderSportTabs(current) {
+    const nav = document.querySelector("nav.sporttabs");
+    if (!nav) return;
+    const tabs = SPORTS.map((s) => [s.id, s.label, s.href])
+      .concat([["glossary", "Glossary", "glossary.html"]]);
+    nav.innerHTML = tabs.map(([id, label, href]) =>
+      `<a href="${escAttr(href)}"${id === current ? ' aria-current="page"' : ""}>${esc(label)}</a>`
+    ).join("");
+  }
+
+  function sport(id) { return SPORTS.find((s) => s.id === id) || null; }
+
+  /* Renders the level chips for a sport page into #level-chips, applies the
+     active level to every [data-level] element and to the section-nav links
+     that point at them, and returns the active level. */
+  function levelChips(sportId, onChange) {
+    const s = sport(sportId);
+    const box = document.getElementById("level-chips");
+    if (!s || !box) return null;
+    const params = new URLSearchParams(window.location.search);
+    let active = params.get("level");
+    if (!active || !(s.levels[active] && s.levels[active].live)) active = s.defaultLevel;
+
+    const apply = () => {
+      document.body.dataset.level = active;
+      document.querySelectorAll("main [data-level]").forEach((el) => {
+        el.hidden = el.dataset.level !== active;
+      });
+      document.querySelectorAll("nav.sitenav a[href^='#']").forEach((a) => {
+        const target = document.getElementById(a.getAttribute("href").slice(1));
+        a.hidden = Boolean(target && target.closest("[hidden]"));
+      });
+      box.querySelectorAll("button.chip").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b.dataset.chipLevel === active));
+      });
+    };
+
+    const idle = LEVELS.filter(([id]) => !s.levels[id].live).map(([, label]) => label);
+    box.innerHTML =
+      `<span class="level-label" data-term="level">Level</span>` +
+      LEVELS.map(([id, label]) => {
+        const lv = s.levels[id];
+        const tip = lv.live ? lv.league : `${lv.league}: no strategy yet`;
+        return `<button type="button" class="chip level-chip" data-chip-level="${id}"` +
+          ` title="${escAttr(tip)}"${lv.live ? "" : " disabled aria-disabled=\"true\""}>` +
+          `${esc(label)}${lv.live ? ` <span class="level-league">${esc(lv.league)}</span>` : ""}</button>`;
+      }).join("") +
+      (idle.length ? `<span class="level-note">${esc(idle.join(" and "))}: no strategy yet</span>` : "");
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("button.chip");
+      if (!b || b.disabled || b.dataset.chipLevel === active) return;
+      active = b.dataset.chipLevel;
+      const url = new URL(window.location.href);
+      url.searchParams.set("level", active);
+      history.replaceState(null, "", url);
+      apply();
+      if (typeof onChange === "function") onChange(active);
+    });
+    apply();
+    return active;
+  }
+
   window.Panthera = {
     esc, escAttr, mdStrip, mdInline, icon, cssVar,
     currentIsDark, initTheme,
     loadGlossary, glossary, glossTerm, glossHref, glossaryDecorate, glossBadge,
+    SPORTS, LEVELS, renderSportTabs, levelChips,
   };
 })();
