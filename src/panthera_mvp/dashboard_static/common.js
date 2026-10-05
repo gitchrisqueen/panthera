@@ -120,9 +120,17 @@
   }
 
   /* Badges link as a whole rather than growing a 24px affordance inside a
-     pill — the badge itself is the better tap target. */
-  function glossBadge(slug, cls, inner) {
+     pill — the badge itself is the better tap target.
+     {link: false} renders the same badge as a plain label with the definition
+     as its tooltip — for badges repeated on every table row, where one linked
+     column header beats a stack of identical links (and the call site still
+     names the slug, so tests/test_glossary.py sees it rendered). */
+  function glossBadge(slug, cls, inner, opts) {
     const t = glossTerm(slug);
+    if (opts && opts.link === false) {
+      const tip = t ? ` title="${escAttr(`${t.label} — ${mdStrip(t.short)}`)}"` : "";
+      return `<span class="badge badge-label ${cls}"${tip}>${inner}</span>`;
+    }
     if (!t) return `<span class="badge ${cls}">${inner}</span>`;
     const tip = escAttr(`${t.label} — ${mdStrip(t.short)}`);
     return `<a class="badge ${cls}" href="${glossHref(slug)}" title="${tip}">${inner}</a>`;
@@ -159,17 +167,38 @@
     },
   ];
 
-  /* Fills <nav class="sporttabs"> in the masthead. `current` is a sport id,
-     or "glossary". Not sticky on purpose: the sticky section nav owns
-     --nav-h and the anchor offsets. */
+  /* Fills <nav class="sporttabs"> in the masthead: one tab per sport, then
+     the page-level utility links (Glossary, Calibration) right-aligned in the
+     same row — the one place on every page to change page. `current` is a
+     sport id, "glossary" or "calibration". Not sticky on purpose: the sticky
+     section nav below owns --nav-h and the anchor offsets, and carries only
+     in-page jumps. */
+  const UTILITY = [
+    ["glossary", "Glossary", "glossary.html"],
+    ["calibration", "Calibration", "calibration.html"],
+  ];
   function renderSportTabs(current) {
     const nav = document.querySelector("nav.sporttabs");
     if (!nav) return;
-    const tabs = SPORTS.map((s) => [s.id, s.label, s.href])
-      .concat([["glossary", "Glossary", "glossary.html"]]);
-    nav.innerHTML = tabs.map(([id, label, href]) =>
-      `<a href="${escAttr(href)}"${id === current ? ' aria-current="page"' : ""}>${esc(label)}</a>`
-    ).join("");
+    const link = ([id, label, href], cls) =>
+      `<a href="${escAttr(href)}"${cls ? ` class="${cls}"` : ""}` +
+      `${id === current ? ' aria-current="page"' : ""}>${esc(label)}</a>`;
+    nav.innerHTML =
+      SPORTS.map((s) => link([s.id, s.label, s.href])).join("") +
+      UTILITY.map((u, i) => link(u, i === 0 ? "tab-util tab-util-first" : "tab-util")).join("");
+  }
+
+  /* The section nav scrolls sideways on narrow screens. Fade its right edge
+     only while more links are off-screen, so the last link is never dimmed
+     and a clipped word always reads as "scroll for more". */
+  function wireNavOverflow() {
+    const wrap = document.querySelector("nav.sitenav .wrap");
+    if (!wrap) return;
+    const update = () =>
+      wrap.classList.toggle("has-more", wrap.scrollLeft + wrap.clientWidth < wrap.scrollWidth - 1);
+    update();
+    wrap.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
   }
 
   function sport(id) { return SPORTS.find((s) => s.id === id) || null; }
@@ -224,10 +253,16 @@
     return active;
   }
 
+  /* A status dot and its word as one unit, so stacked phone cards can't pull
+     them apart (the cell is a space-between flex row there). */
+  function statusCell(status) {
+    return `<span class="status"><span class="status-dot ${escAttr(status)}"></span>${esc(status)}</span>`;
+  }
+
   window.Panthera = {
     esc, escAttr, mdStrip, mdInline, icon, cssVar,
     currentIsDark, initTheme,
     loadGlossary, glossary, glossTerm, glossHref, glossaryDecorate, glossBadge,
-    SPORTS, LEVELS, renderSportTabs, levelChips,
+    SPORTS, LEVELS, renderSportTabs, levelChips, wireNavOverflow, statusCell,
   };
 })();

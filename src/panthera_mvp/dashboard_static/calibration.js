@@ -46,7 +46,7 @@
 
   async function init() {
     P.initTheme();
-    P.renderSportTabs("baseball");
+    P.renderSportTabs("calibration");
     let data;
     try {
       const [res] = await Promise.all([

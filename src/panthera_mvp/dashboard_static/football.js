@@ -92,7 +92,7 @@
         <td data-label="Legs"><ul class="ticket-legs">${t.legs.map((lg) =>
           `<li><span class="status-dot ${esc(lg.status)}"></span>${esc(legLabel(lg))}</li>`).join("")}</ul></td>
         <td data-label="Price" class="num">${price(t.price_american)}</td>
-        <td data-label="Status"><span class="status-dot ${esc(t.status)}"></span>${esc(t.status)}</td>
+        <td data-label="Status">${P.statusCell(t.status)}</td>
         <td data-label="P/L" class="num">${money(t.profit)}</td>
       </tr>`).join("");
   }
@@ -156,6 +156,7 @@
     renderTickets(data);
     renderSignals(data);
     renderDecisions(data);
+    P.wireNavOverflow();
     P.glossaryDecorate(document);
     // Readiness hook for scripts/site_audit.py.
     document.body.dataset.ready = "1";
