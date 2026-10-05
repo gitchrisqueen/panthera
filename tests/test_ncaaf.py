@@ -243,3 +243,24 @@ def test_snapshot_ticket_grade_end_to_end(cfb_root, monkeypatch):
     assert set(store.load_legs()["status"]) == {"win"}
     pipeline.cmd_grade()  # re-run is a no-op
     assert store.load_tickets().iloc[0]["profit"] == pytest.approx(595.8)
+
+
+def test_repo_aliases_match_live_name_differences(cfb_games):
+    """Names the live Odds API feed spelled differently from ESPN on the
+    first open snapshot (2026-10-05) resolve through config/ncaaf.yaml."""
+    import yaml
+
+    from conftest import REPO
+
+    aliases = yaml.safe_load(open(REPO / REPO_CONFIG))["matching"]["team_aliases"]
+    games = [
+        espn_cfb.CfbGame(
+            event_id="1", start_time_utc="2026-10-10T18:00:00Z", game_date_et="2026-10-10",
+            home_team="Massachusetts Minutemen", away_team="Miami (OH) RedHawks",
+            home_rank=None, away_rank=None, neutral_site=False, conference_game=True,
+            venue="", indoor=False, status="Scheduled", home_score=None, away_score=None,
+        )
+    ]
+    ev = [{"id": "x", "commence_time": "2026-10-10T18:00:00Z",
+           "home_team": "UMass Minutemen", "away_team": "Miami (OH) RedHawks"}]
+    assert matching.match_events(ev, games, aliases)[0] == {"x": "1"}

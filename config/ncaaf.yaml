@@ -34,11 +34,16 @@ matching:
   window_hours: 4
   # Odds API name -> ESPN displayName, for the handful that don't normalize
   # to the same string. Add entries as `ncaaf snapshot` logs unmatched events.
-  team_aliases: {}
+  # Found by the first live open snapshot (2026-10-05): 4 of 58 events
+  # unmatched, all naming differences.
+  team_aliases:
+    Southern Mississippi Golden Eagles: Southern Miss Golden Eagles
+    Sam Houston State Bearkats: Sam Houston Bearkats
+    Appalachian State Mountaineers: App State Mountaineers
+    UMass Minutemen: Massachusetts Minutemen
   # Names are compared after normalization (case, accents, apostrophes,
-  # periods, "&" -> "and"), so "Hawai'i" == "Hawaii". Not yet verified
-  # against a live feed — the ncaaf-capture workflow's first run will list
-  # any real mismatches.
+  # periods, "&" -> "and"), so "Hawai'i" == "Hawaii". Checked against the
+  # live feed on 2026-10-05: everything else matched.
 
 cfbd:
   # CollegeFootballData.com — free key in the CFBD_API_KEY secret. Seasons
