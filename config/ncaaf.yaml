@@ -1,0 +1,75 @@
+# NCAAF (college football) data plumbing — config for `panthera-mvp ncaaf`.
+#
+# Deliberately a separate file from config/strategy.yaml: strategy.yaml is
+# hashed into every MLB pick's config_hash, so NCAAF knobs living there would
+# fragment the MLB ledgers. Nothing here is a strategy parameter; the
+# cfb_spread_total_parlay engine's thresholds live in
+# config/ncaaf_strategies/cfb_spread_total_parlay.yaml.
+
+odds_api:
+  sport_key: americanfootball_ncaaf
+  regions: us
+  # h2h serves only the moneyline-leg exception, which the author accepted
+  # but gave no trigger for, so cfb_spread_total_parlay never adds one. It
+  # is kept so a successor can; each market costs 1 credit per region per
+  # snapshot (3 here, 2 without h2h).
+  markets: [spreads, totals, h2h]
+  # Higher floor than MLB's 30: the monthly pool is shared, and MLB is the
+  # incumbent test. NCAAF snapshots stop first when credits run low.
+  min_credits_reserve: 60
+  # One call returns every upcoming FBS event, so a snapshot costs 3
+  # credits however many games it covers. Cadence (.github/workflows/
+  # ncaaf.yml): `prep` takes an "open" snapshot Sunday and Wednesday, and
+  # `picks` one "decision" snapshot per game day (Tue-Sat in season, ~4).
+  # About 6 snapshots = 18 credits/week ~= 78/month; MLB's 9/day ~= 270, so
+  # both fit the 500 free tier with room for the reserve.
+
+espn:
+  # FBS only (ESPN group 80). FCS games appear on the Odds API feed rarely
+  # and are logged as unmatched, never guessed.
+  group: "80"
+
+matching:
+  # Odds API commence_time vs ESPN kickoff tolerance.
+  window_hours: 4
+  # Odds API name -> ESPN displayName, for the handful that don't normalize
+  # to the same string. Add entries as `ncaaf snapshot` logs unmatched events.
+  team_aliases: {}
+  # Names are compared after normalization (case, accents, apostrophes,
+  # periods, "&" -> "and"), so "Hawai'i" == "Hawaii". Not yet verified
+  # against a live feed — the ncaaf-capture workflow's first run will list
+  # any real mismatches.
+
+cfbd:
+  # CollegeFootballData.com — free key in the CFBD_API_KEY secret. Seasons
+  # pulled by `ncaaf cfbd-pull`; completed seasons are cached forever.
+  season_type: regular
+  classification: fbs
+  # Consensus first, then books in preference order, when a game has several
+  # providers' lines.
+  line_providers: [consensus, Bovada, DraftKings, ESPN Bet, William Hill (New Jersey)]
+
+ncaa_api:
+  # Last finals fallback (ncaa-api.henrygd.me, keyless, 5 req/s; used only
+  # when ESPN errors). Matched by ET date + both schools; NCAA.com's "St."
+  # is expanded to "State" automatically. NCAA.com short name -> ESPN school
+  # (team.location) for the rest; add entries as `ncaaf grade` logs games it
+  # could not fill. Not yet verified against the live feed.
+  school_aliases:
+    "Miami (FL)": Miami
+
+grading:
+  flat_stake: 100
+
+schedule:
+  # Plumbing for `ncaaf picks --auto` (the strategy's own decision time is
+  # decision.minutes_before_first_kickoff in its YAML). The hourly cron
+  # decides when the day's first unstarted kickoff is within this many
+  # minutes either side of that target; a 60-minute-wide window means
+  # exactly one hourly run lands in it.
+  decision_window_halfwidth_minutes: 30
+  # `ncaaf prep` refreshes ESPN games for this many ET days back (last
+  # game's result + rank: the letdown angle) and ahead (next opponent's
+  # rank: the look-ahead angle; the week's kickoff times: the cron).
+  prep_days_back: 8
+  prep_days_ahead: 14

@@ -23,6 +23,10 @@ database.
 - **Importing an outside strategy** (e.g. one living in someone's ChatGPT
   chat): send them the prompt in `docs/strategy-intake/EXPORT_PROMPT.md`;
   the same file lists the intake steps for the YAML it returns.
+- **NCAAF strategies** (first: `cfb_spread_total_parlay`, an outside
+  author's parlay method) register in `config/ncaaf_strategies/`, not
+  `config/strategies/` (the MLB registry), and report to
+  `reports/NCAAF_REPORT.md`.
 
 ## Commands
 
@@ -37,6 +41,15 @@ panthera-mvp report
 panthera-mvp status
 panthera-mvp backtest --seasons 2014-2023 [--strategy pv_v2]
 panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
+panthera-mvp ncaaf games --date 2026-10-03       # college football plumbing
+panthera-mvp ncaaf games --week 5 --year 2026    # whole CFB week (CFBD + ESPN)
+panthera-mvp ncaaf snapshot --label open --dry-run [--week 5]  # PANTHERA_NCAAF_ODDS_FIXTURE
+panthera-mvp ncaaf grade | status | report | cfbd-pull --seasons 2015-2025
+panthera-mvp ncaaf prep --odds dry_run           # weekly context for NCAAF strategies
+panthera-mvp ncaaf picks --dry-run [--auto]      # decide today's cfb_spread_total_parlay ticket
+panthera-mvp ncaabase games --date 2026-05-01    # NCAA D1 baseball (--force off-season)
+panthera-mvp ncaabase snapshot --label open --dry-run  # PANTHERA_NCAABASE_ODDS_FIXTURE
+panthera-mvp ncaabase grade | status
 ```
 
 ## Secrets & credits
@@ -50,7 +63,18 @@ panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
   the morning and pregame runs. Splits never change the P/V strategies'
   picks; `fade_public` and `sharp_split` are built on them. Missing key =
   silent skip.
-- MLB Stats API and ESPN endpoints are keyless. `GITHUB_TOKEN` is built-in.
+- `CFBD_API_KEY` (repo Actions secret, optional) — free CollegeFootballData.com
+  key for NCAAF history/metrics and the primary week schedule/lines source
+  (`ncaaf games --week`); `ncaaf cfbd-pull` caches every response. Missing
+  key = ESPN-only. NCAAF odds snapshots share the Odds API pool (reserve 60
+  in `config/ncaaf.yaml`, so MLB keeps priority); one snapshot covers the
+  whole week, so NCAAF runs weekly (~6 credits/week), not daily.
+- College baseball (`ncaabase`) is keyless: ncaa-api.henrygd.me (public demo
+  host, 5 req/s/IP — self-host if it proves flaky) + ESPN fallback. Its
+  `baseball_ncaa` odds snapshot shares the Odds API pool and is **off by
+  default** (`odds_api.enabled` in `config/ncaabase.yaml`, reserve 90).
+- MLB Stats API, ESPN, ncaa-api.henrygd.me (NCAAF finals fallback, 5 req/s)
+  and Open-Meteo endpoints are keyless. `GITHUB_TOKEN` is built-in.
 
 ## Gotchas
 
@@ -62,6 +86,10 @@ panthera-mvp calibrate --train 2014-2019 --validate 2021-2023 --write-config
   times a day. Don't hand-edit; see `data/CLAUDE.md` and `reports/CLAUDE.md`.
 - All times are stored UTC; all game-day/slot logic is US/Eastern via
   `timeutil.py`. Never use naive datetimes.
+- College baseball runs Feb–Jun: `ncaabase` commands no-op outside
+  `season` in `config/ncaabase.yaml` (`--force` for backfills). The sandbox
+  also blocks ncaa-api.henrygd.me; its fixtures are synthetic until the
+  manual `ncaabase-capture` workflow records real ones.
 - Wednesday is a HYBRID day; historical backtests skip it (no start times in
   the archives) — only forward paper-trading tests hybrid slots.
 

@@ -79,3 +79,82 @@ def site_dir() -> Path:
     from data/picks/picks.csv, never committed (unlike reports/, which is
     bot-owned committed markdown history)."""
     return repo_root() / "site"
+
+
+# --- NCAAF (college football) -------------------------------------------
+# A separate tree so the MLB ledger, reports and dashboard never see college
+# rows. Same conventions: bot-owned, UTC timestamps, ET game dates.
+
+
+def ncaaf_dir() -> Path:
+    return data_dir() / "ncaaf"
+
+
+def ncaaf_lines_csv() -> Path:
+    return ncaaf_dir() / "odds" / "lines.csv"
+
+
+def ncaaf_cfbd_lines_csv() -> Path:
+    return ncaaf_dir() / "odds" / "cfbd_lines.csv"
+
+
+def ncaaf_raw_odds_dir(date_et: str) -> Path:
+    return ncaaf_dir() / "odds" / "raw" / date_et
+
+
+def ncaaf_games_csv() -> Path:
+    return ncaaf_dir() / "games" / "games.csv"
+
+
+def ncaaf_tickets_csv() -> Path:
+    return ncaaf_dir() / "tickets" / "tickets.csv"
+
+
+def ncaaf_ticket_legs_csv() -> Path:
+    return ncaaf_dir() / "tickets" / "ticket_legs.csv"
+
+
+def ncaaf_qualifiers_csv() -> Path:
+    """Every leg a strategy found qualifying on a decision run, on the day's
+    ticket or not — graded like legs, reported per signal."""
+    return ncaaf_dir() / "tickets" / "qualifiers.csv"
+
+
+def ncaaf_decisions_csv() -> Path:
+    """One row per (strategy, ET day) decision: ticket, no_ticket or skip."""
+    return ncaaf_dir() / "tickets" / "decisions.csv"
+
+
+def ncaaf_report_md() -> Path:
+    return reports_dir() / "NCAAF_REPORT.md"
+
+
+def ncaaf_cfbd_dir() -> Path:
+    """Cached CollegeFootballData.com responses (games, lines, ratings,
+    venues) — the historical backtest's inputs."""
+    return ncaaf_dir() / "cfbd"
+
+
+# --- NCAA D1 college baseball ----------------------------------------------
+# Own tree for the same reason as NCAAF: no college rows in the MLB ledger,
+# reports or dashboard.
+
+
+def ncaabase_dir() -> Path:
+    return data_dir() / "ncaabase"
+
+
+def ncaabase_games_csv() -> Path:
+    return ncaabase_dir() / "games" / "games.csv"
+
+
+def ncaabase_lines_csv() -> Path:
+    return ncaabase_dir() / "odds" / "lines.csv"
+
+
+def ncaabase_raw_odds_dir(date_et: str) -> Path:
+    return ncaabase_dir() / "odds" / "raw" / date_et
+
+
+def ncaabase_picks_csv() -> Path:
+    return ncaabase_dir() / "picks" / "picks.csv"

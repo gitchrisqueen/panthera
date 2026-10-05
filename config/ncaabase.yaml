@@ -1,0 +1,66 @@
+# NCAA D1 college baseball data plumbing — config for `panthera-mvp ncaabase`.
+#
+# A separate file from config/strategy.yaml for the same reason as
+# config/ncaaf.yaml: strategy.yaml is hashed into every MLB pick's
+# config_hash. Nothing here is a strategy parameter — there is no college
+# baseball strategy yet; a future one gets its own config/strategies/ YAML.
+
+season:
+  # Inclusive MM-DD window (opening weekend is mid-February; the College
+  # World Series finals end late June). Outside it `games`, `grade` and
+  # `snapshot` print a skip and exit without a network call; `--force` on
+  # `games` / `snapshot` overrides (backfills, manual capture runs).
+  start: "02-01"
+  end: "06-30"
+
+ncaa_api:
+  # henrygd/ncaa-api. The public demo host is best-effort and limited to
+  # 5 req/s/IP; point this at a self-hosted instance (docker run
+  # henrygd/ncaa-api) if the demo proves unreliable.
+  base_url: https://ncaa-api.henrygd.me
+
+espn:
+  # Fallback finals source (unofficial). Set false to settle from ncaa-api only.
+  enabled: true
+  # ESPN `groups=` filter. Unset = ESPN's default listing; whether that covers
+  # every D1 game is unverified — check a capture run's game count against
+  # ncaa-api's before relying on the fallback for small-conference games.
+  group: null
+
+odds_api:
+  # The Odds API lists `baseball_ncaa` (in season only). Coverage — how many
+  # of a ~150-game D1 day get priced — is unverified, so live snapshots are
+  # off by default: games ingestion never depends on odds. Flip to true after
+  # a manual `ncaabase-capture` run with odds=live (which passes --force)
+  # shows useful coverage.
+  enabled: false
+  sport_key: baseball_ncaa
+  regions: us
+  markets: [h2h, spreads, totals]  # 3 credits per snapshot
+  # Highest floor of the three sports: the monthly pool is shared, MLB is the
+  # incumbent test and NCAAF (reserve 60) comes next. College baseball
+  # snapshots stop first.
+  min_credits_reserve: 90
+
+matching:
+  # Outside name (ESPN / Odds API) start time vs NCAA start time tolerance.
+  window_hours: 4
+  # Doubleheaders: when the two nearest candidates' start-time gaps differ by
+  # less than this, the match is ambiguous and is skipped (logged), never
+  # guessed. Covers "game 2 time TBA" listings.
+  ambiguity_minutes: 60
+  # Outside name -> NCAA names.short. Names compare after normalization
+  # (case, accents, periods, apostrophes, "&" -> "and", "St." -> "State"),
+  # and an outside name may extend the NCAA one ("LSU Tigers" fits "LSU").
+  # Add entries as `ncaabase grade` / `snapshot` log unmatched games. The two
+  # Miami entries are the known collision (NCAA "Miami (FL)" vs ESPN's
+  # "Miami" location and the Odds API's "Miami Hurricanes"); unverified live.
+  team_aliases:
+    Miami: Miami (FL)
+    Miami Hurricanes: Miami (FL)
+
+grade:
+  # `ncaabase grade` refreshes ET dates (back this many days from today) that
+  # still hold started, unsettled games, plus every date with a pending pick.
+  lookback_days: 3
+  flat_stake: 100

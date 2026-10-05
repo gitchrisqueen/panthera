@@ -1,0 +1,94 @@
+{
+  "season": {"year": 2026, "type": 2},
+  "week": {"number": 6},
+  "events": [
+    {
+      "id": "401900001",
+      "date": "2026-10-03T23:30Z",
+      "competitions": [
+        {
+          "id": "401900001",
+          "date": "2026-10-03T23:30Z",
+          "neutralSite": false,
+          "conferenceCompetition": true,
+          "venue": {"fullName": "LaVell Edwards Stadium", "indoor": false},
+          "status": {"type": {"name": "STATUS_FINAL", "completed": true}},
+          "competitors": [
+            {"homeAway": "home", "score": "31", "curatedRank": {"current": 18}, "team": {"displayName": "BYU Cougars", "location": "BYU"}},
+            {"homeAway": "away", "score": "21", "curatedRank": {"current": 99}, "team": {"displayName": "TCU Horned Frogs", "location": "TCU"}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401900002",
+      "date": "2026-10-03T19:30Z",
+      "competitions": [
+        {
+          "id": "401900002",
+          "date": "2026-10-03T19:30Z",
+          "neutralSite": false,
+          "conferenceCompetition": true,
+          "venue": {"fullName": "Hard Rock Stadium", "indoor": false},
+          "status": {"type": {"name": "STATUS_FINAL", "completed": true}},
+          "competitors": [
+            {"homeAway": "home", "score": "38", "curatedRank": {"current": 6}, "team": {"displayName": "Miami Hurricanes", "location": "Miami"}},
+            {"homeAway": "away", "score": "17", "curatedRank": {"current": 99}, "team": {"displayName": "Clemson Tigers", "location": "Clemson"}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401900003",
+      "date": "2026-10-04T00:00Z",
+      "competitions": [
+        {
+          "id": "401900003",
+          "date": "2026-10-04T00:00Z",
+          "neutralSite": false,
+          "conferenceCompetition": true,
+          "venue": {"fullName": "Jones AT&T Stadium", "indoor": false},
+          "status": {"type": {"name": "STATUS_FINAL", "completed": true}},
+          "competitors": [
+            {"homeAway": "home", "score": "41", "curatedRank": {"current": 12}, "team": {"displayName": "Texas Tech Red Raiders", "location": "Texas Tech"}},
+            {"homeAway": "away", "score": "24", "team": {"displayName": "Colorado Buffaloes", "location": "Colorado"}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401900004",
+      "date": "2026-10-03T16:00Z",
+      "competitions": [
+        {
+          "id": "401900004",
+          "date": "2026-10-03T16:00Z",
+          "neutralSite": true,
+          "conferenceCompetition": false,
+          "venue": {"fullName": "AT&T Stadium", "indoor": true},
+          "status": {"type": {"name": "STATUS_FINAL", "completed": true}},
+          "competitors": [
+            {"homeAway": "home", "score": "27", "team": {"displayName": "Hawai'i Rainbow Warriors", "location": "Hawai'i"}},
+            {"homeAway": "away", "score": "24", "team": {"displayName": "San José State Spartans", "location": "San José State"}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401900005",
+      "date": "2026-10-03T17:00Z",
+      "competitions": [
+        {
+          "id": "401900005",
+          "date": "2026-10-03T17:00Z",
+          "venue": {"fullName": "Kidd Brewer Stadium", "indoor": false},
+          "status": {"type": {"name": "STATUS_POSTPONED", "completed": false}},
+          "competitors": [
+            {"homeAway": "home", "team": {"displayName": "App State Mountaineers", "location": "App State"}},
+            {"homeAway": "away", "team": {"displayName": "Georgia Southern Eagles", "location": "Georgia Southern"}}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "cfb-tcu-byu",
+    "sport_key": "americanfootball_ncaaf",
+    "commence_time": "2026-10-03T23:30:00Z",
+    "home_team": "BYU Cougars",
+    "away_team": "TCU Horned Frogs",
+    "bookmakers": [
+      {"key": "draftkings", "markets": [
+        {"key": "spreads", "outcomes": [
+          {"name": "BYU Cougars", "price": -110, "point": -6.5},
+          {"name": "TCU Horned Frogs", "price": -110, "point": 6.5}]},
+        {"key": "totals", "outcomes": [
+          {"name": "Over", "price": -110, "point": 52.5},
+          {"name": "Under", "price": -110, "point": 52.5}]},
+        {"key": "h2h", "outcomes": [
+          {"name": "BYU Cougars", "price": -250},
+          {"name": "TCU Horned Frogs", "price": 205}]}]}
+    ]
+  },
+  {
+    "id": "cfb-clem-mia",
+    "sport_key": "americanfootball_ncaaf",
+    "commence_time": "2026-10-03T19:30:00Z",
+    "home_team": "Miami Hurricanes",
+    "away_team": "Clemson Tigers",
+    "bookmakers": [
+      {"key": "draftkings", "markets": [
+        {"key": "spreads", "outcomes": [
+          {"name": "Miami Hurricanes", "price": -110, "point": -15.5},
+          {"name": "Clemson Tigers", "price": -110, "point": 15.5}]}]}
+    ]
+  },
+  {
+    "id": "cfb-col-ttu",
+    "sport_key": "americanfootball_ncaaf",
+    "commence_time": "2026-10-04T00:00:00Z",
+    "home_team": "Texas Tech Red Raiders",
+    "away_team": "Colorado Buffaloes",
+    "bookmakers": [
+      {"key": "draftkings", "markets": [
+        {"key": "spreads", "outcomes": [
+          {"name": "Texas Tech Red Raiders", "price": -110, "point": -13.5},
+          {"name": "Colorado Buffaloes", "price": -110, "point": 13.5}]}]}
+    ]
+  },
+  {
+    "id": "cfb-haw-sjsu-neutral",
+    "sport_key": "americanfootball_ncaaf",
+    "commence_time": "2026-10-03T16:00:00Z",
+    "home_team": "San Jose State Spartans",
+    "away_team": "Hawaii Rainbow Warriors",
+    "bookmakers": [
+      {"key": "fanduel", "markets": [
+        {"key": "spreads", "outcomes": [
+          {"name": "San Jose State Spartans", "price": -110, "point": -3.0},
+          {"name": "Hawaii Rainbow Warriors", "price": -110, "point": 3.0}]}]}
+    ]
+  },
+  {
+    "id": "cfb-fcs-unmatched",
+    "sport_key": "americanfootball_ncaaf",
+    "commence_time": "2026-10-03T18:00:00Z",
+    "home_team": "Montana Grizzlies",
+    "away_team": "Montana State Bobcats",
+    "bookmakers": [
+      {"key": "fanduel", "markets": [
+        {"key": "spreads", "outcomes": [
+          {"name": "Montana Grizzlies", "price": -110, "point": -2.5},
+          {"name": "Montana State Bobcats", "price": -110, "point": 2.5}]}]}
+    ]
+  }
+]

@@ -13,7 +13,38 @@
 - `paths.py` — all file locations; honors `PANTHERA_ROOT` (tests point it at
   a tmp dir).
 - `clients/` — `mlb.py` (schedule/ERA/finals, keyless), `odds.py` (The Odds
-  API + credit guard), `espn.py` (backup finals).
+  API + credit guard; `sport_key` selects MLB or NCAAF, one shared credit
+  pool), `espn.py` (backup finals), `espn_cfb.py` (NCAAF FBS schedule +
+  finals by ET date or by CFB week, keyless; always `groups=80`),
+  `cfbd.py` (CollegeFootballData.com: games, open/close lines, SP+, venues,
+  FBS teams, rankings, season team stats; `CFBD_API_KEY`; CFBD game id ==
+  ESPN event id), `ncaa_api.py` (ncaa-api.henrygd.me NCAA.com scoreboard
+  by week, keyless — last NCAAF finals fallback), `weather.py` (Open-Meteo
+  kickoff-hour wind/temp, keyless; forecast + archive).
+- `ncaaf/` — college-football plumbing for the `cfb_spread_total_parlay`
+  intake: own config (`config/ncaaf.yaml`, deliberately outside
+  `strategy.yaml` so MLB config hashes don't move), own data tree
+  (`data/ncaaf/`), name-normalized odds↔ESPN matching, `sources.py` (week
+  ingest = CFBD /games merged with ESPN's week scoreboard by game id; finals
+  fallback chain ESPN → CFBD → ncaa-api, filling only unsettled games), and
+  a parlay-ticket ledger (`grading.py`: spread/total/moneyline legs;
+  push/void legs drop out and the ticket price is re-figured).
+  `parlay.py` is the `cfb_spread_total_parlay` engine (pure: GameViews +
+  schedule context + SP+ + kickoff wind -> one day's qualifying legs and
+  ticket; signal ids S1-S7 in its docstring), `picks.py` runs it
+  (`ncaaf prep` / `ncaaf picks [--auto]`), `report.py` writes
+  `reports/NCAAF_REPORT.md`. NCAAF strategies are YAMLs in
+  `config/ncaaf_strategies/` loaded by `ncaaf/config.py`, never by the MLB
+  registry; same `config_hash` / `hash_lineage` protocol.
+- `clients/college_baseball.py` + `ncaabase/` — NCAA D1 college baseball
+  (issue #52): ncaa-api (henrygd wrapper over NCAA.com; daily scoreboard,
+  NCAA `gameID` = game key) with ESPN's college-baseball scoreboard as the
+  finals fallback, both keyless. Own config (`config/ncaabase.yaml`: season
+  window, hosts, aliases; odds snapshot off by default), own data tree
+  (`data/ncaabase/`). `matching.py` fits mascot-suffixed outside names onto
+  NCAA short names and splits doubleheaders by start time (ambiguous =
+  skipped, never guessed); `store.py` keeps finals sticky; `grading.py`
+  settles single ml/rl/total picks. No strategy yet.
 - `matching.py` — odds event ↔ MLB gamePk; alias table + commence-time
   proximity for doubleheaders; unmatched events are logged, never guessed.
 - `store.py` — CSV datastore with dedupe keys (lines) / upsert (games) /
