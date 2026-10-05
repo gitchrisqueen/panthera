@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-10-05T14:49:37Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-10-05T21:03:08Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -335,8 +335,10 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 | Config | A parameter combination from the calibration sweep, named after its own values — e.g. m10-e110-h250. |
 | Date | The game's calendar date in US/Eastern. All game-day logic uses Eastern time regardless of where the game is played. |
 | Day type | Whether the whole day is classified Public (P), Vegas (V), or HYBRID. Wednesday is the hybrid day. |
+| Decision | What the strategy did that day: ticket, no_ticket (too few qualifying legs) or skip (a daily rule, such as the day after a loss). |
 | Graded | How many of this strategy's picks have a final result yet. Pending picks are not counted. |
 | Kind | What role a strategy plays: baseline (a control), incumbent, aligned, or forward_test. |
+| Legs | The selections on the ticket, each with its line and its own result. |
 | Market | Which bet type was taken: ml (moneyline), rl (run line), or total. |
 | Matchup | The game, written away team @ home team. |
 | N (valid) | How many bets this config placed over the validation seasons — the ones it was not tuned on. |
@@ -346,15 +348,19 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 | Pending | Picks recorded but not yet graded — the game has not finished, or its result has not been collected yet. |
 | Pick | The side and market backed — e.g. 'Detroit Tigers ML' for a moneyline, or 'Chicago Cubs +1.5' for a run line. |
 | Price | The American odds the pick was recorded at. Negative is the favorite (risk that much to win $100); positive is the underdog (win that much on $100). |
+| Qualifying legs | How many qualifying legs this signal picked, on a ticket or not. |
+| Reason | Why the day's decision came out the way it did, as recorded at decision time. |
 | Record | Wins–losses–pushes over the graded picks, in that order. |
 | ROI (valid) | ROI over the validation seasons only. The training-season ROI is not shown here because a config was chosen partly by it. |
 | ROI (±SE) | ROI with its standard error: the ± figure is how much this ROI estimate would typically wobble from sampling noise alone. |
 | Rule | Which sub-rule of the strategy produced this pick. The by-rule breakdown is the falsification instrument — it shows which parts carry the strategy. |
+| Signal | The rule (angle) that picked a leg, S1 to S6. Click one for its definition. |
 | Slot | The P or V classification of the specific start-time slot this game sits in, which need not match the day's own type. |
 | Start (ET) | Scheduled first pitch in US/Eastern. |
 | Status | Where this strategy stands against its own pre-registered bar: collecting, SUPPORTED, FALSIFIED, INCONCLUSIVE, screen only, or not live. |
 | Status | How a pick settled: pending, win, loss, push, or void. |
 | Strategy | The named hypothesis that produced this pick. Each strategy is evaluated separately against its own pre-registered bar. |
+| Ticket status | pending until every leg settles; loss as soon as any leg loses; win if the rest all win; push if every leg pushed. |
 | Tier | How much evidential weight a pick carries: VERDICT picks count toward a pre-registered test; SCREEN picks are descriptive only. |
 
 ### Verdict & trust badges
@@ -376,12 +382,15 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 |---|---|
 | Coverage (cov) | The share of picks that have a closing price on file. Picks made before closing-price collection started are excluded, not counted as misses. |
 | ROI | Return on investment: profit divided by the total amount risked, as a percent. |
+| vs 52.4% | Win % minus 52.4%, the hit rate a -110 bet needs to break even, in percentage points. Positive means beating the vig so far. |
+| Win % | Wins divided by wins plus losses; pushes are left out. |
 
 ### Bet types
 
 | Term | Definition |
 |---|---|
 | Moneyline (ML) | A bet on which team wins the game outright, with no handicap. Priced in American odds. |
+| Parlay | One bet made of several legs. It wins only if every leg wins; a pushed leg drops out and the price is re-figured from the rest. |
 | Run line (RL) | Baseball's spread, almost always ±1.5 runs: the favorite must win by 2+, or the underdog must win or lose by exactly 1. |
 | Total | A bet on the combined runs scored by both teams, over or under a posted number. |
 
@@ -405,6 +414,8 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 | Hash lineage | The list of config hashes a strategy declared at registration. Only picks under those hashes count toward its verdict. |
 | Heavy favorite | A favorite priced at or beyond a configured threshold (typically −200), where the payout no longer justifies the moneyline. |
 | heavy_fav_abs_ml | The price at or beyond which a favorite counts as 'heavy' and gets special handling — converted to a run line, or passed entirely. |
+| Leg | One selection inside a parlay ticket, such as a team's spread or a game's total. |
+| Level | Professional, College or Other (minor, international and semi-pro leagues). A sport page shows one level at a time; grayed levels have no strategy yet. |
 | Line movement | How a price changed between the first snapshot of the day and the latest one. The direction and size of that move is a signal input. |
 | min_move_cents | How many cents a price must move before the engine treats it as a real line-movement signal rather than noise. |
 | Natural vs scam movement | Whether a price move is justified by the team's recent merit (natural) or moves against what merit would predict (scam). |
@@ -413,8 +424,17 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 | Pre-registration | Each strategy declares its sample size and its pass/fail ROI bars before seeing any results, and those numbers are never changed afterwards. |
 | Public day (P) | A day classified as driven by recreational money, where the strategy backs the public side. |
 | Push | A tie against the number — the stake is returned. Pushes appear in the record but move neither profit nor loss. |
+| Qualifying leg | A game the strategy's rules picked on a decision day, whether or not it made the ticket. Graded on its own as evidence for each signal. |
+| S1 — spread move | The spread moved 1.5+ points between the first snapshot and decision time; bet the side it moved toward. |
+| S2 — total move | The total moved 2+ points between the first snapshot and decision time; bet over if it rose, under if it fell. |
+| S3 — letdown | A team that beat a ranked opponent in its last game and is now favored by 10+; bet the other side's spread. |
+| S4 — look-ahead | A team favored by 10+ that plays a ranked opponent in its next game; bet the other side's spread. |
+| S5 — wind under | An outdoor game with wind of 15+ mph forecast at kickoff; bet the under. |
+| S6 — SP+ edge | SP+ ratings (plus 2.5 points home field) disagree with the spread by 4+ points; bet the side SP+ favors. |
 | Segment | A group of a strategy's picks sharing one config hash. Segments are reported separately so results from different behaviour are never silently pooled. |
 | Slate | All of a single day's games. |
+| Sport | Each sport has its own page (Baseball, Football). The tabs at the top switch between them. |
+| Ticket | One paper parlay bet: a set of legs, one flat stake, one combined price. |
 | Underdog | The side the market expects to lose, shown at a positive American price. |
 | Vegas day (V) | A day classified as driven by the book, where the strategy backs the side the public is not on. |
 | Vig (juice) | The book's built-in margin: the reason the two sides of a game add up to more than 100% and a coin-flip bettor loses money over time. |

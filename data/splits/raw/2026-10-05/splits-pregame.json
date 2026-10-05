@@ -1,0 +1,198 @@
+[
+ {
+  "event": {
+   "id": 21359,
+   "name": "New York Yankees @ Tampa Bay Rays",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-10-06T00:00:00Z",
+   "scheduled_start_at": "2026-10-05T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "AL Division Series Game 2",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 64,
+    "name": "Tropicana Field",
+    "city": "St. Petersburg",
+    "surface": "artificial_turf",
+    "roof_type": "dome",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 21359,
+   "available": true,
+   "captured_at": "2026-10-05T20:58:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 19,
+      "handle_pct": 34,
+      "price": 104
+     },
+     "away": {
+      "bets_pct": 81,
+      "handle_pct": 66,
+      "price": -125
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 24,
+      "handle_pct": 4,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 76,
+      "handle_pct": 96,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 66,
+      "handle_pct": 70,
+      "line": 6.5
+     },
+     "under": {
+      "bets_pct": 34,
+      "handle_pct": 30,
+      "line": 6.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 21,
+       "handle_pct": 14,
+       "price": 104
+      },
+      "away": {
+       "bets_pct": 79,
+       "handle_pct": 86,
+       "price": -125
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 30,
+       "handle_pct": 7,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 70,
+       "handle_pct": 93,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 55,
+       "handle_pct": 39,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 45,
+       "handle_pct": 61,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 23,
+       "handle_pct": null,
+       "price": 105
+      },
+      "away": {
+       "bets_pct": 77,
+       "handle_pct": null,
+       "price": -125
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 42,
+       "handle_pct": null,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 58,
+       "handle_pct": null,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 61,
+       "handle_pct": null,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 39,
+       "handle_pct": null,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 13,
+       "handle_pct": 55,
+       "price": 109
+      },
+      "away": {
+       "bets_pct": 88,
+       "handle_pct": 45,
+       "price": -119
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 83,
+       "handle_pct": 100,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 17,
+       "handle_pct": 0,
+       "line": 6.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]
