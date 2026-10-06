@@ -68,10 +68,11 @@ grading:
 
 schedule:
   # Plumbing for `ncaaf picks --auto` (the strategy's own decision time is
-  # decision.minutes_before_first_kickoff in its YAML). The hourly cron
-  # decides when the day's first unstarted kickoff is within this many
-  # minutes either side of that target; a 60-minute-wide window means
-  # exactly one hourly run lands in it.
+  # decision.minutes_before_first_kickoff in its YAML). The half-hourly
+  # cron decides on its first run once the day's first kickoff is less than
+  # target + this many minutes away (and at least the strategy's
+  # min_lead_minutes). No lower bound: GitHub starts crons 15-50 min late,
+  # so a late run must still decide rather than drop the day.
   decision_window_halfwidth_minutes: 30
   # `ncaaf prep` refreshes ESPN games for this many ET days back (last
   # game's result + rank: the letdown angle) and ahead (next opponent's

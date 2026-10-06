@@ -1,14 +1,19 @@
 name: NCAAF Strategy
 
 # Live paper-trading for config/ncaaf_strategies/ (cfb_spread_total_parlay).
-# One workflow, three crons, told apart by github.event.schedule:
+# One workflow, four crons, told apart by github.event.schedule:
 #
-#   5 13-23,0-4 * * *  hourly 9:05-00:05 ET (EDT): `ncaaf picks --auto`.
-#                      A no-op (no network, no credits, no commit) unless the
-#                      day's first unstarted kickoff is 30-90 min away; then
+#   5 13-23,0-4 * * *  hourly 9:05-00:05 ET, plus
+#   35 15-23,0-4 * * * 11:35-00:35 ET (EDT): `ncaaf picks --auto`. A no-op
+#                      (no network, no credits, no commit) unless the day's
+#                      first kickoff is 15-90 min away; then
 #                      it takes one decision-<date> snapshot (3 cr) and
-#                      decides the day. :05 keeps it clear of the MLB runs
-#                      (:35, :50, :20) that share the panthera-data group.
+#                      decides the day (once). Half-hourly + no lower bound
+#                      because GitHub starts crons 15-50 min late — hourly
+#                      runs could straddle a 60-min window and skip a day.
+#                      No :35 at 13-14 UTC: 14:35 is MLB morning, and a newer
+#                      queued run in the panthera-data group cancels an older
+#                      pending one (no kickoff is early enough to need it).
 #   10 23 * * 0,3      Sun + Wed 19:10 ET: `ncaaf prep` — ESPN games 8 days
 #                      back / 14 ahead (after Sunday's AP poll), an "open"
 #                      snapshot (3 cr; skipped when nothing is upcoming),
@@ -21,6 +26,7 @@ name: NCAAF Strategy
 on:
   schedule:
     - cron: "5 13-23,0-4 * * *"
+    - cron: "35 15-23,0-4 * * *"
     - cron: "10 23 * * 0,3"
     - cron: "15 13 * * *"
   workflow_dispatch:
@@ -61,7 +67,8 @@ jobs:
         id: task
         run: |
           case "${{ github.event.schedule }}" in
-            "5 13-23,0-4 * * *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
+            "5 13-23,0-4 * * *")  echo "task=auto" >> "$GITHUB_OUTPUT" ;;
+            "35 15-23,0-4 * * *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
             "10 23 * * 0,3")     echo "task=prep" >> "$GITHUB_OUTPUT" ;;
             "15 13 * * *")       echo "task=grade" >> "$GITHUB_OUTPUT" ;;
             *)                   echo "task=${{ inputs.task }}" >> "$GITHUB_OUTPUT" ;;

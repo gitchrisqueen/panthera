@@ -8,7 +8,7 @@
   picks  one decision per (strategy, ET day): refresh today's games, take a
          "decision-<ET date>" snapshot, build the day's GameViews, run the engine,
          write the ticket (if any), every qualifying leg, and the decision.
-         `--auto` (the hourly cron) does nothing — no network, no credits,
+         `--auto` (the half-hourly cron) does nothing — no network, no credits,
          no writes — unless the day's first unstarted kickoff is within the
          decision window around the strategy's minutes_before_first_kickoff
 
@@ -134,8 +134,10 @@ def in_decision_window(
     games: pd.DataFrame, day: str, now: datetime, scfg: dict, cfg: dict
 ) -> tuple[bool, str]:
     """(decide now?, why). The day's first kickoff that is still at least
-    min_lead_minutes away must sit within the window around the strategy's
-    decision time."""
+    min_lead_minutes away must be less than target + halfwidth minutes away.
+    There is no lower bound beyond min_lead: GitHub starts crons up to ~50
+    min late, so a run that arrives after the target still decides (once —
+    cmd_picks skips a day already decided) rather than dropping the day."""
     target = scfg["decision"]["minutes_before_first_kickoff"]
     half = cfg["schedule"]["decision_window_halfwidth_minutes"]
     lead = timedelta(minutes=scfg["decision"]["min_lead_minutes"])
@@ -147,9 +149,9 @@ def in_decision_window(
     if not starts:
         return False, f"no upcoming FBS games stored for {day}"
     minutes = (starts[0] - now).total_seconds() / 60
-    if target - half <= minutes < target + half:
+    if minutes < target + half:
         return True, f"first kickoff in {minutes:.0f} min"
-    return False, f"first kickoff in {minutes:.0f} min (decide at {target}±{half})"
+    return False, f"first kickoff in {minutes:.0f} min (decide under {target + half})"
 
 
 def cmd_picks(
