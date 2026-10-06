@@ -68,6 +68,7 @@ WARN_CHECKS = {
     "nav_h_token_matches",
     "row_height_budget",
     "tap_targets_24px",
+    "tap_target_spacing",
     "contrast_tokens",
 }
 ALL_CHECKS = sorted(ERROR_CHECKS | WARN_CHECKS)
@@ -343,6 +344,43 @@ AUDIT_JS = r"""
           `tap target is ${Math.round(r.width)}x${Math.round(r.height)}px (minimum 24x24)`, el);
       }
     });
+  }
+
+  // ---- tap_target_spacing ------------------------------------------------
+  // "The links are too close": two targets side by side (or stacked) with
+  // under 8px between their boxes. Same exemption as above for links flowing
+  // inside a sentence; a target nested in another is one target.
+  if (want("tap_target_spacing")) {
+    const TARGETS = "a[href], button, summary, input, select, [role=button]";
+    const els = [...document.querySelectorAll(TARGETS)]
+      .filter((el) => {
+        const st = cs(el);
+        if (st.display === "none" || st.visibility === "hidden") return false;
+        if (el.closest("[hidden]")) return false;
+        const prose = el.closest("p, li, .tagline, .section-sub, footer");
+        if (st.display === "inline" && prose) return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      });
+    const rects = els.map((el) => el.getBoundingClientRect());
+    for (let i = 0; i < els.length; i++) {
+      for (let j = i + 1; j < els.length; j++) {
+        if (els[i].contains(els[j]) || els[j].contains(els[i])) continue;
+        const a = rects[i], b = rects[j];
+        const vOverlap = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        const hOverlap = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        let gap = null;
+        if (vOverlap > 0) gap = Math.max(b.left - a.right, a.left - b.right);
+        else if (hOverlap > 0) gap = Math.max(b.top - a.bottom, a.top - b.bottom);
+        if (gap !== null && gap < 7.5) {    // half-pixel layout noise
+          const other = (els[j].textContent || els[j].getAttribute("aria-label") || "")
+            .trim().slice(0, 30);
+          add("tap_target_spacing",
+            `${Math.round(gap)}px from neighboring target "${other}" (minimum 8px)`,
+            els[i], [R(els[i]), R(els[j])]);
+        }
+      }
+    }
   }
 
   return out;

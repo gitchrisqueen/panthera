@@ -85,10 +85,12 @@
     return P.glossBadge("verdict_inconclusive", "badge-collecting",
       `${icon("hourglass")}INCONCLUSIVE`);
   }
+  /* One per ledger row, so plain labels: the Tier column header carries the
+     glossary link once instead of ~50 identical links stacked down the page. */
   function tierBadgeSmall(kind) {
     return kind === "verdict"
-      ? P.glossBadge("tier_verdict", "badge-tier-verdict", "VERDICT")
-      : P.glossBadge("tier_screen", "badge-screen badge-sm", `${icon("eye")}SCREEN`);
+      ? P.glossBadge("tier_verdict", "badge-tier-verdict", "VERDICT", { link: false })
+      : P.glossBadge("tier_screen", "badge-screen badge-sm", "SCREEN", { link: false });
   }
 
   // ------------------------------------------------------- comparison tbl
@@ -237,7 +239,7 @@
         <td data-label="Matchup">${esc(r.matchup)}</td>
         <td data-label="Pick">${esc(pickLabel(r))}</td>
         <td data-label="Price" class="num">${price(r.price_american)}</td>
-        <td data-label="Status"><span class="status-dot ${esc(r.status)}"></span>${esc(r.status)}</td>
+        <td data-label="Status">${P.statusCell(r.status)}</td>
       </tr>`).join("");
   }
 
@@ -293,7 +295,7 @@
         <td data-label="Matchup">${esc(r.matchup)}</td>
         <td data-label="Pick">${esc(pickLabel(r))}</td>
         <td data-label="Price" class="num">${price(r.price_american)}</td>
-        <td data-label="Status"><span class="status-dot ${esc(r.status)}"></span>${esc(r.status)}</td>
+        <td data-label="Status">${P.statusCell(r.status)}</td>
         <td data-label="P/L" class="num">${money(r.profit)}</td>
         <td data-label="CLV" class="num">${r.clv_cents == null ? "—" : `${r.clv_cents >= 0 ? "+" : ""}${r.clv_cents.toFixed(1)}c`}</td>
         <td data-label="Tier">${tierBadgeSmall(r.segment_kind)}</td>
@@ -478,6 +480,7 @@
     renderReplay(data);
     renderPortfolio(data);
     wireNavActive();
+    P.wireNavOverflow();
     P.glossaryDecorate(document);
     // Deterministic readiness hook for scripts/site_audit.py — without it the
     // audit would measure a half-rendered page.

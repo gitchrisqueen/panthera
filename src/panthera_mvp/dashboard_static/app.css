@@ -14,8 +14,9 @@
   --max-w: 1120px;
   /* Height of the sticky nav. Anchor offsets and the ledger's max-height
      are derived from it; scripts/site_audit.py asserts it still matches
-     the nav's measured height, so it cannot drift silently. */
-  --nav-h: 48px;
+     the nav's measured height, so it cannot drift silently: 36px pills
+     + 2x6px padding + 1px border. */
+  --nav-h: 49px;
 
   /* Fonts */
   --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -458,7 +459,6 @@ footer a { color: var(--fg-muted); }
   /* A nested vertical scroller inside a phone page is a scroll trap, and a
      stacked table has no thead left to stick anyway. */
   .table-scroll.is-tall { max-height: none; }
-  nav.sitenav .wrap { gap: var(--space-3); }
 }
 
 @media (min-width: 641px) and (max-width: 900px) {
@@ -571,3 +571,89 @@ th .gloss-link { vertical-align: -0.2em; }
 .section-gap { margin-top: var(--space-8); }
 
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ---- Spacing & targets ----------------------------------------------------
+ * "The links are too close": every interactive target is >=24px and >=8px
+ * from its neighbors (scripts/site_audit.py tap_targets_24px and
+ * tap_target_spacing). Inline links inside sentences are exempt (WCAG 2.5.8).
+ */
+
+/* Sport tabs: the one place to change page. Glossary/Calibration are quieter
+   utility links right-aligned in the same row. */
+nav.sporttabs { gap: var(--space-2); align-items: flex-end; }
+nav.sporttabs a {
+  padding: 10px 16px; min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: 8px 8px 0 0;
+}
+nav.sporttabs a:hover { background: var(--bg-sunken); }
+nav.sporttabs .tab-util { font-size: 14px; color: var(--fg-muted); padding: 10px 12px; }
+nav.sporttabs .tab-util-first { margin-left: auto; }
+/* Phones: the utility links become a small right-aligned line ABOVE the tabs,
+   so the active-tab underline stays on the tab row. */
+@media (max-width: 640px) {
+  nav.sporttabs { flex-wrap: wrap; row-gap: var(--space-2); }
+  nav.sporttabs::before { content: ""; flex: 1 0 auto; order: 0; }
+  nav.sporttabs .tab-util { order: 0; min-height: 32px; padding: 4px 10px; border-radius: 999px; }
+  nav.sporttabs .tab-util-first { margin-left: 0; }
+  nav.sporttabs::after { content: ""; flex-basis: 100%; order: 1; }
+  nav.sporttabs a:not(.tab-util) { order: 2; }
+}
+
+/* Level chips: 36px targets 8px apart; on phones one row of three equal buttons. */
+.levelchips { gap: var(--space-2) var(--space-3); padding-bottom: var(--space-2); }
+.levelchips .chip { min-height: 36px; padding: 6px 14px; font-size: 14px; }
+@media (max-width: 640px) {
+  .levelchips { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  .levelchips .level-label, .levelchips .level-note { grid-column: 1 / -1; }
+  .levelchips .chip { justify-content: center; min-height: 40px; padding: 6px 8px; }
+  .levelchips .level-league { display: none; }
+}
+
+/* Section nav: in-page jumps only, as 36px pills 8px apart. The current
+   section is filled + underlined in a neutral tone; blue stays keyboard focus. */
+nav.sitenav .wrap { gap: var(--space-2); padding-top: 6px; padding-bottom: 6px; align-items: center; }
+nav.sitenav a {
+  height: 36px; line-height: 20px; padding: 8px 12px; border-radius: 999px;
+  border-bottom: none; display: inline-flex; align-items: center;
+}
+nav.sitenav a:hover { background: var(--bg-sunken); }
+nav.sitenav a[aria-current] {
+  background: var(--bg-sunken); color: var(--fg); font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--border-strong);
+}
+/* Fade the right edge only while more links are off-screen
+   (common.js wireNavOverflow toggles .has-more). */
+nav.sitenav .wrap.has-more {
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+
+/* Ledger filters: strategy chips on their own row, 8px apart; inputs 36px. */
+.ledger-controls { gap: var(--space-2); row-gap: var(--space-3); }
+.ledger-controls .chip { min-height: 32px; padding: 5px 12px; }
+#ledger-strategy-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); flex-basis: 100%; }
+.ledger-controls select, .ledger-controls input { min-height: 36px; }
+
+/* Tables: dates don't wrap; the status dot travels with its word
+   (common.js statusCell); quieter header info icons whose hit area stops short
+   of the label, so clicking the end of a label still sorts. */
+#ledger-table td[data-label="Date"], #today-table td[data-label="Start (ET)"] { white-space: nowrap; }
+.status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.status .status-dot { margin-right: 0; }
+th .gloss-link { margin-left: 6px; opacity: 0.6; position: relative; }
+th:hover .gloss-link, th .gloss-link:focus-visible { opacity: 1; }
+th .gloss-link::after { content: ""; position: absolute; inset: -6px -6px -6px -2px; border-radius: 50%; }
+#comparison-table td a { display: inline-block; padding: 4px 0; }
+
+/* Per-row tier badges are plain labels (glossBadge {link: false}); the Tier
+   column header links the definition. */
+.badge-label { cursor: default; border-style: solid; }
+
+.pagination button, .pagination a { min-height: 36px; padding: 6px 14px; }
+
+/* When the toggle wraps under the tagline it would sit flush on the tabs. */
+.masthead-row { margin-bottom: var(--space-2); }
+.masthead-meta { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); }
+@media (max-width: 640px) {
+  .masthead-meta { align-items: flex-start; }
+}
