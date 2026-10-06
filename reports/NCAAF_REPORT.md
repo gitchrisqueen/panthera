@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-05T13:32:54Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-06T23:21:26Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -22,4 +22,8 @@ No qualifying legs yet.
 
 ### Decisions
 
-No decisions yet.
+no_ticket: 1
+
+| Date | Decision | Reason |
+|---|---|---|
+| 2026-10-06 | no_ticket | 0 qualifying leg(s); a ticket needs 3 |
