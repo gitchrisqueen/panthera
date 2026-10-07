@@ -8,6 +8,11 @@ The author's round-2 answers (via their assistant, Muse, on issue #55's
 questionnaire) are mapped below; four ticket-building answers are still
 `UNKNOWN` and run on labelled proxies.
 
+Because the 3-leg ticket is a proxy and one- or two-game nights can never
+fill it, the report and football.html also show every qualifying leg as a
+$100 **single bet** (added 2026-10-07). That view is descriptive only: it
+changes no rule, ticket or config hash.
+
 The raw exports are **not committed**; the numbers they contain are, in the
 strategy YAML.
 

@@ -4,8 +4,9 @@ truth). Kept out of BETTING_REPORT.md, which is the MLB ledger.
 
 Per strategy: the registration (hypothesis, lineage, pre-registered screen),
 tickets pooled by hash_lineage (other hashes render as separate SCREEN
-segments, as in the MLB report), every qualifying leg graded per signal
-against the -110 breakeven, and the decision log.
+segments, as in the MLB report), every qualifying leg as a flat-stake
+single bet, every qualifying leg graded per signal against the -110
+breakeven, and the decision log.
 """
 
 from __future__ import annotations
@@ -24,6 +25,58 @@ def _record(statuses: pd.Series) -> tuple[int, int, int]:
     return int((statuses == "win").sum()), int((statuses == "loss").sum()), int(
         (statuses == "push").sum()
     )
+
+
+def _leg_decimal(row: dict) -> float:
+    """A leg's decimal price: the stored one, else from American, else -110."""
+    for key in ("price_decimal", "price_american"):
+        v = pd.to_numeric(row.get(key), errors="coerce")
+        if pd.notna(v):
+            if key == "price_decimal":
+                return float(v)
+            return 1 + (v / 100 if v > 0 else 100 / -v)
+    return 1 + 100 / 110
+
+
+def single_profit(row: dict, stake: float) -> float | None:
+    """Profit of one qualifying leg as a straight bet; None until settled."""
+    status = row.get("status")
+    if status == "win":
+        return round(stake * (_leg_decimal(row) - 1), 2)
+    if status == "loss":
+        return -float(stake)
+    if status == "push":
+        return 0.0
+    return None
+
+
+def single_bet_stats(quals: pd.DataFrame, stake: float) -> dict:
+    """Every qualifying leg as a flat-stake straight bet (descriptive: the
+    strategy's own bet is the ticket). A push returns the stake; a void leg
+    (game not played) leaves the sample, as on the MLB ledger."""
+    rows = [r for r in quals.to_dict("records") if r.get("status") != "void"]
+    profits = [single_profit(r, stake) for r in rows]
+    settled = [(r, pr) for r, pr in zip(rows, profits, strict=True) if pr is not None]
+    statuses = pd.Series([r["status"] for r, _ in settled], dtype=object)
+    w, lo, p = _record(statuses)
+    staked = float(stake) * len(settled)
+    profit = round(sum(pr for _, pr in settled), 2)
+    return {
+        "n": len(rows),
+        "record": {"wins": w, "losses": lo, "pushes": p},
+        "pending": len(rows) - len(settled),
+        "staked": staked,
+        "profit": profit,
+        "roi": round(100 * profit / staked, 2) if staked else None,
+    }
+
+
+def leg_label(selection, market, line) -> str:
+    """'BYU Cougars -6.5' for a spread, 'Under 47.5' for a total."""
+    v = pd.to_numeric(line, errors="coerce")
+    if pd.isna(v):
+        return str(selection)
+    return f"{selection} {float(v):+g}" if market == "spread" else f"{selection} {float(v):g}"
 
 
 def _ticket_block(t: pd.DataFrame) -> list[str]:
@@ -70,7 +123,9 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
         "",
     ]
     if tickets.empty:
-        out += ["No tickets yet.", ""]
+        n_legs = (cfg.get("ticket") or {}).get("legs_per_ticket", 3)
+        out += [f"No tickets yet: a ticket needs {n_legs} qualifying legs from "
+                "different games. See Single bets and Decisions below.", ""]
     else:
         in_lineage = tickets["config_hash"].astype(str).isin(lineage)
         out += ["**In lineage:**", ""] + _ticket_block(tickets[in_lineage]) + [""]
@@ -93,6 +148,38 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
             out.append(
                 f"| {t['game_date_et']} | {desc} | {float(t['price_american']):+g} "
                 f"| {t['status']} | {profit} |"
+            )
+        out.append("")
+
+    stake = float((cfg.get("staking") or {}).get("flat_stake", 100))
+    out += ["### Single bets", ""]
+    if quals.empty:
+        out += ["No qualifying legs yet.", ""]
+    else:
+        st = single_bet_stats(quals, stake)
+        rec = st["record"]
+        roi = f"{st['roi']:+.1f}%" if st["roi"] is not None else "n/a"
+        out += [
+            f"Every qualifying leg as a ${stake:,.0f} straight bet at its "
+            "best-available price (break-even 52.4% at -110). Descriptive: the "
+            "strategy's bet is still the ticket.",
+            "",
+            f"- Singles: {st['n']} ({rec['wins']}-{rec['losses']}-{rec['pushes']} "
+            f"W-L-P, {st['pending']} pending)",
+            f"- Staked ${st['staked']:,.0f}, profit ${st['profit']:+,.2f}, ROI {roi}",
+            "",
+            "| Date | Pick | Matchup | Price | Signals | Result | P/L |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        recent = quals.sort_values(["game_date_et", "start_time_utc"], ascending=False)
+        for r in recent.head(30).to_dict("records"):
+            pa = pd.to_numeric(r.get("price_american"), errors="coerce")
+            pr = single_profit(r, stake)
+            out.append(
+                f"| {r['game_date_et']} | {leg_label(r['selection'], r['market'], r['line'])} "
+                f"| {r['matchup']} | {'' if pd.isna(pa) else f'{float(pa):+g}'} "
+                f"| {r['signal_ids']} | {r['status']} "
+                f"| {'' if pr is None else f'${pr:+,.2f}'} |"
             )
         out.append("")
 

@@ -415,16 +415,19 @@ def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
     and the page renders its empty states."""
     from .ncaaf import store as nstore
     from .ncaaf.config import load_ncaaf_strategies
+    from .ncaaf.report import single_bet_stats, single_profit
 
     strategies = load_ncaaf_strategies()
     tickets, legs = nstore.load_tickets(), nstore.load_legs()
     quals, decisions = nstore.load_qualifiers(), nstore.load_decisions()
-    out_strategies, out_tickets = [], []
+    out_strategies, out_tickets, out_singles = [], [], []
     for sid, cfg in strategies.items():
         meta = cfg["strategy"]
         lineage = [str(h) for h in meta.get("hash_lineage") or []]
         t = tickets[tickets["strategy_id"] == sid]
         in_lineage = t["config_hash"].astype(str).isin(lineage)
+        q = quals[quals["strategy_id"] == sid]
+        stake = float((cfg.get("staking") or {}).get("flat_stake", 100))
         d = decisions[decisions["strategy_id"] == sid].sort_values(
             "game_date_et", ascending=False
         )
@@ -442,7 +445,9 @@ def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
                 {"config_hash": h, **_ncaaf_ticket_stats(seg)}
                 for h, seg in t[~in_lineage].groupby(t["config_hash"].astype(str))
             ],
-            "signals": _ncaaf_signal_rows(quals[quals["strategy_id"] == sid]),
+            "legs_per_ticket": (cfg.get("ticket") or {}).get("legs_per_ticket"),
+            "singles": single_bet_stats(q, stake),
+            "signals": _ncaaf_signal_rows(q),
             "decisions": {
                 "counts": {k: int(v) for k, v in d["status"].value_counts().items()},
                 "recent": [
@@ -452,6 +457,21 @@ def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
                 ],
             },
         })
+        for r in q.sort_values(["game_date_et", "start_time_utc"],
+                               ascending=False).head(50).to_dict("records"):
+            out_singles.append({
+                "strategy_id": sid,
+                "game_date_et": r["game_date_et"],
+                "matchup": _n(r["matchup"]),
+                "market": r["market"],
+                "selection": r["selection"],
+                "line": _n(r["line"]),
+                "price_american": _n(r["price_american"]),
+                "signal_ids": _n(r["signal_ids"]),
+                "on_ticket": str(r["on_ticket"]).lower() == "true",
+                "status": r["status"],
+                "profit": single_profit(r, stake),
+            })
         for r in t.sort_values("game_date_et", ascending=False).to_dict("records"):
             tl = legs[legs["ticket_id"].astype(str) == str(r["ticket_id"])].sort_values("leg_no")
             out_tickets.append({
@@ -476,6 +496,7 @@ def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
         "level": "college",
         "strategies": out_strategies,
         "tickets": out_tickets,
+        "singles": out_singles,
     }
 
 

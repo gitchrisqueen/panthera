@@ -359,3 +359,27 @@ def test_ncaaf_strategy_loader_rejects_bad_files(tmp_path, monkeypatch):
     (sdir / "x.yaml").write_text("strategy: {id: x, engine: pv_rules}\n")
     with pytest.raises(StrategyConfigError, match="unknown NCAAF engine"):
         load_ncaaf_strategies()
+
+
+def test_single_bet_stats():
+    from panthera_mvp.ncaaf.report import leg_label, single_bet_stats, single_profit
+
+    quals = pd.DataFrame([
+        {"status": "win", "price_american": -110, "price_decimal": 1.9091},
+        {"status": "win", "price_american": 150, "price_decimal": None},  # from American
+        {"status": "loss", "price_american": -120},
+        {"status": "push", "price_american": -110},
+        {"status": "pending", "price_american": -110},
+        {"status": "void", "price_american": -110},  # leaves the sample
+    ])
+    st = single_bet_stats(quals, 100)
+    assert st["n"] == 5 and st["pending"] == 1
+    assert st["record"] == {"wins": 2, "losses": 1, "pushes": 1}
+    assert st["staked"] == 400.0
+    assert st["profit"] == round(90.91 + 150 - 100, 2)
+    assert st["roi"] == round(100 * st["profit"] / 400, 2)
+    assert single_profit({"status": "pending"}, 100) is None
+    assert single_profit({"status": "win"}, 100) == 90.91  # no price: -110
+    assert single_bet_stats(quals.iloc[0:0], 100)["roi"] is None
+    assert leg_label("BYU Cougars", "spread", -6.5) == "BYU Cougars -6.5"
+    assert leg_label("Under", "total", 47.5) == "Under 47.5"

@@ -784,6 +784,19 @@ terms:
     short: "pending until every leg settles; loss as soon as any leg loses; win if the rest all win; push if every leg pushed."
     see_also: [ticket, push]
 
+  single_bet:
+    label: "Single bet"
+    group: concept
+    short: "One qualifying leg bet on its own at a flat $100, at its best available price. Shown alongside the parlay ticket; descriptive only."
+    long: >
+      The strategy's bet is the parlay ticket, which needs several qualifying
+      legs from different games, so a one- or two-game night produces no
+      ticket. Every qualifying leg is still graded on its own; the Single bets
+      table prices each one as a $100 straight bet at the line it qualified
+      at. At -110 a single breaks even at a 52.4% win rate. This view changes
+      nothing about which legs qualify or what goes on the ticket.
+    see_also: [qualifying_leg, ticket, flat_stake]
+
   signal:
     label: "Signal"
     group: column
@@ -870,6 +883,7 @@ columns:
   breakdown: [rule_id, day_type, slot_type, market, record, profit_loss, roi]
   calibration_top_configs: [config_id, n_bets, roi_valid, profit_valid]
   football_tickets: [game_date_et, ticket_legs, price_american, ticket_status, profit_loss]
+  football_singles: [game_date_et, pick, matchup, price_american, signal, pick_status, profit_loss]
   football_signals: [signal, qualifying_legs, record, win_pct, vs_breakeven]
   football_decisions: [game_date_et, decision, decision_reason]
 
