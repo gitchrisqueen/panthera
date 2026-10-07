@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-10-06T20:56:47Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-10-07T14:47:17Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -432,6 +432,7 @@ Plain-language definitions for every column, badge and rule id above. Also publi
 | S5 — wind under | An outdoor game with wind of 15+ mph forecast at kickoff; bet the under. |
 | S6 — SP+ edge | SP+ ratings (plus 2.5 points home field) disagree with the spread by 4+ points; bet the side SP+ favors. |
 | Segment | A group of a strategy's picks sharing one config hash. Segments are reported separately so results from different behaviour are never silently pooled. |
+| Single bet | One qualifying leg bet on its own at a flat $100, at its best available price. Shown alongside the parlay ticket; descriptive only. |
 | Slate | All of a single day's games. |
 | Sport | Each sport has its own page (Baseball, Football). The tabs at the top switch between them. |
 | Ticket | One paper parlay bet: a set of legs, one flat stake, one combined price. |
