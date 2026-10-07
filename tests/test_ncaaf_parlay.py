@@ -235,7 +235,11 @@ def test_decision_window(scfg):
     assert in_decision_window(games, "2026-10-03", at(15, 0), scfg, cfg)[0]  # 60 min
     assert in_decision_window(games, "2026-10-03", at(14, 31), scfg, cfg)[0]  # 89
     assert not in_decision_window(games, "2026-10-03", at(14, 30), scfg, cfg)[0]  # 90
-    assert not in_decision_window(games, "2026-10-03", at(15, 31), scfg, cfg)[0]  # 29
+    # A late cron run still decides while the first game is min_lead (15) away.
+    assert in_decision_window(games, "2026-10-03", at(15, 31), scfg, cfg)[0]  # 29
+    assert in_decision_window(games, "2026-10-03", at(15, 45), scfg, cfg)[0]  # 15
+    # Under min_lead, game 1 no longer counts; game 2 (23:00) is 7h away.
+    assert not in_decision_window(games, "2026-10-03", at(15, 46), scfg, cfg)[0]  # 14
     # Game 1 has started: the next kickoff (23:00) drives the window.
     assert in_decision_window(games, "2026-10-03", at(22, 0), scfg, cfg)[0]
     assert not in_decision_window(games, "2026-10-04", at(15, 0), scfg, cfg)[0]
