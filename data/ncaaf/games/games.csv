@@ -58,8 +58,8 @@ event_id,game_date_et,start_time_utc,home_team,away_team,home_rank,away_rank,neu
 401860900,2026-10-03,2026-10-04T02:30:00Z,San Diego State Aztecs,Texas State Bobcats,,,False,True,Snapdragon Stadium,False,Final,31.0,29.0,2026,regular,5,San Diego State,Texas State,espn
 401856820,2026-10-03,2026-10-04T03:00:00Z,Arizona Wildcats,Cincinnati Bearcats,,,False,True,Casino Del Sol Stadium,False,Final,34.0,7.0,2026,regular,5,Arizona,Cincinnati,espn
 401864513,2026-10-03,2026-10-04T03:59:00Z,Hawai'i Rainbow Warriors,San José State Spartans,,,False,True,Clarence T.C. Ching Athletics Complex,False,Final,16.0,20.0,2026,regular,5,Hawai'i,San José State,espn
-401871090,2026-10-06,2026-10-07T00:00:00Z,Troy Trojans,Southern Miss Golden Eagles,,,False,True,Veterans Memorial Stadium (AL),False,Scheduled,,,2026,regular,6,Troy,Southern Miss,
-401871051,2026-10-07,2026-10-07T23:00:00Z,Kennesaw State Owls,Jacksonville State Gamecocks,,,False,True,Walens Family Field at Fifth Third Stadium,False,Scheduled,,,2026,regular,6,Kennesaw State,Jacksonville State,
+401871090,2026-10-06,2026-10-07T00:00:00Z,Troy Trojans,Southern Miss Golden Eagles,,,False,True,Veterans Memorial Stadium (AL),False,Final,55.0,34.0,2026,regular,6,Troy,Southern Miss,espn
+401871051,2026-10-07,2026-10-07T23:00:00Z,Kennesaw State Owls,Jacksonville State Gamecocks,,,False,True,Walens Family Field at Fifth Third Stadium,False,InProgress,,,2026,regular,6,Kennesaw State,Jacksonville State,
 401871066,2026-10-07,2026-10-07T23:30:00Z,Florida International Panthers,New Mexico State Aggies,,,False,True,Pitbull Stadium,False,Scheduled,,,2026,regular,6,Florida International,New Mexico State,
 401870766,2026-10-08,2026-10-08T23:00:00Z,Liberty Flames,Sam Houston Bearkats,,,False,True,Williams Stadium (VA),False,Scheduled,,,2026,regular,6,Liberty,Sam Houston,
 401871052,2026-10-08,2026-10-08T23:00:00Z,Western Kentucky Hilltoppers,Missouri State Bears,,,False,True,Houchens Industries-L.T. Smith Stadium,False,Scheduled,,,2026,regular,6,Western Kentucky,Missouri State,
@@ -178,3 +178,7 @@ event_id,game_date_et,start_time_utc,home_team,away_team,home_rank,away_rank,neu
 401866445,2026-10-17,2026-10-18T02:00:00Z,Sacramento State Hornets,Ohio Bobcats,,,False,True,Hornet Stadium,False,Scheduled,,,2026,regular,7,Sacramento State,Ohio,
 401860904,2026-10-17,2026-10-18T02:30:00Z,San Diego State Aztecs,Fresno State Bulldogs,,,False,True,Snapdragon Stadium,False,Scheduled,,,2026,regular,7,San Diego State,Fresno State,
 401864521,2026-10-17,2026-10-18T02:30:00Z,Hawai'i Rainbow Warriors,New Mexico Lobos,,,False,True,Clarence T.C. Ching Athletics Complex,False,Scheduled,,,2026,regular,7,Hawai'i,New Mexico,
+401871055,2026-10-20,2026-10-20T23:00:00Z,Florida International Panthers,Middle Tennessee Blue Raiders,,,False,True,Pitbull Stadium,False,Scheduled,,,2026,regular,8,Florida International,Middle Tennessee,
+401871069,2026-10-20,2026-10-20T23:00:00Z,Delaware Blue Hens,Missouri State Bears,,,False,True,Delaware Stadium,False,Scheduled,,,2026,regular,8,Delaware,Missouri State,
+401871092,2026-10-20,2026-10-20T23:30:00Z,Marshall Thundering Herd,South Alabama Jaguars,,,False,True,Joan C. Edwards Stadium,False,Scheduled,,,2026,regular,8,Marshall,South Alabama,
+401871070,2026-10-21,2026-10-22T00:00:00Z,Sam Houston Bearkats,New Mexico State Aggies,,,False,True,Elliott T. Bowers Stadium,False,Scheduled,,,2026,regular,8,Sam Houston,New Mexico State,
