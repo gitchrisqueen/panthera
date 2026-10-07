@@ -9,7 +9,7 @@
    "kind": "forward_test",
    "enabled": true,
    "registered_at": "2026-10-05",
-   "hypothesis": "An outside author's NCAAF parlay method beats the parlay vig: one 3-leg spread/total ticket per game day, legs chosen when any one of six mechanical angles fires (line move with the market, letdown and look-ahead fades of 10+ favorites, wind unders, SP+ disagreeing with the spread) and no angle contradicts it. Injury and rivalry inputs the author uses are NOT observable here and are dropped, and leg count, leg selection and same-game policy are Panthera proxies \u2014 so this tests the mechanical core of the method, not the author's full judgment.",
+   "hypothesis": "An outside author's NCAAF parlay method beats the parlay vig: one 3-leg spread/total ticket per game day, legs chosen when any one of six mechanical angles fires (line move with the market, letdown and look-ahead fades of 10+ favorites, wind unders, SP+ disagreeing with the spread) and no angle contradicts it. Injury and rivalry inputs the author uses are NOT observable here and are dropped, and leg count, leg selection and same-game policy are Panthera proxies — so this tests the mechanical core of the method, not the author's full judgment.",
    "hash_lineage": [
     "e96612a177"
    ],
@@ -133,6 +133,19 @@
       "reason": "previous day's ticket lost (skip-day rule)"
      }
     ]
+   },
+   "legs_per_ticket": 3,
+   "singles": {
+    "n": 4,
+    "record": {
+     "wins": 2,
+     "losses": 1,
+     "pushes": 0
+    },
+    "pending": 1,
+    "staked": 300.0,
+    "profit": 81.82,
+    "roi": 27.27
    }
   }
  ],
@@ -232,6 +245,60 @@
      "status": "win"
     }
    ]
+  }
+ ],
+ "singles": [
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "game_date_et": "2026-10-17",
+   "matchup": "Away @ Home",
+   "market": "total",
+   "selection": "Under",
+   "line": 47.5,
+   "price_american": -110,
+   "signal_ids": "S3",
+   "on_ticket": true,
+   "status": "pending",
+   "profit": null
+  },
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "game_date_et": "2026-10-17",
+   "matchup": "Away @ Home",
+   "market": "spread",
+   "selection": "Louisiana Ragin' Cajuns",
+   "line": 14.5,
+   "price_american": -110,
+   "signal_ids": "S2",
+   "on_ticket": true,
+   "status": "win",
+   "profit": 90.91
+  },
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "game_date_et": "2026-10-16",
+   "matchup": "Away @ Home",
+   "market": "spread",
+   "selection": "Massachusetts Minutemen",
+   "line": 21.0,
+   "price_american": -105,
+   "signal_ids": "S1+S6",
+   "on_ticket": false,
+   "status": "win",
+   "profit": 95.24
+  },
+  {
+   "strategy_id": "cfb_spread_total_parlay",
+   "game_date_et": "2026-10-15",
+   "matchup": "Away @ Home",
+   "market": "total",
+   "selection": "Over",
+   "line": 52.5,
+   "price_american": -110,
+   "signal_ids": "S6",
+   "on_ticket": false,
+   "status": "loss",
+   "profit": -100.0
   }
  ]
 }

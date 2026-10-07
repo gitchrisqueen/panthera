@@ -280,6 +280,15 @@ def test_ncaaf_payload_matches_markdown_report(tmp_root):
     assert s["decisions"]["counts"] == {"ticket": 1, "no_ticket": 1}
     assert [d["game_date_et"] for d in s["decisions"]["recent"]] == ["2026-10-04", "2026-10-03"]
 
+    sg = s["singles"]  # 2 wins + 1 loss, $100 each at the -110 fallback price
+    assert (sg["n"], sg["record"], sg["pending"]) == (3, {"wins": 2, "losses": 1, "pushes": 0}, 0)
+    assert sg["profit"] == 81.82 and sg["staked"] == 300.0
+    assert "- Singles: 3 (2-1-0 W-L-P, 0 pending)" in md
+    assert f"profit ${sg['profit']:+,.2f}, ROI {sg['roi']:+.1f}%" in md
+    dates = [x["game_date_et"] for x in data["singles"]]
+    assert dates == ["2026-10-04", "2026-10-03", "2026-10-03"]
+    assert data["singles"][0]["profit"] == -100.0 and data["singles"][0]["on_ticket"] is True
+
     ticket_ids = [x["ticket_id"] for x in data["tickets"]]
     assert ticket_ids == ["t2", "t1"]  # newest first
     assert [lg["selection"] for lg in data["tickets"][1]["legs"]] == [
@@ -301,4 +310,6 @@ def test_audit_ncaaf_fixture_matches_payload_shape(tmp_root):
     assert set(fixture["strategies"][0]) == set(real["strategies"][0])
     assert set(fixture["tickets"][0]) == set(real["tickets"][0])
     assert set(fixture["tickets"][0]["legs"][0]) == set(real["tickets"][0]["legs"][0])
+    assert set(fixture["singles"][0]) == set(real["singles"][0])
+    assert set(fixture["strategies"][0]["singles"]) == set(real["strategies"][0]["singles"])
     assert fixture["tickets"], "the audit fixture must carry tickets"

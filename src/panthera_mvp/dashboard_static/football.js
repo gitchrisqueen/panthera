@@ -1,6 +1,7 @@
 /* Project Panthera — Football page (football.html).
  * Renders ncaaf_data.json (dashboard.build_ncaaf_data): the college parlay
- * strategies, their tickets, qualifying legs by signal, and the decision log.
+ * strategies, their tickets, every qualifying leg as a single bet, qualifying
+ * legs by signal, and the decision log.
  * Same numbers as reports/NCAAF_REPORT.md (asserted in tests/test_dashboard.py).
  */
 (function () {
@@ -30,6 +31,11 @@
     if (lg.market === "spread") return `${lg.selection} ${lg.line >= 0 ? "+" : ""}${lg.line}`;
     if (lg.market === "moneyline") return `${lg.selection} ML`;
     return `${lg.selection} ${lg.line == null ? "" : lg.line}`;
+  }
+  function noTickets(s) {
+    const n = s && s.legs_per_ticket ? s.legs_per_ticket : 3;
+    return `No tickets yet: a ticket needs ${n} qualifying legs from different games. ` +
+      "See Single bets and Decisions below.";
   }
   function emptyRow(cols, text) {
     return `<tr><td colspan="${cols}" data-label=""><p class="empty-note">${esc(text)}</p></td></tr>`;
@@ -68,7 +74,7 @@
         <div><div class="stat-label">P/L</div><div class="stat-value">${money(t.profit)}</div></div>
         <div><div class="stat-label">ROI</div><div class="stat-value">${pct(t.roi)}</div></div>
         <div><div class="stat-label">Pending</div><div class="stat-value">${t.pending}</div></div>
-      </div>` : `<p class="section-sub">No tickets yet.</p>`}
+      </div>` : `<p class="section-sub">${noTickets(s)}</p>`}
       <div style="font-size:12px;color:var(--fg-faint);">config hash: ${s.hash_lineage.map((h) => `<code>${esc(h)}</code>`).join(", ") || "none"}</div>
     </article>`;
   }
@@ -83,7 +89,7 @@
   function renderTickets(data) {
     const tbody = document.getElementById("tickets-tbody");
     if (!data.tickets.length) {
-      tbody.innerHTML = emptyRow(5, "No tickets yet. The first decision is on the next game day.");
+      tbody.innerHTML = emptyRow(5, noTickets(data.strategies[0]));
       return;
     }
     tbody.innerHTML = data.tickets.map((t) => `
@@ -94,6 +100,33 @@
         <td data-label="Price" class="num">${price(t.price_american)}</td>
         <td data-label="Status">${P.statusCell(t.status)}</td>
         <td data-label="P/L" class="num">${money(t.profit)}</td>
+      </tr>`).join("");
+  }
+
+  function renderSingles(data) {
+    const stats = data.strategies.map((s) => s.singles).filter((x) => x && x.n);
+    if (stats.length) {
+      const st = stats[0];
+      document.getElementById("singles-summary").textContent =
+        ` So far: ${st.n} single${st.n === 1 ? "" : "s"}, ${record(st.record)}` +
+        `${st.pending ? `, ${st.pending} pending` : ""}, P/L ${money(st.profit)}` +
+        `${st.roi == null ? "" : `, ROI ${pct(st.roi)}`}.`;
+    }
+    const tbody = document.getElementById("singles-tbody");
+    const rows = data.singles || [];
+    if (!rows.length) {
+      tbody.innerHTML = emptyRow(7, "No qualifying legs yet.");
+      return;
+    }
+    tbody.innerHTML = rows.map((r) => `
+      <tr>
+        <td data-label="Date">${esc(r.game_date_et)}</td>
+        <td data-label="Pick"><span>${esc(legLabel(r))}${r.on_ticket ? ' <span class="on-ticket">· on ticket</span>' : ""}</span></td>
+        <td data-label="Matchup">${esc(r.matchup || "")}</td>
+        <td data-label="Price" class="num">${price(r.price_american)}</td>
+        <td data-label="Signals">${esc(r.signal_ids || "")}</td>
+        <td data-label="Status">${P.statusCell(r.status)}</td>
+        <td data-label="P/L" class="num">${money(r.profit)}</td>
       </tr>`).join("");
   }
 
@@ -154,6 +187,7 @@
     renderFreshness(data);
     renderStrategies(data);
     renderTickets(data);
+    renderSingles(data);
     renderSignals(data);
     renderDecisions(data);
     P.wireNavOverflow();
