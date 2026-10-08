@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-07T23:22:01Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-08T13:33:25Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -20,13 +20,13 @@ No tickets yet: a ticket needs 3 qualifying legs from different games. See Singl
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 2 (0-0-0 W-L-P, 2 pending)
-- Staked $0, profit $+0.00, ROI n/a
+- Singles: 2 (1-1-0 W-L-P, 0 pending)
+- Staked $200, profit $-5.66, ROI -2.8%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-10-07 | Florida International Panthers -6.5 | New Mexico State Aggies @ Florida International Panthers | -106 | S6 | pending |  |
-| 2026-10-07 | Jacksonville State Gamecocks -2.5 | Jacksonville State Gamecocks @ Kennesaw State Owls | -124 | S6 | pending |  |
+| 2026-10-07 | Florida International Panthers -6.5 | New Mexico State Aggies @ Florida International Panthers | -106 | S6 | win | $+94.34 |
+| 2026-10-07 | Jacksonville State Gamecocks -2.5 | Jacksonville State Gamecocks @ Kennesaw State Owls | -124 | S6 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -34,7 +34,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 2 | 0-0-0 | n/a |  |
+| S6 | 2 | 1-1-0 | 50.0% | +2.4 pts |
 
 ### Decisions
 
