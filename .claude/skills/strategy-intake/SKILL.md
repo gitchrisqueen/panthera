@@ -52,7 +52,8 @@ rules turned into proxies). Hard rules for the whole run:
    An `available_in_panthera: no` input means drop the rule or ship a new
    client plus fixtures in a separate PR first; write down which. Sport
    decides the home: MLB goes to `config/strategies/`; NCAAF goes to
-   `config/ncaaf_strategies/` with its engine in `src/panthera_mvp/ncaaf/`.
+   `config/ncaaf_strategies/` with its engine in `src/panthera_mvp/ncaaf/`;
+   for NCAAF, steps 6–10 change as set out in "NCAAF strategies" below.
    Verify: every rule's condition names only mapped fields.
 
 6. **Choose or write the engine (20 min).** Prefer an existing engine
@@ -92,7 +93,8 @@ rules turned into proxies). Hard rules for the whole run:
     backtestable engine, also `.venv/bin/panthera-mvp backtest --strategy
     <id>`. Then `.venv/bin/panthera-mvp report` and read the new strategy's
     section in `reports/BETTING_REPORT.md`. Verify: picks or passes appear
-    with plausible volume against `limits.max_bets_per_day`.
+    with plausible volume against the export's `limits.max_bets_per_day`
+    and the registered YAML's `bet_limits.max_picks_per_day`.
     `.venv/bin/panthera-mvp status` shows the credit balance; it must not
     have moved.
 
@@ -111,3 +113,34 @@ rules turned into proxies). Hard rules for the whole run:
     `docs/mvp-design.md`. Verify `git status` shows no `data/` or
     `reports/` paths, then commit, push and `gh pr create`. Do not merge;
     the owner merges, and the strategy goes live only after merge to `main`.
+
+## NCAAF strategies
+
+The verify commands in steps 7, 8 and 10 cover only `config/strategies/`
+and MLB: `load_strategy_configs`, `replay`, `backtest` and `report` never
+read `config/ncaaf_strategies/`, and there is no NCAAF replay or backtest
+command. For an NCAAF strategy use these instead:
+
+- **Step 6.** The engine goes in `src/panthera_mvp/ncaaf/` (pure, like
+  `parlay.py`), and its name goes in `NCAAF_ENGINES` in
+  `src/panthera_mvp/ncaaf/config.py`, not in `registry.engines()`.
+- **Step 7.** Model the YAML on
+  `config/ncaaf_strategies/cfb_spread_total_parlay.yaml`. Each NCAAF YAML
+  is complete, with no base file to merge, and its daily limit is
+  `bet_limits.max_tickets_per_day`. Verify that it loads:
+  `.venv/bin/python -c "from panthera_mvp.config import config_hash; from panthera_mvp.ncaaf.config import load_ncaaf_strategies; print({k: config_hash(v) for k, v in load_ncaaf_strategies().items()})"`
+  raises no `StrategyConfigError`.
+- **Step 8.** Take `<id>`'s hash from that same command for
+  `hash_lineage`. Re-run it to confirm the hash is stable and
+  `cfb_spread_total_parlay`'s is unchanged.
+- **Steps 9–10.** Write the tests in `tests/test_ncaaf_parlay.py`'s
+  pattern. Include an end-to-end test like
+  `test_prep_picks_grade_report_end_to_end`, which runs prep, picks,
+  grade and report against the ESPN and odds fixtures under a temporary
+  `PANTHERA_ROOT`, and a hash-in-lineage test like
+  `test_registered_hash_is_in_lineage`. That end-to-end test is the
+  zero-credit dry run. Do not run `panthera-mvp ncaaf picks` against the
+  repo's `data/`: it refreshes games from ESPN, writes a decision, and
+  without `--dry-run` it buys an odds snapshot. Verify:
+  `.venv/bin/pytest tests/ -q` passes, and `.venv/bin/panthera-mvp status`
+  shows the credit balance has not moved.
