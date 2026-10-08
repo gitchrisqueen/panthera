@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-08T13:33:25Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-08T21:43:57Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -14,17 +14,27 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 ### Tickets
 
-No tickets yet: a ticket needs 3 qualifying legs from different games. See Single bets and Decisions below.
+**In lineage:**
+
+- Tickets: 1 (0-0-0 W-L-P, 1 pending)
+- Staked $0, profit $+0.00, ROI n/a
+
+| Date | Legs | Price | Status | Profit |
+|---|---|---|---|---|
+| 2026-10-08 | Arkansas State Red Wolves -3 (pending)<br>Liberty Flames -13 (pending)<br>South Florida Bulls +6.5 (pending) | +608 | pending |  |
 
 ### Single bets
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 2 (1-1-0 W-L-P, 0 pending)
+- Singles: 5 (1-1-0 W-L-P, 3 pending)
 - Staked $200, profit $-5.66, ROI -2.8%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-10-08 | South Florida Bulls +6.5 | South Florida Bulls @ UTSA Roadrunners | -108 | S6 | pending |  |
+| 2026-10-08 | Arkansas State Red Wolves -3 | South Alabama Jaguars @ Arkansas State Red Wolves | -106 | S1+S6 | pending |  |
+| 2026-10-08 | Liberty Flames -13 | Sam Houston Bearkats @ Liberty Flames | -112 | S6 | pending |  |
 | 2026-10-07 | Florida International Panthers -6.5 | New Mexico State Aggies @ Florida International Panthers | -106 | S6 | win | $+94.34 |
 | 2026-10-07 | Jacksonville State Gamecocks -2.5 | Jacksonville State Gamecocks @ Kennesaw State Owls | -124 | S6 | loss | $-100.00 |
 
@@ -34,13 +44,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 2 | 1-1-0 | 50.0% | +2.4 pts |
+| S1 | 1 | 0-0-0 | n/a |  |
+| S6 | 5 | 1-1-0 | 50.0% | +2.4 pts |
 
 ### Decisions
 
-no_ticket: 2
+no_ticket: 2, ticket: 1
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-10-08 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-07 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-06 | no_ticket | 0 qualifying leg(s); a ticket needs 3 |
