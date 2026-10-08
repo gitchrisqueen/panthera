@@ -2,7 +2,7 @@
 name: strategy-intake
 description: Turn an outside betting strategy (described in chat, or returned as a Strategy Export YAML from docs/strategy-intake/EXPORT_PROMPT.md) into a registered, paper-traded Panthera strategy - config/strategies/<id>.yaml plus engine wiring, tests from the author's worked examples, a zero-credit replay, and the regenerated report - without spending Odds API credits or breaking the pre-registration protocol.
 when_to_use: Use when someone hands over a strategy to test ("register this strategy", "paper-trade my friend's system", "here is the export YAML", "add a new strategy to the registry"). Not for changing an already-registered strategy - a behavior change needs a new id - and not for retuning P/V thresholds (that is `panthera-mvp calibrate`).
-allowed-tools: Read, Edit, Write, Bash(git fetch:*), Bash(git switch:*), Bash(git status:*), Bash(git restore:*), Bash(git clean:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(gh pr create:*), Bash(grep:*), Bash(python3.12 -m venv:*), Bash(.venv/bin/pip install:*), Bash(.venv/bin/pytest:*), Bash(.venv/bin/ruff check:*), Bash(.venv/bin/python -c:*), Bash(.venv/bin/panthera-mvp replay:*), Bash(.venv/bin/panthera-mvp backtest:*), Bash(.venv/bin/panthera-mvp report), Bash(.venv/bin/panthera-mvp status)
+allowed-tools: Read, Edit, Write, Bash(git fetch:*), Bash(git switch:*), Bash(git status:*), Bash(git restore:*), Bash(git clean:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(gh pr create:*), Bash(grep:*), Bash(python3.12 -m venv:*), Bash(.venv/bin/pip install:*), Bash(.venv/bin/pytest:*), Bash(.venv/bin/ruff check:*), Bash(.venv/bin/panthera-mvp replay:*), Bash(.venv/bin/panthera-mvp backtest:*), Bash(.venv/bin/panthera-mvp report), Bash(.venv/bin/panthera-mvp status)
 ---
 
 # Strategy intake
@@ -80,6 +80,9 @@ rules turned into proxies). Hard rules for the whole run:
    and set `hash_lineage: [<hash>]`. Verify: re-running prints the same
    hash, and the other strategies' hashes are unchanged (run it with
    `{k: config_hash(v) for k, v in c.items()}` before and after).
+   These `.venv/bin/python -c` one-liners (and the NCAAF one below) prompt
+   for approval: a skill's `allowed-tools` cannot match them exactly, and a
+   `-c` prefix rule would approve any Python.
 
 9. **Tests from the worked examples (20 min).** Turn each
    `worked_examples` entry (bets and passes) into a unit test on fixtures,
@@ -111,7 +114,9 @@ rules turned into proxies). Hard rules for the whole run:
     `docs/strategy-intake/<id>.md` (summary, input mapping, every proxy)
     and update the "Registered beyond the launch set" line in
     `docs/mvp-design.md`. Verify `git status` shows no `data/` or
-    `reports/` paths, then commit, push and `gh pr create`. Do not merge;
+    `reports/` paths. Then `git add <files>`, naming each file you changed
+    (the YAML, engine, tests, `config/glossary.yaml` and the two docs;
+    never `git add -A` or `.`), commit, push and `gh pr create`. Do not merge;
     the owner merges, and the strategy goes live only after merge to `main`.
 
 ## NCAAF strategies
