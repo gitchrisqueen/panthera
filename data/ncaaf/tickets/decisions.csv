@@ -2,3 +2,4 @@ strategy_id,game_date_et,decided_ts_utc,snapshot_ts_utc,status,reason,n_qualifie
 cfb_spread_total_parlay,2026-10-06,2026-10-06T23:21:23Z,2026-10-06T23:21:23Z,no_ticket,0 qualifying leg(s); a ticket needs 3,0,,e96612a177,
 cfb_spread_total_parlay,2026-10-07,2026-10-07T21:43:17Z,2026-10-07T21:43:18Z,no_ticket,2 qualifying leg(s); a ticket needs 3,2,,e96612a177,
 cfb_spread_total_parlay,2026-10-08,2026-10-08T21:43:53Z,2026-10-08T21:43:53Z,ticket,3 qualifying leg(s); top 3 taken,3,cfb_spread_total_parlay-2026-10-08,e96612a177,"Missouri State Bears @ Western Kentucky Hilltoppers: conflicting spread angles (S1->away, S6->home) - game skipped"
+cfb_spread_total_parlay,2026-10-09,2026-10-09T21:43:22Z,2026-10-09T21:43:22Z,skip,previous day's ticket lost (skip-day rule),0,,e96612a177,
