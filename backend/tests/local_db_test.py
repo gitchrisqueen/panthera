@@ -8,6 +8,8 @@ code below works for a MySQL database in XAMPP
 - NOT XAMPP VM - on Mac OS
 """
 
+import os
+
 import pymysql
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -21,8 +23,8 @@ app = Flask(__name__)
 # assumes you did not create a password for your database
 # and the database username is the default, 'root'
 # change if necessary
-username = 'root'
-password = 'rootpassword'
+username = os.environ.get('MYSQL_USER', 'root')
+password = os.environ.get('MYSQL_PASSWORD', '')
 userpass = 'mysql+pymysql://' + username + ':' + password + '@'
 server   = '127.0.0.1'
 # CHANGE to YOUR database name, with a slash added as shown
