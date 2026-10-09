@@ -4,6 +4,8 @@ both the database and this script must be on the same server
 requires PyMySQL, Flask-SQLAlchemy, Flask
 """
 
+import os
+
 import pymysql
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -16,8 +18,8 @@ app = Flask(__name__)
 
 # make sure the database username, database password and
 # database name are correct
-username = 'something'
-password = 'some_pw'
+username = os.environ.get('MYSQL_USER', 'root')
+password = os.environ.get('MYSQL_PASSWORD', '')
 userpass = 'mysql+pymysql://' + username + ':' + password + '@'
 # keep this as is for a hosted website
 server  = '127.0.0.1'
