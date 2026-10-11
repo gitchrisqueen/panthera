@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-10T15:26:06Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-11T13:25:47Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -16,53 +16,53 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 **In lineage:**
 
-- Tickets: 2 (0-1-0 W-L-P, 1 pending)
-- Staked $100, profit $-100.00, ROI -100.0%
+- Tickets: 2 (0-2-0 W-L-P, 0 pending)
+- Staked $200, profit $-200.00, ROI -100.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-10-10 | Maryland Terrapins +33.5 (pending)<br>UCF Knights +10.5 (pending)<br>Under 48.5 (pending) | +587 | pending |  |
+| 2026-10-10 | Maryland Terrapins +33.5 (win)<br>UCF Knights +10.5 (loss)<br>Under 48.5 (win) | +587 | loss | $-100.00 |
 | 2026-10-08 | Arkansas State Red Wolves -3 (loss)<br>Liberty Flames -13 (win)<br>South Florida Bulls +6.5 (loss) | +608 | loss | $-100.00 |
 
 ### Single bets
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 35 (2-3-0 W-L-P, 30 pending)
-- Staked $500, profit $-116.37, ROI -23.3%
+- Singles: 35 (19-16-0 W-L-P, 0 pending)
+- Staked $3,500, profit $+135.73, ROI +3.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-10-10 | Hawai'i Rainbow Warriors +21 | Hawai'i Rainbow Warriors @ Arizona State Sun Devils | -106 | S4 | pending |  |
-| 2026-10-10 | Boise State Broncos -7.5 | Boise State Broncos @ Fresno State Bulldogs | -106 | S1 | pending |  |
-| 2026-10-10 | Utah Utes -14.5 | Kansas Jayhawks @ Utah Utes | -115 | S6 | pending |  |
-| 2026-10-10 | Minnesota Golden Gophers -2.5 | Minnesota Golden Gophers @ Purdue Boilermakers | -110 | S6 | pending |  |
-| 2026-10-10 | Georgia Bulldogs +2.5 | Georgia Bulldogs @ Alabama Crimson Tide | -110 | S6 | pending |  |
-| 2026-10-10 | James Madison Dukes -7.5 | James Madison Dukes @ Georgia Southern Eagles | +100 | S6 | pending |  |
-| 2026-10-10 | Louisiana Ragin' Cajuns +3 | Louisiana Ragin' Cajuns @ Louisiana Tech Bulldogs | -105 | S6 | pending |  |
-| 2026-10-10 | Under 51 | LSU Tigers @ Kentucky Wildcats | -108 | S2+S5 | pending |  |
-| 2026-10-10 | Memphis Tigers -14.5 | UAB Blazers @ Memphis Tigers | -109 | S6 | pending |  |
-| 2026-10-10 | Nevada Wolf Pack -9.5 | Nevada Wolf Pack @ UTEP Miners | -110 | S6 | pending |  |
-| 2026-10-10 | North Dakota State Bison -2 | North Dakota State Bison @ UNLV Rebels | -111 | S6 | pending |  |
-| 2026-10-10 | Marshall Thundering Herd -4 | Coastal Carolina Chanticleers @ Marshall Thundering Herd | -110 | S1 | pending |  |
-| 2026-10-10 | Arkansas Razorbacks +13.5 | Tennessee Volunteers @ Arkansas Razorbacks | -103 | S4 | pending |  |
-| 2026-10-10 | Maryland Terrapins +33.5 | Maryland Terrapins @ Ohio State Buckeyes | -110 | S1+S3+S4+S6 | pending |  |
-| 2026-10-10 | Vanderbilt Commodores +9.5 | Ole Miss Rebels @ Vanderbilt Commodores | -108 | S6 | pending |  |
-| 2026-10-10 | Under 55.5 | Houston Cougars @ Kansas State Wildcats | -114 | S5 | pending |  |
-| 2026-10-10 | Georgia Tech Yellow Jackets +5.5 | Duke Blue Devils @ Georgia Tech Yellow Jackets | -105 | S1 | pending |  |
-| 2026-10-10 | Virginia Tech Hokies -9.5 | Virginia Tech Hokies @ California Golden Bears | -115 | S1 | pending |  |
-| 2026-10-10 | UCLA Bruins +11 | UCLA Bruins @ Oregon Ducks | -110 | S1 | pending |  |
-| 2026-10-10 | Buffalo Bulls +19.5 | Buffalo Bulls @ Toledo Rockets | -110 | S1 | pending |  |
-| 2026-10-10 | Ohio Bobcats -2 | Central Michigan Chippewas @ Ohio Bobcats | -106 | S6 | pending |  |
-| 2026-10-10 | East Carolina Pirates -9.5 | Rice Owls @ East Carolina Pirates | -114 | S6 | pending |  |
-| 2026-10-10 | Old Dominion Monarchs +10 | Old Dominion Monarchs @ App State Mountaineers | -110 | S6 | pending |  |
-| 2026-10-10 | South Carolina Gamecocks +11.5 | South Carolina Gamecocks @ Florida Gators | -112 | S1+S4 | pending |  |
-| 2026-10-10 | Over 49.5 | Texas A&M Aggies @ Missouri Tigers | -114 | S2 | pending |  |
-| 2026-10-10 | UCF Knights +10.5 | UCF Knights @ Oklahoma State Cowboys | -108 | S4+S6 | pending |  |
-| 2026-10-10 | Pittsburgh Panthers -3.5 | North Carolina Tar Heels @ Pittsburgh Panthers | -102 | S6 | pending |  |
-| 2026-10-10 | NC State Wolfpack +3.5 | Wake Forest Demon Deacons @ NC State Wolfpack | -110 | S6 | pending |  |
-| 2026-10-10 | Under 48.5 | Indiana Hoosiers @ Nebraska Cornhuskers | -115 | S2+S5 | pending |  |
-| 2026-10-10 | Army Black Knights -3.5 | Tulane Green Wave @ Army Black Knights | -115 | S6 | pending |  |
+| 2026-10-10 | Hawai'i Rainbow Warriors +21 | Hawai'i Rainbow Warriors @ Arizona State Sun Devils | -106 | S4 | win | $+94.34 |
+| 2026-10-10 | Boise State Broncos -7.5 | Boise State Broncos @ Fresno State Bulldogs | -106 | S1 | loss | $-100.00 |
+| 2026-10-10 | Utah Utes -14.5 | Kansas Jayhawks @ Utah Utes | -115 | S6 | win | $+86.96 |
+| 2026-10-10 | Minnesota Golden Gophers -2.5 | Minnesota Golden Gophers @ Purdue Boilermakers | -110 | S6 | loss | $-100.00 |
+| 2026-10-10 | Georgia Bulldogs +2.5 | Georgia Bulldogs @ Alabama Crimson Tide | -110 | S6 | win | $+90.91 |
+| 2026-10-10 | James Madison Dukes -7.5 | James Madison Dukes @ Georgia Southern Eagles | +100 | S6 | loss | $-100.00 |
+| 2026-10-10 | Louisiana Ragin' Cajuns +3 | Louisiana Ragin' Cajuns @ Louisiana Tech Bulldogs | -105 | S6 | win | $+95.24 |
+| 2026-10-10 | Under 51 | LSU Tigers @ Kentucky Wildcats | -108 | S2+S5 | loss | $-100.00 |
+| 2026-10-10 | Memphis Tigers -14.5 | UAB Blazers @ Memphis Tigers | -109 | S6 | win | $+91.74 |
+| 2026-10-10 | Nevada Wolf Pack -9.5 | Nevada Wolf Pack @ UTEP Miners | -110 | S6 | win | $+90.91 |
+| 2026-10-10 | North Dakota State Bison -2 | North Dakota State Bison @ UNLV Rebels | -111 | S6 | loss | $-100.00 |
+| 2026-10-10 | Marshall Thundering Herd -4 | Coastal Carolina Chanticleers @ Marshall Thundering Herd | -110 | S1 | loss | $-100.00 |
+| 2026-10-10 | Arkansas Razorbacks +13.5 | Tennessee Volunteers @ Arkansas Razorbacks | -103 | S4 | win | $+97.09 |
+| 2026-10-10 | Maryland Terrapins +33.5 | Maryland Terrapins @ Ohio State Buckeyes | -110 | S1+S3+S4+S6 | win | $+90.91 |
+| 2026-10-10 | Vanderbilt Commodores +9.5 | Ole Miss Rebels @ Vanderbilt Commodores | -108 | S6 | loss | $-100.00 |
+| 2026-10-10 | Under 55.5 | Houston Cougars @ Kansas State Wildcats | -114 | S5 | win | $+87.72 |
+| 2026-10-10 | Georgia Tech Yellow Jackets +5.5 | Duke Blue Devils @ Georgia Tech Yellow Jackets | -105 | S1 | win | $+95.24 |
+| 2026-10-10 | Virginia Tech Hokies -9.5 | Virginia Tech Hokies @ California Golden Bears | -115 | S1 | loss | $-100.00 |
+| 2026-10-10 | UCLA Bruins +11 | UCLA Bruins @ Oregon Ducks | -110 | S1 | win | $+90.91 |
+| 2026-10-10 | Buffalo Bulls +19.5 | Buffalo Bulls @ Toledo Rockets | -110 | S1 | win | $+90.91 |
+| 2026-10-10 | Ohio Bobcats -2 | Central Michigan Chippewas @ Ohio Bobcats | -106 | S6 | win | $+94.34 |
+| 2026-10-10 | East Carolina Pirates -9.5 | Rice Owls @ East Carolina Pirates | -114 | S6 | win | $+87.72 |
+| 2026-10-10 | Old Dominion Monarchs +10 | Old Dominion Monarchs @ App State Mountaineers | -110 | S6 | win | $+90.91 |
+| 2026-10-10 | South Carolina Gamecocks +11.5 | South Carolina Gamecocks @ Florida Gators | -112 | S1+S4 | win | $+89.29 |
+| 2026-10-10 | Over 49.5 | Texas A&M Aggies @ Missouri Tigers | -114 | S2 | loss | $-100.00 |
+| 2026-10-10 | UCF Knights +10.5 | UCF Knights @ Oklahoma State Cowboys | -108 | S4+S6 | loss | $-100.00 |
+| 2026-10-10 | Pittsburgh Panthers -3.5 | North Carolina Tar Heels @ Pittsburgh Panthers | -102 | S6 | loss | $-100.00 |
+| 2026-10-10 | NC State Wolfpack +3.5 | Wake Forest Demon Deacons @ NC State Wolfpack | -110 | S6 | loss | $-100.00 |
+| 2026-10-10 | Under 48.5 | Indiana Hoosiers @ Nebraska Cornhuskers | -115 | S2+S5 | win | $+86.96 |
+| 2026-10-10 | Army Black Knights -3.5 | Tulane Green Wave @ Army Black Knights | -115 | S6 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -70,12 +70,12 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 9 | 0-1-0 | 0.0% | -47.6 pts |
-| S2 | 3 | 0-0-0 | n/a |  |
-| S3 | 1 | 0-0-0 | n/a |  |
-| S4 | 5 | 0-0-0 | n/a |  |
-| S5 | 3 | 0-0-0 | n/a |  |
-| S6 | 22 | 2-3-0 | 40.0% | -7.6 pts |
+| S1 | 9 | 5-4-0 | 55.6% | +7.9 pts |
+| S2 | 3 | 1-2-0 | 33.3% | -14.3 pts |
+| S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
+| S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
+| S5 | 3 | 2-1-0 | 66.7% | +19.0 pts |
+| S6 | 22 | 11-11-0 | 50.0% | +2.4 pts |
 
 ### Decisions
 
