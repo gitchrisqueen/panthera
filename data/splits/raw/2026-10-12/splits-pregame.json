@@ -1,0 +1,198 @@
+[
+ {
+  "event": {
+   "id": 21787,
+   "name": "Los Angeles Dodgers @ Milwaukee Brewers",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-10-12T21:00:00Z",
+   "scheduled_start_at": "2026-10-12T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "NL Championship Series Game 2",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 83,
+    "name": "American Family Field",
+    "city": "Milwaukee",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 21787,
+   "available": true,
+   "captured_at": "2026-10-12T20:48:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 25,
+      "handle_pct": 42,
+      "price": 116
+     },
+     "away": {
+      "bets_pct": 75,
+      "handle_pct": 58,
+      "price": -130
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 38,
+      "handle_pct": 42,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 62,
+      "handle_pct": 58,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 32,
+      "handle_pct": 30,
+      "line": 7.0
+     },
+     "under": {
+      "bets_pct": 68,
+      "handle_pct": 70,
+      "line": 7.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 25,
+       "handle_pct": 17,
+       "price": 116
+      },
+      "away": {
+       "bets_pct": 75,
+       "handle_pct": 83,
+       "price": -130
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 29,
+       "handle_pct": 28,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 71,
+       "handle_pct": 72,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 34,
+       "handle_pct": 31,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 66,
+       "handle_pct": 69,
+       "line": 7.0
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 23,
+       "handle_pct": null,
+       "price": 115
+      },
+      "away": {
+       "bets_pct": 77,
+       "handle_pct": null,
+       "price": -135
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 43,
+       "handle_pct": null,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 57,
+       "handle_pct": null,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 35,
+       "handle_pct": null,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 65,
+       "handle_pct": null,
+       "line": 7.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 28,
+       "handle_pct": 66,
+       "price": 116
+      },
+      "away": {
+       "bets_pct": 72,
+       "handle_pct": 34,
+       "price": -126
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 43,
+       "handle_pct": 55,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 57,
+       "handle_pct": 45,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 26,
+       "handle_pct": 29,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 74,
+       "handle_pct": 71,
+       "line": 7.0
+      }
+     }
+    }
+   ]
+  }
+ }
+]
