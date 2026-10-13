@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-11T23:23:15Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-13T21:41:34Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -28,11 +28,13 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 35 (19-16-0 W-L-P, 0 pending)
+- Singles: 37 (19-16-0 W-L-P, 2 pending)
 - Staked $3,500, profit $+135.73, ROI +3.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-10-13 | Under 43.5 | Florida International Panthers @ Jacksonville State Gamecocks | -105 | S2 | pending |  |
+| 2026-10-13 | Delaware Blue Hens -1 | Delaware Blue Hens @ Middle Tennessee Blue Raiders | -105 | S1 | pending |  |
 | 2026-10-10 | Hawai'i Rainbow Warriors +21 | Hawai'i Rainbow Warriors @ Arizona State Sun Devils | -106 | S4 | win | $+94.34 |
 | 2026-10-10 | Boise State Broncos -7.5 | Boise State Broncos @ Fresno State Bulldogs | -106 | S1 | loss | $-100.00 |
 | 2026-10-10 | Utah Utes -14.5 | Kansas Jayhawks @ Utah Utes | -115 | S6 | win | $+86.96 |
@@ -61,8 +63,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | UCF Knights +10.5 | UCF Knights @ Oklahoma State Cowboys | -108 | S4+S6 | loss | $-100.00 |
 | 2026-10-10 | Pittsburgh Panthers -3.5 | North Carolina Tar Heels @ Pittsburgh Panthers | -102 | S6 | loss | $-100.00 |
 | 2026-10-10 | NC State Wolfpack +3.5 | Wake Forest Demon Deacons @ NC State Wolfpack | -110 | S6 | loss | $-100.00 |
-| 2026-10-10 | Under 48.5 | Indiana Hoosiers @ Nebraska Cornhuskers | -115 | S2+S5 | win | $+86.96 |
-| 2026-10-10 | Army Black Knights -3.5 | Tulane Green Wave @ Army Black Knights | -115 | S6 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -70,8 +70,8 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 9 | 5-4-0 | 55.6% | +7.9 pts |
-| S2 | 3 | 1-2-0 | 33.3% | -14.3 pts |
+| S1 | 10 | 5-4-0 | 55.6% | +7.9 pts |
+| S2 | 4 | 1-2-0 | 33.3% | -14.3 pts |
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 3 | 2-1-0 | 66.7% | +19.0 pts |
@@ -79,10 +79,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 ### Decisions
 
-no_ticket: 2, ticket: 2, skip: 1
+no_ticket: 3, ticket: 2, skip: 1
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-10-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-10 | ticket | 30 qualifying leg(s); top 3 taken |
 | 2026-10-09 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-08 | ticket | 3 qualifying leg(s); top 3 taken |
