@@ -33,7 +33,8 @@ key is exposed raises it as a `needs-chris` task and stops.
    - `LUMIFY_API_KEY` — **MVP Splits Collection** (`mvp-splits.yml`),
      `dry_run: false`. Manual-only and built for exactly this check.
 4. Revoke the old key in the provider's console only after that run is green.
-5. Record the rotation date and the reason in the project's vault note.
+5. Record the rotation date and the reason in the project's private operations
+   notes, so step 2 of the next rotation has a history to read.
 
 ## When to rotate
 
