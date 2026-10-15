@@ -213,16 +213,42 @@ GitHub issue, and that issue is the page.
 on `enabled` + `live` in scope, so the next scheduled run simply skips that
 strategy; snapshots, grading and reporting continue untouched and the
 existing picks keep settling. This is the first move in any incident — it is
-reversible, needs no revert, and does not move any `config_hash`.
+reversible, needs no revert, and does not move any `config_hash` (`enabled`
+lives under the hash-excluded `strategy` block).
 
-**Rolling the scope fix back.** Revert the WHOLE commit (`git revert`), never
-just `config/strategy.yaml`. A partial revert restores
-`season.game_types`, which `strategy/season.py` rejects by design; because
-`load_config()` / `load_strategy_configs()` run before the per-strategy
-`except` handler in `cmd_picks`, that error aborts `picks`, `grade` and
-`report` for every strategy at once rather than isolating one. The same
-applies to reverting only the engine files: the config and the readers must
-move together.
+Two things to know at 2 a.m.:
+- **Commit and push it to the default branch.** Scheduled workflows read only
+  the default branch, so an uncommitted or unmerged edit changes nothing on
+  the next run.
+- **It silences the detector too.** A disabled strategy writes no passes, so
+  `doctor`'s H01/H02 stop firing and the open health issue closes itself. Say
+  in the issue that you disabled the strategy before you do it, or you will
+  lose the thread mid-incident.
+
+**Rolling the scope fix back.** The change is not one commit — it spans
+`f83fe11` and `7218dbb` on PR #65, with PR #66 (`doctor`) stacked on top — so
+`git revert <one sha>` IS the partial revert this paragraph warns about.
+Revert the **whole PR**: GitHub's Revert button on #65, or
+`git revert -m 1 <the #65 merge sha>`.
+
+Never revert `config/strategy.yaml` alone. That restores
+`season.game_types`, which `strategy/season.py` rejects by design, and the
+three entry points then fail *differently*, which is worse than failing
+together:
+- `picks` aborts loudly — `_build_season_context` and the eager validation in
+  `config._validate_strategy` both run outside the per-strategy handler.
+- `grade` keeps going. `cmd_grade` calls only `load_config()`, which does not
+  validate the season key, so pending picks still settle.
+- `report` keeps going in a degraded state. `_load_strategies_for_report`
+  catches `StrategyConfigError` and returns `{}`, so the ledger regenerates
+  with every strategy silently missing from it.
+
+The same applies to reverting only the engine files: the config and its one
+reader must move together.
+
+**If #66 is already merged when you revert #65,** expect `doctor` to open an
+`mlb/config_sanity` issue (H09) on its next run. That is the detector working,
+not a second incident; it clears when #65 is restored or the key is fixed.
 
 **Picks already written under the post-fix hashes survive the revert.** Picks
 are immutable once created (`src/panthera_mvp/CLAUDE.md`), so reverting the
