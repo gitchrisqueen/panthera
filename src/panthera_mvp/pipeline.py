@@ -101,7 +101,13 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
 
     PANTHERA_MLB_FIXTURE (tests/offline dry-runs) points at a recorded
     schedule payload instead of calling statsapi — unit tests never touch
-    the network."""
+    the network.
+
+    That variable is a TEST-ONLY switch: it is read with a bare `open()` and
+    no path confinement, so it must never be wired to a `workflow_dispatch`
+    input, a matrix value or any other caller-supplied value. Today only
+    workflow YAML and the test suite set it. The same holds for the
+    PANTHERA_NCAAF_* and PANTHERA_NCAABASE_* fixture variables."""
     fixture = os.environ.get("PANTHERA_MLB_FIXTURE")
     if fixture:
         with open(fixture) as fh:
@@ -112,6 +118,27 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
         games = mlb.get_schedule(date_et)
     rows = []
     for g in games:
+        # NOT g.status: `abstractGameState` reports a called-off game as
+        # "Final", which nothing downstream can settle or void. See
+        # mlb.stored_status.
+        status = mlb.stored_status(g)
+        is_final = status == "Final"
+        if is_final and (g.home_score is None or g.away_score is None):
+            # The shape that stranded 823490. If this fires, `detailedState`
+            # carries a head `mlb._CALLED_OFF` does not know, so the row is
+            # about to be stored Final with no score — unsettleable, and
+            # doctor's H05 will suggest backfilling a score that may not
+            # exist. Say so loudly rather than repeating the dead end.
+            msg = (
+                f"game {g.game_pk} is Final with no linescore and detailedState "
+                f"{g.detailed_state!r} is not a known called-off state. A pick "
+                "on it cannot settle. If that state means the game was called "
+                "off, add its head to clients/mlb.py::_CALLED_OFF."
+            )
+            print(f"[refresh] {g.game_date_et}: {msg}", file=sys.stderr)
+            store.append_run_note(
+                g.game_date_et, "refresh", "unmapped_final_no_score", msg
+            )
         rows.append(
             {
                 "game_pk": g.game_pk,
@@ -125,24 +152,26 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
                 "home_team": g.home_team,
                 "away_team_id": g.away_team_id,
                 "away_team": g.away_team,
-                "status": g.status if g.status != "Final" else "Final",
+                "status": status,
                 "home_score": g.home_score,
                 "away_score": g.away_score,
+                # `score or 0` on a Final with no linescore used to fabricate a
+                # 0-0 result (the live 823490 row carried winner=Baltimore
+                # Orioles, run_diff=0, total_runs=0 for a game never played).
+                # No score means no derived result.
                 "winner": (
-                    g.home_team
-                    if (g.home_score or 0) > (g.away_score or 0)
-                    else g.away_team
-                )
-                if g.status == "Final"
-                else None,
+                    (g.home_team if g.home_score > g.away_score else g.away_team)
+                    if is_final and g.home_score is not None and g.away_score is not None
+                    else None
+                ),
                 "run_diff": (
-                    abs((g.home_score or 0) - (g.away_score or 0))
-                    if g.status == "Final"
+                    abs(g.home_score - g.away_score)
+                    if is_final and g.home_score is not None and g.away_score is not None
                     else None
                 ),
                 "total_runs": (
-                    (g.home_score or 0) + (g.away_score or 0)
-                    if g.status == "Final"
+                    g.home_score + g.away_score
+                    if is_final and g.home_score is not None and g.away_score is not None
                     else None
                 ),
                 "home_pitcher_era": g.home_pitcher.era if g.home_pitcher else None,
@@ -582,7 +611,15 @@ def cmd_grade(grade_date: str | None = None) -> None:
             _refresh_games(d)
         except Exception as exc:
             print(f"[grade] MLB refresh failed for {d}: {exc}; trying ESPN", file=sys.stderr)
-            _espn_fallback(d)
+        # Unconditional, not only on a refresh exception: the MLB API also
+        # fails by SUCCEEDING with a hole — returning a game as Final with no
+        # linescore — and `_refresh_games` stores that verbatim. Gating the
+        # fallback on an exception left that hole unreachable. `_espn_fallback`
+        # makes no network call when the date has nothing missing, so a
+        # fully-settled date costs exactly what it did before.
+        filled = _espn_fallback(d)
+        if filled:
+            print(f"[grade] {d}: filled {filled} game(s) from ESPN")
     settled = grade_pending()
     print(f"[grade] settled {len(settled)} pick(s)")
     from .clv import fill_clv
@@ -595,25 +632,96 @@ def cmd_grade(grade_date: str | None = None) -> None:
         write_daily_report(d, cfg, credits_note=_credits_note())
 
 
-def _espn_fallback(date_et: str) -> None:
-    """Fill finals from ESPN when the MLB API is unavailable."""
+def _needs_final(games: pd.DataFrame) -> pd.Series:
+    """Rows a finals fallback may fill: not Final yet, OR recorded Final with
+    a missing score.
+
+    The second arm is the whole point, not a belt-and-braces addition. This
+    guard used to read `games["status"] != "Final"`, meaning "only fill games
+    that are still unsettled" — but a row stored as Final with a NULL score is
+    exactly the state that most needs a fallback, and `!= "Final"` made it
+    permanently unreachable. `grading._result_for_pick` settles from the score,
+    so a pick on such a game could never settle at all; three picks on
+    2026-09-27 sat pending for 18 days because of it. Do not reinstate the
+    `!= "Final"` form.
+
+    A row already Final with BOTH scores present is excluded, so a fallback
+    can only fill holes and never rewrites a complete final.
+    """
+    final_hole = (games["status"] == "Final") & (
+        games["home_score"].isna() | games["away_score"].isna()
+    )
+    # A called-off game has no score because it was never played. ESPN must
+    # not reopen one — it carries stale 0-0 rows for rain-outs, and MLB stays
+    # the authority on a game that is later resumed.
+    called_off = games["status"].isin(mlb.CALLED_OFF_STATUSES)
+    return ~called_off & ((games["status"] != "Final") | final_hole)
+
+
+def _espn_fallback(date_et: str) -> int:
+    """Fill this date's missing finals from ESPN. Returns how many game rows
+    changed.
+
+    Returns 0 without touching the network when the date has no hole, so
+    calling it on every graded date is free in the common case."""
+    games = store.load_games()
+    if games.empty:
+        return 0
+    open_rows = (games["game_date_et"] == date_et) & _needs_final(games)
+    if not open_rows.any():
+        return 0
     try:
         scoreboard = espn.get_scoreboard(date_et)
     except Exception as exc:
         print(f"[grade] ESPN fallback failed for {date_et}: {exc}", file=sys.stderr)
-        return
-    games = store.load_games()
-    if games.empty:
-        return
+        return 0
+    # A games.csv in which no row yet carries these loads them as all-NaN
+    # float64, and pandas refuses a string assignment into a float column
+    # ("Invalid value 'New York Yankees' for dtype 'float64'"). Coerce once,
+    # so the first final this store ever records can come from ESPN.
+    for col in ("status", "winner", "score_source"):
+        games[col] = games[col].astype(object)
+    filled = 0
+    # Both events of a doubleheader hit the same ambiguity, and the run log is
+    # committed and rendered into the daily report, so report each matchup once.
+    reported: set[tuple[str, str]] = set()
     for eg in scoreboard:
-        if not eg.completed or eg.home_score is None:
+        if not eg.completed or eg.home_score is None or eg.away_score is None:
             continue
-        mask = (
+        same_matchup = (
             (games["game_date_et"] == date_et)
             & (games["home_team"] == eg.home_team)
             & (games["away_team"] == eg.away_team)
-            & (games["status"] != "Final")
         )
+        # (date, home_team, away_team) is NOT unique: a split doubleheader puts
+        # two games of the same matchup on one date, and `EspnGame` carries no
+        # start time or game number to tell them apart. Writing anyway would
+        # broadcast one game's score to both rows, and `grade_pending` settles
+        # from whichever score landed — permanently, because
+        # `store.settle_picks` only rewrites rows still `pending`. So an
+        # ambiguous event is logged and skipped, which is the convention
+        # `matching.py` and `ncaabase/matching.py` already follow: unmatched
+        # events are reported, never guessed.
+        if int(same_matchup.sum()) > 1:
+            if (eg.home_team, eg.away_team) in reported:
+                continue
+            reported.add((eg.home_team, eg.away_team))
+            msg = (
+                f"{eg.away_team} @ {eg.home_team}: "
+                f"{int(same_matchup.sum())} stored games share that matchup "
+                "(doubleheader) and the ESPN event carries no start time to "
+                "split them; not filled. Only an MLB API refresh can settle "
+                "these — data/ is bot-owned and must not be hand-edited."
+            )
+            print(f"[grade] ambiguous ESPN match for {date_et} {msg}", file=sys.stderr)
+            # Durable too: stderr lives only as long as the Actions log, and
+            # this is the sole trace of a hole that will not be filled.
+            store.append_run_note(date_et, "grade", "ambiguous_espn_match", msg)
+            continue
+        mask = same_matchup & _needs_final(games)
+        if not mask.any():
+            continue
+        filled += int(mask.sum())
         games.loc[mask, ["status", "home_score", "away_score", "score_source"]] = [
             "Final",
             eg.home_score,
@@ -625,7 +733,9 @@ def _espn_fallback(date_et: str) -> None:
         )
         games.loc[mask, "run_diff"] = abs(eg.home_score - eg.away_score)
         games.loc[mask, "total_runs"] = eg.home_score + eg.away_score
-    games.to_csv(paths.games_csv(), index=False)
+    if filled:
+        games.to_csv(paths.games_csv(), index=False)
+    return filled
 
 
 def match_splits_to_games(df: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:

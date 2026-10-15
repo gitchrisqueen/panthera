@@ -123,6 +123,24 @@
   hash is absent from its own non-empty lineage; `panthera-mvp hashes` prints
   the current state. An EMPTY lineage means "pool every hash" (report.py),
   not "undeclared" — never "fix" one by writing a hash into it.
+- **A finals fallback selects its targets by "no score", never by status
+  alone** (added 2026-10-15). Every sport's fallback used to gate on status —
+  MLB `status != "Final"`, NCAAF `~status.isin(SETTLED)`, college baseball
+  `status.isin(UNSETTLED)` — which made a row recorded `Final` with a NULL
+  score, the one state that most needs a fallback, permanently unreachable.
+  Grading settles from the score, so a pick on such a game can never settle.
+  The admitted extra shape is exactly "Final with a missing score": a
+  Postponed/Cancelled row has no score either and must not be reopened, and a
+  row already Final with BOTH scores is never rewritten. MLB's reader is
+  `pipeline._needs_final`.
+- **A game's stored status comes from `clients/mlb.py::stored_status`, not
+  from `abstractGameState`** (added 2026-10-15). The abstract state is only
+  Preview | Live | Final, so it reports a called-off game as `Final` with no
+  linescore; stored that way a pick can neither settle (no score) nor void
+  (`grading`'s void branch tests for Postponed/Suspended/Cancelled, which the
+  pipeline never wrote). `detailedState` is the only field that says a game
+  was called off. Game 823490, cancelled for rain on 2026-09-27, left three
+  picks pending for 18 days this way.
 - **Game-type scope has exactly one reader**: `strategy/season.py::in_scope`,
   over `season.exclude_game_types`. Engines and `pipeline`'s SeasonContext
   both call it. They did not before 2026-10-15 — config in one, a hardcoded

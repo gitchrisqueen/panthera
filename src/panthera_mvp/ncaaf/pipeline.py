@@ -266,17 +266,22 @@ def cmd_grade(date_et: str | None = None) -> None:
         .dt.strftime("%Y-%m-%d")
         .unique()
     )
-    failed: list[str] = []
+    graded: list[str] = []
     for d in sorted(dates):
         if date_et and d != date_et:
             continue
+        graded.append(d)
         try:
             refresh_games(d, cfg)
         except Exception as exc:  # one bad date must not block the rest
             print(f"[ncaaf grade] ESPN refresh failed for {d}: {exc}", file=sys.stderr)
-            failed.append(d)
-    if failed:
-        fill_finals_fallback(failed, set(pending["event_id"].astype(str)), cfg)
+    # Every graded date, not only the dates whose ESPN refresh raised: ESPN
+    # also fails by SUCCEEDING with a hole — a game reported Final with no
+    # score — which grading can never settle from. `fill_finals_fallback`
+    # selects nothing, and so makes no network call, unless a date holds a
+    # game that has kicked off and is still unsettled or score-less.
+    if graded:
+        fill_finals_fallback(graded, set(pending["event_id"].astype(str)), cfg)
     aliases = cfg["matching"].get("team_aliases") or {}
     settled = grading.grade_pending(aliases)
     n_q = grading.grade_qualifiers(aliases)
@@ -289,10 +294,29 @@ def fill_finals_fallback(dates: list[str], event_ids: set[str], cfg: dict) -> in
     join). Both are week-keyed, so a stored row without season/week cannot
     use them (logged). Returns how many games were filled."""
     games = store.load_games()
+    if games.empty:
+        return 0
+    # `~status.isin(SETTLED)` alone (the test until 2026-10-15, and MLB's
+    # `!= "Final"`) made one row shape unreachable: Final with a missing
+    # score. Grading settles from the score, so such a leg can never settle,
+    # and the fallback that could repair it skipped it. A row Final with BOTH
+    # scores is still excluded — this fills holes, it never rewrites a final.
+    # Exactly "Final with a hole". Postponed and Canceled are also in
+    # SETTLED and also carry no score; admitting every score-less row would
+    # let a lagging feed reopen a game that was called off.
+    final_hole = (games["status"] == "Final") & (
+        games["home_score"].isna() | games["away_score"].isna()
+    )
+    # Only games that have kicked off: a finals fallback has nothing to fill
+    # for a game not yet played, and this is what keeps the now-unconditional
+    # call in `cmd_grade` from issuing CFBD and ncaa-api week requests every
+    # day for legs that are simply still in the future.
+    started = pd.to_datetime(games["start_time_utc"], utc=True) <= now_utc()
     todo = games[
         games["event_id"].astype(str).isin(event_ids)
         & games["game_date_et"].isin(dates)
-        & ~games["status"].isin(sources.SETTLED)
+        & started
+        & (~games["status"].isin(sources.SETTLED) | final_hole)
     ]
     groups: dict[tuple[int, int, str], list[dict]] = {}
     for r in todo.to_dict("records"):
@@ -334,7 +358,7 @@ def fill_finals_fallback(dates: list[str], event_ids: set[str], cfg: dict) -> in
             print(f"[ncaaf grade] ncaa-api: not filled {msg}", file=sys.stderr)
     if filled:
         store.upsert_games(pd.DataFrame(filled))
-    print(f"[ncaaf grade] fallback filled {len(filled)} final(s)")
+        print(f"[ncaaf grade] fallback filled {len(filled)} final(s)")
     return len(filled)
 
 

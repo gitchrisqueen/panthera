@@ -54,7 +54,14 @@ def upsert_games(df: pd.DataFrame) -> None:
     df = df.reindex(columns=GAMES_COLUMNS).astype({"game_id": str})
     existing = load_games()
     if not existing.empty:
-        final_ids = set(existing.loc[existing["status"] == "Final", "game_id"])
+        # A stored Final is not downgraded by a lagging feed — but a row
+        # stored Final WITHOUT a score is not a settled result, and refusing
+        # its correction left it unsettleable, the same shape the finals
+        # fallback above exists to repair.
+        scored = existing["home_score"].notna() & existing["away_score"].notna()
+        final_ids = set(
+            existing.loc[(existing["status"] == "Final") & scored, "game_id"]
+        )
         df = df[(df["status"] == "Final") | ~df["game_id"].isin(final_ids)]
         if df.empty:
             return

@@ -63,6 +63,58 @@ def _pitcher_from_probable(side: dict) -> PitcherInfo | None:
     return PitcherInfo(pitcher_id=prob.get("id"), name=prob.get("fullName"), era=era)
 
 
+# `detailedState` heads that mean this game will never produce a score, mapped
+# to the spelling `grading._result_for_pick` voids on. MLB writes both
+# "Cancelled" and "Canceled", and appends a reason ("Suspended: Rain"), so
+# match on the head and normalise.
+_CALLED_OFF = {
+    "cancelled": "Cancelled",
+    "canceled": "Cancelled",
+    "postponed": "Postponed",
+    "suspended": "Suspended",
+}
+# The stored-status vocabulary beyond abstractGameState, defined once here and
+# read by `pipeline._needs_final` and `grading._result_for_pick` so the writer
+# and the settler cannot drift (the repo's "exactly one reader" convention).
+#
+# CALLED_OFF_STATUSES: a normal refresh will not produce a score for these, so
+# a finals fallback must not try to reopen them.
+# VOID_STATUSES: of those, the ones that mean NO score will EVER exist, so a
+# pick on them refunds the stake.
+#
+# "Suspended" is deliberately in the first and NOT the second: MLB resumes a
+# suspended game under the same gamePk, so the pick must stay pending until the
+# real final arrives. Voiding it would be irreversible — `store.settle_picks`
+# only rewrites rows still `pending`, so the true win/loss could never land and
+# the strategy's realised P/L would be silently wrong. College baseball already
+# makes this call the same way (tests/test_ncaabase.py: `pick("Suspended") is
+# None  # resumed later, not voided`).
+CALLED_OFF_STATUSES = ("Cancelled", "Postponed", "Suspended")
+VOID_STATUSES = ("Cancelled", "Postponed")
+
+
+def stored_status(game: GameInfo) -> str:
+    """The status to persist for a game — `detailedState` when the game was
+    called off, otherwise `abstractGameState`.
+
+    `abstractGameState` is only ever Preview | Live | Final, so a rain-out
+    comes back as "Final" with no linescore behind it. Stored that way a pick
+    on it can neither settle (grading settles from the score, and there is
+    none) nor void (grading's void branch tests for
+    Postponed/Suspended/Cancelled, which this pipeline never wrote), and the
+    derived winner/run_diff/total_runs columns get filled from `score or 0`
+    with a fabricated 0-0 result. Game 823490, cancelled for rain on
+    2026-09-27, left three picks pending for 18 days exactly this way.
+    `detailedState` is the only field that says a game was called off.
+
+    "Completed Early: Rain" and "Delayed Start: Rain" are deliberately NOT in
+    the map: the first is an official shortened game that HAS a score, the
+    second is still live.
+    """
+    head = game.detailed_state.split(":", 1)[0].strip().lower()
+    return _CALLED_OFF.get(head, game.status)
+
+
 def parse_schedule(payload: dict) -> list[GameInfo]:
     games: list[GameInfo] = []
     for day in payload.get("dates", []):
