@@ -1,0 +1,293 @@
+name: Health Check
+
+# 12:05 ET (EDT = UTC-4), about 90 minutes after MVP Morning starts (10:35 ET),
+# so
+# this reads a checkout that already has today's snapshot and picks. See
+# .github/workflows/CLAUDE.md for the cron<->ET table.
+#
+# Why this workflow exists: the last MLB pick landed on 2026-09-27, the first
+# all-silent slate was 2026-09-29, and nobody noticed for 14 slate days.
+# Nothing had crashed — every workflow ran green, the data stayed current,
+# and reports/daily/*.md printed the reason in plain text every day. The
+# evidence was there; the watching was not.
+#
+# This is the DETECTOR; it only reports. Remediation is manual today
+# (`panthera-mvp catchup` is planned, not shipped — do not point operators at
+# it until it exists).
+#
+# Timing: `doctor` scores whole slate days and deliberately EXCLUDES today,
+# because today's slate is still being played and graded. So the earliest a
+# dead slate can page you is the run the MORNING AFTER it — about 26 hours,
+# by which time a second slate may also be dead. That is the accepted cost of
+# not alerting on half-finished days.
+#
+# Deliberately NOT in the `panthera-data` concurrency group: it writes nothing,
+# so it must never queue behind the pick-generating workflows and delay them.
+#
+# A RED run of this workflow means the DETECTOR is down, not that the pipeline
+# is healthy — no issue is filed and nothing is closed on that path. Treat a
+# red Health Check the way you would a page.
+on:
+  schedule:
+    - cron: "5 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      # Human-readable copy in the run log, so a maintainer opening the run
+      # sees the findings without parsing JSON. --exit-zero on both: the job
+      # must stay green, because a red X every day is a red X nobody reads.
+      # The GitHub issue is the alert, not the job status.
+      - name: Doctor (text)
+        run: panthera-mvp doctor --exit-zero
+
+      - name: Doctor (json)
+        run: panthera-mvp doctor --json --exit-zero > health.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: health-${{ github.run_id }}
+          path: health.json
+          retention-days: 90
+
+      - name: Reconcile health issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('health.json', 'utf8'));
+            const LABEL = 'panthera-health';
+            // Routing comes from config/health.yaml via doctor's JSON. These
+            // fallbacks only cover an older doctor that does not emit it.
+            const ALERT_ON = report.alert?.open_issue_on ?? ['fail'];
+            const RENOTIFY_DAYS = report.alert?.renotify_every_days ?? 7;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}` +
+                           `/actions/runs/${context.runId}`;
+
+            // Only these levels alert. Everything else is in the run log and
+            // the artifact.
+            const alerting = report.findings.filter(f => ALERT_ON.includes(f.level));
+            const nowIso = new Date().toISOString();
+
+            // A hidden marker, not the title, is the identity of a finding:
+            // titles carry day counts and change as a problem worsens, which
+            // would open a second issue for the same cause every day.
+            const marker = fp => `<!-- panthera-health:${fp} -->`;
+
+            // The last time this issue actually NOTIFIED someone, carried in
+            // the body. `issue.updated_at` cannot be used for this: editing
+            // the body below updates it, so it would always read as "just
+            // now" and the renotify would never fire.
+            const notifyMarker = iso => `<!-- panthera-health-notified:${iso} -->`;
+            const lastNotified = (issue) => {
+              const m = (issue.body || '').match(/<!-- panthera-health-notified:(.+?) -->/);
+              return m ? new Date(m[1]) : new Date(issue.created_at);
+            };
+
+            const body = (f, notifiedIso) => [
+              marker(f.fingerprint),
+              notifyMarker(notifiedIso),
+              `**${f.id} \`${f.check}\`** · sport \`${f.sport}\` · level \`${f.level}\``,
+              '',
+              f.title,
+              '',
+              f.detail,
+              '',
+              f.suggested_command ? `\`\`\`bash\n${f.suggested_command}\n\`\`\`` : '',
+              '',
+              '<details><summary>Evidence</summary>',
+              '',
+              '```json',
+              JSON.stringify(f.evidence, null, 2),
+              '```',
+              '',
+              '</details>',
+              '',
+              `First seen: ${f.since || 'unknown'} · Last reported: ${report.today_et} ET`,
+              `Reported by [run ${context.runId}](${runUrl}) · \`panthera-mvp doctor\``,
+              '',
+              '_Opened automatically. It closes itself once `doctor` runs this sport ' +
+              'again and stops reporting this fingerprint._',
+            ].join('\n');
+
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: LABEL, per_page: 100,
+            });
+            // Adopt ONLY issues this workflow opened. `listForRepo` also
+            // returns pull requests, and both the label and the body are
+            // contributor-controlled: a PR or a human bug report about this
+            // feature that quotes the marker line from this file would
+            // otherwise be matched and auto-closed by a token with
+            // issues:write. Provenance first, then the marker.
+            const byFingerprint = new Map();
+            for (const issue of open) {
+              if (issue.pull_request) continue;
+              if (issue.user?.login !== 'github-actions[bot]') continue;
+              const m = (issue.body || '').match(/<!-- panthera-health:(.+?) -->/);
+              if (m) byFingerprint.set(m[1], issue);
+            }
+
+            const seen = new Set();
+            for (const f of alerting) {
+              seen.add(f.fingerprint);
+              const existing = byFingerprint.get(f.fingerprint);
+
+              if (!existing) {
+                const issue = await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  title: `[health] ${f.fingerprint} — ${f.title}`,
+                  body: body(f, nowIso),
+                  labels: [LABEL, 'bug'],
+                });
+                core.info(`opened #${issue.data.number} for ${f.fingerprint}`);
+                try {
+                  await github.rest.issues.addAssignees({
+                    owner: context.repo.owner, repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    assignees: [context.repo.owner],
+                  });
+                } catch (e) {
+                  core.info(`could not assign #${issue.data.number}: ${e.message}`);
+                }
+                continue;
+              }
+
+              // Comment only when there is genuinely something new to say:
+              // the problem got worse, or a week has gone by. Decide BEFORE
+              // the body edit, since the edit rewrites the marker it reads.
+              const wasLevel = (existing.body || '').match(/level `(\w+)`/)?.[1];
+              const escalated = Boolean(wasLevel) && wasLevel !== f.level;
+              const daysSince = (Date.now() - lastNotified(existing).getTime()) / 86400000;
+              const notifying = escalated || daysSince >= RENOTIFY_DAYS;
+
+              // Refresh the body in place. An edit does NOT notify, so a
+              // standing failure keeps its day counter current silently
+              // instead of pinging every morning. That is what stops this
+              // from becoming an issue — or a notification — per day.
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number,
+                title: `[health] ${f.fingerprint} — ${f.title}`,
+                body: body(f, notifying ? nowIso : lastNotified(existing).toISOString()),
+              });
+
+              if (notifying) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: escalated
+                    ? `Escalated \`${wasLevel}\` → \`${f.level}\`: ${f.title}\n\n` +
+                      `[run ${context.runId}](${runUrl})`
+                    : `Still failing after ${Math.floor(daysSince)} days: ${f.title}\n\n` +
+                      `[run ${context.runId}](${runUrl})`,
+                });
+              }
+              core.info(
+                `updated #${existing.number} for ${f.fingerprint}` +
+                (notifying ? ' (commented)' : ' (silent)'));
+            }
+
+            // Self-healing: a fingerprint that stopped being reported is
+            // fixed, so the issue closes itself. Otherwise stale alerts
+            // accumulate and the label stops meaning anything.
+            // "Not reported" only means "fixed" when the sport was actually
+            // evaluated. A sport that went idle, or whose store could not be
+            // read, stops producing findings while nothing is fixed —
+            // closing then loses the thread mid-incident.
+            //
+            // NOT covered: disabling a strategy (`enabled: false`, the
+            // documented first incident move) leaves the sport `active`, so
+            // its findings stop and the issue DOES close. That is why
+            // docs/mvp-design.md tells the operator to say so in the issue
+            // before disabling. Do not claim a protection here that the
+            // state check does not give.
+            const stateOf = new Map(
+              (report.sports || []).map(s => [s.sport, s.state]));
+
+            for (const [fingerprint, issue] of byFingerprint) {
+              if (seen.has(fingerprint)) continue;
+              const sport = fingerprint.split('/')[0];
+              const check = fingerprint.split('/')[1];
+              const state = stateOf.get(sport);
+              // A check that runs whatever the sport is doing (lineage drift,
+              // credit floor, config sanity) going quiet IS a fix, even for an
+              // idle sport — holding it would leave an issue that can never
+              // close. Only the window checks depend on the sport being active.
+              const alwaysEvaluated =
+                (report.always_evaluated || []).includes(check);
+              if (state !== 'active' && !alwaysEvaluated) {
+                // Throttled like the still-failing path. An idle sport can
+                // hold an issue for a whole offseason; an unthrottled note
+                // would be ~130 notifications, which is the issue-a-day
+                // outcome this design exists to avoid.
+                const heldDays =
+                  (Date.now() - lastNotified(issue).getTime()) / 86400000;
+                if (heldDays >= RENOTIFY_DAYS) {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner, repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: `Not evaluated — \`${sport}\` was \`${state ?? 'absent'}\` on ` +
+                          `${report.today_et} ET, so this finding was not re-checked. ` +
+                          `Leaving open.\n\n[run ${context.runId}](${runUrl})`,
+                  });
+                  // Advance the notified marker, or `lastNotified` stays
+                  // frozen at the last alerting run and this comments every
+                  // day from day 7 onward — the very thing the throttle is
+                  // here to stop.
+                  await github.rest.issues.update({
+                    owner: context.repo.owner, repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: (issue.body || '').replace(
+                      /<!-- panthera-health-notified:.+? -->/,
+                      notifyMarker(nowIso)),
+                  });
+                }
+                core.info(
+                  `held #${issue.number} (${fingerprint}: sport ${state}` +
+                  `${heldDays >= RENOTIFY_DAYS ? ', commented' : ', silent'})`);
+                continue;
+              }
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `Resolved — \`doctor\` no longer reports \`${fingerprint}\` as of ` +
+                      `${report.today_et} ET. Closing.\n\n[run ${context.runId}](${runUrl})`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, state: 'closed',
+              });
+              core.info(`closed #${issue.number} (${fingerprint} resolved)`);
+            }
+
+            core.summary.addHeading('panthera-mvp doctor', 2);
+            core.summary.addRaw(
+              `${report.summary.fail} fail · ${report.summary.warn} warn · ` +
+              `${report.summary.info} informational (idle sports)\n\n`);
+            if (alerting.length) {
+              core.summary.addTable([
+                [{data: 'Level', header: true}, {data: 'Check', header: true},
+                 {data: 'Finding', header: true}],
+                ...alerting.map(f => [f.level, f.fingerprint, f.title]),
+              ]);
+            } else {
+              core.summary.addRaw('No failing checks.\n');
+            }
+            await core.summary.write();

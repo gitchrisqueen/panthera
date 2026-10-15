@@ -5,7 +5,13 @@ from __future__ import annotations
 import argparse
 
 
-def main(argv: list[str] | None = None) -> None:
+def main(argv: list[str] | None = None) -> int | None:
+    """Returns a process exit code, or None for "nothing to report".
+
+    `panthera-mvp` is a console_script, so setuptools wraps this in
+    `sys.exit(main())` — a returned int becomes the exit status, which is how
+    `doctor` signals fail/warn to a CI job without raising.
+    """
     parser = argparse.ArgumentParser(
         prog="panthera-mvp",
         description="Project Panthera MVP — MLB betting strategy validation pipeline",
@@ -46,6 +52,28 @@ def main(argv: list[str] | None = None) -> None:
 
     sub.add_parser("report", help="Regenerate markdown reports")
     sub.add_parser("status", help="Show pending picks and credit balance")
+
+    p_doctor = sub.add_parser(
+        "doctor",
+        help="Cross-sport health and staleness checks (read-only, no API "
+        "credits). Exit 0 clean, 1 warn, 2 fail, 3 doctor could not run.",
+    )
+    p_doctor.add_argument(
+        "--sport", default="all", choices=["all", "mlb", "ncaaf", "ncaabase"]
+    )
+    p_doctor.add_argument("--json", action="store_true", dest="as_json")
+    p_doctor.add_argument(
+        "--since", default=None, help="Override the lookback floor (ET date)"
+    )
+    p_doctor.add_argument(
+        "--strict", action="store_true", help="Exit 2 on warnings as well as failures"
+    )
+    p_doctor.add_argument(
+        "--exit-zero",
+        action="store_true",
+        dest="exit_zero",
+        help="Always exit 0, for a workflow that parses the JSON itself",
+    )
 
     p_hashes = sub.add_parser(
         "hashes",
@@ -176,6 +204,16 @@ def main(argv: list[str] | None = None) -> None:
         from .hashes import cmd_hashes
 
         cmd_hashes(sport=args.sport, as_json=args.as_json)
+    elif args.command == "doctor":
+        from .doctor import cmd_doctor
+
+        return cmd_doctor(
+            sport=args.sport,
+            as_json=args.as_json,
+            since=args.since,
+            strict=args.strict,
+            exit_zero=args.exit_zero,
+        )
     elif args.command == "pages":
         from .pipeline import cmd_pages
 
@@ -236,4 +274,4 @@ def main(argv: list[str] | None = None) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
