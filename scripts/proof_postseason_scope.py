@@ -23,7 +23,8 @@ snapshot and spends no API credits. The replay fixes an empty Dossier and no
 splits, so it measures WHAT THE GATE ADMITS, not what a live run would place
 (a live run has the full season context and the captured splits).
 
-Run from the repo root: python scripts/proof_postseason_scope.py
+Run from the repo root: .venv/bin/python scripts/proof_postseason_scope.py
+(it imports panthera_mvp, so it needs the editable install)
 Writes docs/proofs/postseason-scope.md and exits non-zero if the gate still
 rejects a postseason game.
 """

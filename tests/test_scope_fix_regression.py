@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import copy
 import importlib
+import inspect
 import pkgutil
 
 import pandas as pd
@@ -135,28 +136,53 @@ def _legacy_cfg(scfg: dict, observed: set[str]) -> dict:
     return out
 
 
+def _has_source(module) -> bool:
+    try:
+        inspect.getsource(module)
+    except (OSError, TypeError):
+        return False
+    return True
+
+
 def test_every_scope_reader_is_covered():
     """Every module that reads game-type scope must be one this file knows
     about. Scans the WHOLE package, not just `strategy/` — `pipeline.py` is a
     reader too (src/panthera_mvp/CLAUDE.md), and the earlier version of this
     test missed it."""
     readers = set()
+    failed: list[str] = []
     for info in pkgutil.walk_packages(panthera_mvp.__path__, "panthera_mvp."):
         if ".dashboard_static" in info.name:
             continue
         try:
             module = importlib.import_module(info.name)
-        except Exception:  # optional/other-sport modules must not break the scan
+        except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+            # A module that cannot be imported would escape the scan silently,
+            # which is the same blind spot this test exists to close.
+            failed.append(f"{info.name}: {type(exc).__name__}: {exc}")
             continue
-        if info.name != "panthera_mvp.strategy.season" and hasattr(module, "in_scope"):
+        if info.name == "panthera_mvp.strategy.season":
+            continue
+        # Both forms of reading scope: the `in_scope` helper, and a direct
+        # `excluded_game_types` call (doctor.py's config check does this).
+        src = inspect.getsource(module) if _has_source(module) else ""
+        if hasattr(module, "in_scope") or "excluded_game_types(" in src:
             readers.add(info.name)
-    assert readers == {
+    assert not failed, "modules that would escape the scan: " + "; ".join(failed)
+    expected = {
+        # Validates the key eagerly at load time so a scope fault fails the
+        # run instead of being isolated per-strategy.
+        "panthera_mvp.config",
         "panthera_mvp.pipeline",
         "panthera_mvp.strategy.orig_rules",
         "panthera_mvp.strategy.registry",
         "panthera_mvp.strategy.rules",
         "panthera_mvp.strategy.splits_signal",
-    }, f"scope readers changed: {sorted(readers)}"
+    }
+    # doctor.py reads scope only to validate it (H09), and ships in a later
+    # PR; accept it without requiring it.
+    optional = {"panthera_mvp.doctor"}
+    assert readers - optional == expected, f"scope readers changed: {sorted(readers)}"
 
 
 @pytest.fixture(scope="module")

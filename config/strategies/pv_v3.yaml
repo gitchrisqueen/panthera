@@ -35,8 +35,8 @@ strategy:
   # change is domain-extending, not behavior-altering. Restricted to the
   # games the old config admitted (game_type == "R"), the two configs are
   # provably identical decision functions — tests/test_scope_fix_regression.py
-  # replays both gates over the full captured regular-season history (793
-  # games, 59 dates) and asserts byte-identical engine output. No pick
+  # replays both gates over the full captured regular-season history (at least 793
+  # games over 59 dates) and asserts byte-identical engine output. No pick
   # already in the ledger would have been different, so pooling does not
   # contaminate the pre-fix sample. What IS new is a population (postseason)
   # the day map was never calibrated on; that is disclosed in

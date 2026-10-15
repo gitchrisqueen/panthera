@@ -195,7 +195,7 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   and each lineage was EXTENDED rather than the strategy re-registered,
   because the change is domain-extending:
   `tests/test_scope_fix_regression.py` replays both gates over the captured
-  regular-season history (793 games, 59 dates) and asserts byte-identical
+  regular-season history (at least 793 games over 59 dates) and asserts byte-identical
   engine output, so no existing pick would have differed. The new
   population — postseason games the day map was never calibrated on — is
   disclosed by `BETTING_REPORT.md`'s regime caveat and the per-strategy
