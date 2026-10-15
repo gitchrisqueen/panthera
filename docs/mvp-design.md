@@ -225,11 +225,19 @@ Two things to know at 2 a.m.:
   in the issue that you disabled the strategy before you do it, or you will
   lose the thread mid-incident.
 
-**Rolling the scope fix back.** The change is not one commit — it spans
-`f83fe11` and `7218dbb` on PR #65, with PR #66 (`doctor`) stacked on top — so
-`git revert <one sha>` IS the partial revert this paragraph warns about.
-Revert the **whole PR**: GitHub's Revert button on #65, or
-`git revert -m 1 <the #65 merge sha>`.
+**Rolling the scope fix back.** On the branch the change is several commits,
+with PR #66 (`doctor`) stacked on top, so reverting one of them is the
+partial revert this paragraph warns about. Revert the **whole PR**, and let
+GitHub's Revert button on #65 do it — it picks the right form.
+
+By hand, the command depends on how the PR was merged, and this repo uses
+both: recent PRs are squashed (one parent, subject ending `(#64)`) while
+older ones have merge commits (`Merge pull request #46 …`).
+- Squashed → `git revert <the single squashed sha on main>`. `-m 1` here
+  fails with *"mainline was specified but commit is not a merge"*.
+- Merge commit → `git revert -m 1 <the merge sha>`.
+
+Check with `git log --merges --oneline -1 <sha>` before you type it.
 
 Never revert `config/strategy.yaml` alone. That restores
 `season.game_types`, which `strategy/season.py` rejects by design, and the
