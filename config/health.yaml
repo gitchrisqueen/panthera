@@ -1,0 +1,163 @@
+# Thresholds for `panthera-mvp doctor` and window defaults for
+# `panthera-mvp catchup`.
+#
+# DELIBERATELY NOT in config/strategy.yaml. config.py's HASH_EXCLUDED_KEYS
+# drops only `strategy`, `verdict`, `screen` and `meta` before hashing, so
+# every other top-level key there is part of each strategy's config_hash.
+# A `health:` block in that file would mean tuning an alert threshold moves
+# every MLB strategy's hash, splits its ledger into a new report segment and
+# stalls its verdict countdown — the same class of accident this tool exists
+# to catch. Nothing in this file may ever be read by a strategy engine.
+#
+# Same reasoning as config/ncaaf.yaml and config/ncaabase.yaml, which are
+# separate files for exactly this.
+version: 1
+
+doctor:
+  sports: [mlb, ncaaf, ncaabase]
+
+  # How far back the window checks look. Longer than any threshold below so a
+  # run can always see enough history to measure a streak.
+  lookback_days: 30
+
+  # No games for this many days = IDLE, not broken: every check for that sport
+  # downgrades to INFO. MLB has a four-month offseason and NCAAF a seven-month
+  # one; a tool that screams through every November is a tool nobody reads.
+  # NCAABase uses config/ncaabase.yaml's season window instead of this.
+  idle_after_days:
+    mlb: 7
+    ncaaf: 10
+    ncaabase: 7
+
+  checks:
+    # Every check below accepts `enabled: false` to mute it; doctor applies it
+    # centrally at dispatch. Muting one check is always better than disabling
+    # the workflow, which is the only other lever and removes all nine.
+    # H01 — every strategy that was evaluated on a slate day produced zero
+    # picks, every one wrote at least one pass, and all of their pass reasons
+    # share a single reason key. Independent engines with different hypotheses
+    # do not fall silent for the same stated reason on the same day; that is a
+    # config or data fault, never a strategy opinion.
+    #
+    # Measured 2026-10-15 over the full live history (73 slate days, 6
+    # strategies, data/picks/{picks,passes}.csv): 14 hits, the first on
+    # 2026-09-29 — the first postseason slate day — and ZERO false positives
+    # before it. Not a GUESS. It fires on day one because at zero false
+    # positives there is nothing to be gained by waiting.
+    #
+    # min_strategies guards the degenerate case: with one strategy running,
+    # "they all agree" is not evidence of anything.
+    slate_shutout:
+      enabled: true
+      min_strategies: 2
+      fail_after_days: 1
+
+    # H02 — the per-strategy version of H01: one strategy, zero picks, at
+    # least one pass, all passes sharing one reason key, for N consecutive
+    # SLATE days.
+    #
+    # Slate days, not calendar days. 2026-09-28, 10-02 and 10-09 had no games
+    # at all, and a calendar-day counter resets on every off-day, so the
+    # 14-day outage would have been scored as three short runs.
+    #
+    # Measured 2026-10-15 over the pre-outage history: the longest LEGITIMATE
+    # uniform-pass run is 2 — pv_orig on 2026-09-17 ("thursday is an off day")
+    # and 2026-09-18 ("no natural/scam signal for this slot"). Note the two
+    # days carry DIFFERENT reasons: the check requires one shared reason key
+    # per day, not one across the whole run, which is why those two days
+    # count as a run at all. Every other legitimate run is length 1. The
+    # outage produced a run of 14 in five strategies at once. 3 is therefore
+    # strictly above the observed legitimate maximum, with zero historical
+    # false positives. Not a GUESS.
+    #
+    # 2 would fire a day earlier at the cost of roughly one false positive in
+    # 73 slate days. H01 already fires on 2026-09-29, earlier than either, so
+    # this check is tuned for precision and H01 carries the speed.
+    uniform_pass:
+      warn_after_days: 3
+      fail_after_days: 4
+
+    # H03 — how stale the newest captured game and odds snapshot are.
+    # NCAAF is weekly by design (one snapshot covers the whole week, see
+    # config/ncaaf.yaml), so it gets a much wider window than MLB's daily
+    # cadence. NCAABase takes no odds snapshot by default, so its lines
+    # threshold is loose on purpose.
+    data_staleness:
+      games_max_age_days: {mlb: 2, ncaaf: 8, ncaabase: 2}
+      lines_max_age_days: {mlb: 2, ncaaf: 8, ncaabase: 30}
+
+    # H04 — an MLB slate day should have all three snapshot labels. A label
+    # missing for several days running means one scheduled workflow is failing
+    # while the others cover for it.
+    snapshot_coverage:
+      lookback_days: 3
+      mlb_required_labels: [open, pregame, close]
+
+    # H05 — picks still pending well past their game date: a stalled grader.
+    pending_age:
+      warn_days: 3
+      fail_days: 7
+
+    # H06 — share of a slate with no matched odds event. Catches matching.py
+    # alias rot (a team rename, a new bookmaker naming convention) which
+    # otherwise shows up only as quietly fewer picks.
+    unmatched_slate:
+      lookback_days: 3
+      max_unpriced_pct: 50
+
+    # H07 — an enabled strategy whose current config_hash is absent from its
+    # own non-empty hash_lineage. Its picks render as a separate segment and
+    # its verdict countdown freezes. Generalizes the anti-silent-tuning rule
+    # from "the report looks odd if you read it closely" to an alert.
+    # An EMPTY lineage means "pool every hash" (report.py), never drift.
+    lineage_drift:
+      enabled: true
+
+    # H08 — Odds API credits. Double MLB's min_credits_reserve (30), so the
+    # warning arrives while there is still room to act.
+    credit_floor:
+      warn_below: 60
+
+    # H09 — the strategy configs do not load, or a retired config key is
+    # present. This is where strategy/season.py's legacy-key tripwire surfaces
+    # as an alert instead of a crashed cron.
+    config_sanity:
+      enabled: true
+
+  alert:
+    # Read by .github/workflows/health.yml, which gets these out of doctor's
+    # --json payload (`alert`) rather than hardcoding them — a routing knob
+    # nothing consumes is worse than none, because an operator who edits it
+    # to quiet a flapping alert believes they are still covered.
+    #
+    # Levels that open a GitHub issue.
+    open_issue_on: [fail]
+    # Days before an unresolved finding comments again on its open issue.
+    # Body edits are silent; comments notify. This is what keeps a standing
+    # failure from opening or pinging an issue every single day.
+    renotify_every_days: 7
+
+catchup:
+  # Consumed by `panthera-mvp catchup` (not yet implemented — it lives here
+  # now so that PR and this one do not both edit this file).
+  max_lookback_days: 45
+
+  mlb:
+    strategies: live_enabled
+
+    # Pass-reason prefixes that a config fix has INVALIDATED. A pass matching
+    # one of these does not count as "this strategy evaluated that day", so
+    # gap detection can tell "ran and legitimately passed" from "ran under a
+    # config since corrected" — the state the 2026-09-29 outage was in, which
+    # no "did it run?" test can see, because it did run and did write passes.
+    #
+    # Deciding that a past pass was WRONG is a judgment, not a computation, so
+    # this list is maintained by hand after a diagnosis. That is the one part
+    # of catch-up that is not automatic.
+    void_pass_reasons:
+      # 2026-10-15 postseason scope fix. Both spellings are listed: the
+      # pre-fix one matches the historical rows, and the post-fix one costs
+      # nothing and keeps the machinery ready if the exclusion list is ever
+      # wrong again.
+      - "game_type="
+      - "excluded_game_type="

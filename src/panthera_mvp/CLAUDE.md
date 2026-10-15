@@ -56,6 +56,22 @@
   `StrategyContext -> Pick | Pass | None`; strategies are engine + YAML in
   `config/strategies/`; baselines fav_ml/dog_ml live here),
   `splits_signal.py` (Lumify splits engines).
+- `doctor.py` — `panthera-mvp doctor`: cross-sport health and staleness
+  checks (H01-H09), thresholds in `config/health.yaml` (NOT
+  `strategy.yaml`, which is hashed into every pick). Read-only and
+  zero-API-cost by contract — every input is a committed CSV, enforced by
+  `tests/test_doctor.py::test_doctor_makes_no_network_calls`. Each sport's
+  store is imported lazily, so an unset sport is a finding, not a crash.
+  H01 `slate_shutout` is the one that catches a silent pipeline: every
+  evaluated strategy producing zero picks while passing every game for the
+  same stated reason. Window checks downgrade to INFO when a sport is out
+  of season; the correctness checks (H07-H09) deliberately do not.
+  Findings carry a `fingerprint` of `<sport>/<check>` which
+  `.github/workflows/health.yml` uses as an issue identity, so a check must
+  emit at most ONE finding per sport per run.
+- `hashes.py` — `panthera-mvp hashes`: each strategy's `config_hash` and
+  whether it sits in its own declared `hash_lineage`. Shared with
+  `doctor`'s H07 so the command and the alert cannot disagree.
 - `grading.py` — settles picks (ML/RL/total, pushes, voids).
 - `report.py` — regenerates all markdown from `picks.csv`.
 - `dashboard.py` — builds the public site: `site_data.json` (Baseball ·
