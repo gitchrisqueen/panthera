@@ -82,6 +82,11 @@ def nearest_start(
        flip there writes one game's result onto the other. The caller gets a
        reason and reports it; unmatched is always better than guessed.
 
+    The order matters: rule 1 runs first, so a candidate outside the window
+    can never make a match ambiguous. That is deliberate — it is not a rival
+    for the event — but it means `window_hours` sets the horizon within which
+    `ambiguity_minutes` has any say at all.
+
     Shared by MLB's ESPN finals fallback (`pipeline._match_doubleheader`) and
     college baseball's odds/ESPN matchers (`ncaabase.matching`), which had the
     only implementation until MLB needed the same rule.

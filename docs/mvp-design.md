@@ -407,6 +407,65 @@ abandoned game is treated that way is **Christopher's ruling**, raised as a
 **Record the incident** in this section with the date, the trigger and what was
 reverted, the same way the section above does.
 
+### Rollback and ownership — doubleheader ESPN match (2026-10-15)
+
+The change that gave `clients/espn.py::EspnGame` a `start_time_utc` and taught
+the MLB finals fallback to key each ESPN event onto ONE stored row by start
+time (`pipeline._key_events_to_rows` over `matching.nearest_start`), so a
+split-doubleheader date with one settled game and one score hole fills the
+hole instead of being refused whole. Tolerances live in
+`config/health.yaml`'s `grading.espn_fallback`.
+
+**Unlike the two changes above, this one writes nothing that a revert can
+undo.** It adds no data commit and repairs no stored row. Scores it has
+already filled stay filled (`data/` is bot-owned, and `store.upsert_games`
+keeps a complete final), and picks it has already settled stay settled
+(picks are immutable; `store.settle_picks` only rewrites rows still
+`pending`). So the plain revert is correct here — but keep `data/`,
+`reports/`, `docs/` and the `CLAUDE.md` files out of it, the same way the
+section above does, because the bots rewrite the first two several times a
+day:
+
+```bash
+git rev-list --parents -n 1 <sha>          # 2 hashes = squash, 3 = merge commit
+git revert -n <sha>                        # expect conflicts under data/ and reports/
+git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
+git commit
+```
+
+**`config/health.yaml`'s `grading:` block must go back with the code.** `grade`
+reads it, and `git revert -n` will try to remove it. Keeping it by accident is
+harmless (nothing reads it after the revert); removing it while the code is
+still live is not, so if you revert only part of this change, revert the code
+and the config together.
+
+**What regresses on revert.**
+
+- The matchup-wide refusal from #69 returns: on a doubleheader date, a game
+  with a score hole is never filled, whichever game it is. Any pick behind it
+  stays `pending` and surfaces as `doctor` H05 `pending_age` (warn 3 days,
+  fail 7), with `.github/workflows/health.yml` opening the issue.
+- `data/picks/run_log.csv` goes back to the matchup-wide
+  `ambiguous_espn_match` wording and loses `espn_match_config_error`
+  entirely. Notes already written stay — they are data.
+- Nothing starts settling WRONG. Both the pre- and post-revert code refuse
+  rather than guess; the revert only widens what is refused.
+
+**Owner and alert path.** No service to redeploy: Actions picks up `main` on
+the next scheduled run. An `ambiguous_espn_match` note that never clears is
+not an agent's to resolve — only an MLB API refresh can supply the score, and
+there is no sanctioned way to settle such a pick by hand (see "Abandoned
+without being called off" above, which is the same situation and the same
+mechanism). A standing one becomes a `needs-chris` ClickUp task like any
+other decision.
+
+**Known gap, not fixed here.** `ncaabase/pipeline.py::_espn_fallback` filters
+to the unsettled rows before calling `match_espn`, so a settled game's event
+is never claimed and can be keyed onto an open row when the open row's own
+event is missing from the feed. Tracked as issue #75. Do not copy that
+filtering into the MLB path: `_key_events_to_rows` keeps complete finals as
+candidates on purpose.
+
 ## Verdict criteria (pre-registered)
 
 Criteria are **per-strategy**, declared in each strategy's YAML at

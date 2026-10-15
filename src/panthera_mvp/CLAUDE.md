@@ -141,14 +141,22 @@
   a split doubleheader puts two games of one matchup on one date. Writing to
   the matchup broadcasts one game's score to both rows and `grade_pending`
   settles a pick from whichever landed, permanently. MLB's reader is
-  `pipeline._match_doubleheader` over `matching.nearest_start`, with the
-  tolerances in `config/health.yaml`'s `grading.espn_fallback`; `ncaabase`
-  does the same over its own `matching:` block. The ambiguity arm still
-  refuses — two candidates inside the window of each other are logged,
-  skipped and recorded as an `ambiguous_espn_match` run note — so the fix is
-  "decide when the times decide it", never "guess when they do not". NCAAF
-  needs none of this: its fallbacks join by `event_id`, and a CFB team plays
-  once a week.
+  `pipeline._key_events_to_rows` over `matching.nearest_start`, with the
+  tolerances in `config/health.yaml`'s `grading.espn_fallback`. The ambiguity
+  arm still refuses — two candidates inside the window of each other are
+  logged, skipped and recorded as an `ambiguous_espn_match` run note — so the
+  fix is "decide when the times decide it", never "guess when they do not".
+  **Both sides must be splittable.** Gating on the stored row count alone is
+  not enough: two completed ESPN events against one stored row skip the
+  keying entirely, and two events sharing a start time let the feed's order
+  pick the row. Neither may decide an irreversible settlement.
+  NCAAF needs none of this: its fallbacks join by `event_id`, and a CFB team
+  plays once a week. `ncaabase` runs the same `nearest_start` rule over its
+  own `matching:` block, but NOT over the same candidate set —
+  `ncaabase/pipeline.py::_espn_fallback` filters to the unsettled rows before
+  calling `match_espn`, so a settled game's event is never claimed and can be
+  keyed onto an open row when the open row's own event is missing from the
+  feed. Tracked as issue #75; do not copy that filtering back into MLB.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
   Preview | Live | Final, so it reports a called-off game as `Final` with no

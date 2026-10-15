@@ -5,6 +5,14 @@
 # parameters. It is not doctor's private file; `catchup:` and `grading:` below
 # are read by other commands.
 #
+# One load for all of them: every reader goes through
+# `doctor.load_health_config`, which hard-errors when the `doctor:` block is
+# missing. So deleting or breaking `doctor:` also stops `grading:` being read
+# — `panthera-mvp grade` then leaves a doubleheader unfilled and records an
+# `espn_match_config_error` run note, while the rest of that date and the
+# rest of the run carry on. Keep `doctor:` present even if every check in it
+# is muted with `enabled: false`.
+#
 # DELIBERATELY NOT in config/strategy.yaml. config.py's HASH_EXCLUDED_KEYS
 # drops only `strategy`, `verdict`, `screen` and `meta` before hashing, so
 # every other top-level key there is part of each strategy's config_hash.
@@ -168,6 +176,8 @@ catchup:
 
 grading:
   # Read by `panthera-mvp grade` (src/panthera_mvp/pipeline.py), not by doctor.
+  # Loaded only on a date where one matchup has more than one stored game or
+  # more than one completed ESPN event; an ordinary date never reads it.
   espn_fallback:
     # Splitting a split doubleheader. (game_date_et, home_team, away_team) is
     # not unique on a doubleheader date, so the ESPN finals fallback keys an

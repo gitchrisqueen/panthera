@@ -32,6 +32,18 @@ class EspnGame:
     start_time_utc: str = ""
 
 
+def _start_utc(value) -> str:
+    """ESPN's event date as stored UTC ISO-8601, or "" when it is absent or
+    unparsable. A time-less event is handled by the caller; a raise here
+    would lose the whole scoreboard."""
+    if not value:
+        return ""
+    try:
+        return utc_iso(parse_utc(str(value)))
+    except ValueError:
+        return ""
+
+
 def parse_scoreboard(payload: dict) -> list[EspnGame]:
     games: list[EspnGame] = []
     for event in payload.get("events", []):
@@ -63,8 +75,11 @@ def parse_scoreboard(payload: dict) -> list[EspnGame]:
                         # A date-less event is still returned, not dropped: on
                         # a date whose matchup is unique the fallback never
                         # needs the time, and dropping the event there would
-                        # trade one unfillable hole for another.
-                        start_time_utc=utc_iso(parse_utc(start)) if start else "",
+                        # trade one unfillable hole for another. The same goes
+                        # for an unparsable one — letting it raise here would
+                        # discard every other game on the date for one bad
+                        # field.
+                        start_time_utc=_start_utc(start),
                     )
                 )
     return games
