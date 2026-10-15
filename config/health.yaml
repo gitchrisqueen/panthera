@@ -138,8 +138,8 @@ doctor:
     renotify_every_days: 7
 
 catchup:
-  # Consumed by `panthera-mvp catchup` (not yet implemented — it lives here
-  # now so that PR and this one do not both edit this file).
+  # Consumed by `panthera-mvp catchup` and the weekly
+  # .github/workflows/panthera-catchup.yml.
   max_lookback_days: 45
 
   mlb:

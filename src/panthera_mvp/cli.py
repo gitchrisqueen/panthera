@@ -85,6 +85,36 @@ def main(argv: list[str] | None = None) -> int | None:
     )
     p_hashes.add_argument("--json", action="store_true", dest="as_json")
 
+    p_catchup = sub.add_parser(
+        "catchup",
+        help="Find slate days the pipeline missed and replay them into the "
+        "SHADOW ledger (never picks.csv). Zero API credits for MLB.",
+    )
+    p_catchup.add_argument(
+        "--sport", default="all", choices=["all", "mlb", "ncaaf", "ncaabase"]
+    )
+    p_catchup.add_argument("--from", dest="from_et", default=None, help="ET date")
+    p_catchup.add_argument("--to", dest="to_et", default=None, help="ET date")
+    p_catchup.add_argument(
+        "--strategy", action="append", default=None, help="Limit to these ids"
+    )
+    p_catchup.add_argument(
+        "--dry-run", action="store_true", help="Detect and print; write nothing"
+    )
+    p_catchup.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Forget completion markers in the window so the dates are "
+        "re-detected; needs --yes",
+    )
+    p_catchup.add_argument("--yes", action="store_true", help="Confirm --rebuild")
+    p_catchup.add_argument(
+        "--no-network",
+        action="store_true",
+        help="Skip the NCAAF/NCAABase steps that call keyless APIs",
+    )
+    p_catchup.add_argument("--json", action="store_true", dest="as_json")
+
     p_pages = sub.add_parser(
         "pages", help="Build the static GitHub Pages dashboard from picks.csv"
     )
@@ -116,7 +146,13 @@ def main(argv: list[str] | None = None) -> int | None:
         "history (zero API cost); writes data/picks/shadow_picks.csv, never "
         "pooled into any strategy's verdict",
     )
-    p_replay.add_argument("--strategy", default="pv_orig", help="Strategy id to replay")
+    p_replay.add_argument(
+        "--strategy",
+        action="append",
+        default=None,
+        help="Strategy id to replay; repeatable. Default: every enabled live "
+        "strategy (was pv_orig alone). N strategies share one day loop.",
+    )
     p_replay.add_argument("--from", dest="from_et", default=None, help="ET date, e.g. 2026-07-31")
     p_replay.add_argument("--to", dest="to_et", default=None, help="ET date, e.g. 2026-08-19")
 
@@ -267,6 +303,20 @@ def main(argv: list[str] | None = None) -> int | None:
             ncaabase.cmd_grade(args.date)
         elif args.ncaabase_command == "status":
             ncaabase.cmd_status()
+    elif args.command == "catchup":
+        from .catchup import cmd_catchup
+
+        return cmd_catchup(
+            sport=args.sport,
+            from_et=args.from_et,
+            to_et=args.to_et,
+            strategy=args.strategy,
+            dry_run=args.dry_run,
+            rebuild=args.rebuild,
+            as_json=args.as_json,
+            no_network=args.no_network,
+            yes=args.yes,
+        )
     elif args.command == "replay":
         from .replay import cmd_replay
 

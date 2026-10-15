@@ -1,50 +1,104 @@
-"""Retroactive replay — zero-API-cost backtest over the live pipeline's own
-captured odds/games history (`panthera-mvp replay`).
+"""Retroactive replay — zero-API-cost evaluation over the pipeline's own
+captured odds/games history (`panthera-mvp replay`, and the engine behind
+`panthera-mvp catchup`).
 
 Every live snapshot since launch (data/odds/lines.csv) and every game result
-recorded since (data/games/games.csv) already exist on disk; this replays a
-strategy engine over them WITHOUT taking new snapshots or spending API
+recorded since (data/games/games.csv) already exist on disk; this replays
+strategy engines over them WITHOUT taking new snapshots or spending API
 credits. Output goes to data/picks/shadow_picks.csv — a SEPARATE file from
 the real ledger (data/picks/picks.csv), never pooled into any strategy's
-pre-registered verdict (report.py renders it as a clearly marked
-RETROACTIVE section). This keeps the append-once, pre-registered-criteria
-protocol intact: replay picks were not placed in real time and cannot stand
-in for a forward test, however useful they are as an early read.
+pre-registered verdict (report.py renders it as a clearly marked RETROACTIVE
+section). This keeps the append-once, pre-registered-criteria protocol
+intact: replay picks were not placed in real time and cannot stand in for a
+forward test, however useful they are as an early read.
+
+**Fidelity.** The loop is `strategy/slate.py::evaluate_slate`, the same one
+`cmd_picks` runs, and each day is replayed as the live scheduler would: a
+morning pass against the `open` snapshot with a 16:00 window, then a pregame
+pass against the `pregame` snapshot with a 23:59 window, the first pass's
+picks counting against the second's daily budget. `bet_limits` caps and
+`one_pick_per_game` therefore apply exactly as they do live. Before this, the
+replay evaluated whole slates at once with no cap and no start-time window,
+so shadow picks were systematically more numerous than the live picks they
+stood in for.
+
+**Warm-up.** The season context is accumulated from the FIRST captured date,
+not from the start of the requested window, and it advances on every date in
+between whether or not that date generates picks. A window starting
+2026-09-29 otherwise evaluated its first day with no record, no form and no
+previous-head-to-head price — and that price is `pv_orig`'s primary signal,
+so a cold start is not a slightly different engine, it is a different one.
+`ReplayResult.warmup_*` reports what the warm-up actually built; if it is
+zero, the operator needs to see that.
 
 Caveats stated in the report, not hidden:
   - ERA is only populated in games.csv from 2026-08-16 forward (the
     probablePitcher hydrate fix) — ERA-dependent gates are partly dormant
     for earlier dates.
-  - The season context (record, rank, form, ATS streaks, previous-H2H
-    prices) is built ONLY from what this pipeline has itself captured —
-    short and sparse near the start of the window, exactly like the
-    documented gap for early-season merit inputs in live picks.
+  - The season context is built ONLY from what this pipeline has itself
+    captured — short and sparse near the start of the window, unlike a live
+    run, which reads the whole season from the MLB API.
+  - Splits are not replayed. `sharp_split` and `fade_public` consult
+    `data/splits/splits.csv` through a lookup the live pipeline builds per
+    run; a replay passes none, so those engines pass every game on
+    "no-splits". Replaying them would need the splits history keyed the way
+    the live run keyed it, which is a separate piece of work.
 """
 
 from __future__ import annotations
 
-from datetime import date
+from dataclasses import dataclass, field
+from datetime import datetime, time
 
 import pandas as pd
 
 from . import store
-from .clients.mlb import GameInfo
+from .clients.mlb import GameInfo, PitcherInfo
 from .grading import _result_for_pick
-from .strategy.daytype import day_type
-from .strategy.dossier import Dossier, SeasonContext
-from .strategy.movement import extract_game_prices, extract_totals_prices
-from .strategy.registry import StrategyContext, engines
-from .strategy.rules import Pick
-from .strategy.slots import assign_slots
-from .timeutil import now_utc, parse_utc, utc_iso
+from .strategy.dossier import SeasonContext
+from .strategy.movement import extract_game_prices
+from .strategy.registry import engines
+from .strategy.season import in_scope
+from .strategy.slate import evaluate_slate, pick_row
+from .timeutil import ET, now_utc, parse_utc, utc_iso
+
+#: The two scheduled pick runs, as the replay reproduces them: (run label,
+#: snapshot label, window end, the ET clock the run saw). Mirrors
+#: .github/workflows/mvp-morning.yml (10:35 ET, --window-end-et 16:00) and
+#: mvp-pregame.yml (16:50 ET, 23:59).
+PASSES = (
+    ("morning", "open", (16, 0), time(10, 35)),
+    ("pregame", "pregame", (23, 59), time(16, 50)),
+)
+
+
+@dataclass
+class ReplayResult:
+    strategy_ids: list[str] = field(default_factory=list)
+    generated_dates: list[str] = field(default_factory=list)
+    warmup_dates: int = 0
+    warmup_finals: int = 0
+    warmup_h2h: int = 0
+    added: int = 0
+    graded: int = 0
+    #: Dates in range that had no captured odds at all, so nothing could be
+    #: replayed for them. A silent skip here used to look like "no picks".
+    no_lines_dates: list[str] = field(default_factory=list)
 
 
 def _game_info(row) -> GameInfo:
+    """Rebuild the GameInfo a live run would have had.
+
+    The pitcher objects matter: `slate.build_dossier` reads ERA off
+    `g.home_pitcher.era`, so leaving them None would silently drop every
+    ERA-dependent gate (R3_era, R4's evenness check, half of the R8 veto).
+    games.csv stores the ERAs as columns, so they are put back here.
+    """
     return GameInfo(
         game_pk=int(row.game_pk),
         game_date_et=str(row.game_date_et),
         game_type=str(row.game_type),
-        status="Preview",  # replay always treats the game as not-yet-started
+        status="Preview",  # replay always decides as of before the game
         detailed_state="Scheduled",
         start_utc=parse_utc(str(row.start_time_utc)),
         doubleheader=str(row.doubleheader) if pd.notna(row.doubleheader) else "N",
@@ -53,155 +107,236 @@ def _game_info(row) -> GameInfo:
         home_team=str(row.home_team),
         away_team_id=int(row.away_team_id),
         away_team=str(row.away_team),
+        home_pitcher=PitcherInfo(
+            era=float(row.home_pitcher_era) if pd.notna(row.home_pitcher_era) else None
+        ),
+        away_pitcher=PitcherInfo(
+            era=float(row.away_pitcher_era) if pd.notna(row.away_pitcher_era) else None
+        ),
     )
 
 
-def _pick_row(p: Pick, strategy_id: str, chash: str) -> dict:
-    return {
-        "pick_id": f"{strategy_id}-{p.game_pk}-{p.market}-{p.game_date_et.replace('-', '')}",
-        "strategy_id": strategy_id,
-        "created_ts_utc": utc_iso(now_utc()),
-        "game_date_et": p.game_date_et,
-        "game_pk": p.game_pk,
-        "odds_event_id": p.odds_event_id,
-        "matchup": p.matchup,
-        "start_time_et": p.start_time_et,
-        "day_type": p.day_type,
-        "slot_type": p.slot_type,
-        "rule_id": p.rule_id,
-        "market": p.market,
-        "selection": p.selection,
-        "line": p.line,
-        "price_american": p.price_american,
-        "price_decimal": p.price_decimal,
-        "stake": 100.0,
-        "open_price": p.open_price,
-        "latest_price": p.latest_price,
-        "movement_cents": p.movement_cents,
-        "rationale": p.rationale,
-        "config_hash": chash,
-        "status": "pending",
-        "settled_ts_utc": None,
-        "final_score": None,
-        "profit": None,
-        "close_price": None,
-        "clv_cents": None,
-    }
+def _as_of(date_et: str, clock: time) -> datetime:
+    return datetime.combine(pd.Timestamp(date_et).date(), clock, tzinfo=ET)
 
 
-def cmd_replay(
-    strategy: str = "pv_orig", from_et: str | None = None, to_et: str | None = None
-) -> None:
+def _advance_context(ctx: SeasonContext, day_games, lines_today, scfg) -> tuple[int, int]:
+    """Fold one day's finals into the context. Called AFTER that day's picks
+    (no lookahead) and on EVERY date in range, generating or not — a window
+    with gaps in the middle would otherwise develop a hole in its context.
+
+    Returns (finals added, h2h prices added).
+    """
+    finals = h2h = 0
+    for row in day_games[day_games["status"] == "Final"].itertuples(index=False):
+        if pd.isna(row.home_score) or pd.isna(row.away_score):
+            continue
+        if not in_scope(str(row.game_type), scfg):
+            continue
+        ctx.add_final(
+            row.home_team_id, row.away_team_id,
+            int(row.home_score), int(row.away_score),
+        )
+        finals += 1
+        if lines_today is None or lines_today.empty:
+            continue
+        ev_rows = lines_today[lines_today["game_pk"] == row.game_pk]
+        if ev_rows.empty:
+            continue
+        # Same snapshot label the pregame pass priced its picks at. This used
+        # to fall through to "most recent non-close", so the dossier's prices
+        # were measured at a different endpoint than the picks' were.
+        p = extract_game_prices(
+            lines_today, ev_rows.iloc[0]["odds_event_id"],
+            row.home_team, row.away_team, latest_label="pregame",
+        )
+        if p is not None:
+            ctx.add_h2h_price(
+                row.home_team_id, row.away_team_id,
+                p.home_ml_latest, p.away_ml_latest,
+                p.home_rl_price, p.away_rl_price,
+            )
+            h2h += 1
+    return finals, h2h
+
+
+def _live_strategy_ids(strategies: dict) -> list[str]:
+    return sorted(
+        sid
+        for sid, cfg in strategies.items()
+        if cfg["strategy"].get("enabled") and "live" in cfg["strategy"]["scope"]
+    )
+
+
+def replay_window(
+    strategy_ids: list[str] | None = None,
+    from_et: str | None = None,
+    to_et: str | None = None,
+    *,
+    only_dates: set[str] | None = None,
+    grade: bool = True,
+    run_label: str = "replay",
+    quiet: bool = False,
+) -> ReplayResult:
+    """Replay the given strategies over the captured history.
+
+    `from_et`/`to_et` bound which dates GENERATE picks; the context always
+    warms up from the first captured date. `only_dates` narrows generation
+    further (catch-up passes its detected gap dates) without touching the
+    warm-up or the advance.
+    """
     from .config import config_hash, load_strategy_configs
 
     strategies = load_strategy_configs(known_engines=set(engines()))
-    if strategy not in strategies:
-        raise SystemExit(f"[replay] unknown strategy id: {strategy}")
-    scfg = strategies[strategy]
-    engine = engines()[scfg["strategy"]["engine"]]
-    chash = config_hash(scfg)
+    sids = strategy_ids or _live_strategy_ids(strategies)
+    unknown = [s for s in sids if s not in strategies]
+    if unknown:
+        raise SystemExit(f"[replay] unknown strategy id(s): {', '.join(unknown)}")
 
-    games = store.load_games()
-    lines = store.load_lines()
+    result = ReplayResult(strategy_ids=list(sids))
+    games, lines = store.load_games(), store.load_lines()
     if games.empty or lines.empty:
-        print("[replay] no captured games/lines to replay")
-        return
+        if not quiet:
+            print("[replay] no captured games/lines to replay")
+        return result
+    lines = lines.dropna(subset=["game_pk"]).astype({"game_pk": int})
 
-    dates = sorted(games["game_date_et"].unique())
-    if from_et:
-        dates = [d for d in dates if d >= from_et]
+    all_dates = sorted(games["game_date_et"].unique())
     if to_et:
-        dates = [d for d in dates if d <= to_et]
-    if not dates:
-        print("[replay] no dates in range")
-        return
+        all_dates = [d for d in all_dates if d <= to_et]
 
-    boundary = int(scfg.get("hybrid_boundary_hour_et", 18))
-    ctx = SeasonContext()
-    rows = []
-    for d in dates:
+    def generating(d: str) -> bool:
+        if from_et and d < from_et:
+            return False
+        return only_dates is None or d in only_dates
+
+    if not any(generating(d) for d in all_dates):
+        if not quiet:
+            print("[replay] no dates in range")
+        return result
+
+    existing = store.load_shadow_picks()
+    # One context per strategy: it advances under that strategy's own scope
+    # rule, and `in_scope` is cheap enough that sharing is not worth the
+    # coupling. Prep that does NOT vary by strategy — the day's games, lines
+    # and event map — is built once per day below.
+    ctxs = {sid: SeasonContext() for sid in sids}
+    rows: list[dict] = []
+    per_strategy_dates: dict[str, set[str]] = {sid: set() for sid in sids}
+
+    for d in all_dates:
         day_games = games[games["game_date_et"] == d]
-        game_infos = [_game_info(r) for r in day_games.itertuples(index=False)]
-        dtype = day_type(date.fromisoformat(d), scfg)
-        slot_map = assign_slots(
-            [(g.game_pk, g.start_utc) for g in game_infos], dtype, boundary
-        )
         lines_today = lines[lines["game_date_et"] == d]
-        events_by_pk = (
-            lines_today.dropna(subset=["game_pk"])
-            .astype({"game_pk": int})
-            .drop_duplicates("game_pk")
-            .set_index("game_pk")["odds_event_id"]
-            .to_dict()
+        game_infos = [_game_info(r) for r in day_games.itertuples(index=False)]
+        gen = generating(d)
+
+        if gen and lines_today.empty:
+            result.no_lines_dates.append(d)
+
+        if gen and not lines_today.empty:
+            events_by_pk = (
+                lines_today.drop_duplicates("game_pk")
+                .set_index("game_pk")["odds_event_id"]
+                .to_dict()
+            )
+            for sid in sids:
+                scfg = strategies[sid]
+                engine = engines()[scfg["strategy"]["engine"]]
+                chash = config_hash(scfg)
+                mine = (
+                    existing[
+                        (existing["game_date_et"] == d)
+                        & (existing["strategy_id"] == sid)
+                    ]
+                    if not existing.empty
+                    else existing
+                )
+                max_per_day = scfg["bet_limits"]["max_picks_per_day"]
+                budget = (
+                    None
+                    if max_per_day is None
+                    else max(0, int(max_per_day) - len(mine))
+                )
+                picked_pks = set(mine["game_pk"]) if not mine.empty else set()
+
+                day_rows: list[dict] = []
+                for _label, snap_label, window, clock in PASSES:
+                    out = evaluate_slate(
+                        engine=engine,
+                        scfg=scfg,
+                        games=game_infos,
+                        events_by_pk=events_by_pk,
+                        lines_today=lines_today,
+                        season_ctx=ctxs[sid],
+                        snap_label=snap_label,
+                        window=window,
+                        date_et=d,
+                        as_of_et=_as_of(d, clock),
+                        already_picked_pks=picked_pks,
+                        budget=budget,
+                        splits_lookup=None,
+                    )
+                    for p in out.picks:
+                        day_rows.append(pick_row(p, sid, scfg, chash))
+                        picked_pks.add(p.game_pk)
+                    if budget is not None:
+                        budget = max(0, budget - len(out.picks))
+                if day_rows:
+                    rows.extend(day_rows)
+                    per_strategy_dates[sid].add(d)
+
+        for sid in sids:
+            finals, h2h = _advance_context(
+                ctxs[sid], day_games, lines_today, strategies[sid]
+            )
+            if sid == sids[0]:  # count the warm-up once, not once per strategy
+                if not gen:
+                    result.warmup_dates += 1
+                    result.warmup_finals += finals
+                    result.warmup_h2h += h2h
+
+    result.generated_dates = sorted({d for s in per_strategy_dates.values() for d in s})
+    if rows:
+        result.added = store.append_shadow_picks(pd.DataFrame(rows))
+    if not quiet:
+        print(
+            f"[replay] warm-up over {result.warmup_dates} date(s) "
+            f"({result.warmup_finals} finals, {result.warmup_h2h} H2H prices)"
+        )
+        print(
+            f"[replay] {result.added} shadow pick(s) added for "
+            f"{', '.join(sids)} over {len(result.generated_dates)} date(s)"
+        )
+        if result.no_lines_dates:
+            print(
+                f"[replay] {len(result.no_lines_dates)} date(s) in range had no "
+                f"captured odds and were skipped: "
+                f"{', '.join(result.no_lines_dates[:5])}"
+                + (" …" if len(result.no_lines_dates) > 5 else "")
+            )
+
+    for d in result.generated_dates:
+        store.append_run_note(
+            d, run_label, "replay_shadow",
+            f"replayed {', '.join(sids)} into the shadow ledger",
         )
 
-        for g, row in zip(game_infos, day_games.itertuples(index=False), strict=True):
-            event_id = events_by_pk.get(g.game_pk)
-            prices = (
-                extract_game_prices(
-                    lines_today, event_id, g.home_team, g.away_team,
-                    latest_label="pregame",
-                )
-                if event_id
-                else None
-            )
-            totals = (
-                extract_totals_prices(lines_today, event_id, latest_label="pregame")
-                if event_id
-                else None
-            )
-            era_home = row.home_pitcher_era if pd.notna(row.home_pitcher_era) else None
-            era_away = row.away_pitcher_era if pd.notna(row.away_pitcher_era) else None
-            dossier = Dossier.from_context(
-                ctx,
-                home_key=g.home_team_id,
-                away_key=g.away_team_id,
-                era_home=era_home,
-                era_away=era_away,
-                last10_n=int(scfg.get("dossier", {}).get("last10_n", 10)),
-            )
-            ctx_kwargs = StrategyContext(
-                game=g,
-                odds_event_id=event_id,
-                prices=prices,
-                totals=totals,
-                slot_type=slot_map.get(g.game_pk),
-                dossier=dossier,
-                cfg=scfg,
-            )
-            outcome = engine(ctx_kwargs)
-            if isinstance(outcome, Pick):
-                rows.append(_pick_row(outcome, strategy, chash))
+    if grade:
+        result.graded = grade_shadow(games)
+        if not quiet:
+            print(f"[replay] {result.graded} shadow pick(s) graded")
+    return result
 
-        # Advance the season context AFTER this day's picks are generated —
-        # no lookahead. Only Final games with prices contribute H2H prices.
-        finals_today = day_games[day_games["status"] == "Final"]
-        for row in finals_today.itertuples(index=False):
-            if pd.isna(row.home_score) or pd.isna(row.away_score):
-                continue
-            ctx.add_final(
-                row.home_team_id, row.away_team_id,
-                int(row.home_score), int(row.away_score),
-            )
-            ev_rows = lines_today[lines_today["game_pk"] == row.game_pk]
-            if ev_rows.empty:
-                continue
-            event_id = ev_rows.iloc[0]["odds_event_id"]
-            p = extract_game_prices(lines_today, event_id, row.home_team, row.away_team)
-            if p is not None:
-                ctx.add_h2h_price(
-                    row.home_team_id, row.away_team_id,
-                    p.home_ml_latest, p.away_ml_latest,
-                    p.home_rl_price, p.away_rl_price,
-                )
 
-    picks_df = pd.DataFrame(rows)
-    added = store.append_shadow_picks(picks_df)
-    print(f"[replay:{strategy}] {added} shadow pick(s) added over {len(dates)} date(s)")
-
-    # Grade whatever the shadow ledger now has pending, against games.csv.
+def grade_shadow(games: pd.DataFrame | None = None) -> int:
+    """Settle whatever the shadow ledger has pending, against games.csv."""
+    games = store.load_games() if games is None else games
     shadow = store.load_shadow_picks()
+    if shadow.empty or games.empty:
+        return 0
     pending = shadow[shadow["status"] == "pending"]
+    if pending.empty:
+        return 0
     games_by_pk = games.set_index("game_pk")
     settlements = []
     for _, pick in pending.iterrows():
@@ -227,5 +362,15 @@ def cmd_replay(
                 "profit": profit,
             }
         )
-    graded = store.settle_shadow_picks(pd.DataFrame(settlements))
-    print(f"[replay:{strategy}] {graded} shadow pick(s) graded")
+    return store.settle_shadow_picks(pd.DataFrame(settlements))
+
+
+def cmd_replay(
+    strategy: list[str] | str | None = None,
+    from_et: str | None = None,
+    to_et: str | None = None,
+) -> None:
+    """Thin CLI adapter over `replay_window`."""
+    if isinstance(strategy, str):
+        strategy = [strategy]
+    replay_window(strategy_ids=strategy, from_et=from_et, to_et=to_et)

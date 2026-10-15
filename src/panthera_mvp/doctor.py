@@ -370,11 +370,16 @@ def check_slate_shutout(data: SportData, cfg: dict, today: date, since: str) -> 
                 "last_pick_date": last_pick,
                 "last_slate_day": last_day,
             },
-            # Must name a command that EXISTS. An alert whose remediation is
-            # a typo teaches the reader to distrust the alert. `catchup` is
-            # planned, not shipped; until it is, point at the diagnostic and
-            # say what the manual repair is.
-            suggested_command=f"panthera-mvp doctor --sport {data.sport}",
+            # Must name a command that EXISTS — an alert whose remediation is
+            # a typo teaches the reader to distrust the alert, and
+            # test_every_suggested_command_names_a_real_subcommand enforces
+            # it. `catchup` ships as of PR 3b, so this points at the repair
+            # again; `_cli_prefix` keeps it on the finding's own sport,
+            # because catchup writes.
+            suggested_command=(
+                f"panthera-mvp {_cli_prefix(data.sport)}catchup "
+                f"--sport {data.sport} --from {first_day}"
+            ),
         )
     ]
 

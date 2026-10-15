@@ -100,6 +100,27 @@ GAMES_COLUMNS = [
 
 RUN_LOG_COLUMNS = ["ts_utc", "game_date_et", "run_label", "kind", "note"]
 
+#: run_log.csv was the one writer in this module with no key, so it appended
+#: unconditionally. A weekly catch-up re-reporting the same dates would pile
+#: up identical rows; `ts_utc` is excluded so a re-run matches its own note.
+RUN_LOG_KEY = ["game_date_et", "run_label", "kind", "note"]
+
+#: One row per (sport, strategy, date) that catch-up has completed, under the
+#: config_hash that completed it. Gap detection is otherwise not
+#: self-limiting: catch-up writes to the SHADOW ledger, so `picks.csv` stays
+#: empty for a repaired date and the same gap is re-detected forever. Keying
+#: on the hash means a later config change correctly re-opens the date.
+CATCHUP_LOG_COLUMNS = [
+    "ts_utc",
+    "sport",
+    "strategy_id",
+    "game_date_et",
+    "outcome",
+    "shadow_rows_added",
+    "config_hash",
+]
+CATCHUP_LOG_KEY = ["sport", "strategy_id", "game_date_et", "config_hash"]
+
 
 def _load(path, columns: list[str] | None = None) -> pd.DataFrame:
     if path.exists():
@@ -126,11 +147,66 @@ def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> 
         ]
     )
     existing = _load(path, RUN_LOG_COLUMNS)
+    if not existing.empty:
+        seen = set(map(tuple, existing[RUN_LOG_KEY].astype(str).values))
+        if tuple(str(row.iloc[0][k]) for k in RUN_LOG_KEY) in seen:
+            return  # same note, same day, same run: already recorded
     pd.concat([existing, row], ignore_index=True).to_csv(path, index=False)
 
 
 def load_run_log() -> pd.DataFrame:
     return _load(paths.data_dir() / "picks" / "run_log.csv", RUN_LOG_COLUMNS)
+
+
+def catchup_log_path():
+    return paths.data_dir() / "picks" / "catchup_log.csv"
+
+
+def load_catchup_log() -> pd.DataFrame:
+    return _load(catchup_log_path(), CATCHUP_LOG_COLUMNS)
+
+
+def append_catchup_log(df: pd.DataFrame) -> int:
+    """Append-once on CATCHUP_LOG_KEY; returns rows added.
+
+    The completion marker that makes catch-up idempotent at the DETECTION
+    level, not just the write level: `append_shadow_picks` already dedupes
+    rows, but without this the same repaired dates would be re-detected as
+    gaps on every run forever, because the repair never touches `picks.csv`.
+    """
+    if df.empty:
+        return 0
+    path = catchup_log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    existing = _load(path, CATCHUP_LOG_COLUMNS)
+    df = df.reindex(columns=CATCHUP_LOG_COLUMNS)
+    if not existing.empty:
+        seen = set(map(tuple, existing[CATCHUP_LOG_KEY].astype(str).values))
+        mask = [
+            tuple(str(v) for v in row) not in seen
+            for row in df[CATCHUP_LOG_KEY].values
+        ]
+        df = df[mask]
+    if df.empty:
+        return 0
+    pd.concat([existing, df], ignore_index=True).to_csv(path, index=False)
+    return len(df)
+
+
+def drop_catchup_log(sport: str, dates: set[str]) -> int:
+    """Forget completion markers for these dates, so `--rebuild` re-detects
+    them. Removes markers only, never picks."""
+    existing = load_catchup_log()
+    if existing.empty or not dates:
+        return 0
+    keep = ~(
+        (existing["sport"].astype(str) == sport)
+        & existing["game_date_et"].astype(str).isin(dates)
+    )
+    dropped = int((~keep).sum())
+    if dropped:
+        existing[keep].to_csv(catchup_log_path(), index=False)
+    return dropped
 
 
 def load_lines() -> pd.DataFrame:

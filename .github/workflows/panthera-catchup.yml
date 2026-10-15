@@ -1,0 +1,112 @@
+name: Panthera Catch-up
+
+# Weekly self-heal. `doctor` (health.yml, daily) DETECTS a stalled pipeline;
+# this REPAIRS it. Catch-up is retroactive by construction — a shadow pick
+# computed one day late and seven days late are the same artifact — so the
+# latency that matters is detection's, and that runs daily. Weekly here keeps
+# the commit churn down and the race window with the pick runs small.
+#
+# Monday 12:15 ET: the quiet slot after MVP Morning (10:35 ET) and well
+# before MVP Pregame (16:50 ET). See .github/workflows/CLAUDE.md for the
+# cron<->ET table.
+#
+# Writes data/picks/shadow_picks.csv, data/picks/catchup_log.csv,
+# data/picks/run_log.csv and reports/ — never data/picks/picks.csv. A
+# backdated pick is not a forward paper trade (its result is already known,
+# and CLV is structurally unfillable for it), so it goes to the quarantined
+# shadow ledger that report.py renders as explicitly non-evaluable. The
+# commit step asserts that again before it pushes.
+#
+# Spends no Odds API or Lumify credits on the MLB path: it replays odds this
+# pipeline already captured.
+on:
+  schedule:
+    - cron: "15 16 * * 1"
+  workflow_dispatch:
+    inputs:
+      sport:
+        type: choice
+        options: [all, mlb, ncaaf, ncaabase]
+        default: all
+      from:
+        type: string
+        default: ""
+        description: "ET date, e.g. 2026-09-29 (blank = max_lookback_days)"
+      to:
+        type: string
+        default: ""
+        description: "ET date (blank = yesterday)"
+      dry_run:
+        type: boolean
+        default: true
+        description: "Detect and print only (default, per the testing convention)"
+
+permissions:
+  contents: write
+
+concurrency:
+  # REQUIRED: this commits. Serializes with morning/pregame/close/ncaaf so a
+  # write can never interleave. cancel-in-progress stays false — a cancelled
+  # catch-up mid-write would leave a partial shadow_picks.csv.
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  catchup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Doctor (before)
+        run: panthera-mvp doctor --exit-zero
+
+      - name: Catch-up
+        env:
+          SPORT: ${{ inputs.sport || 'all' }}
+          FROM_ET: ${{ inputs.from }}
+          TO_ET: ${{ inputs.to }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=(--sport "${SPORT:-all}")
+          [ -n "$FROM_ET" ] && args+=(--from "$FROM_ET")
+          [ -n "$TO_ET" ] && args+=(--to "$TO_ET")
+          # Scheduled runs are live; a manual dispatch defaults to a dry run.
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          panthera-mvp catchup "${args[@]}"
+
+      - name: Regenerate reports
+        if: ${{ inputs.dry_run != 'true' }}
+        run: panthera-mvp report
+
+      - name: Doctor (after)
+        run: panthera-mvp doctor --exit-zero
+
+      - name: Commit & push
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data reports
+          # Belt and braces for the one invariant that must never break. The
+          # command has no code path to picks.csv; this fails the commit if a
+          # future one ever does.
+          if git diff --cached --name-only | grep -q '^data/picks/picks\.csv$'; then
+            echo "::error::catchup must never modify data/picks/picks.csv"
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: weekly catch-up $(date -u +%FT%TZ) [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

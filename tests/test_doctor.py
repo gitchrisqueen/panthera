@@ -144,7 +144,9 @@ def test_slate_shutout_fires_on_first_day(health_root, monkeypatch):
     assert f.evidence["reason_key"] == "excluded_game_type"
     assert f.evidence["consecutive_slate_days"] == 1
     assert sorted(f.evidence["strategies"]) == sorted(STRATEGIES)
-    assert f.suggested_command == "panthera-mvp doctor --sport mlb"
+    assert f.suggested_command == (
+        "panthera-mvp catchup --sport mlb --from 2026-09-29"
+    )
 
 
 def test_slate_shutout_silent_on_a_normal_day(health_root, monkeypatch):
