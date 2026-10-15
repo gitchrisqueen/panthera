@@ -25,13 +25,12 @@ from .config import (
 from .grading import grade_pending
 from .matching import match_events, nearest_start
 from .report import write_daily_report, write_ledger_report
-from .strategy.daytype import day_type
-from .strategy.dossier import Dossier, SeasonContext
-from .strategy.movement import extract_game_prices, extract_totals_prices
-from .strategy.registry import StrategyContext, engines
-from .strategy.rules import Pass, Pick
+from .strategy.dossier import SeasonContext
+from .strategy.movement import extract_game_prices
+from .strategy.registry import engines
+from .strategy.rules import Pass
 from .strategy.season import in_scope
-from .strategy.slots import assign_slots
+from .strategy.slate import evaluate_slate, pick_row
 from .timeutil import ET, now_utc, parse_utc, utc_iso
 
 
@@ -269,25 +268,6 @@ def _backfill_h2h_prices(ctx: SeasonContext) -> None:
         )
 
 
-def _build_dossier(g: mlb.GameInfo, ctx: SeasonContext | None, cfg: dict) -> Dossier:
-    era_home = g.home_pitcher.era if g.home_pitcher else None
-    era_away = g.away_pitcher.era if g.away_pitcher else None
-    if ctx is None:
-        return Dossier(era_home=era_home, era_away=era_away)
-    return Dossier.from_context(
-        ctx,
-        home_key=g.home_team_id,
-        away_key=g.away_team_id,
-        era_home=era_home,
-        era_away=era_away,
-        last10_n=int(cfg.get("dossier", {}).get("last10_n", 10)),
-    )
-
-
-# Snapshot-label canon, chronological. Two label vocabularies exist: snapshot
-# labels (below) name odds captures; picks-run labels (morning/pregame/manual)
-# name scheduled pipeline runs. Never conflate them — the mapping lives in
-# _resolve_snapshot_label.
 SNAPSHOT_LABEL_ORDER = ["open", "midday", "pregame", "close"]
 
 # picks-run label -> the snapshot label that run takes immediately beforehand.
@@ -342,42 +322,6 @@ def _late_run_check(run_label: str, cfg: dict, d: str) -> None:
         store.append_run_note(d, run_label, "late_run", note)
 
 
-def _pick_row(p: Pick, strategy_id: str, scfg: dict, chash: str) -> dict:
-    """Build a ledger row from a Pick. The single authoritative pick_id
-    stamping site: whatever id the engine set is overwritten with the
-    strategy-prefixed format."""
-    return {
-        "pick_id": f"{strategy_id}-{p.game_pk}-{p.market}-{p.game_date_et.replace('-', '')}",
-        "strategy_id": strategy_id,
-        "created_ts_utc": utc_iso(now_utc()),
-        "game_date_et": p.game_date_et,
-        "game_pk": p.game_pk,
-        "odds_event_id": p.odds_event_id,
-        "matchup": p.matchup,
-        "start_time_et": p.start_time_et,
-        "day_type": p.day_type,
-        "slot_type": p.slot_type,
-        "rule_id": p.rule_id,
-        "market": p.market,
-        "selection": p.selection,
-        "line": p.line,
-        "price_american": p.price_american,
-        "price_decimal": p.price_decimal,
-        "stake": scfg["staking"]["flat_stake"],
-        "open_price": p.open_price,
-        "latest_price": p.latest_price,
-        "movement_cents": p.movement_cents,
-        "rationale": p.rationale,
-        "config_hash": chash,
-        "status": "pending",
-        "settled_ts_utc": None,
-        "final_score": None,
-        "profit": None,
-        "close_price": None,
-        "clv_cents": None,
-    }
-
-
 def _strategy_picks(
     sid: str,
     scfg: dict,
@@ -393,27 +337,17 @@ def _strategy_picks(
     existing: pd.DataFrame,
     splits_lookup=None,
 ) -> tuple[list[dict], list[Pass]]:
-    """Run one strategy's engine over the slate; returns (rows, passes).
+    """Run one strategy's engine over today's slate; returns (rows, passes).
+
+    The loop itself is `strategy/slate.py::evaluate_slate`, shared with the
+    replay so the two cannot drift again. What stays here is the part that is
+    about THIS run: reading the day's budget out of the live ledger, and
+    turning "now" into the `as_of` cutoff.
 
     Per-day cap: the budget counts picks this strategy already recorded today
     (across runs) — the original per-invocation cap gave morning and pregame
     runs a fresh budget each, over-capping 4 of the first 15 live days.
-    Earliest-start-first truncation bias: games arrive in schedule order, so
-    when the cap binds it drops the latest games, not random ones.
     """
-    engine = engines()[scfg["strategy"]["engine"]]
-    chash = config_hash(scfg)
-    # orig_rules' slot algorithm is a whole-day computation (strategy/
-    # slots.py), not per-game — run it once here rather than per game below.
-    # Other engines compute their own slot label internally and ignore this.
-    slot_map: dict[int, str] = {}
-    if scfg["strategy"]["engine"] == "orig_rules" and games:
-        dtype = day_type(date.fromisoformat(d), scfg)
-        slot_map = assign_slots(
-            [(g.game_pk, g.start_utc) for g in games],
-            dtype,
-            int(scfg["hybrid_boundary_hour_et"]),
-        )
     mine_today = (
         existing[
             (existing["game_date_et"] == d) & (existing["strategy_id"] == sid)
@@ -423,51 +357,26 @@ def _strategy_picks(
     )
     max_per_day = scfg["bet_limits"]["max_picks_per_day"]
     budget = None if max_per_day is None else max(0, int(max_per_day) - len(mine_today))
-    my_pks_today = set(mine_today["game_pk"]) if not mine_today.empty else set()
 
-    end_h, end_m = window
-    picks: list[Pick] = []
-    passes: list[Pass] = []
-    for g in games:
-        start_et = g.start_utc.astimezone(ET)
-        if (start_et.hour, start_et.minute) > (end_h, end_m):
-            continue
-        if start_et <= now_utc().astimezone(ET) and not dry_run:
-            continue  # game already started
-        if scfg["bet_limits"]["one_pick_per_game"] and g.game_pk in my_pks_today:
-            continue
-        event_id = events_by_pk.get(g.game_pk)
-        prices = (
-            extract_game_prices(
-                lines_today, event_id, g.home_team, g.away_team, latest_label=snap_label
-            )
-            if event_id
-            else None
-        )
-        totals = (
-            extract_totals_prices(lines_today, event_id, latest_label=snap_label)
-            if event_id and scfg["strategy"]["engine"] == "orig_rules"
-            else None
-        )
-        ctx = StrategyContext(
-            game=g,
-            odds_event_id=event_id,
-            prices=prices,
-            totals=totals,
-            slot_type=slot_map.get(g.game_pk),
-            dossier=_build_dossier(g, season_ctx, scfg),
-            cfg=scfg,
-            splits=splits_lookup(g) if splits_lookup else None,
-        )
-        result = engine(ctx)
-        if isinstance(result, Pick):
-            picks.append(result)
-        elif isinstance(result, Pass):
-            passes.append(result)
-
-    if budget is not None:
-        picks = picks[:budget]
-    return [_pick_row(p, sid, scfg, chash) for p in picks], passes
+    result = evaluate_slate(
+        engine=engines()[scfg["strategy"]["engine"]],
+        scfg=scfg,
+        games=games,
+        events_by_pk=events_by_pk,
+        lines_today=lines_today,
+        season_ctx=season_ctx,
+        snap_label=snap_label,
+        window=window,
+        date_et=d,
+        # A dry run evaluates the whole slate regardless of start time; a real
+        # run must not pick a game already under way.
+        as_of_et=None if dry_run else now_utc().astimezone(ET),
+        already_picked_pks=set(mine_today["game_pk"]) if not mine_today.empty else set(),
+        budget=budget,
+        splits_lookup=splits_lookup,
+    )
+    chash = config_hash(scfg)
+    return [pick_row(p, sid, scfg, chash) for p in result.picks], result.passes
 
 
 def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manual") -> None:
