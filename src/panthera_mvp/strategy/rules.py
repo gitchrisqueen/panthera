@@ -8,7 +8,8 @@ generate_pick operates on plain GamePrices values (not raw odds tables) so the
 live pipeline and the historical backtest share this exact code path.
 
 Rule map (doc section -> id):
-  R0  §6 exclude spring training / non-regular games
+  R0  §6 exclude non-counting game types (spring training, exhibition,
+      all-star, intrasquad); must be upcoming and priced
   R1  §2 day/slot classification (P, V, hybrid Wednesday)
   R2  §1 line-movement signal on the favorite's ML consensus
   R3  §5 base pick: P slot backs the public side, V slot backs the Vegas side
@@ -30,6 +31,7 @@ from ..timeutil import to_et
 from .daytype import day_type, slot_type
 from .dossier import Dossier
 from .movement import MovementSignal, movement_signal
+from .season import in_scope
 
 
 @dataclass
@@ -91,9 +93,11 @@ def generate_pick(
 ) -> Pick | Pass | None:
     matchup = f"{game.away_team} @ {game.home_team}"
 
-    # R0 — regular season, still upcoming, and priced.
-    if game.game_type not in cfg["season"]["game_types"]:
-        return Pass(game.game_pk, matchup, "R0", f"game_type={game.game_type}")
+    # R0 — in-scope game type, still upcoming, and priced.
+    if not in_scope(game.game_type, cfg):
+        return Pass(
+            game.game_pk, matchup, "R0", f"excluded_game_type={game.game_type}"
+        )
     if game.status != "Preview":
         return Pass(game.game_pk, matchup, "R0", f"status={game.status}")
     if odds_event_id is None or prices is None:

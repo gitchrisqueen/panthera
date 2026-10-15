@@ -47,6 +47,16 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("report", help="Regenerate markdown reports")
     sub.add_parser("status", help="Show pending picks and credit balance")
 
+    p_hashes = sub.add_parser(
+        "hashes",
+        help="Print each strategy's config_hash and whether it is in its "
+        "declared hash_lineage",
+    )
+    p_hashes.add_argument(
+        "--sport", default="all", choices=["all", "mlb", "ncaaf"]
+    )
+    p_hashes.add_argument("--json", action="store_true", dest="as_json")
+
     p_pages = sub.add_parser(
         "pages", help="Build the static GitHub Pages dashboard from picks.csv"
     )
@@ -162,6 +172,10 @@ def main(argv: list[str] | None = None) -> None:
         from .pipeline import cmd_status
 
         cmd_status()
+    elif args.command == "hashes":
+        from .hashes import cmd_hashes
+
+        cmd_hashes(sport=args.sport, as_json=args.as_json)
     elif args.command == "pages":
         from .pipeline import cmd_pages
 

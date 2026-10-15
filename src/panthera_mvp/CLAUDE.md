@@ -93,6 +93,26 @@
 - **A behavioral change under a reused strategy id is a protocol violation**:
   it changes `config_hash`, and the report refuses to pool it with the
   declared `hash_lineage`. New behavior ⇒ new strategy id, fresh counters.
+- **A `hash_lineage` may be extended only for a DOMAIN-EXTENDING change, and
+  only with an automated proof** (added 2026-10-15). A change is
+  domain-extending when, restricted to the inputs the old config admitted,
+  the two configs are the same decision function — so no pick already in the
+  ledger would have differed and pooling cannot contaminate the pre-fix
+  sample. The proof is a test that replays both configs over captured history
+  and asserts identical engine output; `tests/test_scope_fix_regression.py`
+  is the worked example, written for the postseason scope fix. Without that
+  test the rule above stands: register a new strategy id. A threshold, a
+  weight or a day-map cell is never domain-extending.
+  `tests/test_live_config.py` fails the build if a live strategy's current
+  hash is absent from its own non-empty lineage; `panthera-mvp hashes` prints
+  the current state. An EMPTY lineage means "pool every hash" (report.py),
+  not "undeclared" — never "fix" one by writing a hash into it.
+- **Game-type scope has exactly one reader**: `strategy/season.py::in_scope`,
+  over `season.exclude_game_types`. Engines and `pipeline`'s SeasonContext
+  both call it. They did not before 2026-10-15 — config in one, a hardcoded
+  `== "R"` in the other — and the disagreement is why a whitelist that
+  excluded the entire postseason survived for 14 slate days. Do not add a
+  second reader.
 - Store timestamps with `timeutil.utc_iso()`; compare game days in ET only.
 - Tests run offline on `tests/fixtures/` — network calls are never made in
   unit tests. If you add a client method, add a fixture and a parse test.

@@ -14,6 +14,13 @@ strategy:
   kind: baseline
   scope: [live, backtest]
   registered_at: "2026-08-17"
+  # 2026-10-15 scope fix (see config/strategy.yaml `season`): the base config
+  # change moved this baseline's merged config_hash 0146686dc7 -> da0e2b7cf3.
+  # Deliberately NO append here. An EMPTY hash_lineage does not mean
+  # "undeclared" — report.py and dashboard.py read `[]` as "pool every hash"
+  # (`pool = graded[...isin(lineage)] if lineage else graded`), so writing a
+  # hash in would NARROW this baseline from every segment to one, the exact
+  # opposite of what a control needs. Leave it empty.
   hash_lineage: []
   hypothesis: >
     Control, not a strategy: full-slate favorite ML measures the vig drag on

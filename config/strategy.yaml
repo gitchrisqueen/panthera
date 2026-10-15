@@ -13,8 +13,24 @@ meta:
 
 season:
   # docs/sports_betting_process.md §6: "Exclude spring training data from
-  # analysis." MLB gameType R = regular season.
-  game_types: ["R"]
+  # analysis." That is the ONLY exclusion the source states.
+  #
+  # Corrected 2026-10-15. This key was `game_types: ["R"]` — a regular-season
+  # WHITELIST, which silently added an exclusion the source never asked for:
+  # every postseason type fell outside it (F wild card, D division series,
+  # L LCS, W World Series), so from 2026-09-29 every live engine returned a
+  # Pass on every game. Measured: 14 consecutive slate days, 145 passes, zero
+  # picks, across all five live strategies.
+  #
+  # It is now a BLACKLIST, so a gameType nobody has heard of is IN scope by
+  # default. A whitelist fails silent on the unknown; that is the failure mode
+  # being fixed, and re-listing the postseason types explicitly would rebuild
+  # the same trap for the next new code. Read via strategy/season.py:in_scope,
+  # which is also what pipeline.py's SeasonContext uses — the two disagreed
+  # before this change and that is why one config read did not reveal the bug.
+  #
+  #   S = Spring Training, E = Exhibition, A = All-Star, I = Intrasquad
+  exclude_game_types: ["S", "E", "A", "I"]
 
 # §2: each day is a Public (P) or Vegas (V) day; Wednesday is explicitly
 # hybrid (AM public / PM Vegas). The doc never states the Mon-Sun mapping —

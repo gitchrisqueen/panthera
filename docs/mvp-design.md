@@ -26,7 +26,7 @@ aligned reading lives in a separate engine, `strategy/orig_rules.py`
 
 | ID | Doc § | Rule | Parameters (config/strategy.yaml) |
 |---|---|---|---|
-| R0 | §6 | Regular-season games only; must be upcoming and priced | `season.game_types` |
+| R0 | §6 | Non-counting game types excluded (spring training, exhibition, all-star, intrasquad); must be upcoming and priced | `season.exclude_game_types` |
 | R1 | §2 | Day type from map; hybrid slots split at boundary hour | `day_map`, `hybrid_boundary_hour_et` |
 | R2 | §1 | Movement on favorite's consensus ML (median of books), open → latest snapshot; below threshold = neutral | `movement.min_move_cents` |
 | R3 | §5 | P slot backs public side; V slot backs Vegas side; neutral movement falls back through the dossier cascade: ERA edge (`R3_era`) → last-10 form (`R3_form`) → season-series lead (`R3_series`) → pass | `dossier.last10_n`, `min_last10_win_gap`, `min_series_lead` |
@@ -178,6 +178,28 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   filter, totals; see "Alignment with the source recordings" above).
   Registered with a fresh clock; `pv_v2`/`pv_v3` continue unchanged as
   labeled controls.
+- **Postseason scope fix (2026-10-15):** not a new version — a corrected
+  config under the SAME strategy ids. `config/strategy.yaml` had
+  `season.game_types: ["R"]`, a regular-season whitelist. The source
+  material (§6) excludes spring training and says nothing about the
+  postseason, so the whitelist added an exclusion nobody asked for: from
+  2026-09-29 every engine returned a Pass on every postseason game — 14
+  consecutive slate days, 145 passes, zero picks, while the workflows ran
+  normally and the daily reports said so in plain text. The key is now a
+  blacklist (`season.exclude_game_types: ["S","E","A","I"]`) with one
+  reader, `strategy/season.py::in_scope`, which `pipeline`'s SeasonContext
+  also calls — it previously hardcoded `== "R"`, and that split is why a
+  config read did not reveal the bug. Hashes moved
+  (`pv_v3` e7a93ebed7→d29c3e501c, `pv_orig` 3fff5be8ec→d7d851adfa,
+  `sharp_split` afcd384952→2526d326be, `fade_public` 256514e8ad→98b91db942)
+  and each lineage was EXTENDED rather than the strategy re-registered,
+  because the change is domain-extending:
+  `tests/test_scope_fix_regression.py` replays both gates over the captured
+  regular-season history (793 games, 59 dates) and asserts byte-identical
+  engine output, so no existing pick would have differed. The new
+  population — postseason games the day map was never calibrated on — is
+  disclosed by `BETTING_REPORT.md`'s regime caveat and the per-strategy
+  by-phase split, not hidden behind the hash.
 
 ## Verdict criteria (pre-registered)
 

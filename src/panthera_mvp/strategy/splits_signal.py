@@ -23,6 +23,7 @@ import pandas as pd
 from ..timeutil import now_utc, parse_utc, to_et
 from .daytype import day_type, slot_type
 from .rules import Pass, Pick, american_to_decimal
+from .season import in_scope
 
 #: Snapshot labels in freshness order for pick generation. Fixed
 #: pipeline-wide (not per-strategy) so every splits engine reads the same
@@ -120,8 +121,8 @@ def make_splits_lookup(date_et: str):
 def _base_eligibility(ctx, rule_id: str) -> Pass | None:
     g = ctx.game
     matchup = f"{g.away_team} @ {g.home_team}"
-    if g.game_type not in ctx.cfg["season"]["game_types"]:
-        return Pass(g.game_pk, matchup, rule_id, f"game_type={g.game_type}")
+    if not in_scope(g.game_type, ctx.cfg):
+        return Pass(g.game_pk, matchup, rule_id, f"excluded_game_type={g.game_type}")
     if g.status != "Preview":
         return Pass(g.game_pk, matchup, rule_id, f"status={g.status}")
     return None

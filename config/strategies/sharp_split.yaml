@@ -28,7 +28,29 @@ strategy:
   kind: forward_test
   scope: [live]
   registered_at: "2026-08-23"
-  hash_lineage: [afcd384952]
+  # 2026-10-15 — SCOPE BUG FIX, NOT A TUNING. config/strategy.yaml's
+  # `season.game_types: ["R"]` was a regular-season whitelist the source
+  # material never asked for (docs/sports_betting_process.md §6 excludes
+  # spring training and nothing else). From 2026-09-29 it made every engine
+  # Pass on every postseason game: 14 consecutive slate days, 145 passes,
+  # zero picks, across all five live strategies. The fix replaces it with
+  # `season.exclude_game_types: ["S","E","A","I"]`, which moves this
+  # strategy's config_hash afcd384952 -> 2526d326be.
+  #
+  # Why this EXTENDS the lineage rather than registering a successor: the
+  # change is domain-extending, not behavior-altering. Restricted to the
+  # games the old config admitted (game_type == "R"), the two configs are
+  # provably identical decision functions — tests/test_scope_fix_regression.py
+  # replays both gates over the full captured regular-season history (793
+  # games, 59 dates) and asserts byte-identical engine output. No pick
+  # already in the ledger would have been different, so pooling does not
+  # contaminate the pre-fix sample. What IS new is a population (postseason)
+  # the day map was never calibrated on; that is disclosed in
+  # BETTING_REPORT.md's regime caveat and the per-strategy by-phase split,
+  # not hidden behind the hash. A tuning — a threshold, a weight, a day-map
+  # cell — would still require a new strategy id. See src/panthera_mvp/
+  # CLAUDE.md for the rule this is an instance of.
+  hash_lineage: [afcd384952, 2526d326be]
   hypothesis: >
     A side taking a much larger share of money than of tickets is where
     informed ("sharp") bettors are. Backing that side at the latest lines.csv

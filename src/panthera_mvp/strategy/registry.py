@@ -26,6 +26,7 @@ from .daytype import day_type, slot_type
 from .dossier import Dossier
 from .movement import TotalsPrices
 from .rules import GamePrices, Pass, Pick, american_to_decimal, generate_pick
+from .season import in_scope
 
 if TYPE_CHECKING:
     from .splits_signal import GameSplits
@@ -77,8 +78,8 @@ def fav_ml_pick(ctx: StrategyContext) -> Pick | Pass | None:
     """
     g = ctx.game
     matchup = f"{g.away_team} @ {g.home_team}"
-    if g.game_type not in ctx.cfg["season"]["game_types"]:
-        return Pass(g.game_pk, matchup, "B_FAV", f"game_type={g.game_type}")
+    if not in_scope(g.game_type, ctx.cfg):
+        return Pass(g.game_pk, matchup, "B_FAV", f"excluded_game_type={g.game_type}")
     if g.status != "Preview":
         return Pass(g.game_pk, matchup, "B_FAV", f"status={g.status}")
     if ctx.odds_event_id is None or ctx.prices is None:
@@ -119,8 +120,8 @@ def dog_ml_pick(ctx: StrategyContext) -> Pick | Pass | None:
     fav_ml it brackets the vig band in CALIBRATION.md. Not run live."""
     g = ctx.game
     matchup = f"{g.away_team} @ {g.home_team}"
-    if g.game_type not in ctx.cfg["season"]["game_types"]:
-        return Pass(g.game_pk, matchup, "B_DOG", f"game_type={g.game_type}")
+    if not in_scope(g.game_type, ctx.cfg):
+        return Pass(g.game_pk, matchup, "B_DOG", f"excluded_game_type={g.game_type}")
     if g.status != "Preview":
         return Pass(g.game_pk, matchup, "B_DOG", f"status={g.status}")
     if ctx.odds_event_id is None or ctx.prices is None:
