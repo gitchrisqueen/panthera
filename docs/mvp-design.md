@@ -201,6 +201,40 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   disclosed by `BETTING_REPORT.md`'s regime caveat and the per-strategy
   by-phase split, not hidden behind the hash.
 
+### Rollback and ownership — postseason scope fix (2026-10-15)
+
+**Owner of the scope decision and of a red `mvp-morning` / `mvp-pregame`
+run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
+on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
+GitHub issue, and that issue is the page.
+
+**Stop pick generation without a code change.** Set `enabled: false` under
+`strategy:` in the relevant `config/strategies/<id>.yaml`. `cmd_picks` filters
+on `enabled` + `live` in scope, so the next scheduled run simply skips that
+strategy; snapshots, grading and reporting continue untouched and the
+existing picks keep settling. This is the first move in any incident — it is
+reversible, needs no revert, and does not move any `config_hash`.
+
+**Rolling the scope fix back.** Revert the WHOLE commit (`git revert`), never
+just `config/strategy.yaml`. A partial revert restores
+`season.game_types`, which `strategy/season.py` rejects by design; because
+`load_config()` / `load_strategy_configs()` run before the per-strategy
+`except` handler in `cmd_picks`, that error aborts `picks`, `grade` and
+`report` for every strategy at once rather than isolating one. The same
+applies to reverting only the engine files: the config and the readers must
+move together.
+
+**Picks already written under the post-fix hashes survive the revert.** Picks
+are immutable once created (`src/panthera_mvp/CLAUDE.md`), so reverting the
+`hash_lineage` appends does not delete them — it re-classifies them. They
+stop pooling into each strategy's verdict segment and render as separate
+SCREEN segments in `BETTING_REPORT.md`, which is the honest outcome and needs
+no data surgery. Do not hand-edit `data/picks/picks.csv` to "clean up"; it is
+bot-owned and append-once.
+
+**Record the incident** in this section with the date, the trigger and what
+was reverted, the same way the version history above records changes.
+
 ## Verdict criteria (pre-registered)
 
 Criteria are **per-strategy**, declared in each strategy's YAML at

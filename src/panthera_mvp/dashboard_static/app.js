@@ -420,6 +420,18 @@
     // "no-skill-pays-vig" and its closing caveat deliberately.
     document.getElementById("how-to-read-text").innerHTML =
       mdInline(String(data.how_to_read).replace(/\n/g, " "));
+
+    // The postseason regime caveat travels with the ledger it qualifies, so
+    // the site carries the same disclosure as BETTING_REPORT.md rather than
+    // showing postseason picks with no note. Null until such a pick exists.
+    const note = document.getElementById("regime-note");
+    if (data.regime_note) {
+      note.innerHTML = mdInline(String(data.regime_note).replace(/\n/g, " "));
+      note.hidden = false;
+    } else {
+      note.textContent = "";
+      note.hidden = true;
+    }
   }
 
   // ------------------------------------------------------------- site nav

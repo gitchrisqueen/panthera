@@ -659,3 +659,13 @@ th .gloss-link::after { content: ""; position: absolute; inset: -6px -6px -6px -
 @media (max-width: 640px) {
   .masthead-meta { align-items: flex-start; }
 }
+
+/* Postseason regime caveat (site_data.json `regime_note`). Shown only when
+   the ledger holds a postseason pick; mirrors BETTING_REPORT.md's caveat. */
+.regime-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--fg-faint, #888);
+  font-size: 13px;
+  line-height: 1.5;
+}

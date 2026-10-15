@@ -119,6 +119,20 @@ def _validate_strategy(
             f"{stem}.yaml: verdict must be a mapping or null (YAML `null`, "
             f"not the string 'none'); got {verdict!r}"
         )
+    # Game-type scope, validated HERE rather than only where the engines read
+    # it. `cmd_picks` wraps each engine in `except Exception` so one bad engine
+    # cannot lose the slate, which means a scope error raised inside an engine
+    # is downgraded to a run note and the command still exits 0 — a green
+    # workflow that produces no picks, i.e. the exact shape of the outage this
+    # key's own history is about. Loading happens outside that handler, so a
+    # bad scope key fails the run loudly here instead.
+    # Imported lazily: strategy.season imports StrategyConfigError from us.
+    from .strategy.season import excluded_game_types
+
+    try:
+        excluded_game_types(cfg)
+    except StrategyConfigError as exc:
+        raise StrategyConfigError(f"{stem}.yaml: {exc}") from exc
 
 
 def load_strategy_configs(

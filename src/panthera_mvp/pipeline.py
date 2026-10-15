@@ -16,7 +16,12 @@ import pandas as pd
 
 from . import paths, store
 from .clients import espn, lumify, mlb, odds
-from .config import config_hash, load_config, load_strategy_configs
+from .config import (
+    StrategyConfigError,
+    config_hash,
+    load_config,
+    load_strategy_configs,
+)
 from .grading import grade_pending
 from .matching import match_events
 from .report import write_daily_report, write_ledger_report
@@ -501,6 +506,13 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
                 existing,
                 splits_lookup=splits_lookup,
             )
+        except StrategyConfigError:
+            # NEVER isolated. A config fault hits every strategy identically,
+            # so swallowing it per-strategy turns a broken deploy into a
+            # silent zero-pick day that still exits 0 and commits. Let it
+            # abort the run; `load_strategy_configs` above normally catches
+            # this first, and this is the backstop.
+            raise
         except Exception as exc:  # isolate: one bad engine must not lose the slate
             note = f"{sid}: engine error — {type(exc).__name__}: {exc}"
             print(f"[picks:{sid}] ERROR {note}", file=sys.stderr)
