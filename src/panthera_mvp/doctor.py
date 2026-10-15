@@ -563,14 +563,26 @@ def check_pending_age(data: SportData, cfg: dict, today: date, since: str) -> li
     # score recorded means it never can, because grading settles from the
     # score — a different bug with a different fix.
     blocked = _unsettleable(overdue, data.games)
+    waiting = _waiting_on_resumption(blocked)
     extra = ""
     if blocked:
-        extra = (
-            " "
-            + ", ".join(f"game {pk} is {st} with no score recorded" for pk, st in blocked)
-            + " — grading settles from the score, so these can never settle until the "
-            "score is backfilled. This is not a grader schedule problem."
+        extra = " " + ", ".join(
+            f"game {pk} is {st} with no score recorded" for pk, st in blocked
         )
+        if waiting:
+            extra += (
+                " — a suspended game is resumed under the same game_pk, so these "
+                "picks are correctly pending and `grade` will not change them. "
+                "Nothing to do until the game is completed and the feed reports a "
+                "final; if it is abandoned without being called off, the score "
+                "never arrives and the picks need a ruling."
+            )
+        else:
+            extra += (
+                " — grading settles from the score, so these can never settle "
+                "until the score is backfilled. This is not a grader schedule "
+                "problem."
+            )
     return [
         Finding(
             id="H05",
@@ -589,18 +601,38 @@ def check_pending_age(data: SportData, cfg: dict, today: date, since: str) -> li
                 "dates": sorted(stale),
                 "scoreless_final_games": [pk for pk, _ in blocked],
             },
+            # No `grade` remediation when every blocked game is simply waiting
+            # to be resumed: the command would refresh, fill nothing and settle
+            # nothing, and an alert that prescribes a no-op trains the operator
+            # to ignore it.
             suggested_command=(
-                f"panthera-mvp {_cli_prefix(data.sport)}grade --date {min(stale)}"
+                None
+                if waiting
+                else f"panthera-mvp {_cli_prefix(data.sport)}grade --date {min(stale)}"
             ),
         )
     ]
 
 
 def _unsettleable(pending: pd.DataFrame, games: pd.DataFrame) -> list[tuple[int, str]]:
-    """Games a pending pick points at that report a terminal status but carry
-    no score, so no amount of re-grading will settle them."""
+    """Games a pending pick points at that carry no score and will not gain
+    one from re-grading.
+
+    Two different shapes, with two different remediations, which is why the
+    status is returned alongside the game:
+
+    - `Final` with no score — a fault. Something must backfill the score.
+    - a called-off status (`clients/mlb.py::CALLED_OFF_STATUSES`) with no
+      score. `Suspended` is the live one: MLB resumes the game under the same
+      game_pk, so the pick is correctly pending and `grade` will not change
+      that. Telling an operator to run `grade` here is advice that cannot
+      work, which is the thing this check exists to avoid.
+    """
     if games.empty or "game_pk" not in games.columns or "home_score" not in games.columns:
         return []
+    from .clients.mlb import CALLED_OFF_STATUSES
+
+    terminal = ("Final", *CALLED_OFF_STATUSES)
     by_pk = games.drop_duplicates("game_pk").set_index("game_pk")
     out: list[tuple[int, str]] = []
     for pk in sorted({int(x) for x in pending["game_pk"].dropna()}):
@@ -608,9 +640,15 @@ def _unsettleable(pending: pd.DataFrame, games: pd.DataFrame) -> list[tuple[int,
             continue
         row = by_pk.loc[pk]
         status = str(row.get("status", ""))
-        if status == "Final" and pd.isna(row.get("home_score")):
+        if status in terminal and pd.isna(row.get("home_score")):
             out.append((pk, status))
     return out
+
+
+def _waiting_on_resumption(blocked: list[tuple[int, str]]) -> bool:
+    """True when every blocked game is suspended, i.e. the picks are pending
+    for a legitimate reason and no command clears them."""
+    return bool(blocked) and all(st == "Suspended" for _, st in blocked)
 
 
 def check_unmatched_slate(data: SportData, cfg: dict, today: date, since: str) -> list[Finding]:

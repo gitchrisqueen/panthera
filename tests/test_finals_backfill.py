@@ -408,6 +408,45 @@ def test_doubleheader_is_skipped_not_guessed(tmp_root, monkeypatch, capsys):
         assert pd.isna(games.at[pk, "home_score"]), "a guessed score was written"
     assert store.load_picks().iloc[0]["status"] == "pending"
 
+    # Durable, not just stderr: an Actions log expires, and this is the only
+    # trace of a hole that will not be filled.
+    notes = store.load_run_log()
+    assert list(notes["kind"]) == ["ambiguous_espn_match"]
+    assert notes.iloc[0]["game_date_et"] == DAY
+    assert "must not be hand-edited" in notes.iloc[0]["note"]
+
+
+def test_an_unmapped_final_with_no_score_leaves_a_run_note(
+    tmp_root, monkeypatch, fixtures_dir, capsys
+):
+    """The shape that stranded 823490, when `detailedState` carries a head
+    `_CALLED_OFF` does not know: the row is about to be stored Final with no
+    score, so say so durably instead of storing another silent dead end."""
+    import json
+    from dataclasses import replace
+
+    from panthera_mvp.clients import mlb
+
+    with open(fixtures_dir / CANCELLED_FIXTURE) as fh:
+        payload = json.load(fh)
+    # An unknown terminal state: not in _CALLED_OFF, so it stores as Final.
+    payload["dates"][0]["games"][0]["status"]["detailedState"] = "Forfeited"
+    path = tmp_root / "mlb_forfeited.json"
+    path.write_text(json.dumps(payload))
+    monkeypatch.setenv("PANTHERA_MLB_FIXTURE", str(path))
+
+    pipeline._refresh_games("2026-09-27")
+
+    assert mlb.stored_status(
+        replace(
+            mlb.parse_schedule(payload)[0], detailed_state="Forfeited", status="Final"
+        )
+    ) == "Final"
+    assert "is not a known called-off state" in capsys.readouterr().err
+    notes = store.load_run_log()
+    assert list(notes["kind"]) == ["unmapped_final_no_score"]
+    assert "_CALLED_OFF" in notes.iloc[0]["note"]
+
 
 def test_a_lone_game_on_a_doubleheader_date_still_fills(tmp_root, espn_final):
     """The skip is keyed on the matchup, not on the date: a different matchup

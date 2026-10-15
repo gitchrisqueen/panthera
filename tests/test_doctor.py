@@ -349,6 +349,47 @@ def test_pending_age_explains_a_scoreless_final(health_root, monkeypatch):
     assert hits[0].evidence["scoreless_final_games"] == [_pk("2026-09-27", 0)]
 
 
+def test_pending_age_does_not_prescribe_grade_for_a_suspended_game(
+    health_root, monkeypatch
+):
+    """A suspended game is resumed under the same game_pk, so its picks are
+    correctly pending and `grade` cannot change that.
+
+    H05 used to recognise only `Final` with no score, so it reported a
+    suspended game as a stalled grader and told the operator to run
+    `panthera-mvp grade --date ...` — a no-op. An alert that prescribes a
+    no-op trains the operator to ignore it (doctor's own rule).
+    """
+    monkeypatch.setattr(doctor, "today_et", lambda: pd.Timestamp("2026-10-15").date())
+    write_games(days={"2026-10-14": 2}, game_type="L")
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": _pk("2026-09-27", 0),
+                    "game_date_et": "2026-09-27",
+                    "game_type": "R",
+                    "status": "Suspended",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": "2026-09-27T23:05:00Z",
+                }
+            ]
+        )
+    )
+    write_picks(day="2026-09-27", strategies=["pv_v3"], status="pending")
+    write_picks(day="2026-10-14", strategies=["pv_v3"], n_games=2)
+
+    hits = of(findings(since="2026-09-01"), "pending_age")
+    assert len(hits) == 1
+    pk = _pk("2026-09-27", 0)
+    assert f"game {pk} is Suspended with no score recorded" in hits[0].detail
+    assert "resumed under the same game_pk" in hits[0].detail
+    # The dead-end advice is gone, and so is the one that cannot work here.
+    assert "score is backfilled" not in hits[0].detail
+    assert hits[0].suggested_command is None
+
+
 def test_lineage_drift_detects_an_undeclared_hash(health_root, monkeypatch):
     """A live strategy whose current hash left its own lineage has its verdict
     countdown frozen — the half-finished state of a config change."""

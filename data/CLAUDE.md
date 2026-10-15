@@ -35,7 +35,9 @@ state collapses all three to `Final`. Of those three only `Cancelled` and
 `Postponed` void a pick (`clients/mlb.py::VOID_STATUSES`): a `Suspended` game
 is resumed under the same `game_pk`, so its picks stay pending until the real
 final arrives. A row that is `Final` with an empty score is a fault, not a
-result — it can settle nothing, and `panthera-mvp doctor` H05 reports it.
+result — it can settle nothing. `panthera-mvp doctor` H05 names it, but only
+once a pick on that game has been pending past its threshold: a scoreless
+`Final` with no pick on it is reported by nothing.
 
 `score_source` (`mlb`, `espn`) is the provenance of a settlement, and the only
 record that a third-party feed rather than the MLB API supplied the score.

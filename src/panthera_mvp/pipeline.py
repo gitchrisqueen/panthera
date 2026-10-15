@@ -129,13 +129,15 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
             # about to be stored Final with no score — unsettleable, and
             # doctor's H05 will suggest backfilling a score that may not
             # exist. Say so loudly rather than repeating the dead end.
-            print(
-                f"[refresh] game {g.game_pk} ({g.game_date_et}) is Final with "
-                f"no linescore and detailedState {g.detailed_state!r} is not a "
-                "known called-off state. A pick on it cannot settle. If that "
-                "state means the game was called off, add its head to "
-                "clients/mlb.py::_CALLED_OFF.",
-                file=sys.stderr,
+            msg = (
+                f"game {g.game_pk} is Final with no linescore and detailedState "
+                f"{g.detailed_state!r} is not a known called-off state. A pick "
+                "on it cannot settle. If that state means the game was called "
+                "off, add its head to clients/mlb.py::_CALLED_OFF."
+            )
+            print(f"[refresh] {g.game_date_et}: {msg}", file=sys.stderr)
+            store.append_run_note(
+                g.game_date_et, "refresh", "unmapped_final_no_score", msg
             )
         rows.append(
             {
@@ -680,6 +682,9 @@ def _espn_fallback(date_et: str) -> int:
     for col in ("status", "winner", "score_source"):
         games[col] = games[col].astype(object)
     filled = 0
+    # Both events of a doubleheader hit the same ambiguity, and the run log is
+    # committed and rendered into the daily report, so report each matchup once.
+    reported: set[tuple[str, str]] = set()
     for eg in scoreboard:
         if not eg.completed or eg.home_score is None or eg.away_score is None:
             continue
@@ -698,13 +703,20 @@ def _espn_fallback(date_et: str) -> int:
         # `matching.py` and `ncaabase/matching.py` already follow: unmatched
         # events are reported, never guessed.
         if int(same_matchup.sum()) > 1:
-            print(
-                f"[grade] ambiguous ESPN match for {date_et} "
-                f"{eg.away_team} @ {eg.home_team}: {int(same_matchup.sum())} "
-                "stored games share that matchup (doubleheader) and the ESPN "
-                "event carries no start time to split them; not filled",
-                file=sys.stderr,
+            if (eg.home_team, eg.away_team) in reported:
+                continue
+            reported.add((eg.home_team, eg.away_team))
+            msg = (
+                f"{eg.away_team} @ {eg.home_team}: "
+                f"{int(same_matchup.sum())} stored games share that matchup "
+                "(doubleheader) and the ESPN event carries no start time to "
+                "split them; not filled. Only an MLB API refresh can settle "
+                "these — data/ is bot-owned and must not be hand-edited."
             )
+            print(f"[grade] ambiguous ESPN match for {date_et} {msg}", file=sys.stderr)
+            # Durable too: stderr lives only as long as the Actions log, and
+            # this is the sole trace of a hole that will not be filled.
+            store.append_run_note(date_et, "grade", "ambiguous_espn_match", msg)
             continue
         mask = same_matchup & _needs_final(games)
         if not mask.any():

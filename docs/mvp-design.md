@@ -272,6 +272,66 @@ bot-owned and append-once.
 **Record the incident** in this section with the date, the trigger and what
 was reverted, the same way the version history above records changes.
 
+### Rollback and ownership — called-off game settlement (2026-10-15)
+
+The change that taught the pipeline to store a called-off game under its
+`detailedState` (`clients/mlb.py::stored_status`), widened every sport's
+finals fallback to admit a `Final` row with a missing score, and repaired
+game `823490` plus the three picks it blocked.
+
+**It writes to the datastore, so the naive "revert the PR" is wrong.** A plain
+revert sets `data/picks/picks.csv`'s three `823490` rows back to `pending` and
+`data/games/games.csv`'s row back to `Final` with no score — and under the
+reverted code nothing can ever settle them again, because `grading` settles
+from a score that does not exist and `store.settle_picks` only rewrites rows
+still `pending`. That is the exact state the change existed to clear.
+
+Identify the merge form first, the same way as above:
+`git rev-list --parents -n 1 <sha>` — three hashes is a merge commit, two is a
+squash. This repo squashes recent PRs, so expect the squash case.
+
+- **Squashed (expected).** The branch's separate code and data commits do not
+  exist on `main`, so they cannot be reverted individually. Revert the code
+  and put the data back in one commit:
+
+  ```bash
+  git revert -n <squash sha>
+  git checkout <squash sha> -- data/ reports/
+  git commit -m "revert: called-off settlement code, keeping the 823490 repair"
+  ```
+
+- **Merge commit.** `git revert -m 1 <merge sha>`, then the same
+  `git checkout <merge sha> -- data/ reports/` before committing.
+
+**Why the data must stay.** The three picks are settled `void`, and
+`store.settle_picks` never re-touches a row that is not `pending`, so nothing
+re-opens them. `cmd_grade` calls `_refresh_games` only for dates that still
+have pending picks, and 2026-09-27 now has none, so nothing rewrites the
+repaired games row either. The repair is also reproducible rather than
+hand-made: `panthera-mvp grade --date 2026-09-27` against the live MLB API
+regenerates that row byte for byte, ERAs included. (The committed fixture
+`tests/fixtures/mlb_schedule_cancelled.json` is unhydrated and carries no
+`probablePitcher`, so a fixture-driven refresh would blank the two ERA
+columns — use the live API or a runner, per the sandbox note in the repo
+`CLAUDE.md`.)
+
+**What regresses on revert.** A game recorded `Final` with no score becomes
+unsettleable again; a called-off game is stored as `Final` again; and
+`grading`'s void branch becomes unreachable again, so no *new* wrong
+settlement follows — including for suspended games, which the reverted code
+cannot void because it never writes that status.
+
+**Owner and alert path.** No separate service to redeploy: GitHub Actions
+picks up `main` on the next scheduled run. The detector for this class of
+fault is `panthera-mvp doctor` H05 (`pending_age`), which names the blocked
+game and its status; `.github/workflows/health.yml` opens the issue. A pick
+pending on a `Suspended` game is NOT a fault — the game is resumed under the
+same `game_pk` and H05 says so and offers no `grade` remediation, because
+none would work. A pick pending on a `Final` row with no score IS a fault.
+`data/picks/run_log.csv` carries a durable `ambiguous_espn_match` or
+`unmapped_final_no_score` note whenever a fill was skipped; those outlive the
+Actions log and are the first place to look.
+
 ## Verdict criteria (pre-registered)
 
 Criteria are **per-strategy**, declared in each strategy's YAML at
