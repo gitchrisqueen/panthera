@@ -428,16 +428,33 @@ day:
 
 ```bash
 git rev-list --parents -n 1 <sha>          # 2 hashes = squash, 3 = merge commit
-git revert -n <sha>                        # expect conflicts under data/ and reports/
+git revert -n <squash sha>                 # squash: no -m
+git revert -n -m 1 <merge sha>             # merge commit: -m 1, or git errors
+                                           # "commit is a merge but no -m option"
 git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
-git commit
+git commit                                 # expect conflicts under data/ and
+                                           # reports/; keeping HEAD there IS the
+                                           # resolution
 ```
 
-**`config/health.yaml`'s `grading:` block must go back with the code.** `grade`
-reads it, and `git revert -n` will try to remove it. Keeping it by accident is
-harmless (nothing reads it after the revert); removing it while the code is
-still live is not, so if you revert only part of this change, revert the code
-and the config together.
+**Two files must move with the code if you revert only part of this change.**
+
+- `config/health.yaml`'s `grading:` block: `grade` reads it. Keeping it by
+  accident is harmless (nothing reads it after the revert); removing it while
+  the code is still live is not.
+- `src/panthera_mvp/matching.py`: this change moved the shared decision there
+  as `nearest_start`, and `src/panthera_mvp/ncaabase/matching.py` now imports
+  it. A whole-PR revert is consistent, because it restores college baseball's
+  own copy — but reverting `matching.py` alone leaves every `ncaabase` command
+  with an `ImportError`.
+
+**The faster de-risk, with no code change at all.** Deleting the
+`grading.espn_fallback` block from `config/health.yaml` restores #69's
+matchup-wide refusal immediately: ordinary dates are untouched (they never
+read it), and each doubleheader date records one deduped
+`espn_match_config_error` note instead of filling. Leave the `doctor:` block
+alone — removing that stops `grading:` being read AND takes `doctor` down
+with it (see the alert path below).
 
 **What regresses on revert.**
 
@@ -452,7 +469,18 @@ and the config together.
   rather than guess; the revert only widens what is refused.
 
 **Owner and alert path.** No service to redeploy: Actions picks up `main` on
-the next scheduled run. An `ambiguous_espn_match` note that never clears is
+the next scheduled run.
+
+One coupling to know before you trust the alert: `grade` now reads
+`config/health.yaml` through `doctor.load_health_config`, so a health.yaml
+that is absent, invalid or missing its `doctor:` block degrades the ESPN
+repair AND takes the detector down in the same stroke —
+`.github/workflows/health.yml` runs `doctor --exit-zero`, but the config load
+raises before that, so the job goes red and no issue is opened or closed. A
+red Health Check is itself the page; do not read a quiet issue tracker as
+evidence that grading is healthy until that job is green.
+
+An `ambiguous_espn_match` note that never clears is
 not an agent's to resolve — only an MLB API refresh can supply the score, and
 there is no sanctioned way to settle such a pick by hand (see "Abandoned
 without being called off" above, which is the same situation and the same

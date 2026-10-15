@@ -684,14 +684,20 @@ def _espn_match_window() -> tuple[float, float]:
     A missing or malformed file raises rather than defaulting: a silent
     fallback value is the magic number in engine code that config exists to
     avoid. Concretely, a health.yaml that is absent, invalid YAML, missing its
-    `doctor:` block or missing either key here makes this raise on any date
-    where one matchup has more than one stored row or more than one completed
-    ESPN event. `cmd_grade` catches that, prints it and goes on to settle the
-    picks it can, so the blast radius is the ESPN repair for that date, not
-    the grade run and not the rest of the morning workflow.
+    `doctor:` block or missing either key here makes this raise.
 
-    The load is lazy and happens only on such a date, so an ordinary date
-    never touches the file at all.
+    `_espn_fallback` catches that per matchup and records an
+    `espn_match_config_error` run note for each matchup that needed the
+    tolerances, so the blast radius is exactly those matchups: every matchup
+    on the same date that is unique on both sides never asks for the config
+    and still fills, and its picks still settle.
+    `test_a_broken_health_yaml_costs_only_the_espn_repair` pins that.
+    `cmd_grade`'s own try/except around `_espn_fallback` is the outer net for
+    anything this does not foresee, not the catcher for this.
+
+    The load is lazy and happens only on a date where one matchup has more
+    than one stored row or more than one completed ESPN event, so an ordinary
+    date never touches the file at all.
     """
     from .doctor import load_health_config
 
@@ -846,13 +852,24 @@ def _espn_fallback(date_et: str) -> int:
             else:
                 targets, reasons = _key_events_to_rows(events, rows, *window)
         if reasons:
+            # The remediation differs by cause, and a note that prescribes the
+            # wrong one is worse than a note with none: an unreadable config is
+            # the one failure here an operator can fix alone, and telling them
+            # to wait for an MLB refresh would hide that.
+            remedy = (
+                "Restore that block in config/health.yaml and re-run "
+                f"`panthera-mvp grade --date {date_et}` — grading is "
+                "idempotent, and the hole fills on the re-run."
+                if kind == "espn_match_config_error"
+                else "Only an MLB API refresh can settle these; data/ is "
+                "bot-owned and must not be hand-edited."
+            )
             msg = (
                 f"{away} @ {home}: {len(rows)} stored game(s) and {len(events)} "
                 f"completed ESPN event(s) share that matchup (doubleheader), and "
                 + "; ".join(reasons)
                 + ". Not filled — writing anyway would settle a pick from the "
-                "other game's score, permanently. Only an MLB API refresh can "
-                "settle these; data/ is bot-owned and must not be hand-edited."
+                f"other game's score, permanently. {remedy}"
             )
             print(f"[grade] ESPN match refused for {date_et} {msg}", file=sys.stderr)
             # Durable too: stderr lives only as long as the Actions log, and

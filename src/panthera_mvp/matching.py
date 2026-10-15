@@ -87,7 +87,7 @@ def nearest_start(
     for the event — but it means `window_hours` sets the horizon within which
     `ambiguity_minutes` has any say at all.
 
-    Shared by MLB's ESPN finals fallback (`pipeline._match_doubleheader`) and
+    Shared by MLB's ESPN finals fallback (`pipeline._key_events_to_rows`) and
     college baseball's odds/ESPN matchers (`ncaabase.matching`), which had the
     only implementation until MLB needed the same rule.
     """

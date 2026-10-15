@@ -813,6 +813,17 @@ def test_a_broken_health_yaml_costs_only_the_espn_repair(tmp_root, monkeypatch):
     assert pd.isna(games.at[1, "home_score"])
     assert pd.isna(games.at[2, "home_score"])
 
+    # And it says what it actually was, under its own kind: this is the one
+    # failure in this path an operator can fix alone, so the note must not
+    # prescribe the ambiguity remedy (wait for an MLB refresh, do not touch
+    # data/) for a cause that is neither ambiguity nor in data/.
+    notes = store.load_run_log()
+    assert list(notes["kind"]) == ["espn_match_config_error"]
+    note = notes.iloc[0]["note"]
+    assert "config/health.yaml" in note
+    assert f"grade --date {DAY}" in note
+    assert "must not be hand-edited" not in note
+
 
 def test_espn_match_window_comes_from_health_yaml():
     """The tolerances are config, not engine constants — and they are NOT in
