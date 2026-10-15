@@ -237,7 +237,10 @@ older ones have merge commits (`Merge pull request #46 …`).
   fails with *"mainline was specified but commit is not a merge"*.
 - Merge commit → `git revert -m 1 <the merge sha>`.
 
-Check with `git log --merges --oneline -1 <sha>` before you type it.
+Tell which you have with `git rev-list --parents -n 1 <sha>`: three hashes
+means a merge commit, two means a squash. Do NOT use `git log --merges`
+for this — given a squashed sha it walks back and prints the nearest
+ancestor merge, which is a different commit and the wrong answer.
 
 Never revert `config/strategy.yaml` alone. That restores
 `season.game_types`, which `strategy/season.py` rejects by design, and the
