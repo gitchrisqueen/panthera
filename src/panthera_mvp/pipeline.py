@@ -23,7 +23,7 @@ from .config import (
     load_strategy_configs,
 )
 from .grading import grade_pending
-from .matching import match_events
+from .matching import match_events, nearest_start
 from .report import write_daily_report, write_ledger_report
 from .strategy.daytype import day_type
 from .strategy.dossier import Dossier, SeasonContext
@@ -32,7 +32,7 @@ from .strategy.registry import StrategyContext, engines
 from .strategy.rules import Pass, Pick
 from .strategy.season import in_scope
 from .strategy.slots import assign_slots
-from .timeutil import ET, now_utc, utc_iso
+from .timeutil import ET, now_utc, parse_utc, utc_iso
 
 
 def today_et() -> date:
@@ -658,6 +658,64 @@ def _needs_final(games: pd.DataFrame) -> pd.Series:
     return ~called_off & ((games["status"] != "Final") | final_hole)
 
 
+def _espn_match_window() -> tuple[float, float]:
+    """`(window_hours, ambiguity_minutes)` for splitting a doubleheader.
+
+    From config/health.yaml's `grading.espn_fallback`, deliberately NOT
+    config/strategy.yaml or a config/strategies/*.yaml: `config.py`'s
+    HASH_EXCLUDED_KEYS drops only four top-level keys, so every other key in
+    those files is part of each strategy's `config_hash`. A tolerance tweak
+    there would move every MLB strategy's hash, split its ledger into a new
+    report segment and reset its verdict countdown — for a knob no engine
+    reads. health.yaml is the established home for exactly that (doctor's
+    thresholds, `catchup`'s windows), and its own header forbids a strategy
+    engine from reading it.
+
+    Loaded lazily, and only on a date that actually has a doubleheader, so a
+    broken health.yaml cannot stop an ordinary grade run. A missing key raises
+    rather than defaulting: a silent fallback value is the magic number in
+    engine code this file exists to avoid.
+    """
+    from .doctor import load_health_config
+
+    cfg = (load_health_config().get("grading") or {}).get("espn_fallback") or {}
+    return float(cfg["window_hours"]), float(cfg["ambiguity_minutes"])
+
+
+def _match_doubleheader(
+    rows: pd.DataFrame,
+    eg: espn.EspnGame,
+    used: set,
+    window_hours: float,
+    ambiguity_minutes: float,
+):
+    """Which of several stored rows sharing one matchup this ESPN event is.
+
+    `rows` are all the stored games on the date with this (home_team,
+    away_team) — complete finals included, which is the point: an ESPN event
+    must be able to land on the game it actually belongs to and find it
+    already settled, rather than being the only remaining candidate for the
+    other game's open row.
+
+    Returns that row's index label, or a one-line reason it could not be
+    decided. A row with no stored start time is not a candidate: a gap cannot
+    be computed for it, and the alternative is the guess this whole path
+    exists to refuse.
+    """
+    if not eg.start_time_utc:
+        return "the ESPN event carries no start time"
+    start = parse_utc(eg.start_time_utc)
+    cands = []
+    for idx, row in rows.iterrows():
+        stored = row["start_time_utc"]
+        if idx in used or pd.isna(stored) or not str(stored):
+            continue
+        gap = abs((parse_utc(str(stored)) - start).total_seconds())
+        cands.append((gap, f"game_pk {row['game_pk']}", idx))
+    pick = nearest_start(cands, window_hours, ambiguity_minutes)
+    return pick if isinstance(pick, str) else pick[1]
+
+
 def _espn_fallback(date_et: str) -> int:
     """Fill this date's missing finals from ESPN. Returns how many game rows
     changed.
@@ -682,9 +740,14 @@ def _espn_fallback(date_et: str) -> int:
     for col in ("status", "winner", "score_source"):
         games[col] = games[col].astype(object)
     filled = 0
-    # Both events of a doubleheader hit the same ambiguity, and the run log is
-    # committed and rendered into the daily report, so report each matchup once.
+    # Both events of a doubleheader can hit the same ambiguity, and the run log
+    # is committed and rendered into the daily report, so report each matchup
+    # once.
     reported: set[tuple[str, str]] = set()
+    # Index labels already claimed by an earlier event of the same matchup, so
+    # two ESPN events cannot both land on one stored row.
+    used: set = set()
+    window: tuple[float, float] | None = None
     for eg in scoreboard:
         if not eg.completed or eg.home_score is None or eg.away_score is None:
             continue
@@ -693,32 +756,51 @@ def _espn_fallback(date_et: str) -> int:
             & (games["home_team"] == eg.home_team)
             & (games["away_team"] == eg.away_team)
         )
-        # (date, home_team, away_team) is NOT unique: a split doubleheader puts
-        # two games of the same matchup on one date, and `EspnGame` carries no
-        # start time or game number to tell them apart. Writing anyway would
-        # broadcast one game's score to both rows, and `grade_pending` settles
-        # from whichever score landed — permanently, because
-        # `store.settle_picks` only rewrites rows still `pending`. So an
-        # ambiguous event is logged and skipped, which is the convention
-        # `matching.py` and `ncaabase/matching.py` already follow: unmatched
-        # events are reported, never guessed.
-        if int(same_matchup.sum()) > 1:
-            if (eg.home_team, eg.away_team) in reported:
-                continue
-            reported.add((eg.home_team, eg.away_team))
-            msg = (
-                f"{eg.away_team} @ {eg.home_team}: "
-                f"{int(same_matchup.sum())} stored games share that matchup "
-                "(doubleheader) and the ESPN event carries no start time to "
-                "split them; not filled. Only an MLB API refresh can settle "
-                "these — data/ is bot-owned and must not be hand-edited."
-            )
-            print(f"[grade] ambiguous ESPN match for {date_et} {msg}", file=sys.stderr)
-            # Durable too: stderr lives only as long as the Actions log, and
-            # this is the sole trace of a hole that will not be filled.
-            store.append_run_note(date_et, "grade", "ambiguous_espn_match", msg)
+        # Nothing open for this matchup: no hole to fill, and therefore nothing
+        # to report either — a settled doubleheader must not log an ambiguity.
+        if not (same_matchup & _needs_final(games)).any():
             continue
-        mask = same_matchup & _needs_final(games)
+        # (date, home_team, away_team) is NOT unique: a split doubleheader puts
+        # two games of the same matchup on one date. Writing to the matchup
+        # would broadcast one game's score to both rows, and `grade_pending`
+        # settles from whichever score landed — permanently, because
+        # `store.settle_picks` only rewrites rows still `pending`. So the event
+        # is keyed onto ONE row by start time, the way `matching.py` and
+        # `ncaabase/matching.py` already key theirs, and an event that cannot
+        # be keyed is logged and skipped: reported, never guessed.
+        if int(same_matchup.sum()) > 1:
+            if window is None:
+                window = _espn_match_window()
+            hit = _match_doubleheader(games[same_matchup], eg, used, *window)
+            if isinstance(hit, str):
+                if (eg.home_team, eg.away_team) in reported:
+                    continue
+                reported.add((eg.home_team, eg.away_team))
+                msg = (
+                    f"{eg.away_team} @ {eg.home_team} starting "
+                    f"{eg.start_time_utc or 'at an unreported time'}: "
+                    f"{int(same_matchup.sum())} stored games share that matchup "
+                    f"(doubleheader) and {hit}, so the ESPN event cannot be "
+                    "keyed onto one of them; not filled. Only an MLB API "
+                    "refresh can settle these — data/ is bot-owned and must "
+                    "not be hand-edited."
+                )
+                print(
+                    f"[grade] ambiguous ESPN match for {date_et} {msg}", file=sys.stderr
+                )
+                # Durable too: stderr lives only as long as the Actions log, and
+                # this is the sole trace of a hole that will not be filled.
+                store.append_run_note(date_et, "grade", "ambiguous_espn_match", msg)
+                continue
+            # Claimed even when the row turns out to be a complete final: that
+            # is this event's game, so a later event of the same matchup must
+            # not be allowed to take it.
+            used.add(hit)
+            mask = pd.Series(False, index=games.index)
+            mask.loc[hit] = True
+            mask &= _needs_final(games)
+        else:
+            mask = same_matchup & _needs_final(games)
         if not mask.any():
             continue
         filled += int(mask.sum())

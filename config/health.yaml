@@ -1,5 +1,9 @@
-# Thresholds for `panthera-mvp doctor` and window defaults for
-# `panthera-mvp catchup`.
+# Thresholds for `panthera-mvp doctor`, window defaults for
+# `panthera-mvp catchup`, and the grading fallback's matching tolerances.
+#
+# This file is the repo's home for MLB-side knobs that are NOT strategy
+# parameters. It is not doctor's private file; `catchup:` and `grading:` below
+# are read by other commands.
 #
 # DELIBERATELY NOT in config/strategy.yaml. config.py's HASH_EXCLUDED_KEYS
 # drops only `strategy`, `verdict`, `screen` and `meta` before hashing, so
@@ -161,3 +165,26 @@ catchup:
       # wrong again.
       - "game_type="
       - "excluded_game_type="
+
+grading:
+  # Read by `panthera-mvp grade` (src/panthera_mvp/pipeline.py), not by doctor.
+  espn_fallback:
+    # Splitting a split doubleheader. (game_date_et, home_team, away_team) is
+    # not unique on a doubleheader date, so the ESPN finals fallback keys an
+    # event onto one stored row by start time. Same two knobs, same meaning
+    # and same defaults as config/ncaabase.yaml's `matching:` block, which
+    # solves this for college baseball; the shared rule is
+    # `matching.nearest_start`.
+    #
+    # ESPN's start time vs the stored MLB start time must agree within this
+    # many hours, or the event is not that game. 4h is wider than any
+    # start-time correction MLB publishes and narrower than the ~6h gap of a
+    # real split doubleheader (823539 17:05Z / 823501 23:15Z on 2026-08-29),
+    # so each event reaches only its own game.
+    window_hours: 4
+    # When the two nearest candidates' gaps differ by less than this, the
+    # event cannot be keyed onto one row: it is logged, skipped and recorded
+    # as an `ambiguous_espn_match` run note, never guessed. This is the arm
+    # that still refuses a traditional (same-admission) doubleheader, whose
+    # two games can start close together, and a "time TBA" listing.
+    ambiguity_minutes: 60

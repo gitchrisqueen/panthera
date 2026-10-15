@@ -47,6 +47,9 @@
   settles single ml/rl/total picks. No strategy yet.
 - `matching.py` — odds event ↔ MLB gamePk; alias table + commence-time
   proximity for doubleheaders; unmatched events are logged, never guessed.
+  `nearest_start` is the shared nearest-start-within-a-window decision, with
+  the ambiguity arm that refuses rather than picks; MLB's ESPN finals
+  fallback and `ncaabase/matching.py` both run on it.
 - `store.py` — CSV datastore with dedupe keys (lines) / upsert (games) /
   append-once + settle-in-place (picks).
 - `strategy/` — the IP: `daytype.py` (P/V/hybrid), `movement.py` (public vs
@@ -133,6 +136,19 @@
   Postponed/Cancelled row has no score either and must not be reopened, and a
   row already Final with BOTH scores is never rewritten. MLB's reader is
   `pipeline._needs_final`.
+- **A finals fallback keys an event onto ONE stored row, by start time**
+  (added 2026-10-15). `(game_date_et, home_team, away_team)` is not unique:
+  a split doubleheader puts two games of one matchup on one date. Writing to
+  the matchup broadcasts one game's score to both rows and `grade_pending`
+  settles a pick from whichever landed, permanently. MLB's reader is
+  `pipeline._match_doubleheader` over `matching.nearest_start`, with the
+  tolerances in `config/health.yaml`'s `grading.espn_fallback`; `ncaabase`
+  does the same over its own `matching:` block. The ambiguity arm still
+  refuses — two candidates inside the window of each other are logged,
+  skipped and recorded as an `ambiguous_espn_match` run note — so the fix is
+  "decide when the times decide it", never "guess when they do not". NCAAF
+  needs none of this: its fallbacks join by `event_id`, and a CFB team plays
+  once a week.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
   Preview | Live | Final, so it reports a called-off game as `Final` with no

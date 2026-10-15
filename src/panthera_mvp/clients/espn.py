@@ -9,6 +9,8 @@ from dataclasses import dataclass
 
 import requests
 
+from ..timeutil import parse_utc, utc_iso
+
 BASE = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard"
 TIMEOUT = 30
 
@@ -20,6 +22,14 @@ class EspnGame:
     home_score: int | None
     away_score: int | None
     completed: bool
+    #: Scheduled first pitch, UTC ISO-8601 ("" when the payload omits it).
+    #:
+    #: Carried so the grading fallback can tell the two games of a split
+    #: doubleheader apart: (game_date_et, home_team, away_team) is not unique
+    #: on such a date, and without a start time an ESPN event cannot be keyed
+    #: onto one stored row. The field is last and defaults to "" so the
+    #: positional construction in the existing tests keeps working.
+    start_time_utc: str = ""
 
 
 def parse_scoreboard(payload: dict) -> list[EspnGame]:
@@ -35,6 +45,11 @@ def parse_scoreboard(payload: dict) -> list[EspnGame]:
                     home = entry
                 else:
                     away = entry
+            # `competitions[].date` is the per-game start; `events[].date`
+            # repeats it for a single-game event. A doubleheader has one event
+            # per game, so either reads the right one — but prefer the inner
+            # value, as college baseball's parser does.
+            start = comp.get("date") or event.get("date")
             if home and away:
                 games.append(
                     EspnGame(
@@ -45,6 +60,11 @@ def parse_scoreboard(payload: dict) -> list[EspnGame]:
                         completed=comp.get("status", {})
                         .get("type", {})
                         .get("completed", False),
+                        # A date-less event is still returned, not dropped: on
+                        # a date whose matchup is unique the fallback never
+                        # needs the time, and dropping the event there would
+                        # trade one unfillable hole for another.
+                        start_time_utc=utc_iso(parse_utc(start)) if start else "",
                     )
                 )
     return games
