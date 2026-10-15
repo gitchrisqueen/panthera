@@ -1,0 +1,198 @@
+[
+ {
+  "event": {
+   "id": 21898,
+   "name": "Tampa Bay Rays @ Cleveland Guardians",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-10-15T17:00:00Z",
+   "scheduled_start_at": "2026-10-15T22:00:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "AL Championship Series Game 3",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 67,
+    "name": "Progressive Field",
+    "city": "Cleveland",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 21898,
+   "available": true,
+   "captured_at": "2026-10-15T14:38:17Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 34,
+      "handle_pct": 59,
+      "price": -127
+     },
+     "away": {
+      "bets_pct": 66,
+      "handle_pct": 41,
+      "price": 105
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 65,
+      "handle_pct": 98,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 35,
+      "handle_pct": 2,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 68,
+      "handle_pct": 86,
+      "line": 6.5
+     },
+     "under": {
+      "bets_pct": 32,
+      "handle_pct": 14,
+      "line": 6.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 38,
+       "handle_pct": 82,
+       "price": -127
+      },
+      "away": {
+       "bets_pct": 62,
+       "handle_pct": 18,
+       "price": 105
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 52,
+       "handle_pct": 95,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 48,
+       "handle_pct": 5,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 58,
+       "handle_pct": 75,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 42,
+       "handle_pct": 25,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 48,
+       "handle_pct": null,
+       "price": -130
+      },
+      "away": {
+       "bets_pct": 52,
+       "handle_pct": null,
+       "price": 110
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 44,
+       "handle_pct": null,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 56,
+       "handle_pct": null,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 72,
+       "handle_pct": null,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 28,
+       "handle_pct": null,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 17,
+       "handle_pct": 36,
+       "price": -125
+      },
+      "away": {
+       "bets_pct": 83,
+       "handle_pct": 64,
+       "price": 115
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 75,
+       "handle_pct": 98,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 25,
+       "handle_pct": 2,
+       "line": 6.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]
