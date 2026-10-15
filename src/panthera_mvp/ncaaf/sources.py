@@ -15,8 +15,11 @@ Finals chain (`ncaaf grade`, per ET date with pending legs):
   2. CFBD /games for the game's week, id join      (`finals_from_cfbd`)
   3. ncaa-api scoreboard for the week, ET date +
      both schools                                  (`finals_from_ncaa`)
-2 and 3 run only when ESPN errors for that date, and only fill games still
-not Final/Postponed/Canceled. A game they cannot place is logged, never
+2 and 3 run on every graded date (not only after an ESPN error: ESPN also
+fails by reporting a game Final with no score, which grading can never settle
+from). They select only games that have kicked off and are either still
+unsettled or recorded Final with a missing score, so a date whose games are
+all settled reaches no network call. A game they cannot place is logged, never
 guessed.
 """
 

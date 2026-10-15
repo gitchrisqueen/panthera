@@ -147,8 +147,6 @@ def test_cmd_grade_runs_the_fallback_when_the_mlb_refresh_succeeds(
         "_refresh_games",
         lambda d: store.upsert_games(pd.DataFrame([_game()])) or [],
     )
-    monkeypatch.setattr(pipeline, "fill_clv", lambda: 0, raising=False)
-
     pipeline.cmd_grade(DAY)
 
     assert espn_final == [DAY]
@@ -312,3 +310,135 @@ def test_fallback_does_not_reopen_a_called_off_game(tmp_root, espn_final):
     assert espn_final == []
 
     assert store.load_games().iloc[0]["status"] == "Cancelled"
+
+
+# --------------------------------------------------------------------------
+# a suspended game is resumed, so it must not void (gauntlet round 1, E/H)
+# --------------------------------------------------------------------------
+
+
+def test_suspended_is_not_voided_and_settles_once_resumed(tmp_root):
+    """MLB resumes a suspended game under the same gamePk, so a pick on it
+    stays pending until the real final arrives.
+
+    This is the one called-off status that does NOT mean "no score will ever
+    exist". Voiding it would be irreversible — `store.settle_picks` only
+    rewrites rows still `pending` — so the true win/loss could never land.
+    College baseball already settles it this way
+    (`test_ncaabase.py`: `pick("Suspended") is None  # resumed later`).
+    """
+    store.upsert_games(pd.DataFrame([_game(status="Suspended")]))
+    store.append_picks(pd.DataFrame([_pick()]))
+
+    assert grade_pending().empty, "a suspended game was voided"
+    assert store.load_picks().iloc[0]["status"] == "pending"
+
+    # Resumed and completed the next day: the pick settles on the real result.
+    store.upsert_games(pd.DataFrame([_game(home_score=3, away_score=5)]))
+    settled = grade_pending()
+    assert len(settled) == 1
+    assert settled.iloc[0]["status"] == "win"
+
+
+def test_cancelled_and_postponed_still_void(tmp_root):
+    """The two statuses that DO mean no score will ever exist. Guards the
+    narrowing above against going too far."""
+    for status in ("Cancelled", "Postponed"):
+        store.upsert_games(pd.DataFrame([_game(status=status)]))
+        store.append_picks(pd.DataFrame([_pick(pick_id=f"p-{status}")]))
+
+    settled = grade_pending()
+    assert set(settled["status"]) == {"void"}
+
+
+def test_void_vocabulary_has_exactly_one_definition():
+    """`grading` reads the same constant the pipeline writes, so a new
+    called-off head cannot be settled by one and ignored by the other."""
+    import inspect
+
+    from panthera_mvp import grading as grading_mod
+    from panthera_mvp.clients import mlb
+
+    assert mlb.VOID_STATUSES == ("Cancelled", "Postponed")
+    assert "Suspended" in mlb.CALLED_OFF_STATUSES  # not reopened by ESPN...
+    assert "Suspended" not in mlb.VOID_STATUSES  # ...but never voided
+    # The literal tuple is gone from grading: it reads the constant.
+    src = inspect.getsource(grading_mod)
+    assert '"Postponed"' not in src and "'Postponed'" not in src
+    assert "VOID_STATUSES" in src
+
+
+# --------------------------------------------------------------------------
+# a doubleheader is ambiguous, so it is skipped, not guessed (round 1, E/H)
+# --------------------------------------------------------------------------
+
+
+def test_doubleheader_is_skipped_not_guessed(tmp_root, monkeypatch, capsys):
+    """(date, home_team, away_team) is not unique for a split doubleheader,
+    and `EspnGame` carries no start time to split them.
+
+    Writing anyway broadcast one game's score to both rows, and
+    `grade_pending` then settled a pick from whichever score happened to land
+    — permanently. `data/games/games.csv` holds real examples (823501 and
+    823539, both 2026-08-29 Yankees vs Red Sox).
+    """
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                _game() | {"game_pk": 1, "game_number": 1},
+                _game() | {"game_pk": 2, "game_number": 2},
+            ]
+        )
+    )
+    store.append_picks(pd.DataFrame([_pick() | {"game_pk": 1}]))
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: [
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 3, 5, True),
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 1, 0, True),
+        ],
+    )
+
+    assert pipeline._espn_fallback(DAY) == 0
+    assert "ambiguous ESPN match" in capsys.readouterr().err
+
+    games = store.load_games().set_index("game_pk")
+    for pk in (1, 2):
+        assert pd.isna(games.at[pk, "home_score"]), "a guessed score was written"
+    assert store.load_picks().iloc[0]["status"] == "pending"
+
+
+def test_a_lone_game_on_a_doubleheader_date_still_fills(tmp_root, espn_final):
+    """The skip is keyed on the matchup, not on the date: a different matchup
+    on the same date is unambiguous and still gets filled."""
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                _game() | {"game_pk": 1},
+                _game()
+                | {
+                    "game_pk": 2,
+                    "home_team": "Chicago Cubs",
+                    "away_team": "St. Louis Cardinals",
+                },
+            ]
+        )
+    )
+
+    assert pipeline._espn_fallback(DAY) == 1
+
+    games = store.load_games().set_index("game_pk")
+    assert (int(games.at[1, "home_score"]), int(games.at[1, "away_score"])) == (3, 5)
+    assert pd.isna(games.at[2, "home_score"])  # no ESPN event for that matchup
+
+
+def test_upsert_does_not_freeze_an_in_progress_row(tmp_root):
+    """The no-blank guard keys on a COMPLETE final, not on "has a score": a
+    Live row carries a score too, and freezing those would discard the very
+    correction saying the game was called off mid-play."""
+    store.upsert_games(pd.DataFrame([_game(status="Live", home_score=0, away_score=0)]))
+
+    store.upsert_games(pd.DataFrame([_game(status="Suspended")]))
+
+    assert store.load_games().iloc[0]["status"] == "Suspended"

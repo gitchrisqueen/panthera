@@ -73,7 +73,24 @@ _CALLED_OFF = {
     "postponed": "Postponed",
     "suspended": "Suspended",
 }
+# The stored-status vocabulary beyond abstractGameState, defined once here and
+# read by `pipeline._needs_final` and `grading._result_for_pick` so the writer
+# and the settler cannot drift (the repo's "exactly one reader" convention).
+#
+# CALLED_OFF_STATUSES: a normal refresh will not produce a score for these, so
+# a finals fallback must not try to reopen them.
+# VOID_STATUSES: of those, the ones that mean NO score will EVER exist, so a
+# pick on them refunds the stake.
+#
+# "Suspended" is deliberately in the first and NOT the second: MLB resumes a
+# suspended game under the same gamePk, so the pick must stay pending until the
+# real final arrives. Voiding it would be irreversible — `store.settle_picks`
+# only rewrites rows still `pending`, so the true win/loss could never land and
+# the strategy's realised P/L would be silently wrong. College baseball already
+# makes this call the same way (tests/test_ncaabase.py: `pick("Suspended") is
+# None  # resumed later, not voided`).
 CALLED_OFF_STATUSES = ("Cancelled", "Postponed", "Suspended")
+VOID_STATUSES = ("Cancelled", "Postponed")
 
 
 def stored_status(game: GameInfo) -> str:

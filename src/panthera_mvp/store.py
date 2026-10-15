@@ -240,9 +240,23 @@ def _has_both_scores(df: pd.DataFrame) -> pd.Series:
     return df["home_score"].notna() & df["away_score"].notna()
 
 
+def _is_settled_final(df: pd.DataFrame) -> pd.Series:
+    """A row whose result is complete: Final with both scores.
+
+    The protection below keys on THIS and not on "has a score": an
+    in-progress row carries a score too (a Live game at 0-0 counts), and
+    protecting those would discard the very correction that says the game was
+    called off mid-play — the same unsettleable shape this module's guard
+    exists to prevent.
+    """
+    if "status" not in df.columns:
+        return pd.Series(False, index=df.index)
+    return (df["status"] == "Final") & _has_both_scores(df)
+
+
 def upsert_games(df: pd.DataFrame) -> None:
-    """Replace rows by game_pk — except that an incoming row never BLANKS a
-    score the store already holds.
+    """Replace rows by game_pk — except that an incoming row never BLANKS the
+    score of a game the store already has a COMPLETE final for.
 
     `_refresh_games` rebuilds every row straight from the MLB API, and the API
     sometimes returns a completed game as Final with no linescore. Without
@@ -262,7 +276,7 @@ def upsert_games(df: pd.DataFrame) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = _load(path, GAMES_COLUMNS)
     if not existing.empty:
-        scored = set(existing.loc[_has_both_scores(existing), "game_pk"])
+        scored = set(existing.loc[_is_settled_final(existing), "game_pk"])
         df = df[~(df["game_pk"].isin(scored) & ~_has_both_scores(df))]
         if df.empty:
             return

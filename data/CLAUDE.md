@@ -28,6 +28,20 @@ start_time_utc, home_team_id, home_team, away_team_id, away_team, status,
 home_score, away_score, winner, run_diff, total_runs, home_pitcher_era,
 away_pitcher_era, score_source`
 
+`status` domain: `Preview`, `Live`, `Final` (the MLB API's
+`abstractGameState`), plus `Cancelled`, `Postponed` and `Suspended`, which
+`clients/mlb.py::stored_status` reads off `detailedState` because the abstract
+state collapses all three to `Final`. Of those three only `Cancelled` and
+`Postponed` void a pick (`clients/mlb.py::VOID_STATUSES`): a `Suspended` game
+is resumed under the same `game_pk`, so its picks stay pending until the real
+final arrives. A row that is `Final` with an empty score is a fault, not a
+result — it can settle nothing, and `panthera-mvp doctor` H05 reports it.
+
+`score_source` (`mlb`, `espn`) is the provenance of a settlement, and the only
+record that a third-party feed rather than the MLB API supplied the score.
+Treat it as load-bearing: a settlement with no `score_source` cannot be
+audited.
+
 ### picks/picks.csv (the ledger — source of truth)
 `pick_id, strategy_id, created_ts_utc, game_date_et, game_pk, odds_event_id,
 matchup, start_time_et, day_type, slot_type, rule_id, market, selection, line,

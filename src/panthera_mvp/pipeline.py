@@ -101,7 +101,13 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
 
     PANTHERA_MLB_FIXTURE (tests/offline dry-runs) points at a recorded
     schedule payload instead of calling statsapi — unit tests never touch
-    the network."""
+    the network.
+
+    That variable is a TEST-ONLY switch: it is read with a bare `open()` and
+    no path confinement, so it must never be wired to a `workflow_dispatch`
+    input, a matrix value or any other caller-supplied value. Today only
+    workflow YAML and the test suite set it. The same holds for the
+    PANTHERA_NCAAF_* and PANTHERA_NCAABASE_* fixture variables."""
     fixture = os.environ.get("PANTHERA_MLB_FIXTURE")
     if fixture:
         with open(fixture) as fh:
@@ -117,6 +123,20 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
         # mlb.stored_status.
         status = mlb.stored_status(g)
         is_final = status == "Final"
+        if is_final and (g.home_score is None or g.away_score is None):
+            # The shape that stranded 823490. If this fires, `detailedState`
+            # carries a head `mlb._CALLED_OFF` does not know, so the row is
+            # about to be stored Final with no score — unsettleable, and
+            # doctor's H05 will suggest backfilling a score that may not
+            # exist. Say so loudly rather than repeating the dead end.
+            print(
+                f"[refresh] game {g.game_pk} ({g.game_date_et}) is Final with "
+                f"no linescore and detailedState {g.detailed_state!r} is not a "
+                "known called-off state. A pick on it cannot settle. If that "
+                "state means the game was called off, add its head to "
+                "clients/mlb.py::_CALLED_OFF.",
+                file=sys.stderr,
+            )
         rows.append(
             {
                 "game_pk": g.game_pk,
@@ -663,12 +683,30 @@ def _espn_fallback(date_et: str) -> int:
     for eg in scoreboard:
         if not eg.completed or eg.home_score is None or eg.away_score is None:
             continue
-        mask = (
+        same_matchup = (
             (games["game_date_et"] == date_et)
             & (games["home_team"] == eg.home_team)
             & (games["away_team"] == eg.away_team)
-            & _needs_final(games)
         )
+        # (date, home_team, away_team) is NOT unique: a split doubleheader puts
+        # two games of the same matchup on one date, and `EspnGame` carries no
+        # start time or game number to tell them apart. Writing anyway would
+        # broadcast one game's score to both rows, and `grade_pending` settles
+        # from whichever score landed — permanently, because
+        # `store.settle_picks` only rewrites rows still `pending`. So an
+        # ambiguous event is logged and skipped, which is the convention
+        # `matching.py` and `ncaabase/matching.py` already follow: unmatched
+        # events are reported, never guessed.
+        if int(same_matchup.sum()) > 1:
+            print(
+                f"[grade] ambiguous ESPN match for {date_et} "
+                f"{eg.away_team} @ {eg.home_team}: {int(same_matchup.sum())} "
+                "stored games share that matchup (doubleheader) and the ESPN "
+                "event carries no start time to split them; not filled",
+                file=sys.stderr,
+            )
+            continue
+        mask = same_matchup & _needs_final(games)
         if not mask.any():
             continue
         filled += int(mask.sum())

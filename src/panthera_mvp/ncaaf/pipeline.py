@@ -278,8 +278,8 @@ def cmd_grade(date_et: str | None = None) -> None:
     # Every graded date, not only the dates whose ESPN refresh raised: ESPN
     # also fails by SUCCEEDING with a hole — a game reported Final with no
     # score — which grading can never settle from. `fill_finals_fallback`
-    # selects nothing and makes no network call when a date has no hole, so
-    # the all-settled case costs what it did before.
+    # selects nothing, and so makes no network call, unless a date holds a
+    # game that has kicked off and is still unsettled or score-less.
     if graded:
         fill_finals_fallback(graded, set(pending["event_id"].astype(str)), cfg)
     aliases = cfg["matching"].get("team_aliases") or {}
@@ -307,9 +307,15 @@ def fill_finals_fallback(dates: list[str], event_ids: set[str], cfg: dict) -> in
     final_hole = (games["status"] == "Final") & (
         games["home_score"].isna() | games["away_score"].isna()
     )
+    # Only games that have kicked off: a finals fallback has nothing to fill
+    # for a game not yet played, and this is what keeps the now-unconditional
+    # call in `cmd_grade` from issuing CFBD and ncaa-api week requests every
+    # day for legs that are simply still in the future.
+    started = pd.to_datetime(games["start_time_utc"], utc=True) <= now_utc()
     todo = games[
         games["event_id"].astype(str).isin(event_ids)
         & games["game_date_et"].isin(dates)
+        & started
         & (~games["status"].isin(sources.SETTLED) | final_hole)
     ]
     groups: dict[tuple[int, int, str], list[dict]] = {}

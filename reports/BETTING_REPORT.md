@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-10-15T14:44:47Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-10-15T18:06:20Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -28,11 +28,11 @@ not a tournament.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fade_public | forward_test | 177 | 73-104-0 | $-1,285.38 | -7.26% ±8.5 | -0.9c (n=22, 32% pos, 12% cov) | 39% | 0 | screen only |
-| fav_ml | baseline | 419 | 250-169-0 | $-229.68 | -0.55% ±4.0 | +0.0c (n=60, 35% pos, 14% cov) | 35% | 1 | screen only |
+| fav_ml | baseline | 419 | 250-169-0 | $-229.68 | -0.55% ±4.0 | +0.0c (n=60, 35% pos, 14% cov) | 35% | 0 | screen only |
 | pv_orig | aligned | 34 | 15-19-0 | $-135.54 | -3.99% ±22.5 | — | 79% | 0 | collecting (34/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 224 | 123-101-0 | $+1,923.93 | +8.59% ±6.8 | +10.1c (n=23, 52% pos, 10% cov) | 53% | 1 | SUPPORTED* |
-| sharp_split | forward_test | 114 | 64-50-0 | $+859.34 | +7.54% ±9.2 | -0.2c (n=10, 10% pos, 9% cov) | 82% | 1 | screen only |
+| pv_v3 | incumbent | 224 | 123-101-0 | $+1,923.93 | +8.59% ±6.8 | +10.1c (n=23, 52% pos, 10% cov) | 53% | 0 | SUPPORTED* |
+| sharp_split | forward_test | 114 | 64-50-0 | $+859.34 | +7.54% ±9.2 | -0.2c (n=10, 10% pos, 9% cov) | 82% | 0 | screen only |
 | _portfolio (informational — not an evaluation target)_ |  |  |  | $-313.98 | -0.30% |  |  |  |  |
 
 ## Strategy: fade_public
@@ -77,10 +77,10 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `0146686dc7` — descriptive only, no inferential weight; no threshold is tested. checkpoints reached: [100, 200]
 
-- **Record:** 250-169-0 (0 void)
+- **Record:** 250-169-0 (1 void)
 - **P/L:** $-229.68 on $41,900 risked
 - **ROI:** -0.55% (±4.0 pts SE, own SD)
-- **Pending:** 1
+- **Pending:** 0
 
 **By rule**
 
@@ -107,7 +107,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 _The source strategy as the recordings actually describe it, not the doc's lossy bullet-point summary: the documented Mon-Sun day map (not the sweep-derived inverse), the shape-of-schedule slot algorithm (strategy/slots.py), a day-over-day-vs-previous-head-to-head primary signal with a natural-vs-scam classifier (strategy/scam.py) instead of raw movement-direction mapping, the per-day play policy (Tue/Sun totals primary, Thu/Sat off unless a big scam, Wed public-first-half-only, Vegas-days-Vegas-slots-only discipline), the -160-or-cheaper public price filter, heavy favorites (<=-200) passed rather than converted to a run line, and a totals engine. pv_v2/pv_v3's -15.6%/-29.9% live ROI falsifies THEIR engine; this strategy tests the one the source material actually documents. Fresh evaluation clock, no pre-registration picks._
 
-**Verdict segment** (config hashes: 3fff5be8ec):
+**Verdict segment** (config hashes: 3fff5be8ec, d7d851adfa):
 
 **INCONCLUSIVE — collecting data.** 34/100 graded picks. Pre-registered: after 100 graded, ROI > 0% → SUPPORTED; ROI < -5% → FALSIFIED; otherwise inconclusive.
 
@@ -205,14 +205,14 @@ _Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct sweep hy
 
 _The documented P/V strategy with its full dossier finally active: day/slot classification, line movement, and the ERA inputs (R3_era, R4 evenness, R8 veto) that were silently dormant in pv_v2 because the live schedule hydrate never returned pitcher stats. Same calibrated parameters as pv_v2 (VVPPPP-m5-e120-h200); the only change is ERA availability. Evaluation clock starts at registration — no pre-registration picks pool here._
 
-**Verdict segment** (config hashes: e7a93ebed7):
+**Verdict segment** (config hashes: e7a93ebed7, d29c3e501c):
 
 **SUPPORTED** — ROI +8.59% over 224 graded picks. (Screen-grade evidence; see 'How to read this report'.)
 
-- **Record:** 123-101-0 (0 void)
+- **Record:** 123-101-0 (1 void)
 - **P/L:** $+1,923.93 on $22,400 risked
 - **ROI:** +8.59% (±6.8 pts SE, own SD)
-- **Pending:** 1
+- **Pending:** 0
 
 **By rule**
 
@@ -256,7 +256,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-09-26 | Colorado Rockies @ Chicago White Sox | Chicago White Sox -1.5 | -117 | R7 | loss | $-100.00 |
 | 2026-09-26 | St. Louis Cardinals @ Milwaukee Brewers | St. Louis Cardinals ML | +135 | R3_era | loss | $-100.00 |
 | 2026-09-27 | New York Mets @ Washington Nationals | New York Mets ML | -110 | R3_era | loss | $-100.00 |
-| 2026-09-27 | Baltimore Orioles @ New York Yankees | Baltimore Orioles ML | +104 | R3_era | pending |  |
+| 2026-09-27 | Baltimore Orioles @ New York Yankees | Baltimore Orioles ML | +104 | R3_era | void | $+0.00 |
 | 2026-09-27 | Chicago Cubs @ Boston Red Sox | Boston Red Sox ML | +104 | R3_series | loss | $-100.00 |
 | 2026-09-27 | Houston Astros @ Athletics | Houston Astros ML | -190 | R3_era | win | $+52.63 |
 | 2026-09-27 | Los Angeles Dodgers @ San Francisco Giants | Los Angeles Dodgers -1.5 | -140 | R7 | win | $+71.43 |
@@ -270,10 +270,10 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `afcd384952` — descriptive only, no inferential weight; no threshold is tested. checkpoints reached: [100]
 
-- **Record:** 64-50-0 (0 void)
+- **Record:** 64-50-0 (1 void)
 - **P/L:** $+859.34 on $11,400 risked
 - **ROI:** +7.54% (±9.2 pts SE, own SD)
-- **Pending:** 1
+- **Pending:** 0
 
 **By rule**
 
@@ -290,7 +290,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-26 | Colorado Rockies @ Chicago White Sox | Colorado Rockies ML | +205 | SS_ml | win | $+205.00 |
 | 2026-09-26 | Tampa Bay Rays @ Philadelphia Phillies | Philadelphia Phillies ML | -123 | SS_ml | loss | $-100.00 |
 | 2026-09-27 | New York Mets @ Washington Nationals | New York Mets ML | -110 | SS_ml | loss | $-100.00 |
-| 2026-09-27 | Baltimore Orioles @ New York Yankees | New York Yankees ML | -120 | SS_ml | pending |  |
+| 2026-09-27 | Baltimore Orioles @ New York Yankees | New York Yankees ML | -120 | SS_ml | void | $+0.00 |
 | 2026-09-27 | Chicago Cubs @ Boston Red Sox | Chicago Cubs ML | -121 | SS_ml | win | $+82.64 |
 | 2026-09-27 | Los Angeles Dodgers @ San Francisco Giants | San Francisco Giants ML | +202 | SS_ml | loss | $-100.00 |
 | 2026-09-27 | Tampa Bay Rays @ Philadelphia Phillies | Tampa Bay Rays ML | +145 | SS_ml | loss | $-100.00 |
