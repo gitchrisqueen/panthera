@@ -134,7 +134,14 @@ def merge_week(
             week=e.week or c.week,
             conference_game=c.conference_game,
         )
-        if e.status not in SETTLED and c.status == "Final":
+        # `status not in SETTLED` alone skipped an ESPN row reported Final
+        # with no score — the one shape CFBD most needs to fill, since
+        # grading settles from the score. A complete ESPN final (both scores
+        # present) still wins; this only fills holes.
+        # Final-with-a-hole only. Postponed and Canceled are in SETTLED and
+        # carry no score either, and CFBD must not reopen those.
+        espn_hole = e.status == "Final" and (e.home_score is None or e.away_score is None)
+        if (e.status not in SETTLED or espn_hole) and c.status == "Final":
             hs, as_ = (c.home_score, c.away_score) if same else (c.away_score, c.home_score)
             merged = replace(
                 merged, status="Final", home_score=hs, away_score=as_, score_source="cfbd"

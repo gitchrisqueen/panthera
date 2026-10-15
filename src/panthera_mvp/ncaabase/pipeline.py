@@ -69,15 +69,33 @@ def _espn_games(date_et: str, cfg: dict) -> list[cb.EspnBaseballGame]:
 
 
 def _espn_fallback(date_et: str, cfg: dict) -> int:
-    """Settle this date's started, unsettled games from ESPN. Returns how
-    many rows changed. ESPN only ever updates games ncaa-api listed — it
-    never creates rows (no NCAA gameID to key them by)."""
+    """Settle this date's started games that still have no final score from
+    ESPN. Returns how many rows changed. ESPN only ever updates games
+    ncaa-api listed — it never creates rows (no NCAA gameID to key them by).
+
+    The status test admits a row stored as Final with a missing score as well
+    as the UNSETTLED statuses. Status alone was the test here, and in MLB's
+    `pipeline._needs_final` (as `!= "Final"`), until 2026-10-15: a feed that
+    reports a game Final without a linescore leaves a row that grading can
+    never settle from, and a status whitelist of unsettled values makes
+    exactly that row unreachable by the fallback meant to repair it. A row
+    already Final with BOTH scores is still excluded, so this fills holes and
+    never rewrites a complete final.
+    """
     if not cfg["espn"].get("enabled", True):
         return 0
     games = store.load_games()
+    if games.empty:
+        return 0
+    # Exactly "Final with a hole", NOT "any row without a score": Postponed
+    # and Canceled rows also have no score, and admitting those would let a
+    # stale ESPN final reopen a game this store had already called off.
+    final_hole = (games["status"] == "Final") & (
+        games["home_score"].isna() | games["away_score"].isna()
+    )
     games = games[
         (games["game_date_et"] == date_et)
-        & games["status"].isin(UNSETTLED)
+        & (games["status"].isin(UNSETTLED) | final_hole)
         & (pd.to_datetime(games["start_time_utc"], utc=True) <= _now())
     ]
     if games.empty:

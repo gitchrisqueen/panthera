@@ -231,13 +231,41 @@ def append_lines(df: pd.DataFrame) -> int:
     return len(df)
 
 
+def _has_both_scores(df: pd.DataFrame) -> pd.Series:
+    """True where both scores are present. A frame that lacks the score
+    columns altogether carries no scores anywhere — callers may hand over a
+    narrow frame, and a missing column is an absence, not an error."""
+    if not {"home_score", "away_score"} <= set(df.columns):
+        return pd.Series(False, index=df.index)
+    return df["home_score"].notna() & df["away_score"].notna()
+
+
 def upsert_games(df: pd.DataFrame) -> None:
+    """Replace rows by game_pk — except that an incoming row never BLANKS a
+    score the store already holds.
+
+    `_refresh_games` rebuilds every row straight from the MLB API, and the API
+    sometimes returns a completed game as Final with no linescore. Without
+    this guard, a score the ESPN fallback had filled was wiped again on the
+    next `snapshot` or `picks` run (both call `_refresh_games`, and neither has
+    a fallback behind it), so the repair never lasted a full day. A null score
+    is an absence, never a correction, so the stored row wins — wholesale, not
+    field by field. The one production writer rebuilds every column from the
+    same MLB API call, and a game already Final has nothing else left to learn
+    (start time, pitcher ERAs and game type are fixed by then), so keeping the
+    stored row costs nothing. A score that DIFFERS is still accepted: this
+    rejects an absent score, not a corrected one.
+    """
     if df.empty:
         return
     path = paths.games_csv()
     path.parent.mkdir(parents=True, exist_ok=True)
     existing = _load(path, GAMES_COLUMNS)
     if not existing.empty:
+        scored = set(existing.loc[_has_both_scores(existing), "game_pk"])
+        df = df[~(df["game_pk"].isin(scored) & ~_has_both_scores(df))]
+        if df.empty:
+            return
         existing = existing[~existing["game_pk"].isin(df["game_pk"])]
     combined = pd.concat([existing, df], ignore_index=True)
     combined = combined.sort_values(["game_date_et", "game_pk"])
