@@ -108,8 +108,17 @@ def _load(path, columns: list[str] | None = None) -> pd.DataFrame:
 
 
 def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> None:
-    """Persist an operational note (late run, degraded snapshot, engine error)
-    so daily-report regeneration doesn't erase it."""
+    """Persist an operational note so daily-report regeneration doesn't erase
+    it. `kind` is one of `late_run`, `degraded_snapshot`, `engine_error`,
+    `ambiguous_espn_match` or `unmapped_final_no_score`; the schema is
+    documented in `data/CLAUDE.md`, and every kind written anywhere in `src/`
+    belongs there.
+
+    Identical notes are not repeated: the same (game_date_et, kind, note)
+    collapses to one row. A game stuck in an unmapped terminal state is
+    re-examined by every refresh — several times a day, indefinitely — and
+    each note renders as a bullet in the daily report.
+    """
     from .timeutil import now_utc, utc_iso
 
     path = paths.data_dir() / "picks" / "run_log.csv"
@@ -126,6 +135,14 @@ def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> 
         ]
     )
     existing = _load(path, RUN_LOG_COLUMNS)
+    if not existing.empty:
+        same = (
+            (existing["game_date_et"].astype(str) == str(game_date_et))
+            & (existing["kind"].astype(str) == str(kind))
+            & (existing["note"].astype(str) == str(note))
+        )
+        if bool(same.any()):
+            return
     pd.concat([existing, row], ignore_index=True).to_csv(path, index=False)
 
 

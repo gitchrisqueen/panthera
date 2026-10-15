@@ -39,8 +39,11 @@ result — it can settle nothing. `panthera-mvp doctor` H05 names it, but only
 once a pick on that game has been pending past its threshold: a scoreless
 `Final` with no pick on it is reported by nothing.
 
-`score_source` (`mlb`, `espn`) is the provenance of a settlement, and the only
-record that a third-party feed rather than the MLB API supplied the score.
+`score_source` (`mlb`, `espn`) records which feed last wrote the row's result
+fields — so on a settled game it is the provenance of the settlement, and the
+only record that a third-party feed rather than the MLB API supplied the
+score. On a called-off row it names the feed that reported the game off, not a
+settlement: there is none.
 Treat it as load-bearing: a settlement with no `score_source` cannot be
 audited.
 
@@ -66,9 +69,14 @@ strategy (reports subtract games later picked). run_label ∈
 morning|pregame|manual.
 
 ### picks/run_log.csv (append-only)
-`ts_utc, game_date_et, run_label, kind, note` — operational notes (late_run,
-degraded_snapshot, engine_error) rendered into the daily report so they
-survive regeneration.
+`ts_utc, game_date_et, run_label, kind, note` — operational notes rendered
+into the daily report so they survive regeneration. `kind` is one of
+`late_run`, `degraded_snapshot`, `engine_error`, `ambiguous_espn_match` (a
+finals fallback refused to guess between the two games of a doubleheader) or
+`unmapped_final_no_score` (a game stored `Final` with no score whose
+`detailedState` head is unknown to `clients/mlb.py::_CALLED_OFF` — it can
+settle nothing until the head is mapped). `run_label` is the run that wrote
+it: a snapshot label, `grade` or `refresh`.
 
 ### splits/splits.csv (upsert by game_date_et + snapshot_label + lumify_event_id + metric)
 `fetched_ts_utc, game_date_et, snapshot_label, lumify_event_id, event_name,

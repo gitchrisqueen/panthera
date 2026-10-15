@@ -447,6 +447,13 @@ def test_an_unmapped_final_with_no_score_leaves_a_run_note(
     assert list(notes["kind"]) == ["unmapped_final_no_score"]
     assert "_CALLED_OFF" in notes.iloc[0]["note"]
 
+    # A game stuck in an unmapped state is re-examined by every refresh —
+    # several times a day, indefinitely — and each note renders as a bullet in
+    # the daily report, so an identical note must not be appended again.
+    pipeline._refresh_games("2026-09-27")
+    pipeline._refresh_games("2026-09-27")
+    assert len(store.load_run_log()) == 1
+
 
 def test_a_lone_game_on_a_doubleheader_date_still_fills(tmp_root, espn_final):
     """The skip is keyed on the matchup, not on the date: a different matchup

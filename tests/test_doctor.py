@@ -390,6 +390,49 @@ def test_pending_age_does_not_prescribe_grade_for_a_suspended_game(
     assert hits[0].suggested_command is None
 
 
+def test_pending_age_keeps_grade_when_one_game_can_still_be_backfilled(
+    health_root, monkeypatch
+):
+    """A MIXED date: one suspended game and one scoreless `Final`.
+
+    The suspended one is waiting on a resumption; the Final one is a fault that
+    something must backfill. A single verdict for both prescribed a no-op for
+    the suspended half, so the detail is per game, and `grade` is offered
+    because it can still change the Final row.
+    """
+    monkeypatch.setattr(doctor, "today_et", lambda: pd.Timestamp("2026-10-15").date())
+    write_games(days={"2026-10-14": 2}, game_type="L")
+    rows = []
+    for i, status in enumerate(("Suspended", "Final")):
+        rows.append(
+            {
+                "game_pk": _pk("2026-09-27", i),
+                "game_date_et": "2026-09-27",
+                "game_type": "R",
+                "status": status,
+                "home_score": None,
+                "away_score": None,
+                "start_time_utc": "2026-09-27T23:05:00Z",
+            }
+        )
+    store.upsert_games(pd.DataFrame(rows))
+    write_picks(day="2026-09-27", strategies=["pv_v3"], n_games=2, status="pending")
+    write_picks(day="2026-10-14", strategies=["pv_v3"], n_games=2)
+
+    hits = of(findings(since="2026-09-01"), "pending_age")
+    assert len(hits) == 1
+    detail = hits[0].detail
+    susp, final = _pk("2026-09-27", 0), _pk("2026-09-27", 1)
+    # Each game carries its OWN reason.
+    assert f"game {susp} is Suspended" in detail
+    assert "resumed under the same game_pk" in detail
+    assert f"game {final} is Final" in detail
+    assert "score is backfilled" in detail
+    # `grade` is still worth running: it can change the Final row.
+    assert hits[0].suggested_command is not None
+    assert "grade --date 2026-09-27" in hits[0].suggested_command
+
+
 def test_lineage_drift_detects_an_undeclared_hash(health_root, monkeypatch):
     """A live strategy whose current hash left its own lineage has its verdict
     countdown frozen — the half-finished state of a config change."""

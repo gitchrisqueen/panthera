@@ -290,30 +290,59 @@ Identify the merge form first, the same way as above:
 `git rev-list --parents -n 1 <sha>` — three hashes is a merge commit, two is a
 squash. This repo squashes recent PRs, so expect the squash case.
 
+Both forms restore `data/` and `reports/` from **`HEAD`**, never from the
+commit being reverted. `git checkout <that sha> -- data/` would roll the whole
+datastore back to merge time and silently discard every row the bots have
+written since — appended `picks.csv` rows (append-once, never deleted),
+`odds/lines.csv`, `games.csv`, `splits/splits.csv`, `credit_log.csv`,
+`run_log.csv` and every regenerated report — and the next workflow run, which
+rebases onto whatever it finds, would cement the loss.
+
 - **Squashed (expected).** The branch's separate code and data commits do not
   exist on `main`, so they cannot be reverted individually. Revert the code
-  and put the data back in one commit:
+  and keep the datastore as it stands:
 
   ```bash
   git revert -n <squash sha>
-  git checkout <squash sha> -- data/ reports/
+  git checkout HEAD -- data/ reports/
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
   ```
 
-- **Merge commit.** `git revert -m 1 <merge sha>`, then the same
-  `git checkout <merge sha> -- data/ reports/` before committing.
+- **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
+  first line. Keep the `-n`: without it the revert commits on its own and
+  there is nothing left to amend.
+
+`git revert -n` is **expected** to report conflicts under `data/` and
+`reports/`, because the bots rewrite those files several times a day. Taking
+`HEAD` for those paths — the `git checkout HEAD -- data/ reports/` line — IS
+the resolution; do not hand-merge them.
 
 **Why the data must stay.** The three picks are settled `void`, and
 `store.settle_picks` never re-touches a row that is not `pending`, so nothing
 re-opens them. `cmd_grade` calls `_refresh_games` only for dates that still
 have pending picks, and 2026-09-27 now has none, so nothing rewrites the
-repaired games row either. The repair is also reproducible rather than
-hand-made: `panthera-mvp grade --date 2026-09-27` against the live MLB API
-regenerates that row byte for byte, ERAs included. (The committed fixture
-`tests/fixtures/mlb_schedule_cancelled.json` is unhydrated and carries no
-`probablePitcher`, so a fixture-driven refresh would blank the two ERA
-columns — use the live API or a runner, per the sandbox note in the repo
-`CLAUDE.md`.)
+repaired games row either. The repair was not hand-made: it is the output of
+`panthera-mvp grade --date 2026-09-27` against the live MLB API, run **while
+the three picks were still pending** — that is, before the repair commit.
+
+That command is now a no-op and cannot be used to re-verify the row.
+`cmd_grade` builds its date list from pending picks only, and 2026-09-27 has
+none left, so it never refreshes that date; there is no MLB equivalent of
+`ncaaf games --date` to refresh a past date on its own. What an operator can
+check at `HEAD`:
+
+- the commit diff of `games.csv` row 823490 is the audit record, and
+  `data/picks/run_log.csv` plus the commit message carry the rest;
+- to re-derive it, call the refresh directly on a machine or runner that can
+  reach `statsapi.mlb.com`:
+  `python -c "from panthera_mvp.pipeline import _refresh_games; _refresh_games('2026-09-27')"`,
+  which rewrites the row from the live schedule and leaves it byte-identical.
+
+The committed fixture `tests/fixtures/mlb_schedule_cancelled.json` does NOT
+reproduce it: the recorded response is unhydrated and carries no
+`probablePitcher`, so a fixture-driven refresh blanks
+`home_pitcher_era`/`away_pitcher_era` (5.4 / 4.11). Use the live API or a
+runner, per the sandbox note in the repo `CLAUDE.md`.
 
 **What regresses on revert.** A game recorded `Final` with no score becomes
 unsettleable again; a called-off game is stored as `Final` again; and
