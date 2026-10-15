@@ -309,8 +309,8 @@ rebases onto whatever it finds, would cement the loss.
   ```
 
 - **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
-  first line. Keep the `-n`: without it the revert commits on its own and
-  there is nothing left to amend.
+  first line. Keep the `-n`: without it the revert commits on its own,
+  before the datastore is restored, so the restore lands as a second commit.
 
 `git revert -n` is **expected** to report conflicts under `data/` and
 `reports/`, because the bots rewrite those files several times a day. Taking
@@ -333,22 +333,52 @@ check at `HEAD`:
 
 - the commit diff of `games.csv` row 823490 is the audit record, and
   `data/picks/run_log.csv` plus the commit message carry the rest;
-- to re-derive it, call the refresh directly on a machine or runner that can
-  reach `statsapi.mlb.com`:
-  `python -c "from panthera_mvp.pipeline import _refresh_games; _refresh_games('2026-09-27')"`,
-  which rewrites the row from the live schedule and leaves it byte-identical.
+- to re-derive it, call the refresh directly on a host that can reach
+  `statsapi.mlb.com` — **against a throwaway datastore, never the live
+  checkout**, because `_refresh_games` writes `games.csv` in place:
+
+  ```bash
+  cp -R data /tmp/panthera-check
+  PANTHERA_ROOT=/tmp/panthera-check .venv/bin/python -c \
+    "from panthera_mvp.pipeline import _refresh_games; _refresh_games('2026-09-27')"
+  diff <(grep '^823490,' data/games/games.csv) \
+       <(grep '^823490,' /tmp/panthera-check/games/games.csv)
+  ```
+
+  Expect the `status`/`winner`/`run_diff`/`total_runs` columns to match. The two
+  ERA columns may come back EMPTY rather than `5.4`/`4.11`: they depend on the
+  API still returning `probablePitcher` for a game two weeks past, and
+  `upsert_games`' blank-score guard does not protect a called-off row (it keys
+  on a Final with both scores). An ERA-only difference is therefore not a
+  discrepancy in the repair.
 
 The committed fixture `tests/fixtures/mlb_schedule_cancelled.json` does NOT
-reproduce it: the recorded response is unhydrated and carries no
-`probablePitcher`, so a fixture-driven refresh blanks
-`home_pitcher_era`/`away_pitcher_era` (5.4 / 4.11). Use the live API or a
-runner, per the sandbox note in the repo `CLAUDE.md`.
+reproduce the row. It is a real live capture of the `/schedule` response for
+that date, but taken WITHOUT the `hydrate` parameter the pipeline sends, so it
+carries no `probablePitcher` and a fixture-driven refresh blanks both ERA
+columns. It is there for the `status` block, which is what the fix turns on.
 
-**What regresses on revert.** A game recorded `Final` with no score becomes
-unsettleable again; a called-off game is stored as `Final` again; and
-`grading`'s void branch becomes unreachable again, so no *new* wrong
-settlement follows — including for suspended games, which the reverted code
-cannot void because it never writes that status.
+**What regresses on revert.**
+
+- **Stored scores start disappearing.** The revert removes
+  `store.upsert_games`' blank-score guard (`_is_settled_final`,
+  `_has_both_scores`), which this change added. Without it an incoming MLB row
+  with a missing linescore blanks a score the ESPN fallback had already
+  filled — its docstring's "the repair never lasted a full day" — on every
+  `snapshot` and `picks` run, several times a day, on games that are already
+  settled. This is the most damaging regression and the least visible: watch
+  for a `games.csv` row going from Final-with-scores to Final-with-empty-scores
+  in a bot commit. `doctor` H05 only catches it once a pick on that game has
+  been pending past its threshold, so it is not an early warning.
+- A game recorded `Final` with no score becomes unsettleable again, and a
+  called-off game is stored as `Final` again.
+- `grading`'s void branch becomes unreachable again, so no *new* wrong
+  settlement follows — including for suspended games, which the reverted code
+  cannot void because it never writes that status.
+- The revert also removes this section and the "do not reinstate the
+  `!= "Final"` form" convention in `src/panthera_mvp/CLAUDE.md`. Keep `docs/`
+  and the `CLAUDE.md` files the same way `data/` and `reports/` are kept:
+  `git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'`.
 
 **Owner and alert path.** No separate service to redeploy: GitHub Actions
 picks up `main` on the next scheduled run. The detector for this class of
@@ -360,6 +390,22 @@ none would work. A pick pending on a `Final` row with no score IS a fault.
 `data/picks/run_log.csv` carries a durable `ambiguous_espn_match` or
 `unmapped_final_no_score` note whenever a fill was skipped; those outlive the
 Actions log and are the first place to look.
+
+**Abandoned without being called off.** A game can be suspended and then never
+resumed and never marked `Cancelled`, so no score ever arrives and its picks
+stay pending for good. H05 reports it and deliberately offers no command,
+because none of them would work. There is no sanctioned way to settle such a
+pick by hand: picks are immutable, `data/` is bot-owned, and no CLI voids one.
+The one mechanism that works is to make the feed's own status settle it — map
+that game's `detailedState` head into `clients/mlb.py::_CALLED_OFF` (and, if it
+means no score will ever exist, `VOID_STATUSES`), then let `grade` settle it,
+since `store.settle_picks` rewrites pending rows only. Whether a given
+abandoned game is treated that way is **Christopher's ruling**, raised as a
+`needs-chris` ClickUp task per the decision protocol in
+`00-Home/Working-With-Christopher.md`; record the answer here.
+
+**Record the incident** in this section with the date, the trigger and what was
+reverted, the same way the section above does.
 
 ## Verdict criteria (pre-registered)
 

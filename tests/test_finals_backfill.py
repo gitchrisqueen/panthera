@@ -220,8 +220,11 @@ def test_fallback_writes_nothing_when_it_fills_nothing(tmp_root, monkeypatch):
 # `panthera-mvp doctor` reported game 823490 as "Final with no score recorded"
 # and suggested backfilling the score. There is no score to backfill: the MLB
 # API returns it as abstractGameState "Final", detailedState "Cancelled",
-# reason "Rain" (tests/fixtures/mlb_schedule_cancelled.json is that live
-# response). ESPN has no final for it either. The row was unsettleable because
+# reason "Rain". tests/fixtures/mlb_schedule_cancelled.json is that live
+# `/schedule` response, captured WITHOUT the `hydrate` parameter the pipeline
+# sends — so it carries the status block this fix turns on, but no
+# `probablePitcher`, and therefore no ERAs.
+# ESPN has no final for it either. The row was unsettleable because
 # the pipeline stored `abstractGameState`, which cannot express "called off",
 # so grading could neither settle it nor reach its void branch.
 
