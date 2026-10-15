@@ -30,6 +30,35 @@ class CreditGuardError(RuntimeError):
     """Raised when a live snapshot would breach the credit reserve."""
 
 
+class OddsRequestError(RuntimeError):
+    """An Odds API request failure with the credentialed query string removed.
+
+    The Odds API accepts its key only as the `apiKey` query parameter (there is
+    no header form), and `requests` puts the whole request URL -- query string
+    included -- into the message of HTTPError, ConnectionError and Timeout
+    alike. This repository is public and every scheduled run writes to a public
+    Actions log, so a raw `requests` exception from a keyed call would print the
+    live key there, with GitHub's best-effort secret masking as the only
+    barrier. Those messages therefore never leave this module: the raiser is
+    replaced by this one, carrying the status code and the key-free base URL
+    and nothing else, and raised outside the handler so the original is not
+    reachable through `__cause__` or `__context__` either.
+    """
+
+    def __init__(
+        self, url: str, status_code: int | None = None, cause: str = ""
+    ) -> None:
+        self.url = url  # base URL only -- never the query string
+        self.status_code = status_code
+        self.cause = cause
+        detail = (
+            f"HTTP {status_code}"
+            if status_code is not None
+            else cause or "request failed"
+        )
+        super().__init__(f"Odds API request to {url} failed: {detail}")
+
+
 @dataclass
 class CreditInfo:
     used: int | None
@@ -91,17 +120,35 @@ def fetch_snapshot(
             f"{min_credits_reserve}); skipping live snapshot."
         )
     sess = session or requests.Session()
-    resp = sess.get(
-        SPORTS_URL.format(sport_key=sport_key),
-        params={
-            "apiKey": api_key,
-            "regions": regions,
-            "markets": markets,
-            "oddsFormat": "american",
-        },
-        timeout=TIMEOUT,
-    )
-    resp.raise_for_status()
+    url = SPORTS_URL.format(sport_key=sport_key)
+    scrubbed: OddsRequestError | None = None
+    try:
+        resp = sess.get(
+            url,
+            params={
+                "apiKey": api_key,
+                "regions": regions,
+                "markets": markets,
+                "oddsFormat": "american",
+            },
+            timeout=TIMEOUT,
+        )
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        status = exc.response.status_code if exc.response is not None else None
+        scrubbed = OddsRequestError(url, status_code=status)
+    except requests.RequestException as exc:
+        # Transport failures embed the query string too -- ConnectionError's
+        # "Max retries exceeded with url: ...?apiKey=...".
+        scrubbed = OddsRequestError(url, cause=type(exc).__name__)
+    if scrubbed is not None:
+        # Raised OUTSIDE the handler on purpose. `raise ... from None` only
+        # sets __suppress_context__, which stops the default traceback printer
+        # from rendering the original -- the keyed exception object itself
+        # stays reachable on __context__. Out here the active exception is
+        # already cleared, so __context__ is None and nothing holding the key
+        # survives the call.
+        raise scrubbed
 
     def _hdr(name: str) -> int | None:
         val = resp.headers.get(name)

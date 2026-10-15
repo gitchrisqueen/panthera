@@ -16,6 +16,8 @@ below were verified 2026-08-01; re-check before integrating (tiers drift).
 | [Sportsbook Reviews Online archives](https://www.sportsbookreviewsonline.com/scoresoddsarchives/) | none | Historical open/close odds (2014–2021) for calibration | Files committed to `data/historical/raw/`; publication stopped after ~2021 |
 | [Lumify](https://lumify.ai) | `LUMIFY_API_KEY` (optional) | Public betting splits, collected in the morning and pregame runs | Free 1,000 non-expiring credits; guard in `clients/lumify.py`; skips silently without the key |
 
+Rotation owner and procedure for all three keys: [docs/secret-rotation.md](secret-rotation.md).
+
 ## The key fact for NFL/NBA expansion
 
 **No new odds subscription is needed.** The Odds API serves NFL
