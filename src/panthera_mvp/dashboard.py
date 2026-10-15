@@ -37,11 +37,13 @@ from .glossary import glossary_payload
 from .report import (
     GRADED_STATUSES,
     HOW_TO_READ,
+    POSTSEASON_CAVEAT,
     _close_launch_ts,
     _clv_cell,
     _ledger_stats,
     _load_strategies_for_report,
     _overlap_pct,
+    _phase_by_game_pk,
     _roi_se,
     _status_summary,
     _verdict_text,
@@ -328,7 +330,21 @@ def build_site_data(generated_by_run: str = "manual") -> dict:
         ),
         "picks_history": _picks_history_rows(picks, strategies) if not picks.empty else [],
         "retroactive_replay": _retroactive_replay_payload(),
+        # Null until a postseason pick exists, so the site shows the caveat
+        # only when it has something to caveat. Same text as
+        # BETTING_REPORT.md's — one source, report.POSTSEASON_CAVEAT.
+        "regime_note": _regime_note(picks),
     }
+
+
+def _regime_note(picks: pd.DataFrame) -> str | None:
+    """report.POSTSEASON_CAVEAT, iff this ledger holds a postseason pick."""
+    if picks.empty:
+        return None
+    phases = _phase_by_game_pk()
+    if not any(phases.get(int(pk)) == "postseason" for pk in picks["game_pk"].dropna()):
+        return None
+    return POSTSEASON_CAVEAT
 
 
 def build_calibration_data() -> dict:

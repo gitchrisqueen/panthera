@@ -27,6 +27,7 @@ from .dossier import Dossier
 from .movement import TotalsPrices, american_cost
 from .rules import GamePrices, Pass, Pick, american_to_decimal
 from .scam import ScamSignal, classify
+from .season import in_scope
 
 #: Days the engine is OFF by default -- only an outlier ("big") scam earns a
 #: play (doc P2 03:04-03:53: "Thursday and Saturday can be two of the most
@@ -106,9 +107,11 @@ def generate_pick(  # noqa: PLR0911 - a gate chain reads better flat than nested
 ) -> Pick | Pass | None:
     matchup = f"{game.away_team} @ {game.home_team}"
 
-    # O0 — regular season, still upcoming, and priced.
-    if game.game_type not in cfg["season"]["game_types"]:
-        return Pass(game.game_pk, matchup, "O0", f"game_type={game.game_type}")
+    # O0 — in-scope game type, still upcoming, and priced.
+    if not in_scope(game.game_type, cfg):
+        return Pass(
+            game.game_pk, matchup, "O0", f"excluded_game_type={game.game_type}"
+        )
     if game.status != "Preview":
         return Pass(game.game_pk, matchup, "O0", f"status={game.status}")
     if odds_event_id is None or prices is None:

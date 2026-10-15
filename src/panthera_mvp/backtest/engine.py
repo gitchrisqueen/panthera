@@ -74,6 +74,9 @@ def _prepare_games(hist: pd.DataFrame) -> list[PreparedGame]:
         game = GameInfo(
             game_pk=int(row.game_pk) if pd.notna(row.game_pk) else 1_000_000 + idx,
             game_date_et=str(row.game_date),
+            # Synthetic: sbro archive rows carry no gameType and the archives
+            # are regular-season only. Not the live scope, which is config
+            # `season.exclude_game_types` (strategy/season.py).
             game_type="R",
             status="Preview",
             detailed_state="Scheduled",

@@ -12,7 +12,7 @@ from panthera_mvp.strategy.orig_rules import generate_pick
 from panthera_mvp.strategy.rules import GamePrices, Pass, Pick
 
 CFG = {
-    "season": {"game_types": ["R"]},
+    "season": {"exclude_game_types": ["S", "E", "A", "I"]},
     "day_map": {
         "monday": "P",
         "tuesday": "V",

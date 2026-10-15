@@ -26,7 +26,7 @@ aligned reading lives in a separate engine, `strategy/orig_rules.py`
 
 | ID | Doc § | Rule | Parameters (config/strategy.yaml) |
 |---|---|---|---|
-| R0 | §6 | Regular-season games only; must be upcoming and priced | `season.game_types` |
+| R0 | §6 | Non-counting game types excluded (spring training, exhibition, all-star, intrasquad); must be upcoming and priced | `season.exclude_game_types` |
 | R1 | §2 | Day type from map; hybrid slots split at boundary hour | `day_map`, `hybrid_boundary_hour_et` |
 | R2 | §1 | Movement on favorite's consensus ML (median of books), open → latest snapshot; below threshold = neutral | `movement.min_move_cents` |
 | R3 | §5 | P slot backs public side; V slot backs Vegas side; neutral movement falls back through the dossier cascade: ERA edge (`R3_era`) → last-10 form (`R3_form`) → season-series lead (`R3_series`) → pass | `dossier.last10_n`, `min_last10_win_gap`, `min_series_lead` |
@@ -178,6 +178,99 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   filter, totals; see "Alignment with the source recordings" above).
   Registered with a fresh clock; `pv_v2`/`pv_v3` continue unchanged as
   labeled controls.
+- **Postseason scope fix (2026-10-15):** not a new version — a corrected
+  config under the SAME strategy ids. `config/strategy.yaml` had
+  `season.game_types: ["R"]`, a regular-season whitelist. The source
+  material (§6) excludes spring training and says nothing about the
+  postseason, so the whitelist added an exclusion nobody asked for: from
+  2026-09-29 every engine returned a Pass on every postseason game — 14
+  consecutive slate days, 145 passes, zero picks, while the workflows ran
+  normally and the daily reports said so in plain text. The key is now a
+  blacklist (`season.exclude_game_types: ["S","E","A","I"]`) with one
+  reader, `strategy/season.py::in_scope`, which `pipeline`'s SeasonContext
+  also calls — it previously hardcoded `== "R"`, and that split is why a
+  config read did not reveal the bug. Hashes moved
+  (`pv_v3` e7a93ebed7→d29c3e501c, `pv_orig` 3fff5be8ec→d7d851adfa,
+  `sharp_split` afcd384952→2526d326be, `fade_public` 256514e8ad→98b91db942)
+  and each lineage was EXTENDED rather than the strategy re-registered,
+  because the change is domain-extending:
+  `tests/test_scope_fix_regression.py` replays both gates over the captured
+  regular-season history (at least 793 games over 59 dates) and asserts byte-identical
+  engine output, so no existing pick would have differed. The new
+  population — postseason games the day map was never calibrated on — is
+  disclosed by `BETTING_REPORT.md`'s regime caveat and the per-strategy
+  by-phase split, not hidden behind the hash.
+
+### Rollback and ownership — postseason scope fix (2026-10-15)
+
+**Owner of the scope decision and of a red `mvp-morning` / `mvp-pregame`
+run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
+on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
+GitHub issue, and that issue is the page.
+
+**Stop pick generation without a code change.** Set `enabled: false` under
+`strategy:` in the relevant `config/strategies/<id>.yaml`. `cmd_picks` filters
+on `enabled` + `live` in scope, so the next scheduled run simply skips that
+strategy; snapshots, grading and reporting continue untouched and the
+existing picks keep settling. This is the first move in any incident — it is
+reversible, needs no revert, and does not move any `config_hash` (`enabled`
+lives under the hash-excluded `strategy` block).
+
+Two things to know at 2 a.m.:
+- **Commit and push it to the default branch.** Scheduled workflows read only
+  the default branch, so an uncommitted or unmerged edit changes nothing on
+  the next run.
+- **It silences the detector too.** A disabled strategy writes no passes, so
+  `doctor`'s H01/H02 stop firing and the open health issue closes itself. Say
+  in the issue that you disabled the strategy before you do it, or you will
+  lose the thread mid-incident.
+
+**Rolling the scope fix back.** On the branch the change is several commits,
+with PR #66 (`doctor`) stacked on top, so reverting one of them is the
+partial revert this paragraph warns about. Revert the **whole PR**, and let
+GitHub's Revert button on #65 do it — it picks the right form.
+
+By hand, the command depends on how the PR was merged, and this repo uses
+both: recent PRs are squashed (one parent, subject ending `(#64)`) while
+older ones have merge commits (`Merge pull request #46 …`).
+- Squashed → `git revert <the single squashed sha on main>`. `-m 1` here
+  fails with *"mainline was specified but commit is not a merge"*.
+- Merge commit → `git revert -m 1 <the merge sha>`.
+
+Tell which you have with `git rev-list --parents -n 1 <sha>`: three hashes
+means a merge commit, two means a squash. Do NOT use `git log --merges`
+for this — given a squashed sha it walks back and prints the nearest
+ancestor merge, which is a different commit and the wrong answer.
+
+Never revert `config/strategy.yaml` alone. That restores
+`season.game_types`, which `strategy/season.py` rejects by design, and the
+three entry points then fail *differently*, which is worse than failing
+together:
+- `picks` aborts loudly — `_build_season_context` and the eager validation in
+  `config._validate_strategy` both run outside the per-strategy handler.
+- `grade` keeps going. `cmd_grade` calls only `load_config()`, which does not
+  validate the season key, so pending picks still settle.
+- `report` keeps going in a degraded state. `_load_strategies_for_report`
+  catches `StrategyConfigError` and returns `{}`, so the ledger regenerates
+  with every strategy silently missing from it.
+
+The same applies to reverting only the engine files: the config and its one
+reader must move together.
+
+**If #66 is already merged when you revert #65,** expect `doctor` to open an
+`mlb/config_sanity` issue (H09) on its next run. That is the detector working,
+not a second incident; it clears when #65 is restored or the key is fixed.
+
+**Picks already written under the post-fix hashes survive the revert.** Picks
+are immutable once created (`src/panthera_mvp/CLAUDE.md`), so reverting the
+`hash_lineage` appends does not delete them — it re-classifies them. They
+stop pooling into each strategy's verdict segment and render as separate
+SCREEN segments in `BETTING_REPORT.md`, which is the honest outcome and needs
+no data surgery. Do not hand-edit `data/picks/picks.csv` to "clean up"; it is
+bot-owned and append-once.
+
+**Record the incident** in this section with the date, the trigger and what
+was reverted, the same way the version history above records changes.
 
 ## Verdict criteria (pre-registered)
 

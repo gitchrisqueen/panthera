@@ -170,6 +170,48 @@ def test_engine_error_is_isolated(multi_env, fixtures_dir, monkeypatch, clock):
     assert "boom" in errors.iloc[0]["note"] and "kaboom" in errors.iloc[0]["note"]
 
 
+def test_config_error_aborts_instead_of_being_isolated(
+    multi_env, fixtures_dir, monkeypatch, clock
+):
+    """A scope/config fault must NOT be isolated like an engine fault.
+
+    `cmd_picks` wraps each engine in `except Exception` so one bad engine
+    cannot lose the slate. A config fault is the opposite case: it hits every
+    strategy identically, so isolating it turns a broken deploy into a green
+    workflow that silently produces zero picks — the exact shape of the
+    2026-09-29 outage. It must abort the run loudly instead.
+    """
+    from panthera_mvp.config import StrategyConfigError
+
+    tmp_root = multi_env
+    _snapshot("open", monkeypatch, tmp_root, fixtures_dir)
+    clock["now"] = datetime(2026, 8, 1, 15, 0, tzinfo=UTC)
+
+    cfg_path = tmp_root / "config" / "strategy.yaml"
+    cfg_path.write_text(
+        cfg_path.read_text().replace(
+            'exclude_game_types: ["S", "E", "A", "I"]', 'game_types: ["R"]'
+        )
+    )
+
+    with pytest.raises(StrategyConfigError, match="retired"):
+        cmd_picks("23:59", run_label="morning")
+
+
+def test_missing_scope_key_aborts(multi_env, fixtures_dir, monkeypatch, clock):
+    """The other half: the key absent entirely, not just the retired spelling."""
+    from panthera_mvp.config import StrategyConfigError
+
+    _snapshot("open", monkeypatch, multi_env, fixtures_dir)
+    clock["now"] = datetime(2026, 8, 1, 15, 0, tzinfo=UTC)
+    cfg_path = multi_env / "config" / "strategy.yaml"
+    cfg_path.write_text(
+        cfg_path.read_text().replace('exclude_game_types: ["S", "E", "A", "I"]', "{}")
+    )
+    with pytest.raises(StrategyConfigError, match="exclude_game_types"):
+        cmd_picks("23:59", run_label="morning")
+
+
 def test_daily_cap_semantics_marker_in_hash(multi_env):
     """cap_semantics lives in base bet_limits and is hashed — the segment
     split between pre-fix and post-fix picks is mechanical, not manual."""

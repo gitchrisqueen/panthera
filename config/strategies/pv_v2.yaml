@@ -26,6 +26,13 @@ strategy:
   # post-framework hash is deliberately NOT listed: the per-day cap fix
   # (bet_limits.cap_semantics) is a declared behavior change, so post-fix
   # picks form segment 2, rendered as SCREEN only — never a second verdict.
+  # 2026-10-15 scope fix (see config/strategy.yaml `season`): the base config
+  # change moved this strategy's merged config_hash edddc8abdb -> e25e242e95.
+  # Deliberately NO append. pv_v2 was retired 2026-08-16 (enabled: false) and
+  # will never generate another pick, so a hash that can never appear in the
+  # ledger would be noise, and segment 1's frozen verdict must not move.
+  # `panthera-mvp hashes` reports this as drift for completeness; for a
+  # disabled strategy that is expected, not a defect.
   hash_lineage: [6f0d0924d4]
   hypothesis: >
     Calibrated P/V config VVPPPP-m5-e120-h200 — the best of 768 distinct

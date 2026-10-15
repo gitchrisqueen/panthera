@@ -52,6 +52,39 @@ not a tournament."""
 
 GRADED_STATUSES = ["win", "loss", "push", "void"]
 
+#: MLB postseason gameType codes. The day map and hybrid boundary were
+#: calibrated on regular-season slates, so picks on these games are a
+#: different population — see POSTSEASON_CAVEAT.
+POSTSEASON_GAME_TYPES = frozenset({"F", "D", "L", "W"})
+
+POSTSEASON_CAVEAT = """\
+**Postseason picks are a different regime.** The P/V day map and hybrid
+boundary were calibrated on regular-season slates of 10-17 games a day.
+Postseason slates are 1-4 games with concentrated national public money and
+no shape-of-schedule to slot against. These picks sit in the same ledger and
+the same `hash_lineage` segment as regular-season picks — the engines'
+decision function is unchanged, and `tests/test_scope_fix_regression.py`
+proves it — but they are not a like-for-like sample. The by-phase split
+under each strategy is descriptive; no threshold is tested against it."""
+
+
+def _phase_by_game_pk() -> dict[int, str]:
+    """game_pk -> "regular" | "postseason", from games.csv.
+
+    Derived at render time rather than stamped on the pick: picks are
+    immutable once created (src/panthera_mvp/CLAUDE.md) and PICKS_COLUMNS is
+    not extended for a label the schedule already carries.
+    """
+    games = store.load_games()
+    if games.empty or "game_type" not in games.columns:
+        return {}
+    return {
+        int(row.game_pk): (
+            "postseason" if str(row.game_type) in POSTSEASON_GAME_TYPES else "regular"
+        )
+        for row in games.dropna(subset=["game_pk"]).itertuples(index=False)
+    }
+
 
 def _fmt_price(p) -> str:
     if pd.isna(p):
@@ -250,7 +283,30 @@ def _load_strategies_for_report() -> dict[str, dict]:
         return {}
 
 
-def _segment_blocks(sid: str, scfg: dict, picks: pd.DataFrame) -> list[str]:
+def _phase_split_line(graded: pd.DataFrame, phases: dict[int, str] | None) -> str:
+    """One descriptive regular/postseason line, only once a postseason pick
+    exists. Silent in a pure regular-season ledger so the common case stays
+    uncluttered."""
+    if not phases or graded.empty:
+        return ""
+    labels = graded["game_pk"].map(lambda pk: phases.get(int(pk), "regular"))
+    post = graded[labels == "postseason"]
+    if post.empty:
+        return ""
+    reg = graded[labels != "postseason"]
+    parts = []
+    for name, pool in (("regular", reg), ("postseason", post)):
+        if pool.empty:
+            parts.append(f"{name} 0 graded")
+            continue
+        st = _ledger_stats(pool)
+        parts.append(f"{name} {len(pool)} graded, ROI {st['roi']:+.2f}%")
+    return "- **By phase:** " + " · ".join(parts) + " (descriptive; see the caveat above)"
+
+
+def _segment_blocks(
+    sid: str, scfg: dict, picks: pd.DataFrame, phases: dict[int, str] | None = None
+) -> list[str]:
     """Per-strategy section body: verdict on the lineage pool (if criteria
     exist), then SCREEN blocks for every out-of-lineage hash segment."""
     meta = scfg["strategy"]
@@ -272,8 +328,11 @@ def _segment_blocks(sid: str, scfg: dict, picks: pd.DataFrame) -> list[str]:
             f"- **P/L:** ${s['profit']:+,.2f} on ${s['risked']:,.0f} risked",
             f"- **ROI:** {s['roi']:+.2f}%{se_txt}",
             f"- **Pending:** {len(pending)}",
-            "",
         ]
+        phase_line = _phase_split_line(graded, phases)
+        if phase_line:
+            out.append(phase_line)
+        out.append("")
         return out
 
     if criteria:
@@ -338,6 +397,12 @@ def write_ledger_report(cfg: dict) -> Path:
         path.write_text("\n".join(header + body) + "\n")
         return path
 
+    # Shown only once a postseason pick exists, so a regular-season-only
+    # ledger is not cluttered by a caveat about a population it has none of.
+    phases = _phase_by_game_pk()
+    if any(phases.get(int(pk)) == "postseason" for pk in picks["game_pk"].dropna()):
+        header += [POSTSEASON_CAVEAT, ""]
+
     # --- Strategy comparison ------------------------------------------------
     ledger_sids = [s for s in picks["strategy_id"].dropna().unique()]
     all_sids = list(dict.fromkeys(list(strategies.keys()) + ledger_sids))
@@ -395,7 +460,7 @@ def write_ledger_report(cfg: dict) -> Path:
             hyp = str(scfg["strategy"].get("hypothesis", "")).strip()
             if hyp:
                 body += [f"_{hyp}_", ""]
-            body += _segment_blocks(sid, scfg, mine)
+            body += _segment_blocks(sid, scfg, mine, phases)
         else:
             body += [
                 "_No YAML registered for this id (retired). Descriptive stats only._",

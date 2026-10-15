@@ -178,3 +178,49 @@ def test_passes_render_net_of_later_picks(tmp_root, cfg):
     text = write_daily_report("2026-08-01", cfg, credits_note="").read_text()
     assert "game 99" in text
     assert "game 1:" not in text  # later pick supersedes the pass
+
+
+def _games(*rows) -> pd.DataFrame:
+    """Minimal games.csv — only the two columns the phase lookup reads."""
+    return pd.DataFrame(
+        [{"game_pk": pk, "game_type": gt} for pk, gt in rows],
+        columns=["game_pk", "game_type"],
+    )
+
+
+def test_regular_season_ledger_shows_no_postseason_caveat(tmp_root, cfg):
+    """The common case stays uncluttered: no caveat and no by-phase line when
+    the ledger holds nothing but regular-season picks."""
+    store.upsert_games(_games((1, "R"), (2, "R")))
+    store.append_picks(
+        pd.DataFrame(
+            [
+                _pick("a", "win", 66.67, settled="2026-08-02T14:00:00Z"),
+                _pick("b", "loss", -100.0, game_pk=2, settled="2026-08-02T14:00:00Z"),
+            ]
+        )
+    )
+    text = write_ledger_report(cfg).read_text()
+    assert "different regime" not in text
+    assert "By phase" not in text
+
+
+def test_postseason_pick_adds_caveat_and_by_phase_split(tmp_root, cfg):
+    """A postseason pick is pooled into the same verdict segment — the engine
+    is unchanged — but the report must say the population is not like-for-like
+    and show the split. Regression guard for the 2026-10-15 scope fix."""
+    store.upsert_games(_games((1, "R"), (2, "L")))  # L = LCS
+    store.append_picks(
+        pd.DataFrame(
+            [
+                _pick("a", "win", 66.67, settled="2026-08-02T14:00:00Z"),
+                _pick("b", "loss", -100.0, game_pk=2, settled="2026-10-14T14:00:00Z"),
+            ]
+        )
+    )
+    text = write_ledger_report(cfg).read_text()
+    assert "**Postseason picks are a different regime.**" in text
+    assert "- **By phase:** regular 1 graded" in text
+    assert "postseason 1 graded" in text
+    # Pooled, not quarantined: both picks still count in the one record.
+    assert "1-1-0" in text

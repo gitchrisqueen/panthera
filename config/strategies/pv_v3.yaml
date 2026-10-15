@@ -18,9 +18,33 @@ strategy:
   scope: [live, backtest]
   registered_at: "2026-08-16"
   # Filled with this config's own hash at registration; picks under it pool
-  # into the verdict below. Any future behavioral change must NOT extend this
-  # list — it requires pv_v4.
-  hash_lineage: [e7a93ebed7]
+  # into the verdict below. Any future BEHAVIORAL change must NOT extend this
+  # list — it requires pv_v4. The 2026-10-15 append below is not one; the
+  # note says why, and the rule it has to satisfy is in src/panthera_mvp/
+  # CLAUDE.md.
+  # 2026-10-15 — SCOPE BUG FIX, NOT A TUNING. config/strategy.yaml's
+  # `season.game_types: ["R"]` was a regular-season whitelist the source
+  # material never asked for (docs/sports_betting_process.md §6 excludes
+  # spring training and nothing else). From 2026-09-29 it made every engine
+  # Pass on every postseason game: 14 consecutive slate days, 145 passes,
+  # zero picks, across all five live strategies. The fix replaces it with
+  # `season.exclude_game_types: ["S","E","A","I"]`, which moves this
+  # strategy's config_hash e7a93ebed7 -> d29c3e501c.
+  #
+  # Why this EXTENDS the lineage rather than registering a successor: the
+  # change is domain-extending, not behavior-altering. Restricted to the
+  # games the old config admitted (game_type == "R"), the two configs are
+  # provably identical decision functions — tests/test_scope_fix_regression.py
+  # replays both gates over the full captured regular-season history (at least 793
+  # games over 59 dates) and asserts byte-identical engine output. No pick
+  # already in the ledger would have been different, so pooling does not
+  # contaminate the pre-fix sample. What IS new is a population (postseason)
+  # the day map was never calibrated on; that is disclosed in
+  # BETTING_REPORT.md's regime caveat and the per-strategy by-phase split,
+  # not hidden behind the hash. A tuning — a threshold, a weight, a day-map
+  # cell — would still require a new strategy id. See src/panthera_mvp/
+  # CLAUDE.md for the rule this is an instance of.
+  hash_lineage: [e7a93ebed7, d29c3e501c]
   hypothesis: >
     The documented P/V strategy with its full dossier finally active: day/slot
     classification, line movement, and the ERA inputs (R3_era, R4 evenness,

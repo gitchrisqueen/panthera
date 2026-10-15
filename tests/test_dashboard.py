@@ -313,3 +313,29 @@ def test_audit_ncaaf_fixture_matches_payload_shape(tmp_root):
     assert set(fixture["singles"][0]) == set(real["singles"][0])
     assert set(fixture["strategies"][0]["singles"]) == set(real["strategies"][0]["singles"])
     assert fixture["tickets"], "the audit fixture must carry tickets"
+
+
+def test_regime_note_tracks_the_markdown_caveat(tmp_root, cfg):
+    """The site carries the same postseason caveat as BETTING_REPORT.md, from
+    the same constant, and only once a postseason pick exists."""
+    from panthera_mvp.report import POSTSEASON_CAVEAT
+
+    store.upsert_games(
+        pd.DataFrame(
+            [{"game_pk": 1, "game_type": "R"}], columns=["game_pk", "game_type"]
+        )
+    )
+    store.append_picks(pd.DataFrame([_pick("a", "win", 66.67, settled="2026-08-02T14:00:00Z")]))
+    assert build_site_data()["regime_note"] is None
+
+    store.upsert_games(
+        pd.DataFrame(
+            [{"game_pk": 2, "game_type": "W"}], columns=["game_pk", "game_type"]
+        )
+    )
+    store.append_picks(
+        pd.DataFrame(
+            [_pick("b", "loss", -100.0, game_pk=2, settled="2026-10-14T14:00:00Z")]
+        )
+    )
+    assert build_site_data()["regime_note"] == POSTSEASON_CAVEAT

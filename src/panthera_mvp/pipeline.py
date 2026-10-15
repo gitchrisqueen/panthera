@@ -16,7 +16,12 @@ import pandas as pd
 
 from . import paths, store
 from .clients import espn, lumify, mlb, odds
-from .config import config_hash, load_config, load_strategy_configs
+from .config import (
+    StrategyConfigError,
+    config_hash,
+    load_config,
+    load_strategy_configs,
+)
 from .grading import grade_pending
 from .matching import match_events
 from .report import write_daily_report, write_ledger_report
@@ -25,6 +30,7 @@ from .strategy.dossier import Dossier, SeasonContext
 from .strategy.movement import extract_game_prices, extract_totals_prices
 from .strategy.registry import StrategyContext, engines
 from .strategy.rules import Pass, Pick
+from .strategy.season import in_scope
 from .strategy.slots import assign_slots
 from .timeutil import ET, now_utc, utc_iso
 
@@ -148,10 +154,23 @@ def _refresh_games(date_et: str) -> list[mlb.GameInfo]:
     return games
 
 
-def _build_season_context(date_et: str) -> SeasonContext | None:
+def _build_season_context(date_et: str, cfg: dict) -> SeasonContext | None:
     """One league-wide schedule call covering the season to date; feeds every
     dossier's recent-outcomes/trends fields (doc §3). Returns None when the
-    MLB API is unreachable — dossier tiebreaks then simply don't fire."""
+    MLB API is unreachable — dossier tiebreaks then simply don't fire.
+
+    Scope comes from `in_scope` — the same helper the engine gates use. These
+    two disagreed until 2026-10-15 (config there, a hardcoded `== "R"` here),
+    which is how a whitelist bug survived a config read. Postseason finals DO
+    belong here: in a series the previous head-to-head meeting is yesterday's
+    game, and that price is orig_rules' primary signal; excluding it would
+    reach months back for exactly the games the gate now admits.
+
+    `cfg` is the pipeline config, not a per-strategy one: the context is built
+    once and shared by every strategy (see cmd_picks). A strategy that one day
+    needs a different context scope is the moment to build per-strategy
+    contexts — not before.
+    """
     fixture = os.environ.get("PANTHERA_MLB_FIXTURE")
     if fixture:
         # Offline: any finals present in the fixture feed the context; a
@@ -160,7 +179,11 @@ def _build_season_context(date_et: str) -> SeasonContext | None:
             payload = json.load(fh)
         ctx = SeasonContext()
         for g in mlb.parse_schedule(payload):
-            if g.game_type == "R" and g.status == "Final" and g.home_score is not None:
+            if (
+                in_scope(g.game_type, cfg)
+                and g.status == "Final"
+                and g.home_score is not None
+            ):
                 ctx.add_final(g.home_team_id, g.away_team_id, g.home_score, g.away_score)
         _backfill_h2h_prices(ctx)
         return ctx
@@ -173,7 +196,7 @@ def _build_season_context(date_et: str) -> SeasonContext | None:
         return None
     ctx = SeasonContext()
     for g in finals:
-        if g.game_type != "R" or g.status != "Final":
+        if not in_scope(g.game_type, cfg) or g.status != "Final":
             continue
         if g.home_score is None or g.away_score is None:
             continue
@@ -454,7 +477,7 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
     # Shared prep — one schedule refresh, one season context, one lines slice
     # for every strategy; N strategies cost zero extra API credits.
     games = _refresh_games(d)
-    season_ctx = _build_season_context(d)
+    season_ctx = _build_season_context(d, cfg)
     events_by_pk = (
         lines_today.dropna(subset=["game_pk"])
         .drop_duplicates("game_pk")
@@ -483,6 +506,13 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
                 existing,
                 splits_lookup=splits_lookup,
             )
+        except StrategyConfigError:
+            # NEVER isolated. A config fault hits every strategy identically,
+            # so swallowing it per-strategy turns a broken deploy into a
+            # silent zero-pick day that still exits 0 and commits. Let it
+            # abort the run; `load_strategy_configs` above normally catches
+            # this first, and this is the backstop.
+            raise
         except Exception as exc:  # isolate: one bad engine must not lose the slate
             note = f"{sid}: engine error — {type(exc).__name__}: {exc}"
             print(f"[picks:{sid}] ERROR {note}", file=sys.stderr)

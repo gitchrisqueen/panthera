@@ -101,7 +101,14 @@ def schedule_csv(season: int):
 
 
 def fetch_season_schedule(season: int, game_types: tuple[str, ...] = ("R",)):
-    """One request per season. Returns the SCHEDULE_COLUMNS frame."""
+    """One request per season. Returns the SCHEDULE_COLUMNS frame.
+
+    The ("R",) default is a property of the ARCHIVE this feeds, not of the
+    strategy's scope: the sbro odds workbooks backtest/loader.py reads are
+    regular-season only, so pulling other types would find no odds to join.
+    Live scope lives in config `season.exclude_game_types` — see
+    strategy/season.py. Do not "fix" one to match the other.
+    """
     resp = requests.get(
         f"{BASE}/schedule",
         params={
