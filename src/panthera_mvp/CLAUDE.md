@@ -57,7 +57,7 @@
   `config/strategies/`; baselines fav_ml/dog_ml live here),
   `splits_signal.py` (Lumify splits engines).
 - `doctor.py` — `panthera-mvp doctor`: cross-sport health and staleness
-  checks (H01-H09), thresholds in `config/health.yaml` (NOT
+  checks (H01-H10), thresholds in `config/health.yaml` (NOT
   `strategy.yaml`, which is hashed into every pick). Read-only and
   zero-API-cost by contract — every input is a committed CSV, enforced by
   `tests/test_doctor.py::test_doctor_makes_no_network_calls`. Each sport's

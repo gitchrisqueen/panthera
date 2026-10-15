@@ -716,3 +716,42 @@ def test_scoreless_final_ignores_a_called_off_game(health_root):
         if f.check == "scoreless_final"
     ]
     assert hits == []
+
+
+def test_scoreless_final_prescribes_no_noop_command_for_mlb(health_root):
+    """H10 must not hand the operator a command that does nothing.
+
+    `cmd_grade` for MLB and NCAAF builds its date list from PENDING picks and
+    `--date` only filters that list — and H10 exists precisely for a game
+    with no pending pick, so `grade --date` would refresh nothing. An alert
+    whose remediation is a no-op teaches the reader to ignore the alert.
+    """
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].suggested_command is None
+    assert "docs/mvp-design.md" in hits[0].detail
+
+
+def test_scoreless_final_alerts_rather_than_only_logging(health_root):
+    """The check was added to close a detection gap, so its level must be one
+    that `alert.open_issue_on` actually routes. At `warn` — with the shipped
+    `open_issue_on: [fail]` — it would open no issue and the job would stay
+    green: a detector that detects and tells nobody."""
+    cfg = doctor.load_health_config()
+    alert_on = (cfg["doctor"].get("alert") or {}).get("open_issue_on", ["fail"])
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(sport="mlb", cfg=cfg, since="2026-09-01")["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].level in alert_on, (
+        f"H10 emits level {hits[0].level!r}, which alert.open_issue_on "
+        f"{alert_on} does not route — it would alert nobody"
+    )

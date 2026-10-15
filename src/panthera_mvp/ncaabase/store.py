@@ -1,7 +1,7 @@
 """College-baseball CSV datastore: games (upsert, finals sticky), lines
 (append, dedupe), single-bet picks (append-once, settle in place).
 
-Finals are sticky: an incoming non-final row never replaces a stored Final
+Finals are sticky: an incoming row never blanks a stored final's score
 (an ESPN-settled game stays settled when ncaa-api still says "pre" on the
 next refresh). An incoming Final always wins — ncaa-api is the official
 source, so it overwrites an ESPN fallback score.

@@ -316,6 +316,13 @@ alternative, if you would rather not stop the pipeline, is to keep the
 the revert — it is independent of the called-off logic and nothing else
 depends on removing it.
 
+**What to revert.** The called-off settlement change is PR #69, squashed onto
+`main` as `6acd4e6`. A follow-up PR is stacked on top of it (the gauntlet
+fix-forward: `src/panthera_mvp/doctor.py`, `config/health.yaml`,
+`src/panthera_mvp/ncaabase/store.py`, `docs/mvp-design.md`), so revert that
+one FIRST — otherwise `git revert` conflicts outside `data/` and `reports/`,
+where the recipe below does not expect conflicts.
+
 Identify the merge form first, the same way as above:
 `git rev-list --parents -n 1 <sha>` — three hashes is a merge commit, two is a
 squash. This repo squashes recent PRs, so expect the squash case.
@@ -333,8 +340,8 @@ rebases onto whatever it finds, would cement the loss.
   and keep the datastore as it stands:
 
   ```bash
-  git revert -n <squash sha>
-  git checkout HEAD -- data/ reports/
+  git revert -n 6acd4e6
+  git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
   git push origin main
   ```
@@ -350,7 +357,8 @@ rebases onto whatever it finds, would cement the loss.
 
 `git revert -n` is **expected** to report conflicts under `data/` and
 `reports/`, because the bots rewrite those files several times a day. Taking
-`HEAD` for those paths — the `git checkout HEAD -- data/ reports/` line — IS
+`HEAD` for those paths — the `git checkout HEAD -- docs/ data/ reports/
+'**/CLAUDE.md'` line — IS
 the resolution; do not hand-merge them.
 
 **Why the data must stay.** The three picks are settled `void`, and
@@ -412,8 +420,10 @@ columns. It is there for the `status` block, which is what the fix turns on.
   `snapshot` and `picks` run, several times a day, on games that are already
   settled. This is the most damaging regression and the least visible: watch
   for a `games.csv` row going from Final-with-scores to Final-with-empty-scores
-  in a bot commit. `doctor` H05 only catches it once a pick on that game has
-  been pending past its threshold, so it is not an early warning.
+  in a bot commit. `doctor` H10 `scoreless_final` scans `games.csv` for it
+  directly and opens an issue regardless of whether any pick is pending; H05
+  `pending_age` catches it only once a pick on that game has been pending
+  past its threshold, so H05 alone was never an early warning.
 - A game recorded `Final` with no score becomes unsettleable again, and a
   called-off game is stored as `Final` again.
 - `grading`'s void branch becomes unreachable again, so no *new* wrong
@@ -425,8 +435,10 @@ columns. It is there for the `status` block, which is what the fix turns on.
   `git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'`.
 
 **Owner and alert path.** No separate service to redeploy: GitHub Actions
-picks up `main` on the next scheduled run. The detector for this class of
-fault is `panthera-mvp doctor` H05 (`pending_age`), which names the blocked
+picks up `main` on the next scheduled run. The detectors for this class of
+fault are `panthera-mvp doctor` H10 (`scoreless_final`), which scans
+`games.csv` for a `Final` with no score whether or not a pick is pending,
+and H05 (`pending_age`), which names the blocked
 game and its status; `.github/workflows/health.yml` opens the issue. A pick
 pending on a `Suspended` game is NOT a fault — the game is resumed under the
 same `game_pk` and H05 says so and offers no `grade` remediation, because
