@@ -859,6 +859,62 @@ def check_config_sanity(cfg: dict) -> list[Finding]:
     return out
 
 
+def check_scoreless_final(
+    data: SportData, cfg: dict, today: date, since: str
+) -> list[Finding]:
+    """H10 — a row stored `Final` with no score.
+
+    `data/CLAUDE.md` calls this "a fault, not a result": such a row can settle
+    nothing, and it is how the 2026-09-27 rainout stranded three picks for 18
+    days. Until now the ONLY thing that noticed was H05, and only once a pick
+    on that game had been pending past its threshold — so a scoreless final
+    whose picks were already settled, or that never carried a pick at all,
+    was reported by nothing while still feeding the backtest and the reports.
+
+    This reads games.csv directly, independent of any pick.
+    """
+    c = _check_cfg(cfg, "scoreless_final")
+    if data.games.empty:
+        return []
+    games = data.games
+    if not {"status", "home_score", "away_score"}.issubset(games.columns):
+        return []
+    window = games[games["game_date_et"].astype(str) >= since]
+    if window.empty:
+        return []
+    missing = window["home_score"].isna() | window["away_score"].isna()
+    bad = window[(window["status"].astype(str) == "Final") & missing]
+    if bad.empty:
+        return []
+
+    key = "game_pk" if "game_pk" in bad.columns else bad.columns[0]
+    ids = [str(v) for v in bad[key].tolist()[:20]]
+    oldest = str(bad["game_date_et"].min())
+    return [
+        Finding(
+            id="H10",
+            check="scoreless_final",
+            sport=data.sport,
+            level=str(c.get("level", "warn")),
+            title=f"{len(bad)} game(s) stored Final with no score",
+            detail=(
+                f"{len(bad)} row(s) in this sport's games.csv are `Final` with a "
+                f"missing home or away score, oldest {oldest}. A Final with no "
+                "score is a fault, not a result: it can settle no pick, and it "
+                "still feeds the reports and the backtest. Either the feed never "
+                "returned a linescore, or the game was called off and its real "
+                "status was collapsed to Final \u2014 check `detailedState` for the "
+                "game and let the finals fallback rewrite it."
+            ),
+            since=oldest,
+            evidence={"count": int(len(bad)), "oldest_date": oldest, "ids": ids},
+            suggested_command=(
+                f"panthera-mvp {_cli_prefix(data.sport)}grade --date {oldest}"
+            ),
+        )
+    ]
+
+
 # --------------------------------------------------------------------------
 # orchestration
 # --------------------------------------------------------------------------
@@ -873,6 +929,7 @@ WINDOW_CHECKS = (
     check_snapshot_coverage,
     check_pending_age,
     check_unmatched_slate,
+    check_scoreless_final,
 )
 
 #: H07/H08/H09 measure CORRECTNESS, not activity, and are deliberately NOT

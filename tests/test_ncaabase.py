@@ -456,3 +456,56 @@ def test_espn_fallback_does_not_reopen_a_called_off_game(cbb_root):
     g = store.load_games().set_index("game_id").loc["6600003"]
     assert g["status"] == "Postponed"
     assert pd.isna(g["home_score"])
+
+
+def test_scoreless_final_does_not_overwrite_a_stored_final(tmp_root):
+    """A college-baseball Final with no score must not blank a complete one.
+
+    MLB (`store.upsert_games`) and NCAAF (`ncaaf/store.upsert_games`) key this
+    guard on the INCOMING row's score; this module keyed it on the incoming
+    row's status alone, so anything arriving as `Final` was admitted and could
+    overwrite a settled result with blanks — the same unsettleable shape the
+    finals fallback exists to repair. `ncaaf/store.py`'s docstring claims all
+    three key it the same way; this test is what makes that true.
+    """
+    from panthera_mvp.ncaabase import store as nb_store
+
+    settled = pd.DataFrame(
+        [{"game_id": "401", "game_date_et": "2026-05-01", "status": "Final",
+          "home_score": 7, "away_score": 3, "start_time_utc": "2026-05-01T23:00:00Z"}]
+    )
+    nb_store.upsert_games(settled)
+
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "401", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": None, "away_score": None,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    row = nb_store.load_games().iloc[0]
+    assert int(row["home_score"]) == 7, "a scoreless Final blanked a settled result"
+    assert int(row["away_score"]) == 3
+
+
+def test_a_real_correction_to_a_scoreless_final_still_lands(tmp_root):
+    """The guard rejects an ABSENT score, never a corrected one — otherwise
+    the hole it protects could never be filled."""
+    from panthera_mvp.ncaabase import store as nb_store
+
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "402", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": None, "away_score": None,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "402", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": 5, "away_score": 1,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    row = nb_store.load_games().iloc[0]
+    assert int(row["home_score"]) == 5

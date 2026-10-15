@@ -286,6 +286,36 @@ reverted code nothing can ever settle them again, because `grading` settles
 from a score that does not exist and `store.settle_picks` only rewrites rows
 still `pending`. That is the exact state the change existed to clear.
 
+**When to roll back, and when not to.** Do not decide this from first
+principles at 2 a.m.; the observable triggers are:
+
+- a bot commit moves a `games.csv` row from Final-with-scores to
+  Final-with-EMPTY-scores (the blank-score regression below), or
+- a game that was actually played is stored `Cancelled`/`Postponed` and its
+  picks are voided — check `detailedState` against `statsapi.mlb.com` before
+  believing the row.
+
+**Not** a trigger: a pick left pending on a `Suspended` game. That is correct
+behaviour — a suspended game resumes under the same `game_pk`, so its picks
+must stay pending until the real final arrives. `VOID_STATUSES` deliberately
+excludes it.
+
+**Contain first, then revert.** The blank-score regression is driven by the
+scheduled writers, several times a day, so stop them before you push or the
+damage continues while you work:
+
+```bash
+for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml; do
+  gh workflow disable "$w"
+done
+```
+
+Re-enable with `gh workflow enable` once the revert is on `main`. The
+alternative, if you would rather not stop the pipeline, is to keep the
+`_is_settled_final` / `_has_both_scores` hunk in `store.upsert_games` OUT of
+the revert — it is independent of the called-off logic and nothing else
+depends on removing it.
+
 Identify the merge form first, the same way as above:
 `git rev-list --parents -n 1 <sha>` — three hashes is a merge commit, two is a
 squash. This repo squashes recent PRs, so expect the squash case.
@@ -306,7 +336,13 @@ rebases onto whatever it finds, would cement the loss.
   git revert -n <squash sha>
   git checkout HEAD -- data/ reports/
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
+  git push origin main
   ```
+
+  **The push is the step that changes production.** Without it the revert is
+  local only and every scheduled run still uses the old code — GitHub Actions
+  reads `main`. Confirm with `git ls-remote origin main` that the revert sha
+  is what the remote now points at, then re-enable the workflows.
 
 - **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
   first line. Keep the `-n`: without it the revert commits on its own,
@@ -338,12 +374,20 @@ check at `HEAD`:
   checkout**, because `_refresh_games` writes `games.csv` in place:
 
   ```bash
-  cp -R data /tmp/panthera-check
-  PANTHERA_ROOT=/tmp/panthera-check .venv/bin/python -c \
+  CHECK=$(mktemp -d)            # not a fixed /tmp path: predictable and
+  cp -R data "$CHECK"/          # pre-creatable on a shared host
+  PANTHERA_ROOT="$CHECK" .venv/bin/python -c \
     "from panthera_mvp.pipeline import _refresh_games; _refresh_games('2026-09-27')"
   diff <(grep '^823490,' data/games/games.csv) \
-       <(grep '^823490,' /tmp/panthera-check/games/games.csv)
+       <(grep '^823490,' "$CHECK"/data/games/games.csv)
   ```
+
+  The copy must land at `$CHECK/data`, which is why `cp -R data "$CHECK"/`
+  has the trailing slash: `paths.repo_root()` returns `$PANTHERA_ROOT` and
+  `paths.data_dir()` returns `repo_root()/"data"`. Copy to `$CHECK` without
+  it and the run starts from an EMPTY store — `upsert_games`' guard never
+  engages, and the diff compares the untouched copy against itself and
+  passes no matter what the code does.
 
   Expect the `status`/`winner`/`run_diff`/`total_runs` columns to match. The two
   ERA columns may come back EMPTY rather than `5.4`/`4.11`: they depend on the
