@@ -77,6 +77,25 @@ from panthera_mvp.timeutil import parse_utc
 #: Exhibition codes the current config excludes.
 EXHIBITION = ("S", "E", "A", "I")
 
+#: `splits_signal._splits_guards` ages captured splits against `now_utc()`.
+#: Wall clock would make this file flaky — the two arms run seconds apart, so
+#: a splits row sitting on the `max_staleness_hours` boundary can read fresh
+#: for one arm and stale for the other, and the whole premise here is that
+#: both arms see identical inputs. `_replay` pins this to each day's own
+#: capture time + 1h, which is both deterministic and what a real pick run
+#: sees.
+_FAKE_NOW: list = [None]
+
+
+@pytest.fixture(autouse=True)
+def _pinned_splits_clock(monkeypatch):
+    import panthera_mvp.strategy.splits_signal as splits_signal
+
+    real = splits_signal.now_utc
+    monkeypatch.setattr(
+        splits_signal, "now_utc", lambda: _FAKE_NOW[0] or real()
+    )
+
 #: Minimums the docs and the pv_v3 YAML comment cite. Asserted so the written
 #: claim cannot drift away from what the proof actually covers.
 MIN_GAMES, MIN_DATES = 793, 59
@@ -173,6 +192,11 @@ def captured():
             .set_index("game_pk")["odds_event_id"]
             .to_dict()
         )
+        captured_at = (
+            pd.to_datetime(splits_today["captured_at"], utc=True, errors="coerce").max()
+            if not splits_today.empty and "captured_at" in splits_today.columns
+            else pd.NaT
+        )
         entries, finals = [], []
         for row in day_games.itertuples(index=False):
             if str(row.status) == "Final" and pd.notna(row.home_score):
@@ -216,7 +240,14 @@ def captured():
                     ),
                 }
             )
-        days.append({"date": day, "entries": entries, "finals": finals})
+        days.append(
+            {
+                "date": day,
+                "entries": entries,
+                "finals": finals,
+                "splits_captured_at": None if pd.isna(captured_at) else captured_at,
+            }
+        )
 
     has_splits = not splits.empty
     return {"days": days, "games": games, "has_splits": has_splits}
@@ -263,6 +294,10 @@ def _replay(captured, scfg: dict, *, scope) -> list[str]:
     out: list[str] = []
 
     for day in captured["days"]:
+        cap = day["splits_captured_at"]
+        _FAKE_NOW[0] = (
+            (cap + pd.Timedelta(hours=1)).to_pydatetime() if cap is not None else None
+        )
         dtype = day_type(pd.Timestamp(day["date"]).date(), scfg)
         slot_map = assign_slots(
             [(e["game"].game_pk, e["game"].start_utc) for e in day["entries"]],
@@ -319,8 +354,13 @@ def test_captured_splits_reach_the_splits_engines(captured):
     assert captured["has_splits"], "no captured splits — the splits arms prove nothing"
     scfg = load_strategy_configs(known_engines=set(engines()))["sharp_split"]
     outcomes = _replay(captured, scfg, scope=in_scope)
-    assert any("no-splits" not in o for o in outcomes), (
-        "every sharp_split context short-circuited on missing splits"
+    reached = [
+        o for o in outcomes if "no-splits" not in o and "stale" not in o
+    ]
+    assert reached, (
+        "every sharp_split context short-circuited in _splits_guards (missing or "
+        "stale splits), so the sharp_split/fade_public lineage extensions would "
+        "rest on nothing"
     )
 
 
