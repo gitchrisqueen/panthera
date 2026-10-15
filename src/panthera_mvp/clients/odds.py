@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from dataclasses import dataclass
 
 import pandas as pd
@@ -66,6 +67,22 @@ class OddsRequestError(RuntimeError):
 class CreditInfo:
     used: int | None
     remaining: int | None
+
+
+def api_key_from_env() -> str:
+    """Read ODDS_API_KEY and hand it straight to `fetch_snapshot`.
+
+    Callers use `odds.fetch_snapshot(odds.api_key_from_env(), ...)` rather than
+    binding the key to a local of their own: a caller's frame is in the
+    traceback of a failed snapshot, and a local there would hold the key for any
+    renderer that prints locals, undoing the `del` inside `fetch_snapshot`. This
+    function has returned by the time the keyed call runs, so its own frame is
+    not in that traceback.
+    """
+    key = os.environ.get("ODDS_API_KEY")
+    if not key:
+        raise SystemExit("ODDS_API_KEY is not set")
+    return key
 
 
 def last_known_remaining() -> int | None:

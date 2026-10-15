@@ -191,12 +191,9 @@ def cmd_snapshot(
             events = json.load(fh)
         print(f"[ncaaf snapshot] dry-run: {len(events)} events from fixture")
     else:
-        api_key = os.environ.get("ODDS_API_KEY")
-        if not api_key:
-            raise SystemExit("ODDS_API_KEY is not set")
         try:
             events, info = odds.fetch_snapshot(
-                api_key,
+                odds.api_key_from_env(),
                 regions=ocfg["regions"],
                 markets=",".join(ocfg["markets"]),
                 min_credits_reserve=ocfg["min_credits_reserve"],

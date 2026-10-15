@@ -124,6 +124,34 @@ def test_scrub_applies_to_every_sport_key(tmp_root):
         assert sport_key in caught.value.url
 
 
+def test_no_caller_frame_holds_the_key(tmp_root, monkeypatch):
+    """The real production traceback runs through `cmd_snapshot`, not just
+    `fetch_snapshot`, so the caller's frame is rendered too. It must not bind
+    the key: callers pass `odds.api_key_from_env()` straight into the call,
+    and that helper has returned before the request is made.
+    """
+    from panthera_mvp import pipeline
+
+    monkeypatch.setenv("ODDS_API_KEY", KEY)
+    # Patch the constructor `fetch_snapshot` falls back to, so the keyed call
+    # fails without a socket and without cmd_snapshot passing a session.
+    monkeypatch.setattr(requests, "Session", lambda: _Session(status_code=401))
+
+    with pytest.raises(odds.OddsRequestError) as caught:
+        pipeline.cmd_snapshot("open")
+
+    exc = caught.value
+    frames = []
+    tb = exc.__traceback__
+    while tb is not None:
+        frames.append(tb.tb_frame.f_code.co_name)
+        tb = tb.tb_next
+    # The caller really is in the traceback being checked.
+    assert "cmd_snapshot" in frames
+    assert KEY not in _rendered(exc)
+    assert KEY not in _frame_locals(exc)
+
+
 def test_credit_guard_still_fires_before_any_request(tmp_root):
     """The disclosure fix must not have moved the guard: a low balance still
     raises CreditGuardError, and no request is attempted."""

@@ -60,12 +60,9 @@ def cmd_snapshot(label: str, dry_run: bool = False) -> None:
         info = odds.CreditInfo(used=None, remaining=None)
         print(f"[snapshot] dry-run: {len(events)} events from fixture")
     else:
-        api_key = os.environ.get("ODDS_API_KEY")
-        if not api_key:
-            raise SystemExit("ODDS_API_KEY is not set")
         try:
             events, info = odds.fetch_snapshot(
-                api_key,
+                odds.api_key_from_env(),
                 regions=cfg["odds_api"]["regions"],
                 markets=",".join(cfg["odds_api"]["markets"]),
                 min_credits_reserve=cfg["odds_api"]["min_credits_reserve"],

@@ -27,8 +27,20 @@ window in which to verify before committing. **Expect a gap.** Any live
 snapshot that fires between the regeneration and the secret update gets a 401,
 `fetch_snapshot` raises `OddsRequestError`, and the workflow step exits
 non-zero: the run goes **red and writes no picks**, which is the designed
-failure and not something to work around. Odds snapshots run at 10:35, 16:50
-and 18:20 ET, so rotating outside those minutes keeps the gap invisible.
+failure and not something to work around.
+
+Live snapshots fire more often than the three MLB runs, so no window is
+reliably quiet in FBS season:
+
+| When (ET) | Workflow | Credits |
+|---|---|---|
+| 10:35, 16:50, 18:20 daily | `mvp-morning`, `mvp-pregame`, `mvp-close` | 3 each |
+| Sun + Wed 19:10 | `ncaaf.yml` `prep` — a scheduled run leaves `inputs.dry_run` empty, so the step runs `--odds live` | 3, skipped with nothing upcoming |
+| every 30 min, 09:05–00:35 | `ncaaf.yml` `picks --auto` | 3, only when the day's first kickoff is 15–90 min away |
+
+Out of FBS season the three MLB minutes are the whole set. In season, pick a
+moment with no kickoff within 90 minutes, and expect that a rotation may still
+cost one red run.
 
 1. Regenerate in the provider console.
 2. **Immediately** set the new value: repo **Settings → Secrets and variables →
@@ -37,8 +49,8 @@ and 18:20 ET, so rotating outside those minutes keeps the gap invisible.
 3. Verify with a dispatch, using the positive evidence below — not a green run.
 4. If verification fails, regenerate again and repeat from step 2. There is no
    old value to fall back to; the only recovery is a working new one.
-5. Record the date and the reason wherever this project's rotation history is
-   kept. The ["When to rotate"](#when-to-rotate) triggers are what read it.
+5. Append a line to the [rotation log](#rotation-log) at the bottom of this
+   file. The ["When to rotate"](#when-to-rotate) triggers are what read it.
 
 ## How to rotate — overlap available (`CFBD_API_KEY`)
 
@@ -46,7 +58,7 @@ and 18:20 ET, so rotating outside those minutes keeps the gap invisible.
 2. Set the new value as in step 2 above.
 3. Verify with a dispatch, using the positive evidence below.
 4. Retire the old key only after that verification produced its evidence line.
-5. Record the date and the reason, as above.
+5. Append a line to the [rotation log](#rotation-log), as above.
 
 ## Verifying a rotated key
 
@@ -89,6 +101,8 @@ the whole diagnosis:
 | `HTTP 429` | the monthly credit pool is exhausted or the rate limit was hit | check `data/odds/credit_log.csv`; the credit guard normally prevents this |
 | `HTTP 5xx` | the vendor is down | nothing; the next scheduled run picks it up |
 | `failed: ConnectionError` / `Timeout` | network or DNS, usually transient | nothing; the next run picks it up |
+| `SystemExit: ODDS_API_KEY is not set` | the secret was deleted rather than updated | set it again (step 2 above); no credits were spent |
+| `HTTP 404` | the sport key is not one the vendor serves | check the `sport_key` in the sport's config, not the key |
 
 ## When to rotate
 
@@ -112,8 +126,9 @@ log. GitHub's masking of the registered secret was the only barrier, and
 masking is best-effort.
 
 No run was found that demonstrably printed it: the odds-calling workflows have
-no failed run with a populated step list (the two that exist are queue
-cancellations), and Actions log text older than the API's retention window
+no failed run with a populated step list — the one that exists, run
+31119563595 (MVP Morning Run, 2026-08-06), is a queue cancellation whose job
+reports no steps — and Actions log text older than the API's retention window
 cannot be re-read to prove a negative. **So treat prior disclosure as
 possible, not as ruled out**, and do the following once:
 
@@ -124,8 +139,10 @@ possible, not as ruled out**, and do the following once:
    workflows) that predates the fix. Deleting the run is the only removal
    GitHub offers — individual log lines cannot be edited. Owner's action; an
    agent may list the candidate runs but deletes nothing.
-3. Record both in the rotation history, so the next reader knows the key in
-   use post-dates the fix.
+3. Record both in the [rotation log](#rotation-log), so the next reader knows
+   the key in use post-dates the fix. The owner is notified of steps 1 and 2
+   through this project's task tracker, not by this file — a document is a
+   record, never a trigger.
 
 `LUMIFY_API_KEY` and `CFBD_API_KEY` were never URL-borne by this repository
 (see below) and are not part of this one-time action.
@@ -138,10 +155,24 @@ Four places put a key on the wire. Each is accounted for:
   is the only form The Odds API accepts. Every `requests` failure is converted
   to `OddsRequestError`, carrying the status code and the key-free base URL and
   nothing else, raised outside the `except` handler so the original is not
-  reachable through `__cause__` or `__context__`, with `api_key` deleted from
-  the frame first so a locals-printing renderer cannot reach it either.
-  `tests/test_odds_credentials.py` fails the build if the key can reach an
-  exception message, its chain, a rendered traceback or a frame's locals.
+  reachable through `__cause__` or `__context__`.
+
+  A failed snapshot's traceback holds more than one frame, so the key is kept
+  out of all of them: `fetch_snapshot` deletes its own `api_key` before the
+  raise, and its three callers (`cmd_snapshot` in `pipeline.py`,
+  `ncaaf/pipeline.py` and `ncaabase/pipeline.py`) never bind the key at all —
+  they pass `odds.api_key_from_env()` straight into the call, and that helper
+  has returned before the request is made. `tests/test_odds_credentials.py`
+  fails the build if the key can reach an exception message, its chain, a
+  rendered traceback, or the locals of any frame in it, and one of its cases
+  raises through `cmd_snapshot` so a caller frame is really in the traceback
+  being checked.
+
+  One limit, stated rather than fixed: in the HTTP branch `fetch_snapshot`'s
+  frame still binds the `requests.Response`, whose `.url` carries the key as an
+  attribute. A locals renderer shows `<Response [401]>`, not the URL, and
+  nothing here recurses into attributes — but an error reporter that does would
+  reach it.
 - **`clients/cfbd.py`** — `CFBD_API_KEY` in an `Authorization: Bearer` header,
   so it is not part of any URL and cannot appear in a `requests` exception
   message. `ncaaf/picks.py` prints a CFBD exception to stderr; that is safe for
@@ -165,3 +196,13 @@ Four places put a key on the wire. Each is accounted for:
 GitHub masks registered secret values in Actions logs, but masking is
 best-effort — it breaks on encoded or line-split values — so it is treated as a
 second line of defence, never the first.
+
+## Rotation log
+
+Appended by the owner, newest last. **Dates and reasons only — never a key
+value, or any part of one.** An empty table means no rotation has been recorded
+here, which is not the same as none having happened.
+
+| Date | Secret | Why |
+|---|---|---|
+| | | |

@@ -187,12 +187,9 @@ def cmd_snapshot(label: str, dry_run: bool = False, force: bool = False) -> None
             print("[ncaabase snapshot] odds_api.enabled is false in config/ncaabase.yaml; "
                   "skipped (0 credits)")
             return
-        api_key = os.environ.get("ODDS_API_KEY")
-        if not api_key:
-            raise SystemExit("ODDS_API_KEY is not set")
         try:
             events, info = odds.fetch_snapshot(
-                api_key,
+                odds.api_key_from_env(),
                 regions=ocfg["regions"],
                 markets=",".join(ocfg["markets"]),
                 min_credits_reserve=ocfg["min_credits_reserve"],
