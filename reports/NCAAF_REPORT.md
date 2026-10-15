@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-14T23:21:02Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-15T13:27:43Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -28,13 +28,13 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 39 (19-18-0 W-L-P, 2 pending)
-- Staked $3,700, profit $-64.27, ROI -1.7%
+- Singles: 39 (19-20-0 W-L-P, 0 pending)
+- Staked $3,900, profit $-264.27, ROI -6.8%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-10-14 | Over 52.5 | Western Kentucky Hilltoppers @ Sam Houston Bearkats | -117 | S2 | pending |  |
-| 2026-10-14 | Kennesaw State Owls -2.5 | Kennesaw State Owls @ Missouri State Bears | -110 | S6 | pending |  |
+| 2026-10-14 | Over 52.5 | Western Kentucky Hilltoppers @ Sam Houston Bearkats | -117 | S2 | loss | $-100.00 |
+| 2026-10-14 | Kennesaw State Owls -2.5 | Kennesaw State Owls @ Missouri State Bears | -110 | S6 | loss | $-100.00 |
 | 2026-10-13 | Under 43.5 | Florida International Panthers @ Jacksonville State Gamecocks | -105 | S2 | loss | $-100.00 |
 | 2026-10-13 | Delaware Blue Hens -1 | Delaware Blue Hens @ Middle Tennessee Blue Raiders | -105 | S1 | loss | $-100.00 |
 | 2026-10-10 | Hawai'i Rainbow Warriors +21 | Hawai'i Rainbow Warriors @ Arizona State Sun Devils | -106 | S4 | win | $+94.34 |
@@ -71,11 +71,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
 | S1 | 10 | 5-5-0 | 50.0% | +2.4 pts |
-| S2 | 5 | 1-3-0 | 25.0% | -22.6 pts |
+| S2 | 5 | 1-4-0 | 20.0% | -27.6 pts |
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 3 | 2-1-0 | 66.7% | +19.0 pts |
-| S6 | 23 | 11-11-0 | 50.0% | +2.4 pts |
+| S6 | 23 | 11-12-0 | 47.8% | +0.2 pts |
 
 ### Decisions
 
