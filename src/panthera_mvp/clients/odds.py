@@ -43,6 +43,9 @@ class OddsRequestError(RuntimeError):
     replaced by this one, carrying the status code and the key-free base URL
     and nothing else, and raised outside the handler so the original is not
     reachable through `__cause__` or `__context__` either.
+
+    The response body is dropped deliberately, so the status code is the whole
+    diagnosis; `docs/secret-rotation.md` maps each status to an action.
     """
 
     def __init__(
@@ -142,6 +145,12 @@ def fetch_snapshot(
         # "Max retries exceeded with url: ...?apiKey=...".
         scrubbed = OddsRequestError(url, cause=type(exc).__name__)
     if scrubbed is not None:
+        # `del` first: this frame appears in the raised traceback, and its
+        # locals still bind the key. The default traceback renderer never
+        # prints locals, but a renderer that does -- `pytest --showlocals`,
+        # rich, an error reporter -- would expose the key past the scrubbed
+        # message.
+        del api_key
         # Raised OUTSIDE the handler on purpose. `raise ... from None` only
         # sets __suppress_context__, which stops the default traceback printer
         # from rendering the original -- the keyed exception object itself

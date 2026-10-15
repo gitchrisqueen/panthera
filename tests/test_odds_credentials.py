@@ -66,6 +66,17 @@ def _rendered(exc: BaseException) -> str:
     return "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
 
 
+def _frame_locals(exc: BaseException) -> str:
+    """Every local variable in every frame of the traceback, as a renderer that
+    prints locals would show them (`pytest --showlocals`, rich, Sentry)."""
+    out = []
+    tb = exc.__traceback__
+    while tb is not None:
+        out.extend(f"{k}={v!r}" for k, v in tb.tb_frame.f_locals.items())
+        tb = tb.tb_next
+    return "\n".join(out)
+
+
 @pytest.mark.parametrize("status", [401, 429, 500])
 def test_http_error_never_carries_the_api_key(tmp_root, status):
     sess = _Session(status_code=status)
@@ -75,6 +86,7 @@ def test_http_error_never_carries_the_api_key(tmp_root, status):
     exc = caught.value
     assert KEY not in str(exc)
     assert KEY not in _rendered(exc)
+    assert KEY not in _frame_locals(exc)
     assert "apiKey" not in str(exc)
     # The diagnostic survives the scrub.
     assert exc.status_code == status
@@ -96,6 +108,7 @@ def test_transport_error_never_carries_the_api_key(tmp_root, transport_exc):
     exc = caught.value
     assert KEY not in str(exc)
     assert KEY not in _rendered(exc)
+    assert KEY not in _frame_locals(exc)
     assert exc.status_code is None
     assert exc.cause == transport_exc.__name__
     assert exc.__cause__ is None and exc.__context__ is None

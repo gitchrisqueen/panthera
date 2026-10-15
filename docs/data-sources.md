@@ -16,7 +16,7 @@ below were verified 2026-08-01; re-check before integrating (tiers drift).
 | [Sportsbook Reviews Online archives](https://www.sportsbookreviewsonline.com/scoresoddsarchives/) | none | Historical open/close odds (2014–2021) for calibration | Files committed to `data/historical/raw/`; publication stopped after ~2021 |
 | [Lumify](https://lumify.ai) | `LUMIFY_API_KEY` (optional) | Public betting splits, collected in the morning and pregame runs | Free 1,000 non-expiring credits; guard in `clients/lumify.py`; skips silently without the key |
 
-Rotation owner and procedure for all three keys: [docs/secret-rotation.md](secret-rotation.md).
+Rotation owner and procedure for every key above, and for `CFBD_API_KEY` in the candidates table below: [docs/secret-rotation.md](secret-rotation.md).
 
 ## The key fact for NFL/NBA expansion
 
@@ -36,7 +36,7 @@ either alternate sports, cut to 2 snapshots/day each, or upgrade the plan.
 
 | Source | Auth / free tier | What it adds |
 |---|---|---|
-| [Lumify](https://lumify.ai/docs) | `apiKey` — 1,000 credits free (never expire), all endpoints, 20 req/min | **Public betting splits** (`.splits(id)`) for MLB/NFL/NCAAF — the first source that *directly measures* the Public-vs-Vegas premise instead of inferring it from line movement. Could power a new rule input (`public_bet_pct`) and validate R2's movement inference. |
+| [Lumify](https://lumify.ai/docs) | `LUMIFY_API_KEY`, sent by the SDK as an `Authorization: Bearer` header — 1,000 credits free (never expire), all endpoints, 20 req/min | **Public betting splits** (`.splits(id)`) for MLB/NFL/NCAAF — the first source that *directly measures* the Public-vs-Vegas premise instead of inferring it from line movement. Could power a new rule input (`public_bet_pct`) and validate R2's movement inference. |
 | [TheRundown](https://therundown.io/) | `apiKey` — free 20k datapoints/day, 3 sportsbooks | **Line-movement history archived since 2020** and intraday movement endpoints. Two uses: (1) richer live movement than our 3-snapshot budget, (2) a far better backtest corpus than open→close — could re-run calibration with real intraday movement. 30+ leagues incl. NFL/NBA. |
 | [Odds-API.io](https://docs.odds-api.io) | `apiKey` — free 100 req/hr, 2 recreational bookmakers | Backup/secondary odds feed (different vendor than our the-odds-api.com). Useful as a failover and a consensus cross-check; WebSocket on paid tiers. |
 
@@ -84,4 +84,12 @@ service; `statsapi.mlb.com` supersedes it. SuredBits is HTTP-only — excluded.
 - Free-tier limits documented at the top of the client + any hard credit
   guard mirrored from `clients/odds.py`.
 - New secrets must be added to the README setup section, root `CLAUDE.md`,
-  and the PR description that introduces them.
+  and the PR description that introduces them, plus the key table in
+  [docs/secret-rotation.md](secret-rotation.md).
+- **A source whose key travels as a query parameter must convert every
+  `requests` or SDK failure into a scrubbed error carrying no query string** —
+  `requests` puts the full request URL in the message of every exception it
+  raises, and this repository's Actions logs are public. The pattern is
+  `clients/odds.py::OddsRequestError`; ship a regression test modelled on
+  `tests/test_odds_credentials.py`. A key sent as a header (see
+  `clients/cfbd.py`) does not need this.
