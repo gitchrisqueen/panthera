@@ -36,11 +36,25 @@ reliably quiet in FBS season:
 |---|---|---|
 | 10:35, 16:50, 18:20 daily | `mvp-morning`, `mvp-pregame`, `mvp-close` | 3 each |
 | Sun + Wed 19:10 | `ncaaf.yml` `prep` — a scheduled run leaves `inputs.dry_run` empty, so the step runs `--odds live` | 3, skipped with nothing upcoming |
-| every 30 min, 09:05–00:35 | `ncaaf.yml` `picks --auto` | 3, only when the day's first kickoff is 15–90 min away |
+| hourly at :05 from 09:05, and :35 as well from 11:35, through 00:35 | `ncaaf.yml` `picks --auto` | 3, only when the day's first kickoff is 15–90 min away |
 
 Out of FBS season the three MLB minutes are the whole set. In season, pick a
 moment with no kickoff within 90 minutes, and expect that a rotation may still
 cost one red run.
+
+### After the gap
+
+- **Nothing was half-written.** In `mvp-morning.yml` the snapshot step runs
+  before splits, picks, reports and `Commit & push`, and none of those carries
+  `if: always()`, so a failed snapshot skips every later step and commits
+  nothing. The `grade` step that ran before it is discarded too, which is safe:
+  grading is idempotent and the next run redoes it.
+- **Re-dispatch the failed workflow** with `dry_run: false` once the secret is
+  updated. That doubles as the verification above — the same evidence line.
+- **Picks for games that already started are gone, not deferred.** `cmd_picks`
+  skips a game whose start time has passed (`# game already started`), and the
+  late-run check writes a durable note. A gap taken inside a slate window costs
+  that slate's picks permanently; one taken between windows costs nothing.
 
 1. Regenerate in the provider console.
 2. **Immediately** set the new value: repo **Settings → Secrets and variables →
@@ -83,7 +97,7 @@ rotation even when the run is green:
 | Key | Dispatch | Evidence that the key was used |
 |---|---|---|
 | `ODDS_API_KEY` | **NCAAF Strategy** (`ncaaf.yml`), `task: prep`, `dry_run: false` — 3 credits, in FBS season | `[ncaaf snapshot] <N> events; credits used=... remaining=...` **and** a new row in `data/odds/credit_log.csv` |
-| `ODDS_API_KEY`, out of FBS season | **NCAAF Capture** (`ncaaf-capture.yml`) or **NCAA Baseball Capture** (`ncaabase-capture.yml`) with `odds: live` — these snapshot unconditionally, 3 credits — or **MVP Morning Run** (`mvp-morning.yml`) with `dry_run: false` during MLB season | the same `events; credits used=...` line and `credit_log.csv` row |
+| `ODDS_API_KEY`, out of FBS season | **NCAAF Capture** (`ncaaf-capture.yml`) or **NCAA Baseball Capture** (`ncaabase-capture.yml`) with `odds: live` — these skip the season and `enabled` gates, 3 credits — or **MVP Morning Run** (`mvp-morning.yml`) with `dry_run: false` during MLB season | the same `events; credits used=...` line (prefixed `[ncaaf snapshot]`, `[ncaabase snapshot]` or `[snapshot]` by workflow) and a `credit_log.csv` row. The shared credit guard still applies — reserve 60 for NCAAF, 90 for college baseball — so late in a heavy month a capture dispatch can still print `SKIPPED` and prove nothing |
 | `CFBD_API_KEY` | **NCAAF Strategy**, `task: prep`, `dry_run: false` — the same dispatch; its SP+ pull passes `refresh=True`, so it always hits the network and never answers from `data/ncaaf/cfbd/` | `[ncaaf prep] SP+ <year>: <N> teams; <M> venues` |
 | `LUMIFY_API_KEY` | **MVP Splits Collection** (`mvp-splits.yml`), `dry_run: false` — manual-only and built for this check | `[splits] <N> events with splits (<label>); credits ...` |
 
@@ -109,6 +123,18 @@ the whole diagnosis:
 - **Routinely:** no fixed schedule. These are read-only, low-value keys with a
   credit cap as their only real exposure; a calendar rotation would cost more
   attention than it buys.
+**How a dead key is noticed.** Nothing watches the keys directly. The alerts
+are, in the order they arrive:
+
+1. **GitHub's failed-run notification** to the repository owner — the red
+   snapshot run is the first and only immediate signal. `health.yml` always
+   exits 0 by design, so it will never turn CI red for this.
+2. **Next day, 12:05 ET:** `panthera-mvp doctor` files H03 `data_staleness`
+   and H04 `snapshot_coverage` as `panthera-health` issues (one per
+   `<sport>/<check>` fingerprint). The issue is the alert.
+3. H08 `credit_floor` is about the credit *balance*, so it does not fire for a
+   revoked or wrong key — only for an exhausted one.
+
 - **Immediately,** on any of: a key appearing in a log, a traceback, a
   committed file or a screenshot; an unexplained drop in remaining credits
   (`data/odds/credit_log.csv`, `data/splits/credit_log.csv` — `doctor`'s H08
@@ -132,15 +158,35 @@ reports no steps — and Actions log text older than the API's retention window
 cannot be re-read to prove a negative. **So treat prior disclosure as
 possible, not as ruled out**, and do the following once:
 
-1. **Rotate `ODDS_API_KEY`** by the no-overlap procedure above, as part of
-   shipping this change. Owner's action.
-2. **Delete any failed run of an odds-calling workflow** (`MVP Morning Run`,
-   `MVP Pregame Run`, `MVP Close Snapshot`, `NCAAF Strategy`, the two capture
-   workflows) that predates the fix. Deleting the run is the only removal
-   GitHub offers — individual log lines cannot be edited. Owner's action; an
-   agent may list the candidate runs but deletes nothing.
-3. Record both in the [rotation log](#rotation-log), so the next reader knows
-   the key in use post-dates the fix. The owner is notified of steps 1 and 2
+**Order matters, and getting it wrong reprints the key.** Scheduled crons run
+the **default branch** only (`.github/workflows/CLAUDE.md`), so until this fix
+is merged to `main` the live code is still the pre-fix path. Regenerating the
+key first means the 401 during the rotation gap is rendered by that pre-fix
+path — printing the **new** key into a public log, the exact failure this
+change exists to stop. The "expect a red run carrying `OddsRequestError`"
+behaviour described above is only true once the fix is on the default branch.
+
+1. **Merge this fix to `main` first**, and confirm one scheduled odds run has
+   executed from the default branch since. Only then regenerate
+   `ODDS_API_KEY`, by the no-overlap procedure above. Owner's action.
+2. **Delete any failed run of an odds-calling workflow** that predates the
+   fix. Deleting the run is the only removal GitHub offers — individual log
+   lines cannot be edited. Owner's action; an agent may list the candidates but
+   deletes nothing. To enumerate them:
+
+   ```bash
+   for w in mvp-morning mvp-pregame mvp-close ncaaf ncaaf-capture ncaabase-capture; do
+     gh run list --workflow $w.yml --limit 400 \
+       --json databaseId,conclusion,createdAt,headSha \
+       --jq '.[] | select(.conclusion != "success" and .conclusion != "skipped") | [.databaseId, .conclusion, .createdAt] | @tsv'
+   done
+   ```
+
+   At the time of writing that returns exactly one row, run 31119563595.
+3. Record the rotation in the [rotation log](#rotation-log), so the next reader
+   knows the key in use post-dates the fix, and the deleted run ids in the
+   [deleted-runs log](#deleted-runs-log) beside it — a deletion is not a
+   rotation and does not fit the rotation log's columns. The owner is notified of steps 1 and 2
    through this project's task tracker, not by this file — a document is a
    record, never a trigger.
 
@@ -197,6 +243,18 @@ GitHub masks registered secret values in Actions logs, but masking is
 best-effort — it breaks on encoded or line-split values — so it is treated as a
 second line of defence, never the first.
 
+## Rolling back the scrub
+
+`clients/odds.py`'s scrub is a plain `git revert` — no data write, no schema
+change, no migration — and no caller catches `requests` exceptions, so
+reverting restores the previous propagation exactly. Reverting also restores
+the disclosure, so rotate the key afterwards if a live snapshot has failed in
+the meantime.
+
+The one irreversible step in this document is the owner's run deletion above,
+which destroys the evidence of the exposure it closes. Record the ids in the
+deleted-runs log before deleting.
+
 ## Rotation log
 
 Appended by the owner, newest last. **Dates and reasons only — never a key
@@ -206,3 +264,12 @@ here, which is not the same as none having happened.
 | Date | Secret | Why |
 |---|---|---|
 | | | |
+
+## Deleted-runs log
+
+Appended by the owner. Run ids deleted to remove a possible key disclosure from
+a public log, so the record of the deletion survives the evidence.
+
+| Date | Workflow | Run id | Why |
+|---|---|---|---|
+| | | | |
