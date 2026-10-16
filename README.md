@@ -66,7 +66,12 @@ Repo Actions secrets (Settings → Secrets and variables → Actions):
 - `ODDS_API_KEY` — required. Free at [the-odds-api.com](https://the-odds-api.com) (500 credits/month).
 - `LUMIFY_API_KEY` — optional. Free at [lumify.ai/api-keys](https://lumify.ai/api-keys) (1,000 non-expiring credits). Enables public **betting-splits** collection in the morning and pregame runs — a direct measurement of the Public-vs-Vegas premise. If unset, splits collection skips silently; the odds pipeline and the P/V strategies still run, but the two splits-based strategies (`fade_public`, `sharp_split`) pass every game.
 
+- `CFBD_API_KEY` — optional. Free at [collegefootballdata.com/key](https://collegefootballdata.com/key). Primary source for the NCAAF week schedule, lines, SP+ and venues; responses are cached under `data/ncaaf/cfbd/`. If unset, NCAAF falls back to ESPN only.
+
 Everything else is keyless; workflows commit with the built-in `GITHUB_TOKEN`.
+
+Who rotates each of these, how to prove a replacement works, and what a keyed
+failure in the log means: [docs/secret-rotation.md](docs/secret-rotation.md).
 
 ### Local development
 

@@ -51,9 +51,17 @@ jobs:
         run: pip install -e .
 
       # Human-readable copy in the run log, so a maintainer opening the run
-      # sees the findings without parsing JSON. --exit-zero on both: the job
-      # must stay green, because a red X every day is a red X nobody reads.
-      # The GitHub issue is the alert, not the job status.
+      # sees the findings without parsing JSON. --exit-zero on both: FINDINGS
+      # must not redden the job, because a red X every day is a red X nobody
+      # reads. The GitHub issue is the alert, not the job status.
+      #
+      # One case still exits 3 and so reddens this job, by design (added
+      # 2026-10-16): `cmd_doctor`'s DoctorConfigError branch — a missing or
+      # invalid config/health.yaml, or one with no `doctor:` block. That is
+      # "doctor could not run", not a finding, and it must not be mistaken
+      # for a clean bill of health. When this step fails, no issue is opened,
+      # edited or closed on that run, and no health.json artifact is
+      # uploaded: the detector is down, and the red X IS the alert.
       - name: Doctor (text)
         run: panthera-mvp doctor --exit-zero
 

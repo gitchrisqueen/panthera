@@ -60,7 +60,7 @@ def test_espn_cfb_parse(cfb_games):
     assert postponed.status == "Postponed" and postponed.home_score is None
 
 
-def test_odds_sport_key_routes_url():
+def test_odds_sport_key_routes_url(tmp_root):
     calls = []
 
     class Resp:

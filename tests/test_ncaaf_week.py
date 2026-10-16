@@ -24,6 +24,7 @@ import pytest
 
 from panthera_mvp.clients import cfbd, espn_cfb, ncaa_api
 from panthera_mvp.ncaaf import sources, store
+from panthera_mvp.ncaaf.config import load_ncaaf_config
 
 REPO_CONFIG = "config/ncaaf.yaml"
 
@@ -380,3 +381,58 @@ def test_grade_prefers_cfbd_over_ncaa_api(cfb_root, monkeypatch, fake_cfbd, espn
     games = store.load_games().set_index("event_id")
     assert set(games.loc[["401900001", "401900004"], "score_source"]) == {"cfbd"}
     assert store.load_tickets().iloc[0]["status"] == "win"
+
+
+def test_fill_finals_fallback_fills_a_final_with_no_score(cfb_root, espn_games, fake_cfbd):
+    """NCAAF selected its fallback targets with `~status.isin(SETTLED)`, which
+    excluded a row recorded Final with a NULL score — the same defect MLB
+    carried as `status != "Final"` (see tests/test_finals_backfill.py). A leg
+    on such a game can never settle, because grading settles from the score."""
+    from panthera_mvp.ncaaf import pipeline
+
+    monkey_rows = _open_rows(espn_games)
+    for r in monkey_rows:
+        if r["event_id"] == "401900004":
+            r["status"] = "Final"  # Final on the row, no score behind it
+    store.upsert_games(pd.DataFrame(monkey_rows))
+
+    n = pipeline.fill_finals_fallback(
+        [monkey_rows[0]["game_date_et"]], {"401900004"}, load_ncaaf_config()
+    )
+
+    assert n == 1
+    g = store.load_games().set_index("event_id").loc["401900004"]
+    assert (int(g["home_score"]), int(g["away_score"])) == (27, 24)
+
+
+def test_merge_week_lets_cfbd_fill_an_espn_final_with_no_score(espn_games, cfbd_games):
+    """`e.status not in SETTLED` skipped an ESPN row reported Final with no
+    score. CFBD has the score; a complete ESPN final still wins."""
+    holed = [
+        replace(g, home_score=None, away_score=None) if g.event_id == "401900004" else g
+        for g in espn_games
+    ]
+    merged, _ = sources.merge_week(holed, cfbd_games)
+    by_id = {g.event_id: g for g in merged}
+
+    assert by_id["401900004"].status == "Final"
+    assert (by_id["401900004"].home_score, by_id["401900004"].away_score) == (27, 24)
+    assert by_id["401900004"].score_source == "cfbd"
+    # A complete ESPN final is untouched: CFBD does not restate it.
+    assert by_id["401900001"].score_source != "cfbd"
+
+
+def test_merge_week_does_not_reopen_a_called_off_game(espn_games, cfbd_games):
+    """Postponed and Canceled are in SETTLED and carry no score either; the
+    widened arm is "Final with a hole", so CFBD must not reopen those."""
+    called_off = [
+        replace(g, status="Canceled", home_score=None, away_score=None)
+        if g.event_id == "401900004"
+        else g
+        for g in espn_games
+    ]
+    merged, _ = sources.merge_week(called_off, cfbd_games)
+    by_id = {g.event_id: g for g in merged}
+
+    assert by_id["401900004"].status == "Canceled"
+    assert by_id["401900004"].home_score is None

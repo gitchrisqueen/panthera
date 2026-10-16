@@ -351,6 +351,90 @@ def test_pending_age_explains_a_scoreless_final(health_root, monkeypatch):
     assert hits[0].evidence["scoreless_final_games"] == [_pk("2026-09-27", 0)]
 
 
+def test_pending_age_does_not_prescribe_grade_for_a_suspended_game(
+    health_root, monkeypatch
+):
+    """A suspended game is resumed under the same game_pk, so its picks are
+    correctly pending and `grade` cannot change that.
+
+    H05 used to recognise only `Final` with no score, so it reported a
+    suspended game as a stalled grader and told the operator to run
+    `panthera-mvp grade --date ...` — a no-op. An alert that prescribes a
+    no-op trains the operator to ignore it (doctor's own rule).
+    """
+    monkeypatch.setattr(doctor, "today_et", lambda: pd.Timestamp("2026-10-15").date())
+    write_games(days={"2026-10-14": 2}, game_type="L")
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": _pk("2026-09-27", 0),
+                    "game_date_et": "2026-09-27",
+                    "game_type": "R",
+                    "status": "Suspended",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": "2026-09-27T23:05:00Z",
+                }
+            ]
+        )
+    )
+    write_picks(day="2026-09-27", strategies=["pv_v3"], status="pending")
+    write_picks(day="2026-10-14", strategies=["pv_v3"], n_games=2)
+
+    hits = of(findings(since="2026-09-01"), "pending_age")
+    assert len(hits) == 1
+    pk = _pk("2026-09-27", 0)
+    assert f"game {pk} is Suspended with no score recorded" in hits[0].detail
+    assert "resumed under the same game_pk" in hits[0].detail
+    # The dead-end advice is gone, and so is the one that cannot work here.
+    assert "score is backfilled" not in hits[0].detail
+    assert hits[0].suggested_command is None
+
+
+def test_pending_age_keeps_grade_when_one_game_can_still_be_backfilled(
+    health_root, monkeypatch
+):
+    """A MIXED date: one suspended game and one scoreless `Final`.
+
+    The suspended one is waiting on a resumption; the Final one is a fault that
+    something must backfill. A single verdict for both prescribed a no-op for
+    the suspended half, so the detail is per game, and `grade` is offered
+    because it can still change the Final row.
+    """
+    monkeypatch.setattr(doctor, "today_et", lambda: pd.Timestamp("2026-10-15").date())
+    write_games(days={"2026-10-14": 2}, game_type="L")
+    rows = []
+    for i, status in enumerate(("Suspended", "Final")):
+        rows.append(
+            {
+                "game_pk": _pk("2026-09-27", i),
+                "game_date_et": "2026-09-27",
+                "game_type": "R",
+                "status": status,
+                "home_score": None,
+                "away_score": None,
+                "start_time_utc": "2026-09-27T23:05:00Z",
+            }
+        )
+    store.upsert_games(pd.DataFrame(rows))
+    write_picks(day="2026-09-27", strategies=["pv_v3"], n_games=2, status="pending")
+    write_picks(day="2026-10-14", strategies=["pv_v3"], n_games=2)
+
+    hits = of(findings(since="2026-09-01"), "pending_age")
+    assert len(hits) == 1
+    detail = hits[0].detail
+    susp, final = _pk("2026-09-27", 0), _pk("2026-09-27", 1)
+    # Each game carries its OWN reason.
+    assert f"game {susp} is Suspended" in detail
+    assert "resumed under the same game_pk" in detail
+    assert f"game {final} is Final" in detail
+    assert "score is backfilled" in detail
+    # `grade` is still worth running: it can change the Final row.
+    assert hits[0].suggested_command is not None
+    assert "grade --date 2026-09-27" in hits[0].suggested_command
+
+
 def test_lineage_drift_detects_an_undeclared_hash(health_root, monkeypatch):
     """A live strategy whose current hash left its own lineage has its verdict
     countdown frozen — the half-finished state of a config change."""
@@ -419,6 +503,21 @@ def test_missing_health_config_exits_broken(tmp_root, capsys):
     """Exit 3, never 0: "doctor could not run" must not read as "nothing
     wrong". tmp_root deliberately has no health.yaml."""
     assert doctor.cmd_doctor() == doctor.EXIT_BROKEN
+    assert "cannot run" in capsys.readouterr().out
+
+
+def test_missing_health_config_exits_broken_even_under_exit_zero(tmp_root, capsys):
+    """`--exit-zero` does not apply to "doctor could not run".
+
+    The flag exists so FINDINGS do not redden the scheduled job, and
+    .github/workflows/health.yml passes it to BOTH doctor steps. While this
+    branch honoured it, an unreadable health.yaml left those steps green with
+    `[doctor] cannot run: ...` written into health.json, and the job failed
+    one step later in "Reconcile health issues" when JSON.parse hit that
+    line — which reads as a broken issue bot rather than a blind detector.
+    `cmd_doctor`'s own comment promised exit 3 the whole time.
+    """
+    assert doctor.cmd_doctor(exit_zero=True) == doctor.EXIT_BROKEN
     assert "cannot run" in capsys.readouterr().out
 
 
@@ -547,3 +646,129 @@ def test_suggested_commands_target_the_finding_s_own_sport():
     assert _cli_prefix("mlb") == ""
     assert _cli_prefix("ncaaf") == "ncaaf "
     assert _cli_prefix("ncaabase") == "ncaabase "
+
+
+# --------------------------------------------------------------------------
+# H10 scoreless_final
+# --------------------------------------------------------------------------
+
+
+def _write_scoreless_final(day: str = "2026-09-27", pk: int = 823490):
+    """A row stored Final with no score — the 2026-09-27 rainout's shape."""
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": pk,
+                    "game_date_et": day,
+                    "game_type": "R",
+                    "status": "Final",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": f"{day}T17:05:00Z",
+                }
+            ]
+        )
+    )
+
+
+def test_scoreless_final_is_reported_with_no_pick_on_the_game(health_root):
+    """The gap H10 exists to close: before it, a Final with no score was
+    noticed only by H05, and only while a pick on that game was still
+    pending. This game carries no pick at all, so nothing else would see it —
+    yet it still feeds the reports and the backtest."""
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert len(hits) == 1
+    f = hits[0]
+    assert f.id == "H10"
+    assert f.fingerprint == "mlb/scoreless_final"
+    assert f.evidence["count"] == 1
+    assert f.evidence["ids"] == ["823490"]
+    assert f.evidence["oldest_date"] == "2026-09-27"
+
+
+def test_scoreless_final_silent_on_a_settled_slate(health_root):
+    """Must not fire on healthy data — every builder game carries 4-2."""
+    write_games(days={"2026-09-24": 6})
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits == []
+
+
+def test_scoreless_final_ignores_a_called_off_game(health_root):
+    """A `Cancelled` row has no score and never will — that is a resolved
+    outcome, not a hole. Only `Final` without a score is the fault."""
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": 823490,
+                    "game_date_et": "2026-09-27",
+                    "game_type": "R",
+                    "status": "Cancelled",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": "2026-09-27T17:05:00Z",
+                }
+            ]
+        )
+    )
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits == []
+
+
+def test_scoreless_final_prescribes_no_noop_command_for_mlb(health_root):
+    """H10 must not hand the operator a command that does nothing.
+
+    `cmd_grade` for MLB and NCAAF builds its date list from PENDING picks and
+    `--date` only filters that list — and H10 exists precisely for a game
+    with no pending pick, so `grade --date` would refresh nothing. An alert
+    whose remediation is a no-op teaches the reader to ignore the alert.
+    """
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].suggested_command is None
+    assert "docs/mvp-design.md" in hits[0].detail
+
+
+def test_scoreless_final_alerts_rather_than_only_logging(health_root):
+    """The check was added to close a detection gap, so its level must be one
+    that `alert.open_issue_on` actually routes. At `warn` — with the shipped
+    `open_issue_on: [fail]` — it would open no issue and the job would stay
+    green: a detector that detects and tells nobody."""
+    cfg = doctor.load_health_config()
+    alert_on = (cfg["doctor"].get("alert") or {}).get("open_issue_on", ["fail"])
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(sport="mlb", cfg=cfg, since="2026-09-01")["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].level in alert_on, (
+        f"H10 emits level {hits[0].level!r}, which alert.open_issue_on "
+        f"{alert_on} does not route — it would alert nobody"
+    )

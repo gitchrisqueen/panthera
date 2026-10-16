@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from ..matching import nearest_start
 from ..ncaaf.matching import normalize_name
 from ..timeutil import parse_utc
 
@@ -64,13 +65,14 @@ def orientation(
 def _nearest(
     cands: list[tuple[float, str, bool]], window_hours: float, ambiguity_minutes: float
 ) -> tuple[str, bool] | str:
-    """cands = [(gap_seconds, id, swapped)]. Returns (id, swapped) or a reason."""
-    cands = sorted(c for c in cands if c[0] <= window_hours * 3600)
-    if not cands:
-        return "no game within the start-time window"
-    if len(cands) > 1 and cands[1][0] - cands[0][0] < ambiguity_minutes * 60:
-        return f"ambiguous between {cands[0][1]} and {cands[1][1]} (doubleheader?)"
-    return cands[0][1], cands[0][2]
+    """cands = [(gap_seconds, id, swapped)]. Returns (id, swapped) or a reason.
+
+    The rule itself lives in `matching.nearest_start`: MLB's ESPN finals
+    fallback needs the identical nearest-start-with-an-ambiguity-window
+    decision, and a second implementation of it is a second thing to get
+    wrong.
+    """
+    return nearest_start(cands, window_hours, ambiguity_minutes)
 
 
 def match_odds_events(

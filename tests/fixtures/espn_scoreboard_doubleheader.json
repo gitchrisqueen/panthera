@@ -1,0 +1,44 @@
+{
+  "_comment": [
+    "A split doubleheader: ESPN returns one event per game, both with the",
+    "same (date, home_team, away_team) and different start times. The start",
+    "times are the real pair in data/games/games.csv -- game_pk 823539 (game",
+    "1, 2026-08-29T17:05:00Z) and 823501 (game 2, 2026-08-29T23:15:00Z), both",
+    "2026-08-29 Red Sox at Yankees -- re-dated onto the suite's DAY. The",
+    "home/away sides here are SWAPPED relative to those rows, which store",
+    "home New York Yankees / away Boston Red Sox: the fixture matches the",
+    "suite's own _game() rows in tests/test_finals_backfill.py, which store",
+    "home Boston Red Sox / away New York Yankees. Only the two start times",
+    "and the scores are taken from the real pair."
+  ],
+  "events": [
+    {
+      "id": "401696101",
+      "date": "2026-08-01T17:05Z",
+      "competitions": [
+        {
+          "date": "2026-08-01T17:05Z",
+          "status": {"type": {"completed": true}},
+          "competitors": [
+            {"homeAway": "home", "team": {"displayName": "Boston Red Sox"}, "score": "6"},
+            {"homeAway": "away", "team": {"displayName": "New York Yankees"}, "score": "0"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401696102",
+      "date": "2026-08-01T23:15Z",
+      "competitions": [
+        {
+          "date": "2026-08-01T23:15Z",
+          "status": {"type": {"completed": true}},
+          "competitors": [
+            {"homeAway": "home", "team": {"displayName": "Boston Red Sox"}, "score": "2"},
+            {"homeAway": "away", "team": {"displayName": "New York Yankees"}, "score": "9"}
+          ]
+        }
+      ]
+    }
+  ]
+}

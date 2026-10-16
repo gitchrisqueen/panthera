@@ -8,6 +8,8 @@ Scenarios compared: **2960** — every enabled live strategy x 74 captured slate
 
 **Mismatches: 0.**
 
+_Data basis: `data/games/games.csv` at 825 rows, latest `game_date_et` 2026-10-15. The counts above describe that snapshot; regenerate after the datastore grows._
+
 | strategy | picks emitted | result |
 |---|---|---|
 | `fade_public` | 871 | identical |

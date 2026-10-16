@@ -76,6 +76,10 @@ panthera-mvp ncaabase grade | status
 - MLB Stats API, ESPN, ncaa-api.henrygd.me (NCAAF finals fallback, 5 req/s)
   and Open-Meteo endpoints are keyless. `GITHUB_TOKEN` is built-in.
 
+- Rotation owner and procedure for every key: `docs/secret-rotation.md`. No key may reach an exception message —
+  `clients/odds.py` scrubs `requests` failures into `OddsRequestError`
+  because the Odds API only accepts the key as a query parameter.
+
 ## Gotchas
 
 - Some sandboxed dev environments block `statsapi.mlb.com`,
