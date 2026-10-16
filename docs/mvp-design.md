@@ -633,7 +633,7 @@ candidates on purpose.
 ### Rollback and ownership — catch-up (2026-10-16)
 
 `panthera-mvp catchup` plus `.github/workflows/panthera-catchup.yml`
-(Monday 12:15 ET) and the replay hardening under it. The command finds slate
+(Monday 07:15 ET) and the replay hardening under it. The command finds slate
 days the pipeline missed — never ran, or ran under a config since corrected —
 and replays them into the SHADOW ledger. It has no code path to
 `data/picks/picks.csv`, `tests/test_catchup.py::test_catchup_never_writes_picks_csv`
@@ -648,13 +648,33 @@ every item below is something one person does from a laptop.
 *Disable workflow*. That is the kill switch; `config/health.yaml`'s `catchup:`
 block tunes the window and the void prefixes but has no `enabled:` flag. A
 manual dispatch defaults to `dry_run: true`, which detects and prints and
-writes nothing, so a rehearsal is always available while it stays enabled.
+writes nothing to the repo, so a rehearsal is always available while it stays
+enabled. One caveat: `pages.yml` triggers on this workflow's `workflow_run`
+and gates only on `conclusion == 'success'`, so even a dry rehearsal
+redeploys the public dashboard — from the current default-branch tip, with
+nothing of its own in it.
 
 **Undo one bad run.** Revert its bot commit (`data: weekly catch-up …`):
 
 ```bash
-git rev-list --parents -n 1 <sha>   # 2 hashes = squash, 3 = merge commit
-git revert <sha>                    # add -m 1 only for a merge commit
+git rev-list --parents -n 1 <sha>          # 2 hashes = squash, 3 = merge
+git revert -n <sha>                        # -n: resolve before committing
+git revert -n -m 1 <sha>                   # merge commit form instead
+
+# CONFLICTS ARE EXPECTED, the same way they are for the sections above: the
+# bots rewrite reports/ wholesale every morning, append to run_log.csv on
+# every grade, and touch data/ncaaf several times a day. Keep HEAD for every
+# derived path (the table below) and let ONLY the two quarantine files take
+# the revert.
+git checkout HEAD -- reports/ data/ncaaf/ data/ncaabase/ \
+    data/picks/run_log.csv
+git status --short                         # expect only the two files below
+#   data/picks/shadow_picks.csv
+#   data/picks/catchup_log.csv
+
+git commit
+git push origin main                       # NOTHING changes until this
+git ls-remote origin main                  # confirm the SHA you just pushed
 ```
 
 That removes the shadow rows AND the `data/picks/catchup_log.csv` completion
@@ -715,8 +735,8 @@ to `--strategy` when given.
 
 **Nothing watches catch-up itself.** `doctor` detects the silence catch-up
 repairs, not catch-up's own failure, so a workflow left disabled is invisible
-until H01 fires on a fresh outage. Whoever disables it opens a `needs-chris`
-ClickUp task in the same session to put it back.
+until H01 fires on a fresh outage. Whoever disables it owns a dated reminder
+to put it back, filed wherever this project tracks its follow-ups.
 
 ## Verdict criteria (pre-registered)
 
