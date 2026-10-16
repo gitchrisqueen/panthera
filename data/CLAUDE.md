@@ -74,7 +74,10 @@ morning|pregame|manual.
 `ts_utc, game_date_et, run_label, kind, note` — operational notes rendered
 into the daily report so they survive regeneration. `kind` is one of
 `late_run`, `degraded_snapshot`, `engine_error`, `ambiguous_espn_match` (a
-finals fallback refused to guess between the two games of a doubleheader) or
+finals fallback refused to guess between the two games of a doubleheader),
+`espn_match_config_error` (that fallback could not read its start-time
+tolerances from `config/health.yaml`, so the doubleheader it was about went
+unfilled; the ordinary matchups on the same date are unaffected) or
 `unmapped_final_no_score` (a game stored `Final` with no score whose
 `detailedState` head is unknown to `clients/mlb.py::_CALLED_OFF` — it can
 settle nothing until the head is mapped). `run_label` is the run that wrote

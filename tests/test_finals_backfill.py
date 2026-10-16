@@ -16,15 +16,23 @@ are tested beside their own fixtures, in `test_ncaabase.py` and
 
 from __future__ import annotations
 
+import json
+import shutil
+from pathlib import Path
+
 import pandas as pd
 import pytest
+import yaml
 
 from panthera_mvp import paths, pipeline, store
 from panthera_mvp.clients import espn
 from panthera_mvp.grading import grade_pending
+from panthera_mvp.matching import nearest_start
 
+REPO = Path(__file__).resolve().parents[1]
 DAY = "2026-08-01"
 PK = 776001
+DOUBLEHEADER_FIXTURE = "espn_scoreboard_doubleheader.json"
 
 
 def _game(status="Final", home_score=None, away_score=None, score_source="mlb"):
@@ -53,6 +61,19 @@ def _pick(pick_id="p1", selection="New York Yankees"):
         "stake": 100,
         "status": "pending",
     }
+
+
+@pytest.fixture
+def health_config(tmp_root):
+    """`tmp_root` plus the REAL config/health.yaml, which carries the
+    fallback's `grading.espn_fallback` tolerances.
+
+    Copied per-test rather than into `tmp_root` itself, because
+    `test_doctor.py` pins doctor's exit-3-on-a-missing-health.yaml behaviour
+    against a root that deliberately has none.
+    """
+    shutil.copy(REPO / "config" / "health.yaml", tmp_root / "config" / "health.yaml")
+    return tmp_root
 
 
 @pytest.fixture
@@ -235,7 +256,6 @@ CANCELLED_FIXTURE = "mlb_schedule_cancelled.json"
 def test_stored_status_reads_called_off_from_detailed_state(fixtures_dir):
     """The mapping, per detailedState head. `abstractGameState` is "Final" for
     every row here, so anything reading it alone sees a settled game."""
-    import json
     from dataclasses import replace
 
     from panthera_mvp.clients import mlb
@@ -376,20 +396,142 @@ def test_void_vocabulary_has_exactly_one_definition():
 # --------------------------------------------------------------------------
 
 
-def test_doubleheader_is_skipped_not_guessed(tmp_root, monkeypatch, capsys):
-    """(date, home_team, away_team) is not unique for a split doubleheader,
-    and `EspnGame` carries no start time to split them.
+def test_parse_scoreboard_carries_the_start_time(espn_payload, fixtures_dir):
+    """The new client field, from the fixtures and through the real parser.
 
-    Writing anyway broadcast one game's score to both rows, and
-    `grade_pending` then settled a pick from whichever score happened to land
-    — permanently. `data/games/games.csv` holds real examples (823501 and
-    823539, both 2026-08-29 Yankees vs Red Sox).
+    `EspnGame` carried no start time, which is the whole reason the fallback
+    could not tell two games of one matchup apart. ESPN publishes it as
+    `competitions[].date`; it is stored UTC ISO-8601, like every other start
+    time in the repo.
+    """
+    [one] = espn.parse_scoreboard(espn_payload)
+    assert one.start_time_utc == "2026-08-01T17:05:00Z"
+
+    with open(fixtures_dir / DOUBLEHEADER_FIXTURE) as fh:
+        both = espn.parse_scoreboard(json.load(fh))
+    assert [g.start_time_utc for g in both] == [
+        "2026-08-01T17:05:00Z",
+        "2026-08-01T23:15:00Z",
+    ]
+    # Same matchup, both completed: the payload shape that used to be
+    # unsplittable.
+    assert {(g.home_team, g.away_team) for g in both} == {
+        ("Boston Red Sox", "New York Yankees")
+    }
+
+    # A payload without a date still yields the event. Dropping it would make
+    # an ordinary unique-matchup date unfillable, which is a second hole, not
+    # a fix.
+    [dateless] = espn.parse_scoreboard(
+        {"events": [{"competitions": [c | {"date": None}
+                     for c in espn_payload["events"][0]["competitions"]]}]}
+    )
+    assert dateless.start_time_utc == ""
+
+
+def test_nearest_start_window_and_ambiguity():
+    """The shared decision, in isolation: outside the window is not a
+    candidate, a clear nearest wins, and two near-equal gaps are refused.
+
+    This is the rule `ncaabase/matching.py` already ran on and MLB now shares
+    (`matching.nearest_start`), so it is pinned once rather than per caller.
+    """
+    # Nothing inside a 1h window when the only candidate is 2h away.
+    assert nearest_start([(7200.0, "a", 1)], 1, 60) == "no game within the start-time window"
+    # A clear nearest: 0s vs 6h10m, the real split-doubleheader gap.
+    assert nearest_start([(0.0, "a", 1), (22200.0, "b", 2)], 8, 60) == ("a", 1)
+    # 30 minutes apart is inside the 60-minute ambiguity window: refused.
+    reason = nearest_start([(0.0, "a", 1), (1800.0, "b", 2)], 8, 60)
+    assert isinstance(reason, str) and "ambiguous between a and b" in reason
+
+
+def test_doubleheader_fills_only_the_game_with_the_hole(
+    health_config, monkeypatch, fixtures_dir
+):
+    """The behaviour PR #69 could not deliver: game 1 complete, game 2 a
+    score hole, and the fallback fills game 2 alone.
+
+    #69 made an ambiguous match fail closed, which was right and incomplete:
+    the guard was matchup-wide, so this date — one settled game, one hole —
+    was refused forever rather than half-filled. The ESPN events now carry
+    start times and are keyed onto one stored row each.
+
+    Note what the scores prove. Game 1 was Red Sox 6, Yankees 0; game 2 was
+    Yankees 9, Red Sox 2. The pending pick is the Yankees on GAME 2, so it
+    can only settle `win` if game 2's score — not game 1's, and not either
+    broadcast to both rows — reached its row.
     """
     store.upsert_games(
         pd.DataFrame(
             [
-                _game() | {"game_pk": 1, "game_number": 1},
-                _game() | {"game_pk": 2, "game_number": 2},
+                _game(home_score=6, away_score=0)
+                | {
+                    "game_pk": 1,
+                    "doubleheader": "S",
+                    "game_number": 1,
+                    "start_time_utc": "2026-08-01T17:05:00Z",
+                    "winner": "Boston Red Sox",
+                },
+                _game()  # Final, no score: the hole
+                | {
+                    "game_pk": 2,
+                    "doubleheader": "S",
+                    "game_number": 2,
+                    "start_time_utc": "2026-08-01T23:15:00Z",
+                },
+            ]
+        )
+    )
+    store.append_picks(pd.DataFrame([_pick() | {"game_pk": 2}]))
+    with open(fixtures_dir / DOUBLEHEADER_FIXTURE) as fh:
+        payload = json.load(fh)
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: espn.parse_scoreboard(payload),
+    )
+
+    assert pipeline._espn_fallback(DAY) == 1
+
+    games = store.load_games().set_index("game_pk")
+    # Game 2 got game 2's score, from ESPN.
+    assert (int(games.at[2, "home_score"]), int(games.at[2, "away_score"])) == (2, 9)
+    assert games.at[2, "winner"] == "New York Yankees"
+    assert games.at[2, "score_source"] == "espn"
+    # Game 1 is untouched, still attributed to the MLB API.
+    assert (int(games.at[1, "home_score"]), int(games.at[1, "away_score"])) == (6, 0)
+    assert games.at[1, "score_source"] == "mlb"
+
+    grade_pending()
+    assert store.load_picks().iloc[0]["status"] == "win"
+
+    # Game 1's ESPN event landed on game 1, found it already final and did
+    # nothing. It is not an unmatched event, so it leaves no run note: a
+    # settled doubleheader that reports an ambiguity every morning is noise
+    # in a file that is committed and rendered into the daily report.
+    assert store.load_run_log().empty
+
+
+def test_doubleheader_is_skipped_not_guessed(health_config, monkeypatch, capsys):
+    """Ambiguity still fails closed — now measured on start times.
+
+    Rewritten from PR #69's version of this test, which asserted that ANY
+    doubleheader date was skipped, because `EspnGame` carried no start time
+    at all. That is no longer the behaviour: a split doubleheader is now
+    split. What survives is the rule it was really defending — a match that
+    cannot be decided is reported, never guessed — so the case is now the
+    traditional (same-admission) doubleheader, whose two games start 30
+    minutes apart on both sides, inside `ambiguity_minutes`.
+    `data/games/games.csv` holds the real split pair (823501 and 823539, both
+    2026-08-29 Red Sox at Yankees).
+    """
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                _game() | {"game_pk": 1, "game_number": 1,
+                           "start_time_utc": "2026-08-01T17:05:00Z"},
+                _game() | {"game_pk": 2, "game_number": 2,
+                           "start_time_utc": "2026-08-01T17:35:00Z"},
             ]
         )
     )
@@ -398,13 +540,17 @@ def test_doubleheader_is_skipped_not_guessed(tmp_root, monkeypatch, capsys):
         pipeline.espn,
         "get_scoreboard",
         lambda d, session=None: [
-            espn.EspnGame("Boston Red Sox", "New York Yankees", 3, 5, True),
-            espn.EspnGame("Boston Red Sox", "New York Yankees", 1, 0, True),
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 3, 5, True,
+                          "2026-08-01T17:05:00Z"),
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 1, 0, True,
+                          "2026-08-01T17:35:00Z"),
         ],
     )
 
     assert pipeline._espn_fallback(DAY) == 0
-    assert "ambiguous ESPN match" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "ESPN match refused" in err
+    assert "two ESPN events for it start within 60 minutes of each other" in err
 
     games = store.load_games().set_index("game_pk")
     for pk in (1, 2):
@@ -412,11 +558,299 @@ def test_doubleheader_is_skipped_not_guessed(tmp_root, monkeypatch, capsys):
     assert store.load_picks().iloc[0]["status"] == "pending"
 
     # Durable, not just stderr: an Actions log expires, and this is the only
-    # trace of a hole that will not be filled.
+    # trace of a hole that will not be filled. Reported once for the matchup,
+    # not once per event.
     notes = store.load_run_log()
     assert list(notes["kind"]) == ["ambiguous_espn_match"]
     assert notes.iloc[0]["game_date_et"] == DAY
     assert "must not be hand-edited" in notes.iloc[0]["note"]
+
+
+def test_two_rows_too_close_to_split_are_refused(health_config, monkeypatch, capsys):
+    """The other half of the ambiguity rule: the ROWS are what cannot be told
+    apart.
+
+    One completed ESPN event, two stored games 30 minutes apart — the shape
+    when ESPN published only one game of a traditional doubleheader. The
+    event is inside the window of both rows, so `matching.nearest_start`
+    refuses it rather than taking the nearer by 30 minutes.
+    """
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                _game() | {"game_pk": 1, "game_number": 1,
+                           "start_time_utc": "2026-08-01T17:05:00Z"},
+                _game() | {"game_pk": 2, "game_number": 2,
+                           "start_time_utc": "2026-08-01T17:35:00Z"},
+            ]
+        )
+    )
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: [
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 3, 5, True,
+                          "2026-08-01T17:05:00Z"),
+        ],
+    )
+
+    assert pipeline._espn_fallback(DAY) == 0
+    assert "ambiguous between game_pk 1 and game_pk 2" in capsys.readouterr().err
+    games = store.load_games().set_index("game_pk")
+    for pk in (1, 2):
+        assert pd.isna(games.at[pk, "home_score"])
+    assert list(store.load_run_log()["kind"]) == ["ambiguous_espn_match"]
+
+
+def test_doubleheader_with_no_stored_start_times_is_still_skipped(
+    health_config, monkeypatch, capsys
+):
+    """A gap needs both sides. A stored row with no `start_time_utc` is not a
+    candidate, so a doubleheader whose rows carry no start times stays
+    skipped — the matching is an extra way to decide, never a reason to
+    lower the bar."""
+    store.upsert_games(
+        pd.DataFrame([_game() | {"game_pk": 1}, _game() | {"game_pk": 2}])
+    )
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: [
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 3, 5, True,
+                          "2026-08-01T17:05:00Z"),
+        ],
+    )
+
+    assert pipeline._espn_fallback(DAY) == 0
+    assert "no game within the start-time window" in capsys.readouterr().err
+    assert list(store.load_run_log()["kind"]) == ["ambiguous_espn_match"]
+
+
+def test_two_espn_events_at_one_time_are_refused_whatever_the_order(
+    health_config, monkeypatch, capsys
+):
+    """ESPN's feed order must never decide which row a score lands on.
+
+    When ESPN misreports game 2's start as game 1's, the two events cannot be
+    told apart, so the matchup is refused. Both orderings are asserted,
+    because "the first one wins" is exactly the defect: with a greedy
+    assignment, reversing these two entries moves game 2's score onto game
+    1's row, and `store.settle_picks` only rewrites rows still `pending`, so
+    that settlement would be permanent.
+    """
+    e1 = espn.EspnGame("Boston Red Sox", "New York Yankees", 6, 0, True,
+                       "2026-08-01T17:05:00Z")
+    e2 = espn.EspnGame("Boston Red Sox", "New York Yankees", 2, 9, True,
+                       "2026-08-01T17:05:00Z")  # ESPN's time is wrong here
+    for order in ([e1, e2], [e2, e1]):
+        store.upsert_games(
+            pd.DataFrame(
+                [
+                    _game() | {"game_pk": 1, "game_number": 1,
+                               "start_time_utc": "2026-08-01T17:05:00Z"},
+                    _game() | {"game_pk": 2, "game_number": 2,
+                               "start_time_utc": "2026-08-01T23:15:00Z"},
+                ]
+            )
+        )
+        monkeypatch.setattr(
+            pipeline.espn, "get_scoreboard", lambda d, session=None, o=order: o
+        )
+
+        assert pipeline._espn_fallback(DAY) == 0
+
+        games = store.load_games().set_index("game_pk")
+        for pk in (1, 2):
+            assert pd.isna(games.at[pk, "home_score"]), "feed order decided a score"
+    assert "two ESPN events for it start within 60 minutes" in capsys.readouterr().err
+    assert list(store.load_run_log()["kind"]) == ["ambiguous_espn_match"]
+
+
+def test_two_espn_events_against_one_stored_row_still_key_by_time(
+    health_config, monkeypatch, capsys
+):
+    """The stored side being unique does not make the ESPN side unique.
+
+    A split doubleheader announced after the last schedule refresh leaves one
+    stored row and two completed ESPN events. Gating the keying on the stored
+    row count alone sent this down the unique path, where the first event in
+    ESPN's order filled the row — so listing game 2 first put game 2's score
+    on game 1. Here game 2 is listed first and the row still gets game 1's
+    score, because the match is decided by the clock, not the feed.
+    """
+    store.upsert_games(
+        pd.DataFrame(
+            [_game() | {"game_pk": 1, "game_number": 1,
+                        "start_time_utc": "2026-08-01T17:05:00Z"}]
+        )
+    )
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: [
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 2, 9, True,
+                          "2026-08-01T23:15:00Z"),  # game 2, listed first
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 6, 0, True,
+                          "2026-08-01T17:05:00Z"),  # game 1
+        ],
+    )
+
+    assert pipeline._espn_fallback(DAY) == 1
+
+    games = store.load_games().set_index("game_pk")
+    assert (int(games.at[1, "home_score"]), int(games.at[1, "away_score"])) == (6, 0)
+    # Game 2 has no stored row, so its event is reported rather than dropped.
+    assert "no game within the start-time window" in capsys.readouterr().err
+    assert list(store.load_run_log()["kind"]) == ["ambiguous_espn_match"]
+
+
+def test_a_settled_doubleheader_reports_nothing(health_config, monkeypatch, fixtures_dir):
+    """An unsplittable doubleheader with no hole is not a finding.
+
+    The run log is committed and rendered as bullets in the daily report, so
+    a date whose doubleheader is already settled must not log an ambiguity
+    every time `grade` runs — several times a day, indefinitely. Only a
+    matchup with something open is considered at all.
+    """
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                # Settled, and with no stored start times, so the events of
+                # this matchup could not be keyed onto a row even if asked.
+                _game(home_score=6, away_score=0) | {"game_pk": 1, "game_number": 1},
+                _game(home_score=2, away_score=9) | {"game_pk": 2, "game_number": 2},
+                # A different matchup, with the hole.
+                _game() | {"game_pk": 3, "home_team": "Chicago Cubs",
+                           "away_team": "St. Louis Cardinals"},
+            ]
+        )
+    )
+    with open(fixtures_dir / DOUBLEHEADER_FIXTURE) as fh:
+        dh = espn.parse_scoreboard(json.load(fh))
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: dh
+        + [
+            espn.EspnGame("Chicago Cubs", "St. Louis Cardinals", 4, 1, True,
+                          "2026-08-01T20:05:00Z"),
+        ],
+    )
+
+    assert pipeline._espn_fallback(DAY) == 1
+
+    games = store.load_games().set_index("game_pk")
+    assert (int(games.at[3, "home_score"]), int(games.at[3, "away_score"])) == (4, 1)
+    assert store.load_run_log().empty
+
+
+def test_a_broken_health_yaml_costs_only_the_espn_repair(tmp_root, monkeypatch):
+    """`grade` must not be able to die of a config file it never used to read.
+
+    `_espn_match_window` raises on a health.yaml that is absent, invalid, or
+    missing `grading.espn_fallback`. That load happens inside `grade`, whose
+    actual job is settling picks — and in .github/workflows/mvp-morning.yml
+    the grade step has no continue-on-error, so an exception escaping here
+    would also skip the snapshot, splits, picks and commit steps and the
+    morning would produce no data at all. The blast radius is the ESPN repair
+    for that one date.
+
+    Here the date holds both shapes: a doubleheader matchup (which needs the
+    config and therefore fails) and an ordinary matchup with a hole and a
+    pending pick (which must still fill and settle).
+    """
+    stripped = "\n".join(
+        line
+        for line in (REPO / "config" / "health.yaml").read_text().splitlines()
+        if not line.startswith(("grading:", "  ", "    "))
+        or not line.strip()
+    )
+    (tmp_root / "config" / "health.yaml").write_text(
+        yaml.safe_dump({"doctor": yaml.safe_load(stripped or "{}").get("doctor", {})})
+    )
+    assert "grading" not in yaml.safe_load(
+        (tmp_root / "config" / "health.yaml").read_text()
+    )
+
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                _game() | {"game_pk": 1, "game_number": 1,
+                           "start_time_utc": "2026-08-01T17:05:00Z"},
+                _game() | {"game_pk": 2, "game_number": 2,
+                           "start_time_utc": "2026-08-01T23:15:00Z"},
+                _game() | {"game_pk": 3, "home_team": "Chicago Cubs",
+                           "away_team": "St. Louis Cardinals",
+                           "start_time_utc": "2026-08-01T20:05:00Z"},
+            ]
+        )
+    )
+    store.append_picks(
+        pd.DataFrame([_pick("p3", "St. Louis Cardinals") | {"game_pk": 3}])
+    )
+    monkeypatch.setattr(pipeline, "_refresh_games", lambda d: [])
+    monkeypatch.setattr(
+        pipeline.espn,
+        "get_scoreboard",
+        lambda d, session=None: [
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 6, 0, True,
+                          "2026-08-01T17:05:00Z"),
+            espn.EspnGame("Boston Red Sox", "New York Yankees", 2, 9, True,
+                          "2026-08-01T23:15:00Z"),
+            espn.EspnGame("Chicago Cubs", "St. Louis Cardinals", 1, 4, True,
+                          "2026-08-01T20:05:00Z"),
+        ],
+    )
+
+    pipeline.cmd_grade(DAY)
+
+    games = store.load_games().set_index("game_pk")
+    # The ordinary matchup is unique on both sides, so it never reads the
+    # config: it filled, and its pick settled.
+    assert (int(games.at[3, "home_score"]), int(games.at[3, "away_score"])) == (1, 4)
+    assert store.load_picks().iloc[0]["status"] == "win"
+    # The doubleheader is the only casualty.
+    assert pd.isna(games.at[1, "home_score"])
+    assert pd.isna(games.at[2, "home_score"])
+
+    # And it says what it actually was, under its own kind: this is the one
+    # failure in this path an operator can fix alone, so the note must not
+    # prescribe the ambiguity remedy (wait for an MLB refresh, do not touch
+    # data/) for a cause that is neither ambiguity nor in data/.
+    notes = store.load_run_log()
+    assert list(notes["kind"]) == ["espn_match_config_error"]
+    note = notes.iloc[0]["note"]
+    # Names the block, not just the file: "that block" in a ~200-line config
+    # is not a remediation.
+    assert "`grading.espn_fallback` block in config/health.yaml" in note
+    # And a remedy with a production path. No workflow runs `grade --date`,
+    # and a human committing under data/ is forbidden, so the note must point
+    # at the next scheduled run — which reaches this date because `cmd_grade`
+    # walks every date that still has a pending pick.
+    assert "next scheduled MVP Morning run" in note
+    assert "grade --date" not in note
+    assert "must not be hand-edited" not in note
+
+
+def test_espn_match_window_comes_from_health_yaml():
+    """The tolerances are config, not engine constants — and they are NOT in
+    config/strategy.yaml or a config/strategies/*.yaml, where every
+    non-excluded key is hashed into every pick's `config_hash`."""
+    window_hours, ambiguity_minutes = pipeline._espn_match_window()
+    assert (window_hours, ambiguity_minutes) == (4.0, 60.0)
+
+    raw = yaml.safe_load((paths.config_dir() / "health.yaml").read_text())
+    assert raw["grading"]["espn_fallback"] == {
+        "window_hours": 4,
+        "ambiguity_minutes": 60,
+    }
+    for path in [paths.config_dir() / "strategy.yaml"] + sorted(
+        (paths.config_dir() / "strategies").glob("*.yaml")
+    ):
+        assert "espn_fallback" not in path.read_text(), (
+            f"{path.name} is hashed into every pick; a grading tolerance there "
+            "would move every strategy's config_hash"
+        )
 
 
 def test_an_unmapped_final_with_no_score_leaves_a_run_note(
@@ -425,7 +859,6 @@ def test_an_unmapped_final_with_no_score_leaves_a_run_note(
     """The shape that stranded 823490, when `detailedState` carries a head
     `_CALLED_OFF` does not know: the row is about to be stored Final with no
     score, so say so durably instead of storing another silent dead end."""
-    import json
     from dataclasses import replace
 
     from panthera_mvp.clients import mlb
@@ -458,9 +891,14 @@ def test_an_unmapped_final_with_no_score_leaves_a_run_note(
     assert len(store.load_run_log()) == 1
 
 
-def test_a_lone_game_on_a_doubleheader_date_still_fills(tmp_root, espn_final):
-    """The skip is keyed on the matchup, not on the date: a different matchup
-    on the same date is unambiguous and still gets filled."""
+def test_a_second_matchup_on_the_same_date_still_fills(tmp_root, espn_final):
+    """The refusal is keyed on the matchup, not on the date: a different
+    matchup on the same date is unambiguous and still gets filled.
+
+    Renamed from `test_a_lone_game_on_a_doubleheader_date_still_fills`: the
+    two rows here are two different matchups, which is not a doubleheader, so
+    the old name described a case the body never built.
+    """
     store.upsert_games(
         pd.DataFrame(
             [

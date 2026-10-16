@@ -1153,10 +1153,17 @@ def cmd_doctor(
         cfg = load_health_config()
         result = run_checks(sport=sport, cfg=cfg, since=since)
     except DoctorConfigError as exc:
-        # Exit 3, never 0: "doctor could not run" must not be mistaken for
-        # "doctor found nothing wrong".
+        # Exit 3, never 0 — including under `--exit-zero`, which this branch
+        # deliberately ignores. That flag exists so FINDINGS do not redden the
+        # scheduled job; "doctor could not run" is not a finding, and the
+        # comment above this line promised exit 3 while the code returned 0
+        # for the one caller that matters: .github/workflows/health.yml passes
+        # `--exit-zero` to both doctor steps. They stayed green and printed
+        # `[doctor] cannot run: ...` into health.json, so the job failed one
+        # step later, in "Reconcile health issues", when JSON.parse hit that
+        # line — which reads as a broken issue bot, not a blind detector.
         print(f"[doctor] cannot run: {exc}")
-        return EXIT_OK if exit_zero else EXIT_BROKEN
+        return EXIT_BROKEN
 
     code = exit_code(result["findings"], strict=strict)
     print(render_json(result, code) if as_json else render_text(result))

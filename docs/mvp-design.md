@@ -463,6 +463,151 @@ abandoned game is treated that way is **Christopher's ruling**, raised as a
 **Record the incident** in this section with the date, the trigger and what was
 reverted, the same way the section above does.
 
+### Rollback and ownership — doubleheader ESPN match (2026-10-15)
+
+The change that gave `clients/espn.py::EspnGame` a `start_time_utc` and taught
+the MLB finals fallback to key each ESPN event onto ONE stored row by start
+time (`pipeline._key_events_to_rows` over `matching.nearest_start`), so a
+split-doubleheader date with one settled game and one score hole fills the
+hole instead of being refused whole. Tolerances live in
+`config/health.yaml`'s `grading.espn_fallback`.
+
+**Unlike the two changes above, this one writes nothing that a revert can
+undo.** It adds no data commit and repairs no stored row. Scores it has
+already filled stay filled (`data/` is bot-owned, and `store.upsert_games`
+keeps a complete final), and picks it has already settled stay settled
+(picks are immutable; `store.settle_picks` only rewrites rows still
+`pending`). So the plain revert is correct here — but keep `data/`,
+`reports/`, `docs/` and the `CLAUDE.md` files out of it, the same way the
+section above does, because the bots rewrite the first two several times a
+day:
+
+```bash
+git rev-list --parents -n 1 <sha>          # 2 hashes = squash, 3 = merge commit
+git revert -n <squash sha>                 # squash: no -m
+git revert -n -m 1 <merge sha>             # merge commit: -m 1, or git errors
+                                           # "commit is a merge but no -m option"
+git checkout HEAD -- docs/ data/ reports/ \
+    CLAUDE.md ':(glob,top)**/CLAUDE.md'    # the bare **/ pathspec needs a
+                                           # leading component, so the ROOT
+                                           # CLAUDE.md must be named too
+git commit                                 # expect conflicts under data/ and
+                                           # reports/; keeping HEAD there IS the
+                                           # resolution
+```
+
+**Two files must move with the code if you revert only part of this change.**
+
+- `config/health.yaml`'s `grading:` block: `grade` reads it. Keeping it by
+  accident is harmless (nothing reads it after the revert); removing it while
+  the code is still live is not.
+- `src/panthera_mvp/matching.py`: this change moved the shared decision there
+  as `nearest_start`, and `src/panthera_mvp/ncaabase/matching.py` now imports
+  it. A whole-PR revert is consistent, because it restores college baseball's
+  own copy — but reverting `matching.py` alone leaves every `ncaabase` command
+  with an `ImportError`.
+
+**The faster de-risk, with no engine change.** Deleting the
+`grading.espn_fallback` block from `config/health.yaml` restores #69's
+matchup-wide refusal immediately: ordinary dates are untouched (they never
+read it), and each refused matchup records one deduped
+`espn_match_config_error` note instead of filling (a date with two
+unsplittable matchups records two). Leave the `doctor:` block alone —
+removing that stops `grading:` being read AND takes `doctor` down with it
+(see the alert path below).
+
+**It is not free: one test goes red.**
+`tests/test_finals_backfill.py::test_espn_match_window_comes_from_health_yaml`
+reads the REAL `config/health.yaml` and asserts the block is present with
+exactly `window_hours: 4` and `ambiguity_minutes: 60`, so deleting it — or
+retuning either value — reddens `pytest` in `.github/workflows/ci.yml` on the
+push to main, and a red main blocks the standing "agents merge once CI is
+green" rule while the incident is open. Update or mute that test in the same
+commit as the config change, and say in the commit message that it is a
+deliberate de-risk.
+
+**But nothing watches that state, so it needs an owner before you leave it.**
+No check reads `data/picks/run_log.csv` — `store.load_run_log`'s only callers
+are `store.py` itself and `report.py`'s daily-report renderer — and
+`doctor`'s `config_sanity` check validates the strategy configs, not this
+file. A deliberate de-risk and a fat-fingered `grading:` block are therefore
+indistinguishable and silent; the only signal is H05 `pending_age` at 3 days,
+and only when a pick happens to sit behind one of the holes. Whoever removes
+the block opens a `needs-chris` ClickUp task in the same session to put it
+back, the same way a standing `ambiguous_espn_match` is routed below.
+
+**What regresses on revert.**
+
+- The matchup-wide refusal from #69 returns: on a doubleheader date, a game
+  with a score hole is never filled, whichever game it is. Any pick behind it
+  stays `pending` and surfaces as `doctor` H05 `pending_age` (warn 3 days,
+  fail 7), with `.github/workflows/health.yml` opening the issue.
+- `data/picks/run_log.csv` goes back to the matchup-wide
+  `ambiguous_espn_match` wording and loses `espn_match_config_error`
+  entirely. Notes already written stay — they are data.
+- Nothing starts settling WRONG. Both the pre- and post-revert code refuse
+  rather than guess; the revert only widens what is refused.
+
+**Owner and alert path.** No service to redeploy: Actions picks up `main` on
+the next scheduled run.
+
+One coupling to know before you trust the alert: `grade` now reads
+`config/health.yaml` through `doctor.load_health_config`, so a health.yaml
+that is absent, invalid or missing its `doctor:` block degrades the ESPN
+repair AND takes the detector down in the same stroke. That shows up in
+`.github/workflows/health.yml` as a failed **"Run doctor"** step: this change
+also made `cmd_doctor` return exit 3 on a config error even under
+`--exit-zero`, which the workflow passes to both doctor steps. Before, both
+stayed green and wrote `[doctor] cannot run: ...` into `health.json`, and the
+job failed one step later in **"Reconcile health issues"** on `JSON.parse` —
+which reads at 2 a.m. as a broken issue bot rather than a blind detector. A
+red Health Check is itself the page; do not read a quiet issue tracker as
+evidence that grading is healthy until that job is green. Note that the
+failing step is before `actions/upload-artifact`, so that run leaves no
+`health.json` behind — the run log is the only record.
+
+An `ambiguous_espn_match` note that never clears is
+not an agent's to resolve — only an MLB API refresh can supply the score, and
+there is no sanctioned way to settle such a pick by hand (see "Abandoned
+without being called off" above, which is the same situation and the same
+mechanism). A standing one becomes a `needs-chris` ClickUp task like any
+other decision.
+
+**If it filled the wrong row.** This is the failure that pages you, and a
+revert does not undo it: an ESPN event was keyed onto the wrong game of a
+doubleheader, a pick settled from the other game's score, and
+`store.settle_picks` only rewrites rows still `pending`, so that settlement
+is permanent. The strategy's ledger segment carries it, and the verdict
+counters never question it.
+
+- **Detect it.** The forensic handle is `score_source`. Find the dates where
+  one matchup has more than one stored game and at least one of those rows
+  reads `espn`, then re-derive those rows from the MLB Stats API with the
+  throwaway-datastore recipe above (`cp -R data /tmp/panthera-check`;
+  `PANTHERA_ROOT=/tmp/panthera-check .venv/bin/python -c "from
+  panthera_mvp.pipeline import _refresh_games; _refresh_games('<date>')"`;
+  diff the two rows). Use that recipe and not a CLI: `panthera-mvp grade
+  --date <date>` only filters the dates that still have a PENDING pick, so
+  once the bad fill has settled its pick the date is no longer visited, and
+  `_refresh_games` in the live checkout would write `data/games/games.csv` in
+  place, which ruling 2 forbids. For the same reason, the ledger-side
+  signature — a games.csv row and a pick's `final_score` disagreeing on one
+  `game_pk`, because `store.upsert_games` accepts MLB's differing score while
+  the settled pick is never rewritten — only appears if some OTHER pick on
+  that date was still pending when MLB's correction arrived.
+- **You cannot fix it in the data.** Picks are immutable, `data/` is
+  bot-owned and no CLI unsettles a pick. Do not hand-edit either file.
+- **Owner.** A `needs-chris` ClickUp task, like the dead end in "Abandoned
+  without being called off" above: what the correct result was, which picks
+  settled wrong, and what it does to the affected strategy's ledger segment.
+
+**Known gap, not fixed here.** `ncaabase/pipeline.py::_espn_fallback` filters
+to the unsettled rows before calling `match_espn`, so a settled game's event
+is never claimed and can be keyed onto an open row when the open row's own
+event is missing from the feed. Tracked as issue #75. Do not copy that
+filtering into the MLB path: `_key_events_to_rows` keeps complete finals as
+candidates on purpose.
+
 ## Verdict criteria (pre-registered)
 
 Criteria are **per-strategy**, declared in each strategy's YAML at

@@ -47,6 +47,9 @@
   settles single ml/rl/total picks. No strategy yet.
 - `matching.py` — odds event ↔ MLB gamePk; alias table + commence-time
   proximity for doubleheaders; unmatched events are logged, never guessed.
+  `nearest_start` is the shared nearest-start-within-a-window decision, with
+  the ambiguity arm that refuses rather than picks; MLB's ESPN finals
+  fallback and `ncaabase/matching.py` both run on it.
 - `store.py` — CSV datastore with dedupe keys (lines) / upsert (games) /
   append-once + settle-in-place (picks).
 - `strategy/` — the IP: `daytype.py` (P/V/hybrid), `movement.py` (public vs
@@ -133,6 +136,27 @@
   Postponed/Cancelled row has no score either and must not be reopened, and a
   row already Final with BOTH scores is never rewritten. MLB's reader is
   `pipeline._needs_final`.
+- **A finals fallback keys an event onto ONE stored row, by start time**
+  (added 2026-10-15). `(game_date_et, home_team, away_team)` is not unique:
+  a split doubleheader puts two games of one matchup on one date. Writing to
+  the matchup broadcasts one game's score to both rows and `grade_pending`
+  settles a pick from whichever landed, permanently. MLB's reader is
+  `pipeline._key_events_to_rows` over `matching.nearest_start`, with the
+  tolerances in `config/health.yaml`'s `grading.espn_fallback`. The ambiguity
+  arm still refuses — two candidates inside the window of each other are
+  logged, skipped and recorded as an `ambiguous_espn_match` run note — so the
+  fix is "decide when the times decide it", never "guess when they do not".
+  **Both sides must be splittable.** Gating on the stored row count alone is
+  not enough: two completed ESPN events against one stored row skip the
+  keying entirely, and two events sharing a start time let the feed's order
+  pick the row. Neither may decide an irreversible settlement.
+  NCAAF needs none of this: its fallbacks join by `event_id`, and a CFB team
+  plays once a week. `ncaabase` runs the same `nearest_start` rule over its
+  own `matching:` block, but NOT over the same candidate set —
+  `ncaabase/pipeline.py::_espn_fallback` filters to the unsettled rows before
+  calling `match_espn`, so a settled game's event is never claimed and can be
+  keyed onto an open row when the open row's own event is missing from the
+  feed. Tracked as issue #75; do not copy that filtering back into MLB.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
   Preview | Live | Final, so it reports a called-off game as `Final` with no
