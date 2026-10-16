@@ -109,10 +109,13 @@ tolerances from `config/health.yaml`, so the doubleheader it was about went
 unfilled; the ordinary matchups on the same date are unaffected) or
 `unmapped_final_no_score` (a game stored `Final` with no score whose
 `detailedState` head is unknown to `clients/mlb.py::_CALLED_OFF` — it can
-settle nothing until the head is mapped) or `replay_shadow` (a retroactive
-replay or catch-up wrote shadow picks for that date; the real ledger is
-untouched). `run_label` is the run that wrote it: a snapshot label, `grade`,
-`refresh`, `replay` or `catchup`.
+settle nothing until the head is mapped), `slate_skipped` (a strategy
+produced neither a pick nor a pass because no game reached its engine —
+every game was outside the run's window, already under way, or already
+picked; the note carries the per-reason counts) or `replay_shadow` (a
+retroactive replay or catch-up wrote shadow picks for that date; the real
+ledger is untouched). `run_label` is the run that wrote it: a snapshot
+label, `grade`, `refresh`, `replay` or `catchup`.
 
 Identical notes collapse: the dedupe key is `(game_date_et, kind, note)` and
 deliberately excludes `run_label`, because a game stuck in an unmapped

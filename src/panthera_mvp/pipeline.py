@@ -335,6 +335,7 @@ def _strategy_picks(
     dry_run: bool,
     run_label: str,
     existing: pd.DataFrame,
+    as_of_et,
     splits_lookup=None,
 ) -> tuple[list[dict], list[Pass]]:
     """Run one strategy's engine over today's slate; returns (rows, passes).
@@ -370,9 +371,12 @@ def _strategy_picks(
         snap_label=snap_label,
         window=window,
         date_et=d,
-        # A dry run evaluates the whole slate regardless of start time; a real
-        # run must not pick a game already under way.
-        as_of_et=None if dry_run else now_utc().astimezone(ET),
+        # One cutoff for the whole slate, read by `cmd_picks` before the
+        # strategy loop and passed down. Read here it would be read once per
+        # STRATEGY, and two strategies in the same run could then disagree
+        # about whether a game has started. `None` on a dry run, which
+        # evaluates the slate regardless of start time.
+        as_of_et=as_of_et,
         already_picked_pks=set(mine_today["game_pk"]) if not mine_today.empty else set(),
         budget=budget,
         splits_lookup=splits_lookup,
@@ -380,8 +384,13 @@ def _strategy_picks(
     # Surface the skip counters rather than dropping them. A strategy that
     # produced nothing because every game was already under way, or outside
     # the run's window, looks identical in the ledger to one whose engine
-    # passed on everything — and doctor H01 slate_shutout reads exactly that
-    # shape. One durable note tells the two apart afterwards.
+    # passed on everything — which is the shape doctor H01 slate_shutout
+    # alerts on. The note does NOT reach H01: `doctor` reads passes.csv and
+    # picks.csv and never loads run_log.csv. It lands in the daily report,
+    # for the human who opens the issue H01 filed.
+    #
+    # This is the one thing a live run writes that it did not before the
+    # extraction: a row in data/picks/run_log.csv. It changes no pick.
     if result.skipped and any(result.skipped.values()):
         detail = " ".join(f"{k}={v}" for k, v in sorted(result.skipped.items()) if v)
         print(f"[picks:{sid}] skipped {detail}")
@@ -440,6 +449,10 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
     splits_lookup = _make_splits_lookup(d)
     window = tuple(int(x) for x in window_end_et.split(":"))
     existing = store.load_picks()
+    # ONE clock for the slate, read here, before any strategy runs: every
+    # strategy must agree about which games have already started. A dry run
+    # evaluates the whole slate regardless of start time.
+    as_of_et = None if dry_run else now_utc().astimezone(ET)
 
     total_added = 0
     for sid, scfg in live.items():
@@ -457,6 +470,7 @@ def cmd_picks(window_end_et: str, dry_run: bool = False, run_label: str = "manua
                 dry_run,
                 run_label,
                 existing,
+                as_of_et,
                 splits_lookup=splits_lookup,
             )
         except StrategyConfigError:
