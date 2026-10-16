@@ -626,6 +626,12 @@ def test_every_suggested_command_names_a_real_subcommand():
     known = set(re.findall(r'sub\.add_parser\(\s*"([a-z0-9_-]+)"', cli_src))
     assert known, "could not recover the CLI subcommand list from cli.py"
 
+    nested = {
+        "ncaaf": set(re.findall(r'cfb\.add_parser\(\s*"([a-z0-9_-]+)"', cli_src)),
+        "ncaabase": set(re.findall(r'cbb\.add_parser\(\s*"([a-z0-9_-]+)"', cli_src)),
+    }
+    assert all(nested.values()), "could not recover the per-sport subcommands"
+
     doctor_src = Path(doctor_mod.__file__).read_text()
     suggested = set(re.findall(r"panthera-mvp ([a-z0-9_-]+)", doctor_src))
     assert suggested, "doctor.py suggests no commands at all — did the format change?"
@@ -635,6 +641,23 @@ def test_every_suggested_command_names_a_real_subcommand():
         f"doctor.py suggests commands that do not exist: {unknown} "
         f"(known subcommands: {sorted(known)})"
     )
+
+    # A command written through `_cli_prefix` is invisible to the regex above
+    # — the character after "panthera-mvp " in the source is "{" — so it
+    # shipped `panthera-mvp ncaaf catchup`, which has never existed. A
+    # prefixed command must exist under EVERY namespace the prefix can take.
+    prefixed = set(
+        re.findall(r"panthera-mvp \{_cli_prefix\([^)]*\)\}([a-z0-9_-]+)", doctor_src)
+    )
+    for cmd in sorted(prefixed):
+        missing = sorted(s for s, cmds in nested.items() if cmd not in cmds)
+        assert not missing, (
+            f"doctor.py builds `panthera-mvp <sport> {cmd}` via _cli_prefix, "
+            f"but no such subcommand exists for: {missing}"
+        )
+        assert cmd in known, (
+            f"`panthera-mvp {cmd}` (the MLB arm of _cli_prefix) does not exist"
+        )
 
 
 def test_suggested_commands_target_the_finding_s_own_sport():

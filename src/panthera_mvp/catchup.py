@@ -237,6 +237,52 @@ def _default_window(cfg: dict, from_et: str | None, to_et: str | None):
     return (max(from_et, floor), to_et), truncated, floor
 
 
+def _rebuild_markers(
+    sport: str,
+    win_from: str,
+    win_to: str,
+    strategy: list[str] | None,
+    *,
+    explicit: bool,
+    yes: bool,
+    dry_run: bool,
+) -> list[str]:
+    """Forget completion markers in the window so those dates are detected as
+    gaps again.
+
+    Markers only. Shadow rows stay: `append_shadow_picks` dedupes on
+    `pick_id`, so replaying an unchanged config adds none, and a changed
+    config legitimately adds the rows it now produces.
+    """
+    if not explicit:
+        return ["--rebuild needs an explicit --from and --to; nothing removed"]
+    done = store.load_catchup_log()
+    rows = (
+        done[done["sport"].astype(str) == sport] if not done.empty else done
+    )
+    if strategy and not rows.empty:
+        rows = rows[rows["strategy_id"].astype(str).isin(strategy)]
+    dates = (
+        {d for d in rows["game_date_et"].astype(str) if win_from <= d <= win_to}
+        if not rows.empty
+        else set()
+    )
+    if not dates:
+        return [f"--rebuild found no completion markers in {win_from}..{win_to}"]
+    if not yes:
+        return [
+            f"--rebuild would forget {len(dates)} marked date(s) in "
+            f"{win_from}..{win_to}; needs --yes; nothing removed"
+        ]
+    if dry_run:
+        return [
+            f"--rebuild (dry run) would forget {len(dates)} marked date(s) "
+            f"in {win_from}..{win_to}"
+        ]
+    removed = store.drop_catchup_log(sport, dates, strategy_ids=strategy)
+    return [f"--rebuild forgot {removed} completion marker(s)"]
+
+
 def cmd_catchup(
     sport: str = "all",
     from_et: str | None = None,
@@ -262,6 +308,20 @@ def cmd_catchup(
     sports = list(SPORTS) if sport == "all" else [sport]
 
     if "mlb" in sports:
+        if rebuild:
+            # Before detection, and over the whole requested window. A date
+            # already marked complete is skipped by `detect_mlb_gaps`, so
+            # dropping markers for the dates it DID return could never
+            # re-open the ones `--rebuild` exists to re-open.
+            report.notes += _rebuild_markers(
+                "mlb",
+                win_from,
+                win_to,
+                strategy,
+                explicit=from_et is not None and to_et is not None,
+                yes=yes,
+                dry_run=dry_run,
+            )
         gaps, partial, notes = detect_mlb_gaps(cfg, win_from, win_to)
         report.gaps += gaps
         report.partial += partial
@@ -273,14 +333,6 @@ def cmd_catchup(
             gap_dates = sorted(
                 {g.date_et for g in gaps if g.strategy_id in strategy}
             )
-        if rebuild and gap_dates:
-            if not (yes or dry_run):
-                report.notes.append(
-                    "--rebuild needs --yes (it deletes shadow rows); nothing removed"
-                )
-            elif not dry_run:
-                removed = store.drop_catchup_log("mlb", set(gap_dates))
-                report.notes.append(f"--rebuild cleared {removed} completion marker(s)")
         if gap_dates and not dry_run:
             from .replay import replay_window
 

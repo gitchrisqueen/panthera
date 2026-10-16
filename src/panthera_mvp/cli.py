@@ -105,7 +105,8 @@ def main(argv: list[str] | None = None) -> int | None:
         "--rebuild",
         action="store_true",
         help="Forget completion markers in the window so the dates are "
-        "re-detected; needs --yes",
+        "re-detected; needs an explicit --from/--to and --yes. Removes "
+        "markers only — never picks, never shadow rows",
     )
     p_catchup.add_argument("--yes", action="store_true", help="Confirm --rebuild")
     p_catchup.add_argument(

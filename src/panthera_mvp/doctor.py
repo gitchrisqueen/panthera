@@ -373,12 +373,12 @@ def check_slate_shutout(data: SportData, cfg: dict, today: date, since: str) -> 
             # Must name a command that EXISTS — an alert whose remediation is
             # a typo teaches the reader to distrust the alert, and
             # test_every_suggested_command_names_a_real_subcommand enforces
-            # it. `catchup` ships as of PR 3b, so this points at the repair
-            # again; `_cli_prefix` keeps it on the finding's own sport,
-            # because catchup writes.
+            # it. NOT `_cli_prefix` here: `catchup` is one top-level command
+            # for every sport, so `panthera-mvp ncaaf catchup` does not
+            # exist. `--sport` is what keeps the repair, which writes, on the
+            # finding's own sport.
             suggested_command=(
-                f"panthera-mvp {_cli_prefix(data.sport)}catchup "
-                f"--sport {data.sport} --from {first_day}"
+                f"panthera-mvp catchup --sport {data.sport} --from {first_day}"
             ),
         )
     ]

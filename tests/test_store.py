@@ -141,9 +141,11 @@ def test_upsert_games_replaces_by_pk(tmp_root):
 
 
 def test_append_run_note_dedupes(tmp_root):
-    """run_log.csv was the one writer in this module with no key, so it
-    appended unconditionally — a weekly catch-up re-reporting the same dates
-    would pile up identical rows."""
+    """Characterization test for behaviour that predates `RUN_LOG_KEY`, not a
+    regression test for a fix: `append_run_note` already collapsed the same
+    (game_date_et, kind, note) before the constant named that key. It is here
+    because a weekly catch-up re-reports dates it already repaired, so the
+    dedupe is now load-bearing for a caller that did not exist."""
     store.append_run_note("2026-09-29", "catchup", "replay_shadow", "replayed pv_v3")
     store.append_run_note("2026-09-29", "catchup", "replay_shadow", "replayed pv_v3")
     assert len(store.load_run_log()) == 1

@@ -100,8 +100,10 @@ GAMES_COLUMNS = [
 
 RUN_LOG_COLUMNS = ["ts_utc", "game_date_et", "run_label", "kind", "note"]
 
-#: run_log.csv was the one writer in this module with no key, so it appended
-#: unconditionally. `ts_utc` is excluded so a re-run matches its own note.
+#: run_log.csv was the one writer in this module whose dedupe was an inline
+#: condition rather than a NAMED key — it always deduped; this constant only
+#: gives the key a name, so the rule is readable where the other writers'
+#: keys are. `ts_utc` is excluded so a re-run matches its own note.
 #:
 #: `run_label` is excluded DELIBERATELY, and that is load-bearing rather than
 #: an oversight: a game stuck in an unmapped terminal state is re-examined by
@@ -210,16 +212,24 @@ def append_catchup_log(df: pd.DataFrame) -> int:
     return len(df)
 
 
-def drop_catchup_log(sport: str, dates: set[str]) -> int:
+def drop_catchup_log(
+    sport: str, dates: set[str], strategy_ids: list[str] | None = None
+) -> int:
     """Forget completion markers for these dates, so `--rebuild` re-detects
-    them. Removes markers only, never picks."""
+    them. Removes markers only, never picks and never shadow rows.
+
+    `strategy_ids` narrows the removal: without it a rebuild aimed at one
+    strategy would re-open the date for every strategy that shares it.
+    """
     existing = load_catchup_log()
     if existing.empty or not dates:
         return 0
-    keep = ~(
-        (existing["sport"].astype(str) == sport)
-        & existing["game_date_et"].astype(str).isin(dates)
-    )
+    hit = (existing["sport"].astype(str) == sport) & existing[
+        "game_date_et"
+    ].astype(str).isin(dates)
+    if strategy_ids:
+        hit &= existing["strategy_id"].astype(str).isin(strategy_ids)
+    keep = ~hit
     dropped = int((~keep).sum())
     if dropped:
         existing[keep].to_csv(catchup_log_path(), index=False)

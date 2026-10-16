@@ -263,6 +263,99 @@ def test_marker_reopens_the_date_after_a_config_change(catchup_root):
     assert _gaps()[0], "a config change must re-open the date"
 
 
+def test_rebuild_reopens_a_repaired_date(catchup_root, capsys):
+    """The regression test for a `--rebuild` that could not rebuild.
+
+    It used to drop markers for the gaps DETECTION returned, and detection
+    skips any date already marked complete — so the one in-product redo
+    lever could never re-open the date it was aimed at.
+    """
+    write_games({"2026-09-29": 2})
+    write_lines({"2026-09-29": 2})
+    write_passes("2026-09-29", LIVE, 2, "[R0] game_type=F")
+    catchup.cmd_catchup(sport="mlb", dry_run=False, no_network=True)
+    assert _gaps()[0] == [], "precondition: the date is marked complete"
+    capsys.readouterr()
+
+    catchup.cmd_catchup(
+        sport="mlb",
+        from_et="2026-09-29",
+        to_et="2026-09-29",
+        rebuild=True,
+        yes=True,
+        dry_run=False,
+        no_network=True,
+    )
+    out = capsys.readouterr().out
+    assert "--rebuild forgot" in out
+    assert "2026-09-29" in out and "gap(s)" in out, out
+
+
+def test_rebuild_refuses_an_unbounded_window(catchup_root, capsys):
+    """`--rebuild` over the default 45-day window would forget every marker
+    the pipeline has, so it demands an explicit --from/--to."""
+    write_games({"2026-09-29": 2})
+    write_lines({"2026-09-29": 2})
+    write_passes("2026-09-29", LIVE, 2, "[R0] game_type=F")
+    catchup.cmd_catchup(sport="mlb", dry_run=False, no_network=True)
+    before = len(store.load_catchup_log())
+
+    catchup.cmd_catchup(
+        sport="mlb", rebuild=True, yes=True, dry_run=False, no_network=True
+    )
+    assert "needs an explicit --from and --to" in capsys.readouterr().out
+    assert len(store.load_catchup_log()) == before
+
+
+def test_rebuild_needs_yes(catchup_root, capsys):
+    write_games({"2026-09-29": 2})
+    write_lines({"2026-09-29": 2})
+    write_passes("2026-09-29", LIVE, 2, "[R0] game_type=F")
+    catchup.cmd_catchup(sport="mlb", dry_run=False, no_network=True)
+    before = len(store.load_catchup_log())
+
+    catchup.cmd_catchup(
+        sport="mlb",
+        from_et="2026-09-29",
+        to_et="2026-09-29",
+        rebuild=True,
+        dry_run=False,
+        no_network=True,
+    )
+    assert "needs --yes" in capsys.readouterr().out
+    assert len(store.load_catchup_log()) == before
+
+
+def test_rebuild_stays_inside_the_named_strategies(catchup_root, capsys):
+    """Markers are keyed per strategy; a rebuild aimed at one strategy must
+    not re-open the date for the others that share it."""
+    write_games({"2026-09-29": 2})
+    write_lines({"2026-09-29": 2})
+    write_passes("2026-09-29", LIVE, 2, "[R0] game_type=F")
+    catchup.cmd_catchup(sport="mlb", dry_run=False, no_network=True)
+    others = sorted(set(store.load_catchup_log()["strategy_id"]) - {LIVE[0]})
+    assert others, "precondition: more than one strategy was marked"
+    capsys.readouterr()
+
+    catchup.cmd_catchup(
+        sport="mlb",
+        from_et="2026-09-29",
+        to_et="2026-09-29",
+        strategy=[LIVE[0]],
+        rebuild=True,
+        yes=True,
+        dry_run=True,
+        no_network=True,
+    )
+    note = capsys.readouterr().out
+    assert "--rebuild (dry run) would forget 1 marked date(s)" in note, note
+    assert not store.load_catchup_log().empty, "a dry run removes nothing"
+
+    store.drop_catchup_log("mlb", {"2026-09-29"}, strategy_ids=[LIVE[0]])
+    left = sorted(set(store.load_catchup_log()["strategy_id"]))
+    assert LIVE[0] not in left and left == others
+
+
 def test_dry_run_writes_nothing(catchup_root):
     write_games({"2026-09-29": 2})
     write_lines({"2026-09-29": 2})

@@ -630,6 +630,71 @@ event is missing from the feed. Tracked as issue #75. Do not copy that
 filtering into the MLB path: `_key_events_to_rows` keeps complete finals as
 candidates on purpose.
 
+### Rollback and ownership — catch-up (2026-10-16)
+
+`panthera-mvp catchup` plus `.github/workflows/panthera-catchup.yml`
+(Monday 12:15 ET) and the replay hardening under it. The command finds slate
+days the pipeline missed — never ran, or ran under a config since corrected —
+and replays them into the SHADOW ledger. It has no code path to
+`data/picks/picks.csv`, `tests/test_catchup.py::test_catchup_never_writes_picks_csv`
+hashes that file around a live run, and the workflow's commit step greps the
+staged paths and fails before pushing if it ever appears.
+
+**Owner of a red or a wrong catch-up run:** the repo owner, Christopher Queen
+(`@gitchrisqueen`). There is no on-call rotation and no second maintainer, so
+every item below is something one person does from a laptop.
+
+**Stop it without a code change.** Actions → Panthera Catch-up → `⋯` →
+*Disable workflow*. That is the kill switch; `config/health.yaml`'s `catchup:`
+block tunes the window and the void prefixes but has no `enabled:` flag. A
+manual dispatch defaults to `dry_run: true`, which detects and prints and
+writes nothing, so a rehearsal is always available while it stays enabled.
+
+**Undo one bad run.** Revert its bot commit (`data: weekly catch-up …`):
+
+```bash
+git rev-list --parents -n 1 <sha>   # 2 hashes = squash, 3 = merge commit
+git revert <sha>                    # add -m 1 only for a merge commit
+```
+
+That removes the shadow rows AND the `data/picks/catchup_log.csv` completion
+markers written in the same commit, so the next Monday run detects the same
+dates and replays them again. **Correct the cause first** — usually
+`catchup.mlb.void_pass_reasons` in `config/health.yaml`, the human-declared
+list of pass-reason prefixes a config fix has invalidated — or disable the
+workflow, or the revert is undone within the week.
+
+**Undo the code.** Revert the PR commit, keeping `data/`, `reports/`, `docs/`
+and the `CLAUDE.md` files out of it, exactly as the three sections above do.
+Shadow rows already written stay: they are immutable like every pick, and
+nothing else reads `catchup_log.csv`.
+
+**Re-open dates deliberately** (as opposed to by reverting): `catchup
+--rebuild --yes --from <date> --to <date>`, which forgets completion markers
+in that window so the dates are detected again. It refuses an unbounded
+window, removes markers only — never picks, never shadow rows — and narrows
+to `--strategy` when given.
+
+**The triggers that say a run was wrong.**
+
+- The job is red. The `picks.csv` guard, a `doctor` exit 3 (a missing or
+  invalid `config/health.yaml`) and a failed rebase all fail closed, before
+  the push.
+- `reports/BETTING_REPORT.md`'s retroactive section, or the dashboard's
+  `retroactive_replay` block, gains rows for dates that were never actually
+  missed. Read the run's gap list against `data/picks/passes.csv`: a date
+  with a surviving non-void pass was not a gap, and
+  `catchup.mlb.void_pass_reasons` is too broad.
+- A Monday run repairs the same dates it repaired the week before. The
+  completion markers are not landing — check that the commit pushed.
+- Partial gaps are reported and never repaired, by ruling (2026-10-16); a run
+  that repaired one is a defect, not an improvement.
+
+**Nothing watches catch-up itself.** `doctor` detects the silence catch-up
+repairs, not catch-up's own failure, so a workflow left disabled is invisible
+until H01 fires on a fresh outage. Whoever disables it opens a `needs-chris`
+ClickUp task in the same session to put it back.
+
 ## Verdict criteria (pre-registered)
 
 Criteria are **per-strategy**, declared in each strategy's YAML at

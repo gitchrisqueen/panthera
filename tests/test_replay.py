@@ -200,6 +200,7 @@ def test_replay_is_idempotent(replay_root):
     write_history()
     first = replay.replay_window(["pv_v3"], grade=False, quiet=True)
     n = len(store.load_shadow_picks())
+    assert first.added == n, "precondition: the first run is what wrote them"
     second = replay.replay_window(["pv_v3"], grade=False, quiet=True)
     assert second.added == 0, "a re-run added rows"
     assert len(store.load_shadow_picks()) == n

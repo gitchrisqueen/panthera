@@ -75,23 +75,27 @@ jobs:
           FROM_ET: ${{ inputs.from }}
           TO_ET: ${{ inputs.to }}
           DRY_RUN: ${{ inputs.dry_run }}
+          # `--sport all` grades NCAAF, whose finals fallback needs this
+          # key (ncaaf/pipeline.py::fill_finals_fallback). Without it the
+          # weekly run would settle NCAAF with that arm silently missing.
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: |
           args=(--sport "${SPORT:-all}")
-          [ -n "$FROM_ET" ] && args+=(--from "$FROM_ET")
-          [ -n "$TO_ET" ] && args+=(--to "$TO_ET")
+          if [ -n "$FROM_ET" ]; then args+=(--from "$FROM_ET"); fi
+          if [ -n "$TO_ET" ]; then args+=(--to "$TO_ET"); fi
           # Scheduled runs are live; a manual dispatch defaults to a dry run.
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
           panthera-mvp catchup "${args[@]}"
 
       - name: Regenerate reports
-        if: ${{ inputs.dry_run != 'true' }}
+        if: inputs.dry_run != true
         run: panthera-mvp report
 
       - name: Doctor (after)
         run: panthera-mvp doctor --exit-zero
 
       - name: Commit & push
-        if: ${{ inputs.dry_run != 'true' }}
+        if: inputs.dry_run != true
         run: |
           git config user.name "panthera-bot"
           git config user.email "actions@users.noreply.github.com"
