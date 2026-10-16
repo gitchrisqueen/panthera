@@ -820,8 +820,15 @@ def test_a_broken_health_yaml_costs_only_the_espn_repair(tmp_root, monkeypatch):
     notes = store.load_run_log()
     assert list(notes["kind"]) == ["espn_match_config_error"]
     note = notes.iloc[0]["note"]
-    assert "config/health.yaml" in note
-    assert f"grade --date {DAY}" in note
+    # Names the block, not just the file: "that block" in a ~200-line config
+    # is not a remediation.
+    assert "`grading.espn_fallback` block in config/health.yaml" in note
+    # And a remedy with a production path. No workflow runs `grade --date`,
+    # and a human committing under data/ is forbidden, so the note must point
+    # at the next scheduled run — which reaches this date because `cmd_grade`
+    # walks every date that still has a pending pick.
+    assert "next scheduled MVP Morning run" in note
+    assert "grade --date" not in note
     assert "must not be hand-edited" not in note
 
 

@@ -431,7 +431,10 @@ git rev-list --parents -n 1 <sha>          # 2 hashes = squash, 3 = merge commit
 git revert -n <squash sha>                 # squash: no -m
 git revert -n -m 1 <merge sha>             # merge commit: -m 1, or git errors
                                            # "commit is a merge but no -m option"
-git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
+git checkout HEAD -- docs/ data/ reports/ \
+    CLAUDE.md ':(glob,top)**/CLAUDE.md'    # the bare **/ pathspec needs a
+                                           # leading component, so the ROOT
+                                           # CLAUDE.md must be named too
 git commit                                 # expect conflicts under data/ and
                                            # reports/; keeping HEAD there IS the
                                            # resolution
@@ -451,10 +454,21 @@ git commit                                 # expect conflicts under data/ and
 **The faster de-risk, with no code change at all.** Deleting the
 `grading.espn_fallback` block from `config/health.yaml` restores #69's
 matchup-wide refusal immediately: ordinary dates are untouched (they never
-read it), and each doubleheader date records one deduped
-`espn_match_config_error` note instead of filling. Leave the `doctor:` block
-alone — removing that stops `grading:` being read AND takes `doctor` down
-with it (see the alert path below).
+read it), and each refused matchup records one deduped
+`espn_match_config_error` note instead of filling (a date with two
+unsplittable matchups records two). Leave the `doctor:` block alone —
+removing that stops `grading:` being read AND takes `doctor` down with it
+(see the alert path below).
+
+**But nothing watches that state, so it needs an owner before you leave it.**
+No check reads `data/picks/run_log.csv` — `store.load_run_log`'s only callers
+are `store.py` itself and `report.py`'s daily-report renderer — and
+`doctor`'s `config_sanity` check validates the strategy configs, not this
+file. A deliberate de-risk and a fat-fingered `grading:` block are therefore
+indistinguishable and silent; the only signal is H05 `pending_age` at 3 days,
+and only when a pick happens to sit behind one of the holes. Whoever removes
+the block opens a `needs-chris` ClickUp task in the same session to put it
+back, the same way a standing `ambiguous_espn_match` is routed below.
 
 **What regresses on revert.**
 
@@ -474,9 +488,13 @@ the next scheduled run.
 One coupling to know before you trust the alert: `grade` now reads
 `config/health.yaml` through `doctor.load_health_config`, so a health.yaml
 that is absent, invalid or missing its `doctor:` block degrades the ESPN
-repair AND takes the detector down in the same stroke —
-`.github/workflows/health.yml` runs `doctor --exit-zero`, but the config load
-raises before that, so the job goes red and no issue is opened or closed. A
+repair AND takes the detector down in the same stroke. That shows up in
+`.github/workflows/health.yml` as a failed **"Run doctor"** step: this change
+also made `cmd_doctor` return exit 3 on a config error even under
+`--exit-zero`, which the workflow passes to both doctor steps. Before, both
+stayed green and wrote `[doctor] cannot run: ...` into `health.json`, and the
+job failed one step later in **"Reconcile health issues"** on `JSON.parse` —
+which reads at 2 a.m. as a broken issue bot rather than a blind detector. A
 red Health Check is itself the page; do not read a quiet issue tracker as
 evidence that grading is healthy until that job is green.
 
@@ -486,6 +504,27 @@ there is no sanctioned way to settle such a pick by hand (see "Abandoned
 without being called off" above, which is the same situation and the same
 mechanism). A standing one becomes a `needs-chris` ClickUp task like any
 other decision.
+
+**If it filled the wrong row.** This is the failure that pages you, and a
+revert does not undo it: an ESPN event was keyed onto the wrong game of a
+doubleheader, a pick settled from the other game's score, and
+`store.settle_picks` only rewrites rows still `pending`, so that settlement
+is permanent. The strategy's ledger segment carries it, and the verdict
+counters never question it.
+
+- **Detect it.** The forensic handle is `score_source`. Find the dates where
+  one matchup has more than one stored game and at least one of those rows
+  reads `espn`, and re-check those rows against the MLB Stats API; a
+  disagreement there is the signature. `store.upsert_games` accepts MLB's
+  differing score for the game row, so games.csv can self-correct while the
+  settled pick does not — a games.csv row and a pick's `final_score`
+  disagreeing on the same `game_pk` is the same signature seen from the
+  ledger side.
+- **You cannot fix it in the data.** Picks are immutable, `data/` is
+  bot-owned and no CLI unsettles a pick. Do not hand-edit either file.
+- **Owner.** A `needs-chris` ClickUp task, like the dead end in "Abandoned
+  without being called off" above: what the correct result was, which picks
+  settled wrong, and what it does to the affected strategy's ledger segment.
 
 **Known gap, not fixed here.** `ncaabase/pipeline.py::_espn_fallback` filters
 to the unsettled rows before calling `match_espn`, so a settled game's event

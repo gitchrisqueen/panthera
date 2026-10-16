@@ -504,6 +504,21 @@ def test_missing_health_config_exits_broken(tmp_root, capsys):
     assert "cannot run" in capsys.readouterr().out
 
 
+def test_missing_health_config_exits_broken_even_under_exit_zero(tmp_root, capsys):
+    """`--exit-zero` does not apply to "doctor could not run".
+
+    The flag exists so FINDINGS do not redden the scheduled job, and
+    .github/workflows/health.yml passes it to BOTH doctor steps. While this
+    branch honoured it, an unreadable health.yaml left those steps green with
+    `[doctor] cannot run: ...` written into health.json, and the job failed
+    one step later in "Reconcile health issues" when JSON.parse hit that
+    line — which reads as a broken issue bot rather than a blind detector.
+    `cmd_doctor`'s own comment promised exit 3 the whole time.
+    """
+    assert doctor.cmd_doctor(exit_zero=True) == doctor.EXIT_BROKEN
+    assert "cannot run" in capsys.readouterr().out
+
+
 def test_json_carries_every_key_the_workflow_reads(health_root, monkeypatch, capsys):
     """.github/workflows/health.yml's reconciler reads these by name; renaming
     one silently stops the alerting rather than failing loudly."""

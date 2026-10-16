@@ -834,6 +834,13 @@ def _espn_fallback(date_et: str) -> int:
             # needs no start time from either side. This is the ordinary date,
             # and it behaves exactly as it did before start times existed, and
             # without reading config/health.yaml at all.
+            #
+            # What makes it safe is the stored side: `_refresh_games` upserts
+            # every game the MLB schedule lists for the date, so one stored row
+            # for a matchup means MLB itself reported one game — there is no
+            # second game for this event to belong to. The ESPN side is not
+            # trusted the same way, which is why two completed events against
+            # one row take the keying path above instead.
             targets, reasons = [(events[0], rows.index[0])], []
         else:
             if window is None and config_error is None:
@@ -857,9 +864,13 @@ def _espn_fallback(date_et: str) -> int:
             # the one failure here an operator can fix alone, and telling them
             # to wait for an MLB refresh would hide that.
             remedy = (
-                "Restore that block in config/health.yaml and re-run "
-                f"`panthera-mvp grade --date {date_et}` — grading is "
-                "idempotent, and the hole fills on the re-run."
+                "Restore the `grading.espn_fallback` block in "
+                "config/health.yaml; the next scheduled MVP Morning run "
+                "grades every date that still has a pending pick, so this "
+                "hole fills itself — no manual command, and nothing to "
+                "commit under data/ by hand. A hole with no pick behind it "
+                "is not revisited, and needs no fix: there is nothing to "
+                "settle."
                 if kind == "espn_match_config_error"
                 else "Only an MLB API refresh can settle these; data/ is "
                 "bot-owned and must not be hand-edited."
