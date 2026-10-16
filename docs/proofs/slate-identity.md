@@ -44,27 +44,51 @@ this merges, compare that run's new rows in `data/picks/picks.csv`
 against what the previous commit produced for the same slate; the
 offline check needs no API credits:
 
+Run it on a date that HAS odds rows: `cmd_picks` returns early with
+"no odds lines for today" when it does not, both arms then write
+nothing, and an empty diff would read as "no regression" while
+proving nothing. The guard below fails loudly on that.
+
 ```bash
-# Two checkouts, one datastore copy each, same fixture odds; diff the
-# picks they produce. Never `git stash` for this: the stash stack is
-# shared across worktrees and other sessions may be using it.
-BASE=$(git rev-parse HEAD~1)        # the commit before the merge
+# Two checkouts, one datastore copy each, the SAME recorded schedule;
+# diff the picks they produce. Never `git stash` for this: the stash
+# stack is shared across worktrees and other sessions may be using it.
+BASE=$(git rev-parse HEAD~1)          # the commit before the merge
+OUT=$(mktemp -d)
 for REF in HEAD "$BASE"; do
   WT=$(mktemp -d); CHECK=$(mktemp -d)
   git worktree add -q --detach "$WT" "$REF"
-  cp -R data "$CHECK"/
+  cp -R data config "$CHECK"/   # BOTH: paths.config_dir() is $ROOT/config
   (cd "$WT" && python3.12 -m venv .venv && .venv/bin/pip install -q -e .
-   PANTHERA_ROOT="$CHECK" PANTHERA_ODDS_FIXTURE=tests/fixtures/odds_snapshot.json \
-     .venv/bin/panthera-mvp picks --window-end-et 23:59 --label manual --dry-run)
-  cp "$CHECK"/data/picks/picks.csv "/tmp/picks-$(basename $REF).csv"
+   # PANTHERA_MLB_FIXTURE, not _ODDS_: `picks` reads the schedule, and
+   # without it _refresh_games calls statsapi.mlb.com for real.
+   export PANTHERA_ROOT="$CHECK"
+   export PANTHERA_MLB_FIXTURE="$WT/tests/fixtures/mlb_schedule.json"
+   .venv/bin/panthera-mvp picks --window-end-et 23:59 --label manual)
+  cp "$CHECK"/data/picks/picks.csv "$OUT/picks-${REF//\//_}.csv"
   git worktree remove --force "$WT"
 done
-diff /tmp/picks-HEAD.csv /tmp/picks-*.csv
+
+# Both arms must have produced something, or the diff is vacuous.
+for f in "$OUT"/picks-*.csv; do
+  [ "$(wc -l < "$f")" -gt 1 ] || { echo "VACUOUS: $f has no picks"; exit 1; }
+done
+diff "$OUT/picks-HEAD.csv" "$OUT/picks-$BASE.csv"
 ```
 
 Expect no difference in any behaviour-bearing column. `pick_id`,
 `created_ts_utc` and `config_hash` are not behaviour: the first two
 are stamped per run and the third moves with the strategy YAML.
+
+**Containment for rows already written.** Picks are append-once and
+settle in place, and `config_hash` covers only the YAML — so picks
+made by a regressed loop cannot be un-written OR segmented out of a
+strategy's verdict sample by hash. If a regression reaches the
+ledger: record the affected `pick_id`s in a run note and in
+`reports/BETTING_REPORT.md`, then treat re-registering the affected
+strategies under new ids with fresh counters as the remedy — which is
+a behavioural-change call under `src/panthera_mvp/CLAUDE.md`, so it is
+Christopher's, not an agent's.
 
 **Trigger:** a slate where the strategies pick a different set of
 games than the pre-merge code did on the same inputs, or a capped day

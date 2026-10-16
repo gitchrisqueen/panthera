@@ -44,10 +44,12 @@ testpaths = ["tests"]
 target-version = "py311"
 line-length = 100
 src = ["src", "tests"]
-# `scripts` is NOT excluded: proof_refactor_identity.py sat broken with a
-# dead import after the evaluate_slate extraction moved the symbols it
-# imported, and nothing caught it because ruff skipped the directory and
-# pytest collects only tests/. The frozen legacy trees stay excluded.
+# `scripts` is NOT excluded, so these files get the same lint as the rest.
+# NOTE: linting them would NOT have caught the breakage that prompted this —
+# proof_refactor_identity.py imported a symbol that no longer existed, and
+# ruff does no cross-module resolution (the name was used, so not even
+# F401). tests/test_scripts_import.py is what catches that class.
+# The frozen legacy trees stay excluded.
 extend-exclude = ["backend", "frontend", "db", "mockup"]
 
 [tool.ruff.lint]
