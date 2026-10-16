@@ -35,9 +35,11 @@ state collapses all three to `Final`. Of those three only `Cancelled` and
 `Postponed` void a pick (`clients/mlb.py::VOID_STATUSES`): a `Suspended` game
 is resumed under the same `game_pk`, so its picks stay pending until the real
 final arrives. A row that is `Final` with an empty score is a fault, not a
-result — it can settle nothing. `panthera-mvp doctor` H05 names it, but only
-once a pick on that game has been pending past its threshold: a scoreless
-`Final` with no pick on it is reported by nothing.
+result — it can settle nothing. `panthera-mvp doctor` H10 `scoreless_final` scans for it directly and
+opens an issue (level `fail`), independent of any pick. H05 `pending_age`
+also names it, but only once a pick on that game has been pending past its
+threshold — H10 exists because a scoreless `Final` whose picks had settled,
+or that never carried a pick, was previously reported by nothing.
 
 `score_source` (`mlb`, `espn`) records which feed last wrote the row's result
 fields — so on a settled game it is the provenance of the settlement, and the
@@ -158,9 +160,11 @@ Separate tree, same reason as ncaaf/.
   away_rank, home_conference, away_conference, status, current_period,
   home_score, away_score, score_source, espn_event_id`. Team names are
   NCAA `names.short` ("Florida St."). `status` ∈ Scheduled | InProgress |
-  Final | Postponed | Canceled | Suspended. **Finals are sticky**: a
-  non-final refresh never replaces a stored Final; an ncaa-api Final
-  overwrites an ESPN one. `score_source` = `ncaa` | `espn` (fallback, with
+  Final | Postponed | Canceled | Suspended. **Settled finals are sticky**: an incoming
+  row never blanks a stored final's score — the guard keys on the incoming
+  SCORE, not its status, the same way MLB and NCAAF do, so a correction
+  still lands but a scoreless `Final` cannot overwrite a complete one. An
+  ncaa-api Final overwrites an ESPN one. `score_source` = `ncaa` | `espn` (fallback, with
   `espn_event_id`). `start_time_tba` rows carry ET midnight as their start.
 - `ncaabase/odds/lines.csv`: MLB lines schema with `game_pk` replaced by
   `game_id` (null = unmatched); same dedupe key. Raw responses in

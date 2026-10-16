@@ -1,7 +1,7 @@
 """College-baseball CSV datastore: games (upsert, finals sticky), lines
 (append, dedupe), single-bet picks (append-once, settle in place).
 
-Finals are sticky: an incoming non-final row never replaces a stored Final
+Finals are sticky: an incoming row never blanks a stored final's score
 (an ESPN-settled game stays settled when ncaa-api still says "pre" on the
 next refresh). An incoming Final always wins — ncaa-api is the official
 source, so it overwrites an ESPN fallback score.
@@ -62,7 +62,13 @@ def upsert_games(df: pd.DataFrame) -> None:
         final_ids = set(
             existing.loc[(existing["status"] == "Final") & scored, "game_id"]
         )
-        df = df[(df["status"] == "Final") | ~df["game_id"].isin(final_ids)]
+        # Key the incoming row on its SCORE, not on its status, exactly as
+        # MLB (store.py) and NCAAF (ncaaf/store.py) do. Admitting anything
+        # whose status is "Final" let a scoreless Final overwrite a stored
+        # complete final — the same unsettleable shape the fallback above
+        # exists to repair, reintroduced one layer down.
+        incoming_scored = df["home_score"].notna() & df["away_score"].notna()
+        df = df[~(df["game_id"].isin(final_ids) & ~incoming_scored)]
         if df.empty:
             return
         existing = existing[~existing["game_id"].isin(df["game_id"])]

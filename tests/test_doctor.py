@@ -629,3 +629,129 @@ def test_suggested_commands_target_the_finding_s_own_sport():
     assert _cli_prefix("mlb") == ""
     assert _cli_prefix("ncaaf") == "ncaaf "
     assert _cli_prefix("ncaabase") == "ncaabase "
+
+
+# --------------------------------------------------------------------------
+# H10 scoreless_final
+# --------------------------------------------------------------------------
+
+
+def _write_scoreless_final(day: str = "2026-09-27", pk: int = 823490):
+    """A row stored Final with no score — the 2026-09-27 rainout's shape."""
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": pk,
+                    "game_date_et": day,
+                    "game_type": "R",
+                    "status": "Final",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": f"{day}T17:05:00Z",
+                }
+            ]
+        )
+    )
+
+
+def test_scoreless_final_is_reported_with_no_pick_on_the_game(health_root):
+    """The gap H10 exists to close: before it, a Final with no score was
+    noticed only by H05, and only while a pick on that game was still
+    pending. This game carries no pick at all, so nothing else would see it —
+    yet it still feeds the reports and the backtest."""
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert len(hits) == 1
+    f = hits[0]
+    assert f.id == "H10"
+    assert f.fingerprint == "mlb/scoreless_final"
+    assert f.evidence["count"] == 1
+    assert f.evidence["ids"] == ["823490"]
+    assert f.evidence["oldest_date"] == "2026-09-27"
+
+
+def test_scoreless_final_silent_on_a_settled_slate(health_root):
+    """Must not fire on healthy data — every builder game carries 4-2."""
+    write_games(days={"2026-09-24": 6})
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits == []
+
+
+def test_scoreless_final_ignores_a_called_off_game(health_root):
+    """A `Cancelled` row has no score and never will — that is a resolved
+    outcome, not a hole. Only `Final` without a score is the fault."""
+    store.upsert_games(
+        pd.DataFrame(
+            [
+                {
+                    "game_pk": 823490,
+                    "game_date_et": "2026-09-27",
+                    "game_type": "R",
+                    "status": "Cancelled",
+                    "home_score": None,
+                    "away_score": None,
+                    "start_time_utc": "2026-09-27T17:05:00Z",
+                }
+            ]
+        )
+    )
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits == []
+
+
+def test_scoreless_final_prescribes_no_noop_command_for_mlb(health_root):
+    """H10 must not hand the operator a command that does nothing.
+
+    `cmd_grade` for MLB and NCAAF builds its date list from PENDING picks and
+    `--date` only filters that list — and H10 exists precisely for a game
+    with no pending pick, so `grade --date` would refresh nothing. An alert
+    whose remediation is a no-op teaches the reader to ignore the alert.
+    """
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(
+            sport="mlb", cfg=doctor.load_health_config(), since="2026-09-01"
+        )["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].suggested_command is None
+    assert "docs/mvp-design.md" in hits[0].detail
+
+
+def test_scoreless_final_alerts_rather_than_only_logging(health_root):
+    """The check was added to close a detection gap, so its level must be one
+    that `alert.open_issue_on` actually routes. At `warn` — with the shipped
+    `open_issue_on: [fail]` — it would open no issue and the job would stay
+    green: a detector that detects and tells nobody."""
+    cfg = doctor.load_health_config()
+    alert_on = (cfg["doctor"].get("alert") or {}).get("open_issue_on", ["fail"])
+    _write_scoreless_final()
+    hits = [
+        f
+        for f in doctor.run_checks(sport="mlb", cfg=cfg, since="2026-09-01")["findings"]
+        if f.check == "scoreless_final"
+    ]
+    assert hits and hits[0].level in alert_on, (
+        f"H10 emits level {hits[0].level!r}, which alert.open_issue_on "
+        f"{alert_on} does not route — it would alert nobody"
+    )

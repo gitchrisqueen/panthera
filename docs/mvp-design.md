@@ -286,6 +286,43 @@ reverted code nothing can ever settle them again, because `grading` settles
 from a score that does not exist and `store.settle_picks` only rewrites rows
 still `pending`. That is the exact state the change existed to clear.
 
+**When to roll back, and when not to.** Do not decide this from first
+principles at 2 a.m.; the observable triggers are:
+
+- a bot commit moves a `games.csv` row from Final-with-scores to
+  Final-with-EMPTY-scores (the blank-score regression below), or
+- a game that was actually played is stored `Cancelled`/`Postponed` and its
+  picks are voided — check `detailedState` against `statsapi.mlb.com` before
+  believing the row.
+
+**Not** a trigger: a pick left pending on a `Suspended` game. That is correct
+behaviour — a suspended game resumes under the same `game_pk`, so its picks
+must stay pending until the real final arrives. `VOID_STATUSES` deliberately
+excludes it.
+
+**Contain first, then revert.** The blank-score regression is driven by the
+scheduled writers, several times a day, so stop them before you push or the
+damage continues while you work:
+
+```bash
+for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml; do
+  gh workflow disable "$w"
+done
+```
+
+Re-enable with `gh workflow enable` once the revert is on `main`. The
+alternative, if you would rather not stop the pipeline, is to keep the
+`_is_settled_final` / `_has_both_scores` hunk in `store.upsert_games` OUT of
+the revert — it is independent of the called-off logic and nothing else
+depends on removing it.
+
+**What to revert.** The called-off settlement change is PR #69, squashed onto
+`main` as `6acd4e6`. A follow-up PR is stacked on top of it (the gauntlet
+fix-forward: `src/panthera_mvp/doctor.py`, `config/health.yaml`,
+`src/panthera_mvp/ncaabase/store.py`, `docs/mvp-design.md`), so revert that
+one FIRST — otherwise `git revert` conflicts outside `data/` and `reports/`,
+where the recipe below does not expect conflicts.
+
 Identify the merge form first, the same way as above:
 `git rev-list --parents -n 1 <sha>` — three hashes is a merge commit, two is a
 squash. This repo squashes recent PRs, so expect the squash case.
@@ -303,10 +340,16 @@ rebases onto whatever it finds, would cement the loss.
   and keep the datastore as it stands:
 
   ```bash
-  git revert -n <squash sha>
-  git checkout HEAD -- data/ reports/
+  git revert -n 6acd4e6
+  git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
+  git push origin main
   ```
+
+  **The push is the step that changes production.** Without it the revert is
+  local only and every scheduled run still uses the old code — GitHub Actions
+  reads `main`. Confirm with `git ls-remote origin main` that the revert sha
+  is what the remote now points at, then re-enable the workflows.
 
 - **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
   first line. Keep the `-n`: without it the revert commits on its own,
@@ -314,7 +357,8 @@ rebases onto whatever it finds, would cement the loss.
 
 `git revert -n` is **expected** to report conflicts under `data/` and
 `reports/`, because the bots rewrite those files several times a day. Taking
-`HEAD` for those paths — the `git checkout HEAD -- data/ reports/` line — IS
+`HEAD` for those paths — the `git checkout HEAD -- docs/ data/ reports/
+'**/CLAUDE.md'` line — IS
 the resolution; do not hand-merge them.
 
 **Why the data must stay.** The three picks are settled `void`, and
@@ -338,12 +382,20 @@ check at `HEAD`:
   checkout**, because `_refresh_games` writes `games.csv` in place:
 
   ```bash
-  cp -R data /tmp/panthera-check
-  PANTHERA_ROOT=/tmp/panthera-check .venv/bin/python -c \
+  CHECK=$(mktemp -d)            # not a fixed /tmp path: predictable and
+  cp -R data "$CHECK"/          # pre-creatable on a shared host
+  PANTHERA_ROOT="$CHECK" .venv/bin/python -c \
     "from panthera_mvp.pipeline import _refresh_games; _refresh_games('2026-09-27')"
   diff <(grep '^823490,' data/games/games.csv) \
-       <(grep '^823490,' /tmp/panthera-check/games/games.csv)
+       <(grep '^823490,' "$CHECK"/data/games/games.csv)
   ```
+
+  The copy must land at `$CHECK/data`, which is why `cp -R data "$CHECK"/`
+  has the trailing slash: `paths.repo_root()` returns `$PANTHERA_ROOT` and
+  `paths.data_dir()` returns `repo_root()/"data"`. Copy to `$CHECK` without
+  it and the run starts from an EMPTY store — `upsert_games`' guard never
+  engages, and the diff compares the untouched copy against itself and
+  passes no matter what the code does.
 
   Expect the `status`/`winner`/`run_diff`/`total_runs` columns to match. The two
   ERA columns may come back EMPTY rather than `5.4`/`4.11`: they depend on the
@@ -368,8 +420,10 @@ columns. It is there for the `status` block, which is what the fix turns on.
   `snapshot` and `picks` run, several times a day, on games that are already
   settled. This is the most damaging regression and the least visible: watch
   for a `games.csv` row going from Final-with-scores to Final-with-empty-scores
-  in a bot commit. `doctor` H05 only catches it once a pick on that game has
-  been pending past its threshold, so it is not an early warning.
+  in a bot commit. `doctor` H10 `scoreless_final` scans `games.csv` for it
+  directly and opens an issue regardless of whether any pick is pending; H05
+  `pending_age` catches it only once a pick on that game has been pending
+  past its threshold, so H05 alone was never an early warning.
 - A game recorded `Final` with no score becomes unsettleable again, and a
   called-off game is stored as `Final` again.
 - `grading`'s void branch becomes unreachable again, so no *new* wrong
@@ -381,8 +435,10 @@ columns. It is there for the `status` block, which is what the fix turns on.
   `git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'`.
 
 **Owner and alert path.** No separate service to redeploy: GitHub Actions
-picks up `main` on the next scheduled run. The detector for this class of
-fault is `panthera-mvp doctor` H05 (`pending_age`), which names the blocked
+picks up `main` on the next scheduled run. The detectors for this class of
+fault are `panthera-mvp doctor` H10 (`scoreless_final`), which scans
+`games.csv` for a `Final` with no score whether or not a pick is pending,
+and H05 (`pending_age`), which names the blocked
 game and its status; `.github/workflows/health.yml` opens the issue. A pick
 pending on a `Suspended` game is NOT a fault — the game is resumed under the
 same `game_pk` and H05 says so and offers no `grade` remediation, because

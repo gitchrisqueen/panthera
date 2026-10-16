@@ -124,6 +124,19 @@ doctor:
     config_sanity:
       enabled: true
 
+    # H10 — a games.csv row stored `Final` with no score. data/CLAUDE.md
+    # calls this a fault, not a result. Before this check the only thing that
+    # noticed was H05 (pending_age), and only while a pick on that game was
+    # still pending: a scoreless final whose picks had settled, or that never
+    # carried a pick, was reported by nothing while still feeding the reports
+    # and the backtest. `fail`, because alert.open_issue_on is [fail]: at
+    # `warn` this check would open no issue and the job would stay green,
+    # i.e. a detector that detects and tells nobody — the gap it was added
+    # to close, one layer along.
+    scoreless_final:
+      enabled: true
+      level: fail
+
   alert:
     # Read by .github/workflows/health.yml, which gets these out of doctor's
     # --json payload (`alert`) rather than hardcoding them — a routing knob

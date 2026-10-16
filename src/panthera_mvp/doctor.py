@@ -859,6 +859,73 @@ def check_config_sanity(cfg: dict) -> list[Finding]:
     return out
 
 
+def check_scoreless_final(
+    data: SportData, cfg: dict, today: date, since: str
+) -> list[Finding]:
+    """H10 — a row stored `Final` with no score.
+
+    `data/CLAUDE.md` calls this "a fault, not a result": such a row can settle
+    nothing, and it is how the 2026-09-27 rainout stranded three picks for 18
+    days. Until now the ONLY thing that noticed was H05, and only once a pick
+    on that game had been pending past its threshold — so a scoreless final
+    whose picks were already settled, or that never carried a pick at all,
+    was reported by nothing while still feeding the backtest and the reports.
+
+    This reads games.csv directly, independent of any pick.
+    """
+    c = _check_cfg(cfg, "scoreless_final")
+    if data.games.empty:
+        return []
+    games = data.games
+    if not {"status", "home_score", "away_score"}.issubset(games.columns):
+        return []
+    window = games[games["game_date_et"].astype(str) >= since]
+    if window.empty:
+        return []
+    missing = window["home_score"].isna() | window["away_score"].isna()
+    bad = window[(window["status"].astype(str) == "Final") & missing]
+    if bad.empty:
+        return []
+
+    key = "game_pk" if "game_pk" in bad.columns else bad.columns[0]
+    ids = [str(v) for v in bad[key].tolist()[:20]]
+    oldest = str(bad["game_date_et"].min())
+    return [
+        Finding(
+            id="H10",
+            check="scoreless_final",
+            sport=data.sport,
+            level=str(c.get("level", "warn")),
+            title=f"{len(bad)} game(s) stored Final with no score",
+            detail=(
+                f"{len(bad)} row(s) in this sport's games.csv are `Final` with a "
+                f"missing home or away score, oldest {oldest}. A Final with no "
+                "score is a fault, not a result: it can settle no pick, and it "
+                "still feeds the reports and the backtest. Either the feed never "
+                "returned a linescore, or the game was called off and its real "
+                "status was collapsed to Final \u2014 check `detailedState` for the "
+                "game and let the finals fallback rewrite it. There is no "
+                "one-command repair for MLB or NCAAF: see the called-off "
+                "settlement section of docs/mvp-design.md."
+            ),
+            since=oldest,
+            evidence={"count": int(len(bad)), "oldest_date": oldest, "ids": ids},
+            # Only college baseball can act on this. `cmd_grade` for MLB and
+            # NCAAF builds its date list from PENDING picks and `--date` only
+            # filters that list — and H10 exists precisely for a game with no
+            # pending pick, so the command would refresh nothing. An alert
+            # that prescribes a no-op teaches the reader to ignore the alert;
+            # ncaabase's cmd_grade takes the date unconditionally, so there
+            # it is real.
+            suggested_command=(
+                f"panthera-mvp ncaabase grade --date {oldest}"
+                if data.sport == "ncaabase"
+                else None
+            ),
+        )
+    ]
+
+
 # --------------------------------------------------------------------------
 # orchestration
 # --------------------------------------------------------------------------
@@ -873,6 +940,7 @@ WINDOW_CHECKS = (
     check_snapshot_coverage,
     check_pending_age,
     check_unmatched_slate,
+    check_scoreless_final,
 )
 
 #: H07/H08/H09 measure CORRECTNESS, not activity, and are deliberately NOT
@@ -884,7 +952,18 @@ WINDOW_CHECKS = (
 #: because nobody looked" from "stopped being reported because it is fixed".
 #: An idle sport holds its WINDOW findings open, but one of these going quiet
 #: really is a fix, and an issue that can never close is noise.
-ALWAYS_EVALUATED = ("lineage_drift", "credit_floor", "config_sanity")
+ALWAYS_EVALUATED = (
+    "lineage_drift",
+    "credit_floor",
+    "config_sanity",
+    # H10 reads games.csv, so it needs a sport's data and lives in
+    # WINDOW_CHECKS — but it measures CORRECTNESS, not activity. A row stored
+    # Final with no score is just as wrong in December as in July, and the
+    # offseason is when you want to find it rather than the morning of
+    # opening day. It is therefore exempt from the idle downgrade below and
+    # listed here so the issue reconciler closes it on its own merits.
+    "scoreless_final",
+)
 
 
 def run_checks(
@@ -929,10 +1008,12 @@ def run_checks(
         ]
         produced = _drop_subsumed(produced)
         if idle:
-            # Out of season nothing is wrong, so findings are recorded for the
-            # record and never alerted on.
+            # Out of season nothing is wrong, so ACTIVITY findings are
+            # recorded for the record and never alerted on. Correctness
+            # findings are not activity and keep their level.
             for f in produced:
-                f.level = "info"
+                if f.check not in ALWAYS_EVALUATED:
+                    f.level = "info"
         findings += produced
 
     if sport == "all" or sport == "mlb":
