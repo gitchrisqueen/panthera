@@ -176,6 +176,10 @@ def main() -> int:
     }
 
     days = sorted(games_df["game_date_et"].unique())
+    # What this run read, stamped into the report so the counts date
+    # themselves rather than standing as bare assertions.
+    games_rows = len(games_df)
+    latest_day = str(games_df["game_date_et"].max())
     real_now = splits_signal.now_utc
     compared = mismatched = 0
     picks_seen = 0
@@ -311,6 +315,16 @@ def main() -> int:
         f"(uncapped, 2). Picks emitted across them: **{picks_seen}**.",
         "",
         f"**Mismatches: {mismatched}.**",
+        "",
+        # Stamp what the run actually read. Without it the counts above are
+        # a bare assertion: `data/` grows on every bot commit, so a reader
+        # months later cannot tell whether they describe the history they
+        # are looking at. Re-rendering this in CI would be the wrong fix —
+        # it would take minutes and redden on honest data growth — so the
+        # doc dates itself instead.
+        f"_Data basis: `data/games/games.csv` at {games_rows} rows, latest "
+        f"`game_date_et` {latest_day}. The counts above describe that "
+        f"snapshot; regenerate after the datastore grows._",
         "",
         "| strategy | picks emitted | result |",
         "|---|---|---|",
