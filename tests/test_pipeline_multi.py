@@ -6,11 +6,11 @@ the real "today", so without the clock these tests would pass vacuously on
 the empty-lines early return)."""
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from panthera_mvp import store
+from panthera_mvp import pipeline, store
 from panthera_mvp.pipeline import cmd_picks, cmd_snapshot
 
 FIXTURE_DATE = "2026-08-01"
@@ -259,3 +259,41 @@ def test_dry_run_evaluates_a_started_game_and_a_real_run_does_not(
     assert not store.load_picks().empty, (
         "a dry run must evaluate the whole slate regardless of start time"
     )
+
+
+def test_one_cutoff_for_the_whole_slate_not_one_per_strategy(
+    multi_env, fixtures_dir, monkeypatch, clock
+):
+    """Every strategy in a run must agree about which games have started.
+
+    The cutoff used to be read inside `_strategy_picks`, i.e. once per
+    STRATEGY, while `slate.py` and docs/proofs/slate-identity.md both said
+    "once per slate". With a game starting between two strategies' reads
+    they disagreed: the first evaluated it, the second skipped it.
+    `cmd_picks` now reads it once, before the loop, and passes it down.
+
+    The clock here ADVANCES on every read, which is what makes this a test:
+    under the pinned `clock` fixture a per-strategy read returns the same
+    instant and the bug is invisible.
+    """
+    tmp_root = multi_env
+    _snapshot("open", monkeypatch, tmp_root, fixtures_dir)
+
+    ticks = iter(range(1, 1000))
+    base = datetime(2026, 8, 1, 20, 0, tzinfo=UTC)
+    monkeypatch.setattr(
+        pipeline, "now_utc", lambda: base + timedelta(minutes=next(ticks))
+    )
+
+    seen: list = []
+    real = pipeline.evaluate_slate
+
+    def spy(**kw):
+        seen.append(kw["as_of_et"])
+        return real(**kw)
+
+    monkeypatch.setattr(pipeline, "evaluate_slate", spy)
+    cmd_picks("23:59", run_label="manual")
+
+    assert len(seen) > 1, "need more than one live strategy to prove this"
+    assert len(set(seen)) == 1, f"strategies saw different cutoffs: {seen}"
