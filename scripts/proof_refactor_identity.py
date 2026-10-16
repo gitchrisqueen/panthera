@@ -7,7 +7,7 @@ paths with byte-identical inputs:
        (base strategy.yaml + strategy.calibrated.yaml), as the pre-framework
        cmd_picks did;
   NEW: the registry adapter (`_pv_rules`) with config/strategies/pv_v2.yaml
-       (behavioral params inlined) + the `_pick_row` builder.
+       (behavioral params inlined) + the `pick_row` builder.
 
 and asserts row-equality on every behavior-bearing field — explicitly
 excluding pick_id / config_hash / strategy_id, which legitimately change.
@@ -35,11 +35,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from panthera_mvp import store  # noqa: E402
 from panthera_mvp.clients.mlb import GameInfo  # noqa: E402
 from panthera_mvp.config import config_hash, load_config, load_strategy_configs  # noqa: E402
-from panthera_mvp.pipeline import _build_dossier, _pick_row  # noqa: E402
 from panthera_mvp.strategy.dossier import SeasonContext  # noqa: E402
 from panthera_mvp.strategy.movement import extract_game_prices  # noqa: E402
 from panthera_mvp.strategy.registry import StrategyContext, _pv_rules  # noqa: E402
 from panthera_mvp.strategy.rules import Pick, generate_pick  # noqa: E402
+
+# Moved out of pipeline.py into strategy/slate.py by the evaluate_slate
+# extraction; same functions, public names.
+from panthera_mvp.strategy.slate import build_dossier, pick_row  # noqa: E402
 from panthera_mvp.timeutil import parse_utc  # noqa: E402
 
 REPLAY_DATES = ["2026-08-03", "2026-08-16"]  # <=6-pick days: cap never binds
@@ -112,7 +115,7 @@ def main() -> None:
         "",
         "Old path: `generate_pick` + pipeline config (base+calibrated). "
         "New path: registry `_pv_rules` + `config/strategies/pv_v2.yaml` + "
-        "`_pick_row`. Identical inputs (lines.csv + games.csv replay; shared "
+        "`pick_row`. Identical inputs (lines.csv + games.csv replay; shared "
         "games.csv-derived season context). Compared fields: "
         f"`{'`, `'.join(COMPARE_FIELDS)}` — `pick_id`/`config_hash`/"
         "`strategy_id` excluded (they legitimately change).",
@@ -147,14 +150,14 @@ def main() -> None:
                 else None
             )
             old = generate_pick(
-                g, event_id, prices, _build_dossier(g, ctx_season, old_cfg), old_cfg
+                g, event_id, prices, build_dossier(g, ctx_season, old_cfg), old_cfg
             )
             new = _pv_rules(
                 StrategyContext(
                     game=g,
                     odds_event_id=event_id,
                     prices=prices,
-                    dossier=_build_dossier(g, ctx_season, new_cfg),
+                    dossier=build_dossier(g, ctx_season, new_cfg),
                     cfg=new_cfg,
                 )
             )
@@ -163,7 +166,7 @@ def main() -> None:
             if isinstance(new, Pick):
                 rows_new.append(
                     {
-                        f: _pick_row(new, "pv_v2", new_cfg, config_hash(new_cfg))[f]
+                        f: pick_row(new, "pv_v2", new_cfg, config_hash(new_cfg))[f]
                         for f in COMPARE_FIELDS
                     }
                 )

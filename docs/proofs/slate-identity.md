@@ -8,7 +8,11 @@ Scenarios compared: **3000** — every enabled live strategy x 75 captured slate
 
 **Mismatches: 0.**
 
-_Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-16. The counts above describe that snapshot; regenerate after the datastore grows._
+**One known, intended non-identity.** The pre-refactor loop read the clock per game (`start_et <= now_utc()`); the extracted loop takes a single hoisted `as_of`. Both arms below use the hoisted form, so the comparison cannot see it. The effect is that a game whose start time passes mid-loop is now judged consistently across the slate instead of flipping partway through — it cannot produce a pick the old code would not have made earlier in the same loop, but it is a difference and this proof is not evidence about it.
+
+**What the proof does NOT cover.** `build_dossier`, `pick_row` and `slot_map_for` moved modules unchanged, and BOTH arms import the new copies, so they are outside the comparison; the diff is their evidence. The proof also calls `evaluate_slate` directly rather than `pipeline._strategy_picks`, so the `dry_run -> as_of_et=None` mapping and the ledger-derived budget are not exercised here (they are covered by `tests/test_slate.py` and the pipeline tests).
+
+_Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-16; `data/splits/splits.csv` at 9172 rows. The counts above describe that snapshot; regenerate after the datastore grows._
 
 | strategy | picks emitted | result |
 |---|---|---|
@@ -19,3 +23,79 @@ _Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-1
 | `sharp_split` | 670 | identical |
 
 The splits staleness clock is pinned per day to that day's own capture time: `splits_signal._splits_guards` ages captured splits against `now_utc()`, so an unpinned comparison straddles the staleness boundary and goes flaky.
+
+
+## Rollback and ownership
+
+**Owner:** the repo owner, Christopher Queen (`@gitchrisqueen`). No
+on-call rotation.
+
+**Revert:** `git revert` the squash commit of PR #70 on `main`. It is
+self-contained — `replay.py` is untouched by it and the 28-column
+pick schema does not change — so nothing else has to move with it.
+
+**Detection is manual, and this is the important part.** `config_hash`
+is computed over the strategy YAML, NOT over code, so a behaviour
+regression inside the evaluation loop does not move any hash:
+`hash_lineage` and `tests/test_live_config.py` cannot see it. Picks
+are append-once and settle in place, so a wrong pick cannot be
+un-written by reverting the code. On the first scheduled run after
+this merges, compare that run's new rows in `data/picks/picks.csv`
+against what the previous commit produced for the same slate; the
+offline check needs no API credits:
+
+Run it on a date that HAS odds rows: `cmd_picks` returns early with
+"no odds lines for today" when it does not, both arms then write
+nothing, and an empty diff would read as "no regression" while
+proving nothing. The guard below fails loudly on that.
+
+```bash
+# Two checkouts, one datastore copy each, the SAME recorded schedule;
+# diff the picks they produce. Never `git stash` for this: the stash
+# stack is shared across worktrees and other sessions may be using it.
+BASE=$(git rev-parse HEAD~1)          # the commit before the merge
+OUT=$(mktemp -d)
+for REF in HEAD "$BASE"; do
+  WT=$(mktemp -d); CHECK=$(mktemp -d)
+  git worktree add -q --detach "$WT" "$REF"
+  cp -R data config "$CHECK"/   # BOTH: paths.config_dir() is $ROOT/config
+  (cd "$WT" && python3.12 -m venv .venv && .venv/bin/pip install -q -e .
+   # PANTHERA_MLB_FIXTURE, not _ODDS_: `picks` reads the schedule, and
+   # without it _refresh_games calls statsapi.mlb.com for real.
+   export PANTHERA_ROOT="$CHECK"
+   export PANTHERA_MLB_FIXTURE="$WT/tests/fixtures/mlb_schedule.json"
+   .venv/bin/panthera-mvp picks --window-end-et 23:59 --label manual)
+  cp "$CHECK"/data/picks/picks.csv "$OUT/picks-${REF//\//_}.csv"
+  git worktree remove --force "$WT"
+done
+
+# Both arms must have produced something, or the diff is vacuous.
+for f in "$OUT"/picks-*.csv; do
+  [ "$(wc -l < "$f")" -gt 1 ] || { echo "VACUOUS: $f has no picks"; exit 1; }
+done
+diff "$OUT/picks-HEAD.csv" "$OUT/picks-$BASE.csv"
+```
+
+Expect no difference in any behaviour-bearing column. `pick_id`,
+`created_ts_utc` and `config_hash` are not behaviour: the first two
+are stamped per run and the third moves with the strategy YAML.
+
+**Containment for rows already written.** Picks are append-once and
+settle in place, and `config_hash` covers only the YAML — so picks
+made by a regressed loop cannot be un-written OR segmented out of a
+strategy's verdict sample by hash. If a regression reaches the
+ledger: record the affected `pick_id`s in a run note and in
+`reports/BETTING_REPORT.md`, then treat re-registering the affected
+strategies under new ids with fresh counters as the remedy — which is
+a behavioural-change call under `src/panthera_mvp/CLAUDE.md`, so it is
+Christopher's, not an agent's.
+
+**Trigger:** a slate where the strategies pick a different set of
+games than the pre-merge code did on the same inputs, or a capped day
+that keeps later games than it used to (the truncation bias depends
+on the caller passing schedule order — see
+`tests/test_slate.py::test_the_cap_follows_input_order_not_start_time`).
+
+**Not a trigger:** a change in which games are skipped as already
+started. The clock is now read once per slate rather than per game,
+which is the known non-identity recorded above.

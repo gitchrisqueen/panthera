@@ -2,15 +2,20 @@
 
 PR 3a moved the per-slate evaluation loop out of `pipeline._strategy_picks`
 into `strategy/slate.py::evaluate_slate` so the live pipeline and the replay
-share one implementation. That loop decides every live pick, so "no behavior
-change" has to be demonstrated, not asserted.
+CAN share one implementation. Only the pipeline is converted here —
+`replay.py` still runs its own copy until PR 3b converts it. That loop
+decides every live pick, so "no behavior change" has to be demonstrated,
+not asserted.
 
 This replays BOTH implementations over the pipeline's own captured history
 (`data/games/games.csv` + `data/odds/lines.csv`, offline, no API credits):
 
-  OLD: the pre-refactor loop, copied verbatim from pipeline.py at the commit
-       before the extraction, with its one `now_utc()` call replaced by an
-       injected `as_of` so the two arms cannot differ by wall clock;
+  OLD: the pre-refactor loop from pipeline.py at the commit before the
+       extraction, with its one `now_utc()` call replaced by an injected
+       `as_of` so the two arms cannot differ by wall clock. NOT verbatim:
+       it calls the moved helpers (build_dossier / pick_row / slot_map_for)
+       from their new home, so those are shared by both arms and are
+       outside what this proof compares;
   NEW: `strategy/slate.py::evaluate_slate` through the refactored
        `pipeline._strategy_picks`'s own argument shape.
 
@@ -179,6 +184,10 @@ def main() -> int:
     # What this run read, stamped into the report so the counts date
     # themselves rather than standing as bare assertions.
     games_rows = len(games_df)
+    # Splits too: an absent splits.csv does NOT raise (load_splits returns an
+    # empty frame), so fade_public and sharp_split would quietly emit far
+    # fewer picks and the doc would still read "0 mismatches".
+    splits_rows = len(splits)
     latest_day = str(games_df["game_date_et"].max())
     real_now = splits_signal.now_utc
     compared = mismatched = 0
@@ -322,9 +331,27 @@ def main() -> int:
         # are looking at. Re-rendering this in CI would be the wrong fix —
         # it would take minutes and redden on honest data growth — so the
         # doc dates itself instead.
+        "**One known, intended non-identity.** The pre-refactor loop read the "
+        "clock per game (`start_et <= now_utc()`); the extracted loop takes a "
+        "single hoisted `as_of`. Both arms below use the hoisted form, so the "
+        "comparison cannot see it. The effect is that a game whose start time "
+        "passes mid-loop is now judged consistently across the slate instead "
+        "of flipping partway through — it cannot produce a pick the old code "
+        "would not have made earlier in the same loop, but it is a difference "
+        "and this proof is not evidence about it.",
+        "",
+        "**What the proof does NOT cover.** `build_dossier`, `pick_row` and "
+        "`slot_map_for` moved modules unchanged, and BOTH arms import the new "
+        "copies, so they are outside the comparison; the diff is their "
+        "evidence. The proof also calls `evaluate_slate` directly rather than "
+        "`pipeline._strategy_picks`, so the `dry_run -> as_of_et=None` mapping "
+        "and the ledger-derived budget are not exercised here (they are "
+        "covered by `tests/test_slate.py` and the pipeline tests).",
+        "",
         f"_Data basis: `data/games/games.csv` at {games_rows} rows, latest "
-        f"`game_date_et` {latest_day}. The counts above describe that "
-        f"snapshot; regenerate after the datastore grows._",
+        f"`game_date_et` {latest_day}; `data/splits/splits.csv` at "
+        f"{splits_rows} rows. The counts above describe that snapshot; "
+        f"regenerate after the datastore grows._",
         "",
         "| strategy | picks emitted | result |",
         "|---|---|---|",
@@ -342,6 +369,84 @@ def main() -> int:
         "",
     ]
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    report += [
+        "",
+        "## Rollback and ownership",
+        "",
+        "**Owner:** the repo owner, Christopher Queen (`@gitchrisqueen`). No",
+        "on-call rotation.",
+        "",
+        "**Revert:** `git revert` the squash commit of PR #70 on `main`. It is",
+        "self-contained — `replay.py` is untouched by it and the 28-column",
+        "pick schema does not change — so nothing else has to move with it.",
+        "",
+        "**Detection is manual, and this is the important part.** `config_hash`",
+        "is computed over the strategy YAML, NOT over code, so a behaviour",
+        "regression inside the evaluation loop does not move any hash:",
+        "`hash_lineage` and `tests/test_live_config.py` cannot see it. Picks",
+        "are append-once and settle in place, so a wrong pick cannot be",
+        "un-written by reverting the code. On the first scheduled run after",
+        "this merges, compare that run's new rows in `data/picks/picks.csv`",
+        "against what the previous commit produced for the same slate; the",
+        "offline check needs no API credits:",
+        "",
+        "Run it on a date that HAS odds rows: `cmd_picks` returns early with",
+        "\"no odds lines for today\" when it does not, both arms then write",
+        "nothing, and an empty diff would read as \"no regression\" while",
+        "proving nothing. The guard below fails loudly on that.",
+        "",
+        "```bash",
+        "# Two checkouts, one datastore copy each, the SAME recorded schedule;",
+        "# diff the picks they produce. Never `git stash` for this: the stash",
+        "# stack is shared across worktrees and other sessions may be using it.",
+        "BASE=$(git rev-parse HEAD~1)          # the commit before the merge",
+        "OUT=$(mktemp -d)",
+        "for REF in HEAD \"$BASE\"; do",
+        "  WT=$(mktemp -d); CHECK=$(mktemp -d)",
+        "  git worktree add -q --detach \"$WT\" \"$REF\"",
+        "  cp -R data config \"$CHECK\"/   # BOTH: paths.config_dir() is $ROOT/config",
+        "  (cd \"$WT\" && python3.12 -m venv .venv && .venv/bin/pip install -q -e .",
+        "   # PANTHERA_MLB_FIXTURE, not _ODDS_: `picks` reads the schedule, and",
+        "   # without it _refresh_games calls statsapi.mlb.com for real.",
+        "   export PANTHERA_ROOT=\"$CHECK\"",
+        "   export PANTHERA_MLB_FIXTURE=\"$WT/tests/fixtures/mlb_schedule.json\"",
+        "   .venv/bin/panthera-mvp picks --window-end-et 23:59 --label manual)",
+        "  cp \"$CHECK\"/data/picks/picks.csv \"$OUT/picks-${REF//\\//_}.csv\"",
+        "  git worktree remove --force \"$WT\"",
+        "done",
+        "",
+        "# Both arms must have produced something, or the diff is vacuous.",
+        "for f in \"$OUT\"/picks-*.csv; do",
+        "  [ \"$(wc -l < \"$f\")\" -gt 1 ] || { echo \"VACUOUS: $f has no picks\"; exit 1; }",
+        "done",
+        "diff \"$OUT/picks-HEAD.csv\" \"$OUT/picks-$BASE.csv\"",
+        "```",
+        "",
+        "Expect no difference in any behaviour-bearing column. `pick_id`,",
+        "`created_ts_utc` and `config_hash` are not behaviour: the first two",
+        "are stamped per run and the third moves with the strategy YAML.",
+        "",
+        "**Containment for rows already written.** Picks are append-once and",
+        "settle in place, and `config_hash` covers only the YAML — so picks",
+        "made by a regressed loop cannot be un-written OR segmented out of a",
+        "strategy's verdict sample by hash. If a regression reaches the",
+        "ledger: record the affected `pick_id`s in a run note and in",
+        "`reports/BETTING_REPORT.md`, then treat re-registering the affected",
+        "strategies under new ids with fresh counters as the remedy — which is",
+        "a behavioural-change call under `src/panthera_mvp/CLAUDE.md`, so it is",
+        "Christopher's, not an agent's.",
+        "",
+        "**Trigger:** a slate where the strategies pick a different set of",
+        "games than the pre-merge code did on the same inputs, or a capped day",
+        "that keeps later games than it used to (the truncation bias depends",
+        "on the caller passing schedule order — see",
+        "`tests/test_slate.py::test_the_cap_follows_input_order_not_start_time`).",
+        "",
+        "**Not a trigger:** a change in which games are skipped as already",
+        "started. The clock is now read once per slate rather than per game,",
+        "which is the known non-identity recorded above.",
+        "",
+    ]
     OUT.write_text("\n".join(report))
     print(f"wrote {OUT}; {compared} scenarios, {picks_seen} picks, "
           f"{mismatched} mismatches — {'PASS' if mismatched == 0 else 'FAIL'}")

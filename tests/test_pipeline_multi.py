@@ -232,3 +232,30 @@ def test_daily_cap_semantics_marker_in_hash(multi_env):
     pv3["strategy"]["enabled"] = False
     pv3["verdict"] = None
     assert config_hash(pv3) == h1
+
+
+def test_dry_run_evaluates_a_started_game_and_a_real_run_does_not(
+    multi_env, fixtures_dir, monkeypatch, clock
+):
+    """`dry_run` maps to `as_of_et=None`, so a dry run evaluates the whole
+    slate while a real run skips games already under way.
+
+    That one line (`as_of_et=None if dry_run else now_utc()...`) carries the
+    pre-refactor `and not dry_run` guard, and the rollback procedure in
+    docs/proofs/slate-identity.md depends on it: the comparison it prescribes
+    runs the same slate through two checkouts, and would silently compare
+    nothing if the dry/real distinction stopped working.
+    """
+    tmp_root = multi_env
+    _snapshot("open", monkeypatch, tmp_root, fixtures_dir)
+
+    # Both fixture games have started: 23:05Z and 2026-08-02 00:40Z.
+    clock["now"] = datetime(2026, 8, 2, 2, 0, tzinfo=UTC)
+
+    cmd_picks("23:59", run_label="manual")
+    assert store.load_picks().empty, "a real run must not pick a started game"
+
+    cmd_picks("23:59", run_label="manual", dry_run=True)
+    assert not store.load_picks().empty, (
+        "a dry run must evaluate the whole slate regardless of start time"
+    )

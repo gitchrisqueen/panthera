@@ -457,8 +457,8 @@ that game's `detailedState` head into `clients/mlb.py::_CALLED_OFF` (and, if it
 means no score will ever exist, `VOID_STATUSES`), then let `grade` settle it,
 since `store.settle_picks` rewrites pending rows only. Whether a given
 abandoned game is treated that way is **Christopher's ruling**, raised as a
-`needs-chris` ClickUp task per the decision protocol in
-`00-Home/Working-With-Christopher.md`; record the answer here.
+`needs-chris` ClickUp task per the maintainer's own decision protocol;
+record the answer here.
 
 **Record the incident** in this section with the date, the trigger and what was
 reverted, the same way the section above does.
