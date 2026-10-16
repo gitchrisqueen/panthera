@@ -7,11 +7,16 @@ at a different snapshot label than the prices it priced picks at, and wrote a
 hardcoded stake. Shadow picks were therefore systematically more numerous and
 subtly differently priced than the live picks they were meant to stand in for.
 
-So there is one loop, here, and both callers use it. What stays with the
+So there is one loop, here. **`pipeline._strategy_picks` is its only caller
+today** — `replay.py` still runs its own copy and still has all four of those
+divergences; PR 3b converts it. Until then shadow picks remain more numerous
+and differently priced than live ones, and this module's existence has not
+yet fixed that. What stays with the
 CALLER is everything environment-shaped: which day, which snapshot label, how
 much budget is left, which games it has already picked, and what "now" is.
-This module decides nothing about those — it is pure, which is what lets the
-replay pass a simulated `as_of` and get the live algorithm exactly.
+This module decides nothing about those — it is pure, which is what will let the
+replay pass a simulated `as_of` and get the live algorithm exactly once it is
+converted.
 """
 
 from __future__ import annotations

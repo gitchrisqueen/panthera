@@ -8,7 +8,11 @@ Scenarios compared: **3000** — every enabled live strategy x 75 captured slate
 
 **Mismatches: 0.**
 
-_Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-16. The counts above describe that snapshot; regenerate after the datastore grows._
+**One known, intended non-identity.** The pre-refactor loop read the clock per game (`start_et <= now_utc()`); the extracted loop takes a single hoisted `as_of`. Both arms below use the hoisted form, so the comparison cannot see it. The effect is that a game whose start time passes mid-loop is now judged consistently across the slate instead of flipping partway through — it cannot produce a pick the old code would not have made earlier in the same loop, but it is a difference and this proof is not evidence about it.
+
+**What the proof does NOT cover.** `build_dossier`, `pick_row` and `slot_map_for` moved modules unchanged, and BOTH arms import the new copies, so they are outside the comparison; the diff is their evidence. The proof also calls `evaluate_slate` directly rather than `pipeline._strategy_picks`, so the `dry_run -> as_of_et=None` mapping and the ledger-derived budget are not exercised here (they are covered by `tests/test_slate.py` and the pipeline tests).
+
+_Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-16; `data/splits/splits.csv` at 9172 rows. The counts above describe that snapshot; regenerate after the datastore grows._
 
 | strategy | picks emitted | result |
 |---|---|---|
@@ -19,3 +23,55 @@ _Data basis: `data/games/games.csv` at 826 rows, latest `game_date_et` 2026-10-1
 | `sharp_split` | 670 | identical |
 
 The splits staleness clock is pinned per day to that day's own capture time: `splits_signal._splits_guards` ages captured splits against `now_utc()`, so an unpinned comparison straddles the staleness boundary and goes flaky.
+
+
+## Rollback and ownership
+
+**Owner:** the repo owner, Christopher Queen (`@gitchrisqueen`). No
+on-call rotation.
+
+**Revert:** `git revert` the squash commit of PR #70 on `main`. It is
+self-contained — `replay.py` is untouched by it and the 28-column
+pick schema does not change — so nothing else has to move with it.
+
+**Detection is manual, and this is the important part.** `config_hash`
+is computed over the strategy YAML, NOT over code, so a behaviour
+regression inside the evaluation loop does not move any hash:
+`hash_lineage` and `tests/test_live_config.py` cannot see it. Picks
+are append-once and settle in place, so a wrong pick cannot be
+un-written by reverting the code. On the first scheduled run after
+this merges, compare that run's new rows in `data/picks/picks.csv`
+against what the previous commit produced for the same slate; the
+offline check needs no API credits:
+
+```bash
+# Two checkouts, one datastore copy each, same fixture odds; diff the
+# picks they produce. Never `git stash` for this: the stash stack is
+# shared across worktrees and other sessions may be using it.
+BASE=$(git rev-parse HEAD~1)        # the commit before the merge
+for REF in HEAD "$BASE"; do
+  WT=$(mktemp -d); CHECK=$(mktemp -d)
+  git worktree add -q --detach "$WT" "$REF"
+  cp -R data "$CHECK"/
+  (cd "$WT" && python3.12 -m venv .venv && .venv/bin/pip install -q -e .
+   PANTHERA_ROOT="$CHECK" PANTHERA_ODDS_FIXTURE=tests/fixtures/odds_snapshot.json \
+     .venv/bin/panthera-mvp picks --window-end-et 23:59 --label manual --dry-run)
+  cp "$CHECK"/data/picks/picks.csv "/tmp/picks-$(basename $REF).csv"
+  git worktree remove --force "$WT"
+done
+diff /tmp/picks-HEAD.csv /tmp/picks-*.csv
+```
+
+Expect no difference in any behaviour-bearing column. `pick_id`,
+`created_ts_utc` and `config_hash` are not behaviour: the first two
+are stamped per run and the third moves with the strategy YAML.
+
+**Trigger:** a slate where the strategies pick a different set of
+games than the pre-merge code did on the same inputs, or a capped day
+that keeps later games than it used to (the truncation bias depends
+on the caller passing schedule order — see
+`tests/test_slate.py::test_the_cap_follows_input_order_not_start_time`).
+
+**Not a trigger:** a change in which games are skipped as already
+started. The clock is now read once per slate rather than per game,
+which is the known non-identity recorded above.

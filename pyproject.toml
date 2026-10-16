@@ -44,7 +44,11 @@ testpaths = ["tests"]
 target-version = "py311"
 line-length = 100
 src = ["src", "tests"]
-extend-exclude = ["backend", "frontend", "db", "mockup", "scripts"]
+# `scripts` is NOT excluded: proof_refactor_identity.py sat broken with a
+# dead import after the evaluate_slate extraction moved the symbols it
+# imported, and nothing caught it because ruff skipped the directory and
+# pytest collects only tests/. The frozen legacy trees stay excluded.
+extend-exclude = ["backend", "frontend", "db", "mockup"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]

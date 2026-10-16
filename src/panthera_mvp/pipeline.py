@@ -339,8 +339,9 @@ def _strategy_picks(
 ) -> tuple[list[dict], list[Pass]]:
     """Run one strategy's engine over today's slate; returns (rows, passes).
 
-    The loop itself is `strategy/slate.py::evaluate_slate`, shared with the
-    replay so the two cannot drift again. What stays here is the part that is
+    The loop itself is `strategy/slate.py::evaluate_slate`. This is its only
+    caller today; the replay keeps its own copy until PR 3b converts it, so
+    the drift it was extracted to end is not ended yet. What stays here is
     about THIS run: reading the day's budget out of the live ledger, and
     turning "now" into the `as_of` cutoff.
 
@@ -375,6 +376,22 @@ def _strategy_picks(
         budget=budget,
         splits_lookup=splits_lookup,
     )
+    # Surface the skip counters rather than dropping them. A strategy that
+    # produced nothing because every game was already under way, or outside
+    # the run's window, looks identical in the ledger to one whose engine
+    # passed on everything — and doctor H01 slate_shutout reads exactly that
+    # shape. One durable note tells the two apart afterwards.
+    if result.skipped and any(result.skipped.values()):
+        detail = " ".join(f"{k}={v}" for k, v in sorted(result.skipped.items()) if v)
+        print(f"[picks:{sid}] skipped {detail}")
+        if not result.picks and not result.passes:
+            store.append_run_note(
+                d,
+                run_label,
+                "slate_skipped",
+                f"{sid}: no game reached the engine — {detail}",
+            )
+
     chash = config_hash(scfg)
     return [pick_row(p, sid, scfg, chash) for p in result.picks], result.passes
 
