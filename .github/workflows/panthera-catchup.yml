@@ -6,9 +6,16 @@ name: Panthera Catch-up
 # latency that matters is detection's, and that runs daily. Weekly here keeps
 # the commit churn down and the race window with the pick runs small.
 #
-# Monday 12:15 ET: the quiet slot after MVP Morning (10:35 ET) and well
-# before MVP Pregame (16:50 ET). See .github/workflows/CLAUDE.md for the
-# cron<->ET table.
+# Monday 07:15 ET, which is the only genuinely quiet band. Picking it off
+# the MLB runs alone is not enough: `ncaaf` shares the `panthera-data`
+# concurrency group and fires half-hourly from 13:00 to 04:35 UTC, and
+# GitHub starts crons 15-50 min late — so a catch-up queued inside that band
+# can sit PENDING behind an in-progress ncaaf run and then be CANCELLED by
+# the next ncaaf run to queue (only one run per group may be pending). It
+# would be a repair that silently never ran, once a week, with nothing
+# watching. 11:15 UTC is outside every other cron in the group: ncaaf's last
+# is 04:35 and its first is 13:05, MVP Morning is 14:35, Pregame 20:50,
+# Close 22:20. See .github/workflows/CLAUDE.md for the cron<->ET table.
 #
 # Writes data/picks/shadow_picks.csv, data/picks/catchup_log.csv,
 # data/picks/run_log.csv and reports/ — never data/picks/picks.csv. A
@@ -21,7 +28,7 @@ name: Panthera Catch-up
 # pipeline already captured.
 on:
   schedule:
-    - cron: "15 16 * * 1"
+    - cron: "15 11 * * 1"
   workflow_dispatch:
     inputs:
       sport:
@@ -46,8 +53,10 @@ permissions:
 
 concurrency:
   # REQUIRED: this commits. Serializes with morning/pregame/close/ncaaf so a
-  # write can never interleave. cancel-in-progress stays false — a cancelled
-  # catch-up mid-write would leave a partial shadow_picks.csv.
+  # write can never interleave. cancel-in-progress stays false so an
+  # in-progress catch-up is never killed by a pick run queueing behind it;
+  # nothing reaches the repo before the final commit step, so a cancellation
+  # discards the workspace rather than a half-written ledger.
   group: panthera-data
   cancel-in-progress: false
 
@@ -90,6 +99,19 @@ jobs:
       - name: Regenerate reports
         if: inputs.dry_run != true
         run: panthera-mvp report
+
+      - name: Regenerate the NCAAF report
+        # `--sport all` settles NCAAF tickets and this job commits them, so
+        # ncaaf.yml's own conditional step (which regenerates only when
+        # data/ncaaf is dirty) would find nothing left to do and the markdown
+        # would stay stale. Same guard shape as ncaaf.yml.
+        if: inputs.dry_run != true
+        run: |
+          if [ -n "$(git status --porcelain -- data/ncaaf)" ]; then
+            panthera-mvp ncaaf report
+          else
+            echo "data/ncaaf unchanged; NCAAF report not regenerated."
+          fi
 
       - name: Doctor (after)
         run: panthera-mvp doctor --exit-zero

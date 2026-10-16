@@ -381,8 +381,11 @@ def cmd_catchup(
     if "ncaabase" in sports:
         report.notes.append(
             "ncaabase: no strategy is registered, so catch-up is data backfill "
-            "only (games + grade), and it no-ops outside the season window in "
-            "config/ncaabase.yaml."
+            "only (games + grade). `games` is season-gated (it skips dates "
+            "outside config/ncaabase.yaml's window); `grade` is NOT — it "
+            "refreshes any date that still has an unsettled game or a pending "
+            "pick, in any month, so out of season it is a no-op only while "
+            "nothing is left unsettled. --no-network skips both."
         )
         if not no_network and not dry_run:
             from .ncaabase.pipeline import cmd_games as nb_games

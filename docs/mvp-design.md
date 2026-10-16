@@ -664,6 +664,20 @@ dates and replays them again. **Correct the cause first** — usually
 list of pass-reason prefixes a config fix has invalidated — or disable the
 workflow, or the revert is undone within the week.
 
+**The revert takes back more than the MLB repair**, because the commit step
+stages all of `data` and `reports` and a scheduled run is `--sport all`.
+Also in that commit, and also reverted:
+
+| also reverted | recovers by itself? |
+|---|---|
+| `data/picks/run_log.csv` notes | no, but they are only operational notes; the next catch-up rewrites them for any date it repairs again |
+| `data/ncaaf/**` ticket settlements | **yes** — the daily `ncaaf grade` (`ncaaf.yml`, `15 13 * * *`) re-settles them |
+| `data/ncaabase/**` game refreshes | **yes** — `ncaabase grade` re-refreshes any date still unsettled |
+| `reports/**`, including `reports/NCAAF_REPORT.md` | **yes** — the next MLB morning run regenerates the MLB reports, and the NCAAF report follows the next time `data/ncaaf` changes |
+
+So the only thing a revert destroys for good is the MLB shadow repair, which
+is the point of reverting. Everything else is derived and comes back.
+
 **Undo the code.** Revert the PR commit, keeping `data/`, `reports/`, `docs/`
 and the `CLAUDE.md` files out of it, exactly as the three sections above do.
 Shadow rows already written stay: they are immutable like every pick, and
@@ -679,7 +693,16 @@ to `--strategy` when given.
 
 - The job is red. The `picks.csv` guard, a `doctor` exit 3 (a missing or
   invalid `config/health.yaml`) and a failed rebase all fail closed, before
-  the push.
+  the push — as does anything that throws after the MLB arm but before the
+  commit step (the NCAAF or college-baseball arm, `report`, "Doctor
+  (after)"), which discards the week's repair entirely. That list is not
+  exhaustive; treat any red run as "this week was not repaired".
+- **There is no run at all, or the Monday run shows `cancelled`.** Catch-up
+  shares the `panthera-data` concurrency group, where only one run may be
+  pending and a newer one cancels it. The cron sits outside every other
+  cron in the group for exactly this reason, so a cancellation means
+  something new was added to the group — check its schedule against
+  `.github/workflows/CLAUDE.md`'s cron↔ET table.
 - `reports/BETTING_REPORT.md`'s retroactive section, or the dashboard's
   `retroactive_replay` block, gains rows for dates that were never actually
   missed. Read the run's gap list against `data/picks/passes.csv`: a date

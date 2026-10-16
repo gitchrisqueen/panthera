@@ -145,7 +145,7 @@ def test_slate_shutout_fires_on_first_day(health_root, monkeypatch):
     assert f.evidence["consecutive_slate_days"] == 1
     assert sorted(f.evidence["strategies"]) == sorted(STRATEGIES)
     assert f.suggested_command == (
-        "panthera-mvp catchup --sport mlb --from 2026-09-29"
+        "panthera-mvp catchup --sport mlb --from 2026-09-29 --dry-run"
     )
 
 

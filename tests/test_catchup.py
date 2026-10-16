@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import shutil
+from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -27,6 +28,11 @@ def catchup_root(tmp_root):
     """`tmp_root` plus the REAL config/health.yaml, so these exercise the
     `void_pass_reasons` list that actually ships."""
     shutil.copy(REPO / "config" / "health.yaml", tmp_root / "config" / "health.yaml")
+    # The ncaabase arm reads its own config; without it `catchup --sport
+    # ncaabase` exits before the behaviour under test.
+    shutil.copy(
+        REPO / "config" / "ncaabase.yaml", tmp_root / "config" / "ncaabase.yaml"
+    )
     shutil.copytree(
         REPO / "config" / "strategies", tmp_root / "config" / "strategies",
         dirs_exist_ok=True,
@@ -411,7 +417,47 @@ def test_void_prefix_match_is_substring_not_startswith(catchup_root):
     assert not catchup._is_void("[R3] no movement signal", ("game_type=",))
 
 
-def test_ncaabase_catchup_is_a_noop_out_of_season(catchup_root):
-    """No strategy is registered, and October is outside 02-01..06-30."""
-    catchup.cmd_catchup(sport="ncaabase", dry_run=False, no_network=True)
+def test_ncaabase_catchup_touches_no_network_out_of_season(catchup_root, monkeypatch):
+    """Out of season and with nothing unsettled, the arm makes no call.
+
+    Deliberately run with `no_network=False`: passing True short-circuits the
+    whole branch, so the earlier version of this test asserted nothing about
+    the behaviour its name claimed.
+    """
+    from panthera_mvp.ncaabase import pipeline as nb
+
+    calls: list[str] = []
+    monkeypatch.setattr(nb, "refresh_date", lambda d, cfg: calls.append(d))
+    catchup.cmd_catchup(sport="ncaabase", dry_run=False, no_network=False)
+    assert calls == []
     assert store.load_shadow_picks().empty
+
+
+def test_ncaabase_grade_is_not_season_gated(catchup_root, monkeypatch):
+    """The honest limit the module note now states: only `games` is gated.
+
+    `grade` refreshes any date that still carries an unsettled game, in any
+    month — out of season it is quiet only while nothing is left unsettled.
+    """
+    from panthera_mvp.ncaabase import pipeline as nb
+    from panthera_mvp.ncaabase import store as nb_store
+
+    # Inside `grade.lookback_days` (3) and already started, so the date is
+    # unsettled business today whatever today is; October is out of season.
+    yesterday = str(catchup.today_et() - timedelta(days=1))
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{
+                "game_id": "99",
+                "game_date_et": yesterday,
+                "start_time_utc": f"{yesterday}T00:05:00Z",
+                "home_team": "Florida St.",
+                "away_team": "Miami (FL)",
+                "status": "Scheduled",
+            }]
+        )
+    )
+    calls: list[str] = []
+    monkeypatch.setattr(nb, "refresh_date", lambda d, cfg: calls.append(d))
+    catchup.cmd_catchup(sport="ncaabase", dry_run=False, no_network=False)
+    assert calls == [yesterday], calls

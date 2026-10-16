@@ -2,10 +2,9 @@
 
 PR 3a moved the per-slate evaluation loop out of `pipeline._strategy_picks`
 into `strategy/slate.py::evaluate_slate` so the live pipeline and the replay
-CAN share one implementation. Only the pipeline is converted here —
-`replay.py` still runs its own copy until PR 3b converts it. That loop
-decides every live pick, so "no behavior change" has to be demonstrated,
-not asserted.
+share one implementation; `replay.py` was converted in PR 3b and now calls
+it too. This proof covers the pipeline arm, which decides every live pick,
+so "no behavior change" has to be demonstrated, not asserted.
 
 This replays BOTH implementations over the pipeline's own captured history
 (`data/games/games.csv` + `data/odds/lines.csv`, offline, no API credits):

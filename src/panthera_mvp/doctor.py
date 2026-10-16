@@ -377,8 +377,13 @@ def check_slate_shutout(data: SportData, cfg: dict, today: date, since: str) -> 
             # for every sport, so `panthera-mvp ncaaf catchup` does not
             # exist. `--sport` is what keeps the repair, which writes, on the
             # finding's own sport.
+            # `--dry-run` because this is pasted out of a GitHub issue into
+            # whatever checkout the reader is sitting in, and `cmd_catchup`
+            # writes by default. Every other manual path in the repo opens
+            # the same way (.github/workflows/CLAUDE.md's testing convention).
             suggested_command=(
-                f"panthera-mvp catchup --sport {data.sport} --from {first_day}"
+                f"panthera-mvp catchup --sport {data.sport} "
+                f"--from {first_day} --dry-run"
             ),
         )
     ]
