@@ -39,22 +39,10 @@ reliably quiet in FBS season:
 | hourly at :05 from 09:05, and :35 as well from 11:35, through 00:35 | `ncaaf.yml` `picks --auto` | 3, only when the day's first kickoff is 15–90 min away |
 
 Out of FBS season the three MLB minutes are the whole set. In season, pick a
-moment with no kickoff within 90 minutes, and expect that a rotation may still
-cost one red run.
-
-### After the gap
-
-- **Nothing was half-written.** In `mvp-morning.yml` the snapshot step runs
-  before splits, picks, reports and `Commit & push`, and none of those carries
-  `if: always()`, so a failed snapshot skips every later step and commits
-  nothing. The `grade` step that ran before it is discarded too, which is safe:
-  grading is idempotent and the next run redoes it.
-- **Re-dispatch the failed workflow** with `dry_run: false` once the secret is
-  updated. That doubles as the verification above — the same evidence line.
-- **Picks for games that already started are gone, not deferred.** `cmd_picks`
-  skips a game whose start time has passed (`# game already started`), and the
-  late-run check writes a durable note. A gap taken inside a slate window costs
-  that slate's picks permanently; one taken between windows costs nothing.
+moment with no kickoff within 90 minutes, and expect a rotation to cost at
+least one red run — `picks --auto` fires at both :05 and :35 against a
+15–90-minute kickoff window, so a gap that lands inside one can redden two or
+three before the secret is updated.
 
 1. Regenerate in the provider console.
 2. **Immediately** set the new value: repo **Settings → Secrets and variables →
@@ -65,6 +53,23 @@ cost one red run.
    old value to fall back to; the only recovery is a working new one.
 5. Append a line to the [rotation log](#rotation-log) at the bottom of this
    file. The ["When to rotate"](#when-to-rotate) triggers are what read it.
+
+### After the gap
+
+- **Nothing was half-written.** In `mvp-morning.yml` the snapshot step runs
+  before splits, picks, reports and `Commit & push`, and none of those carries
+  `if: always()`, so a failed snapshot skips every later step and commits
+  nothing. The `grade` step that ran before it is discarded too, which is safe:
+  grading is idempotent and the next run redoes it. `ncaaf.yml` has the same
+  shape — its report and commit steps are unguarded, so a failed `prep` or
+  `picks --auto` commits nothing either.
+- **Re-dispatch the failed workflow** with `dry_run: false` once the secret is
+  updated. That is step 3 above done for real — the same evidence line counts
+  for both.
+- **Picks for games that already started are gone, not deferred.** `cmd_picks`
+  skips a game whose start time has passed (`# game already started`), and the
+  late-run check writes a durable note. A gap taken inside a slate window costs
+  that slate's picks permanently; one taken between windows costs nothing.
 
 ## How to rotate — overlap available (`CFBD_API_KEY`)
 
@@ -123,17 +128,34 @@ the whole diagnosis:
 - **Routinely:** no fixed schedule. These are read-only, low-value keys with a
   credit cap as their only real exposure; a calendar rotation would cost more
   attention than it buys.
-**How a dead key is noticed.** Nothing watches the keys directly. The alerts
-are, in the order they arrive:
+### How a dead key is noticed
+
+Nothing watches the keys directly, and the automated checks are weaker here
+than they look. In the order anything actually fires:
 
 1. **GitHub's failed-run notification** to the repository owner — the red
-   snapshot run is the first and only immediate signal. `health.yml` always
-   exits 0 by design, so it will never turn CI red for this.
-2. **Next day, 12:05 ET:** `panthera-mvp doctor` files H03 `data_staleness`
-   and H04 `snapshot_coverage` as `panthera-health` issues (one per
-   `<sport>/<check>` fingerprint). The issue is the alert.
+   snapshot run is the first, and usually the only, signal. `health.yml` always
+   exits 0 by design, so it will never turn CI red for this. **Treat this as
+   the detector.**
+2. `doctor` runs daily at 12:05 ET, but `config/health.yaml` sets
+   `open_issue_on: [fail]` and `health.yml` files issues only for that level,
+   so:
+   - **H04 `snapshot_coverage` never opens an issue** — it always emits
+     `level="warn"`.
+   - **H03 `data_staleness` opens one late.** It warns past the limit and only
+     escalates to `fail` above *twice* the limit, and MLB lines allow 2 days —
+     so the `panthera-health` issue arrives around the fifth stale day, not the
+     next morning.
+   - Both are window checks that drop to `info` once a sport is idle, and a
+     sport goes idle after `idle_after_days` with no captured games. A dead key
+     stops `_refresh_games` (it only runs inside `cmd_snapshot` and
+     `cmd_picks`), so a long outage can silence the very checks meant to report
+     it.
 3. H08 `credit_floor` is about the credit *balance*, so it does not fire for a
    revoked or wrong key — only for an exhausted one.
+
+So in the MLB offseason, or after about a week of a dead key, the failed-run
+notification is the **only** thing that reports it.
 
 - **Immediately,** on any of: a key appearing in a log, a traceback, a
   committed file or a screenshot; an unexplained drop in remaining credits
@@ -152,9 +174,10 @@ log. GitHub's masking of the registered secret was the only barrier, and
 masking is best-effort.
 
 No run was found that demonstrably printed it: the odds-calling workflows have
-no failed run with a populated step list — the one that exists, run
-31119563595 (MVP Morning Run, 2026-08-06), is a queue cancellation whose job
-reports no steps — and Actions log text older than the API's retention window
+no failed run with a populated step list. The two that exist — run 31119563595
+(MVP Morning Run) and run 31124650946 (MVP Midday Check, a retired workflow
+that held the key), both 2026-08-06 — are queue cancellations whose jobs report
+no steps. Actions log text older than the API's retention window
 cannot be re-read to prove a negative. **So treat prior disclosure as
 possible, not as ruled out**, and do the following once:
 
@@ -175,14 +198,18 @@ behaviour described above is only true once the fix is on the default branch.
    deletes nothing. To enumerate them:
 
    ```bash
-   for w in mvp-morning mvp-pregame mvp-close ncaaf ncaaf-capture ncaabase-capture; do
+   # mvp-midday is retired (2026-08-19) but held ODDS_API_KEY and ran a live
+   # snapshot, and its runs still exist -- omitting it leaves a pre-fix failed
+   # odds run in the public log.
+   for w in mvp-morning mvp-pregame mvp-close ncaaf ncaaf-capture ncaabase-capture mvp-midday; do
      gh run list --workflow $w.yml --limit 400 \
        --json databaseId,conclusion,createdAt,headSha \
        --jq '.[] | select(.conclusion != "success" and .conclusion != "skipped") | [.databaseId, .conclusion, .createdAt] | @tsv'
    done
    ```
 
-   At the time of writing that returns exactly one row, run 31119563595.
+   At the time of writing that returns two rows: run 31119563595 (MVP Morning
+   Run) and run 31124650946 (MVP Midday Check), both 2026-08-06.
 3. Record the rotation in the [rotation log](#rotation-log), so the next reader
    knows the key in use post-dates the fix, and the deleted run ids in the
    [deleted-runs log](#deleted-runs-log) beside it — a deletion is not a
@@ -247,7 +274,9 @@ second line of defence, never the first.
 
 `clients/odds.py`'s scrub is a plain `git revert` — no data write, no schema
 change, no migration — and no caller catches `requests` exceptions, so
-reverting restores the previous propagation exactly. Reverting also restores
+reverting restores the previous propagation exactly. Revert
+`tests/test_odds_credentials.py` with it: left behind, it asserts a scrub that
+no longer exists and `ci.yml` goes red. Reverting also restores
 the disclosure, so rotate the key afterwards if a live snapshot has failed in
 the meantime.
 
