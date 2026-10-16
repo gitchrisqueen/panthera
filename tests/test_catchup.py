@@ -280,12 +280,35 @@ def test_window_floors_at_max_lookback_and_says_so(catchup_root):
     assert truncated and win_from == floor
 
 
-def test_to_defaults_to_yesterday_never_today(catchup_root):
-    """Today belongs to the live morning and pregame runs; a catch-up racing
-    them would write shadow picks for a slate still being decided."""
+def test_to_defaults_to_yesterday_because_today_belongs_to_the_live_runs(
+    catchup_root,
+):
+    """Excluding today is DELIBERATE, not an off-by-one. Do not "fix" it.
+
+    Today's slate is still being decided: the morning run picks against the
+    `open` snapshot and the pregame run against `pregame`, hours apart. A
+    catch-up that included today would race them and write shadow picks for
+    games the live pipeline is still working, and the shadow ledger would
+    then hold retroactive rows for a day that was never actually missed.
+
+    Pinned to exactly yesterday rather than "any earlier date", so a bug that
+    moved the default a week back would fail this too.
+    """
+    from datetime import timedelta
+
     cfg = catchup.load_health_config()
     (_, win_to), _, _ = catchup._default_window(cfg, None, None)
-    assert win_to < str(catchup.today_et())
+    assert win_to == str(catchup.today_et() - timedelta(days=1))
+
+
+def test_an_explicit_to_is_still_honoured(catchup_root):
+    """The guard is on the DEFAULT, not a prohibition: an operator who
+    deliberately passes `--to <today>` gets it, because they have chosen to
+    accept the race the default avoids."""
+    cfg = catchup.load_health_config()
+    today = str(catchup.today_et())
+    (_, win_to), _, _ = catchup._default_window(cfg, None, today)
+    assert win_to == today
 
 
 def test_void_prefix_match_is_substring_not_startswith(catchup_root):
