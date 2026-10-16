@@ -218,10 +218,11 @@ one game lost to the merge window.
 is a finished game with a known result, so writing a pick for it now would be
 a retroactive bet with hindsight — the pre-registration violation the shadow
 ledger exists to prevent — and it would re-open that day's pick budget, which
-is why `catchup` refuses partial gaps by design. `data/picks/passes.csv`
-already records what the old config did with it, so the history is honest as
-it stands. `catchup` reports it as a partial gap and takes no action; that is
-the detector working, not a gap in it.
+is why `catchup` — specified in PR #71, not merged at the time of writing —
+refuses partial gaps by design. `data/picks/passes.csv` already records what
+the old config did with it, so the history is honest as it stands. Once
+`catchup` ships it is specified to report this day as a partial gap and take
+no action; that is the detector working, not a gap in it.
 
 ### Rollback and ownership — postseason scope fix (2026-10-15)
 
@@ -229,6 +230,11 @@ the detector working, not a gap in it.
 run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
 on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
 GitHub issue, and that issue is the page.
+
+The loop that decides every pick is `strategy/slate.py::evaluate_slate`,
+extracted from `pipeline._strategy_picks` so the live pipeline and the
+replay share one implementation; `docs/proofs/slate-identity.md` is the
+identity proof for that extraction and carries its own rollback runbook.
 
 **Stop pick generation without a code change.** Set `enabled: false` under
 `strategy:` in the relevant `config/strategies/<id>.yaml`. `cmd_picks` filters
