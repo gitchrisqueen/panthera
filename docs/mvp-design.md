@@ -451,7 +451,7 @@ git commit                                 # expect conflicts under data/ and
   own copy — but reverting `matching.py` alone leaves every `ncaabase` command
   with an `ImportError`.
 
-**The faster de-risk, with no code change at all.** Deleting the
+**The faster de-risk, with no engine change.** Deleting the
 `grading.espn_fallback` block from `config/health.yaml` restores #69's
 matchup-wide refusal immediately: ordinary dates are untouched (they never
 read it), and each refused matchup records one deduped
@@ -459,6 +459,16 @@ read it), and each refused matchup records one deduped
 unsplittable matchups records two). Leave the `doctor:` block alone —
 removing that stops `grading:` being read AND takes `doctor` down with it
 (see the alert path below).
+
+**It is not free: one test goes red.**
+`tests/test_finals_backfill.py::test_espn_match_window_comes_from_health_yaml`
+reads the REAL `config/health.yaml` and asserts the block is present with
+exactly `window_hours: 4` and `ambiguity_minutes: 60`, so deleting it — or
+retuning either value — reddens `pytest` in `.github/workflows/ci.yml` on the
+push to main, and a red main blocks the standing "agents merge once CI is
+green" rule while the incident is open. Update or mute that test in the same
+commit as the config change, and say in the commit message that it is a
+deliberate de-risk.
 
 **But nothing watches that state, so it needs an owner before you leave it.**
 No check reads `data/picks/run_log.csv` — `store.load_run_log`'s only callers
@@ -496,7 +506,9 @@ stayed green and wrote `[doctor] cannot run: ...` into `health.json`, and the
 job failed one step later in **"Reconcile health issues"** on `JSON.parse` —
 which reads at 2 a.m. as a broken issue bot rather than a blind detector. A
 red Health Check is itself the page; do not read a quiet issue tracker as
-evidence that grading is healthy until that job is green.
+evidence that grading is healthy until that job is green. Note that the
+failing step is before `actions/upload-artifact`, so that run leaves no
+`health.json` behind — the run log is the only record.
 
 An `ambiguous_espn_match` note that never clears is
 not an agent's to resolve — only an MLB API refresh can supply the score, and
@@ -514,12 +526,19 @@ counters never question it.
 
 - **Detect it.** The forensic handle is `score_source`. Find the dates where
   one matchup has more than one stored game and at least one of those rows
-  reads `espn`, and re-check those rows against the MLB Stats API; a
-  disagreement there is the signature. `store.upsert_games` accepts MLB's
-  differing score for the game row, so games.csv can self-correct while the
-  settled pick does not — a games.csv row and a pick's `final_score`
-  disagreeing on the same `game_pk` is the same signature seen from the
-  ledger side.
+  reads `espn`, then re-derive those rows from the MLB Stats API with the
+  throwaway-datastore recipe above (`cp -R data /tmp/panthera-check`;
+  `PANTHERA_ROOT=/tmp/panthera-check .venv/bin/python -c "from
+  panthera_mvp.pipeline import _refresh_games; _refresh_games('<date>')"`;
+  diff the two rows). Use that recipe and not a CLI: `panthera-mvp grade
+  --date <date>` only filters the dates that still have a PENDING pick, so
+  once the bad fill has settled its pick the date is no longer visited, and
+  `_refresh_games` in the live checkout would write `data/games/games.csv` in
+  place, which ruling 2 forbids. For the same reason, the ledger-side
+  signature — a games.csv row and a pick's `final_score` disagreeing on one
+  `game_pk`, because `store.upsert_games` accepts MLB's differing score while
+  the settled pick is never rewritten — only appears if some OTHER pick on
+  that date was still pending when MLB's correction arrived.
 - **You cannot fix it in the data.** Picks are immutable, `data/` is
   bot-owned and no CLI unsettles a pick. Do not hand-edit either file.
 - **Owner.** A `needs-chris` ClickUp task, like the dead end in "Abandoned
