@@ -21,6 +21,7 @@ import pytest
 import yaml
 
 from conftest import FIXTURES, REPO
+from panthera_mvp import paths
 from panthera_mvp.clients import college_baseball as cb
 from panthera_mvp.ncaabase import grading, matching, store
 from panthera_mvp.ncaabase.config import in_season, load_ncaabase_config
@@ -411,3 +412,100 @@ def test_snapshot_live_force_uses_baseball_ncaa_and_logs_credits(cbb_root, monke
     assert (cbb_root / "data/ncaabase/odds/raw/2026-10-04/open.json").exists()
     assert pd.read_csv(cbb_root / "data/odds/credit_log.csv")["label"].tolist() == ["ncaabase_open"]
     assert len(store.load_lines()) == 12
+
+
+def test_espn_fallback_fills_a_final_with_no_score(cbb_root):
+    """`status.isin(UNSETTLED)` excluded a row recorded Final with a NULL
+    score — the same defect MLB carried as `status != "Final"` (see
+    tests/test_finals_backfill.py). Grading settles from the score, so such a
+    pick could never settle and the fallback that could repair it skipped it.
+    ESPN's fixture has the score for 6600003; ncaa-api's does not."""
+    from panthera_mvp.ncaabase import pipeline
+
+    games = [g.__dict__ for g in cb.parse_schedule(_payload(), DAY) if g.game_date_et == DAY]
+    store.upsert_games(pd.DataFrame(games))
+    stored = store.load_games()
+    target = stored["game_id"] == "6600003"
+    assert target.any()
+    stored.loc[target, ["status", "home_score", "away_score"]] = ["Final", None, None]
+    stored.to_csv(paths.ncaabase_games_csv(), index=False)
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) >= 1
+
+    g = store.load_games().set_index("game_id").loc["6600003"]
+    assert g["score_source"] == "espn"
+    assert pd.notna(g["home_score"]) and pd.notna(g["away_score"])
+
+
+def test_espn_fallback_does_not_reopen_a_called_off_game(cbb_root):
+    """The widened arm is "Final with a hole", NOT "any row with no score".
+    Postponed and Canceled rows have no score either, and a stale ESPN final
+    must not reopen a game this store had already called off."""
+    from panthera_mvp.ncaabase import pipeline
+
+    games = [g.__dict__ for g in cb.parse_schedule(_payload(), DAY) if g.game_date_et == DAY]
+    store.upsert_games(pd.DataFrame(games))
+    stored = store.load_games()
+    stored.loc[
+        stored["game_id"] == "6600003", ["status", "home_score", "away_score"]
+    ] = ["Postponed", None, None]
+    stored.to_csv(paths.ncaabase_games_csv(), index=False)
+
+    pipeline._espn_fallback(DAY, _repo_cfg())
+
+    g = store.load_games().set_index("game_id").loc["6600003"]
+    assert g["status"] == "Postponed"
+    assert pd.isna(g["home_score"])
+
+
+def test_scoreless_final_does_not_overwrite_a_stored_final(tmp_root):
+    """A college-baseball Final with no score must not blank a complete one.
+
+    MLB (`store.upsert_games`) and NCAAF (`ncaaf/store.upsert_games`) key this
+    guard on the INCOMING row's score; this module keyed it on the incoming
+    row's status alone, so anything arriving as `Final` was admitted and could
+    overwrite a settled result with blanks — the same unsettleable shape the
+    finals fallback exists to repair. `ncaaf/store.py`'s docstring claims all
+    three key it the same way; this test is what makes that true.
+    """
+    from panthera_mvp.ncaabase import store as nb_store
+
+    settled = pd.DataFrame(
+        [{"game_id": "401", "game_date_et": "2026-05-01", "status": "Final",
+          "home_score": 7, "away_score": 3, "start_time_utc": "2026-05-01T23:00:00Z"}]
+    )
+    nb_store.upsert_games(settled)
+
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "401", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": None, "away_score": None,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    row = nb_store.load_games().iloc[0]
+    assert int(row["home_score"]) == 7, "a scoreless Final blanked a settled result"
+    assert int(row["away_score"]) == 3
+
+
+def test_a_real_correction_to_a_scoreless_final_still_lands(tmp_root):
+    """The guard rejects an ABSENT score, never a corrected one — otherwise
+    the hole it protects could never be filled."""
+    from panthera_mvp.ncaabase import store as nb_store
+
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "402", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": None, "away_score": None,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    nb_store.upsert_games(
+        pd.DataFrame(
+            [{"game_id": "402", "game_date_et": "2026-05-01", "status": "Final",
+              "home_score": 5, "away_score": 1,
+              "start_time_utc": "2026-05-01T23:00:00Z"}]
+        )
+    )
+    row = nb_store.load_games().iloc[0]
+    assert int(row["home_score"]) == 5

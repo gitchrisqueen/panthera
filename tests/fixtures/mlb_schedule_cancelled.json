@@ -1,0 +1,84 @@
+{
+  "dates": [
+    {
+      "date": "2026-09-27",
+      "games": [
+        {
+          "gamePk": 823490,
+          "gameGuid": "60af2974-4c0b-4e44-a0d6-89de17c8ec3c",
+          "link": "/api/v1.1/game/823490/feed/live",
+          "gameType": "R",
+          "season": "2026",
+          "gameDate": "2026-09-27T17:05:00Z",
+          "officialDate": "2026-09-27",
+          "status": {
+            "abstractGameState": "Final",
+            "codedGameState": "C",
+            "detailedState": "Cancelled",
+            "statusCode": "CR",
+            "startTimeTBD": false,
+            "reason": "Rain",
+            "abstractGameCode": "F"
+          },
+          "teams": {
+            "away": {
+              "team": {
+                "id": 110,
+                "name": "Baltimore Orioles",
+                "link": "/api/v1/teams/110"
+              },
+              "leagueRecord": {
+                "wins": 79,
+                "losses": 82,
+                "ties": 0,
+                "pct": ".491"
+              },
+              "splitSquad": false,
+              "seriesNumber": 52
+            },
+            "home": {
+              "team": {
+                "id": 147,
+                "name": "New York Yankees",
+                "link": "/api/v1/teams/147"
+              },
+              "leagueRecord": {
+                "wins": 93,
+                "losses": 68,
+                "ties": 0,
+                "pct": ".578"
+              },
+              "splitSquad": false,
+              "seriesNumber": 52
+            }
+          },
+          "venue": {
+            "id": 3313,
+            "name": "Yankee Stadium",
+            "link": "/api/v1/venues/3313"
+          },
+          "content": {
+            "link": "/api/v1/game/823490/content"
+          },
+          "gameNumber": 1,
+          "publicFacing": true,
+          "doubleHeader": "N",
+          "gamedayType": "P",
+          "tiebreaker": "N",
+          "calendarEventID": "14-823490-2026-09-27",
+          "seasonDisplay": "2026",
+          "dayNight": "day",
+          "scheduledInnings": 9,
+          "reverseHomeAwayStatus": false,
+          "inningBreakLength": 120,
+          "gamesInSeries": 3,
+          "seriesGameNumber": 3,
+          "seriesDescription": "Regular Season",
+          "recordSource": "S",
+          "ifNecessary": "N",
+          "ifNecessaryDescription": "Normal Game"
+        }
+      ]
+    }
+  ]
+}

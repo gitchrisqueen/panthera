@@ -563,14 +563,17 @@ def check_pending_age(data: SportData, cfg: dict, today: date, since: str) -> li
     # score recorded means it never can, because grading settles from the
     # score — a different bug with a different fix.
     blocked = _unsettleable(overdue, data.games)
-    extra = ""
-    if blocked:
-        extra = (
-            " "
-            + ", ".join(f"game {pk} is {st} with no score recorded" for pk, st in blocked)
-            + " — grading settles from the score, so these can never settle until the "
-            "score is backfilled. This is not a grader schedule problem."
+    extra, grade_helps = _blocked_detail(blocked)
+    if blocked and not grade_helps:
+        extra += (
+            " Nothing to run: wait for the game to be completed and the feed to "
+            "report a final. If it is abandoned without ever being called off, "
+            "the score never arrives and the picks need a ruling — see "
+            "docs/mvp-design.md, \"Rollback and ownership — called-off game "
+            "settlement\"."
         )
+    elif blocked:
+        extra += " This is not a grader schedule problem."
     return [
         Finding(
             id="H05",
@@ -589,18 +592,39 @@ def check_pending_age(data: SportData, cfg: dict, today: date, since: str) -> li
                 "dates": sorted(stale),
                 "scoreless_final_games": [pk for pk, _ in blocked],
             },
+            # No `grade` remediation when every blocked game is simply waiting
+            # to be resumed: the command would refresh, fill nothing and settle
+            # nothing, and an alert that prescribes a no-op trains the operator
+            # to ignore it. A date with no blocked game at all still gets it —
+            # there, a stalled grader is exactly what `grade` fixes.
             suggested_command=(
-                f"panthera-mvp {_cli_prefix(data.sport)}grade --date {min(stale)}"
+                None
+                if blocked and not grade_helps
+                else f"panthera-mvp {_cli_prefix(data.sport)}grade --date {min(stale)}"
             ),
         )
     ]
 
 
 def _unsettleable(pending: pd.DataFrame, games: pd.DataFrame) -> list[tuple[int, str]]:
-    """Games a pending pick points at that report a terminal status but carry
-    no score, so no amount of re-grading will settle them."""
+    """Games a pending pick points at that carry no score and will not gain
+    one from re-grading.
+
+    Two different shapes, with two different remediations, which is why the
+    status is returned alongside the game:
+
+    - `Final` with no score — a fault. Something must backfill the score.
+    - a called-off status (`clients/mlb.py::CALLED_OFF_STATUSES`) with no
+      score. `Suspended` is the live one: MLB resumes the game under the same
+      game_pk, so the pick is correctly pending and `grade` will not change
+      that. Telling an operator to run `grade` here is advice that cannot
+      work, which is the thing this check exists to avoid.
+    """
     if games.empty or "game_pk" not in games.columns or "home_score" not in games.columns:
         return []
+    from .clients.mlb import CALLED_OFF_STATUSES
+
+    terminal = ("Final", *CALLED_OFF_STATUSES)
     by_pk = games.drop_duplicates("game_pk").set_index("game_pk")
     out: list[tuple[int, str]] = []
     for pk in sorted({int(x) for x in pending["game_pk"].dropna()}):
@@ -608,9 +632,38 @@ def _unsettleable(pending: pd.DataFrame, games: pd.DataFrame) -> list[tuple[int,
             continue
         row = by_pk.loc[pk]
         status = str(row.get("status", ""))
-        if status == "Final" and pd.isna(row.get("home_score")):
+        if status in terminal and pd.isna(row.get("home_score")):
             out.append((pk, status))
     return out
+
+
+def _blocked_detail(blocked: list[tuple[int, str]]) -> tuple[str, bool]:
+    """Render the blocked games and say whether `grade` is worth suggesting.
+
+    Per game, not per finding: on a mixed date one game can be waiting on a
+    resumption while another is a scoreless `Final` that something must
+    backfill. Lumping them under one verdict prescribed a no-op for the
+    suspended half, which is the failure this helper exists to avoid.
+    `grade` is offered only when at least one blocked game is a scoreless
+    `Final`, i.e. only when running it could change something.
+    """
+    if not blocked:
+        return "", False
+    waiting = (
+        "a suspended game is resumed under the same game_pk, so its picks are "
+        "correctly pending and `grade` will not change them"
+    )
+    backfill = (
+        "grading settles from the score, so it can never settle until the "
+        "score is backfilled"
+    )
+    parts = [
+        f"game {pk} is {st} with no score recorded — "
+        + (waiting if st == "Suspended" else backfill)
+        for pk, st in blocked
+    ]
+    grade_helps = any(st != "Suspended" for _, st in blocked)
+    return " " + "; ".join(parts) + ".", grade_helps
 
 
 def check_unmatched_slate(data: SportData, cfg: dict, today: date, since: str) -> list[Finding]:
@@ -806,6 +859,73 @@ def check_config_sanity(cfg: dict) -> list[Finding]:
     return out
 
 
+def check_scoreless_final(
+    data: SportData, cfg: dict, today: date, since: str
+) -> list[Finding]:
+    """H10 — a row stored `Final` with no score.
+
+    `data/CLAUDE.md` calls this "a fault, not a result": such a row can settle
+    nothing, and it is how the 2026-09-27 rainout stranded three picks for 18
+    days. Until now the ONLY thing that noticed was H05, and only once a pick
+    on that game had been pending past its threshold — so a scoreless final
+    whose picks were already settled, or that never carried a pick at all,
+    was reported by nothing while still feeding the backtest and the reports.
+
+    This reads games.csv directly, independent of any pick.
+    """
+    c = _check_cfg(cfg, "scoreless_final")
+    if data.games.empty:
+        return []
+    games = data.games
+    if not {"status", "home_score", "away_score"}.issubset(games.columns):
+        return []
+    window = games[games["game_date_et"].astype(str) >= since]
+    if window.empty:
+        return []
+    missing = window["home_score"].isna() | window["away_score"].isna()
+    bad = window[(window["status"].astype(str) == "Final") & missing]
+    if bad.empty:
+        return []
+
+    key = "game_pk" if "game_pk" in bad.columns else bad.columns[0]
+    ids = [str(v) for v in bad[key].tolist()[:20]]
+    oldest = str(bad["game_date_et"].min())
+    return [
+        Finding(
+            id="H10",
+            check="scoreless_final",
+            sport=data.sport,
+            level=str(c.get("level", "warn")),
+            title=f"{len(bad)} game(s) stored Final with no score",
+            detail=(
+                f"{len(bad)} row(s) in this sport's games.csv are `Final` with a "
+                f"missing home or away score, oldest {oldest}. A Final with no "
+                "score is a fault, not a result: it can settle no pick, and it "
+                "still feeds the reports and the backtest. Either the feed never "
+                "returned a linescore, or the game was called off and its real "
+                "status was collapsed to Final \u2014 check `detailedState` for the "
+                "game and let the finals fallback rewrite it. There is no "
+                "one-command repair for MLB or NCAAF: see the called-off "
+                "settlement section of docs/mvp-design.md."
+            ),
+            since=oldest,
+            evidence={"count": int(len(bad)), "oldest_date": oldest, "ids": ids},
+            # Only college baseball can act on this. `cmd_grade` for MLB and
+            # NCAAF builds its date list from PENDING picks and `--date` only
+            # filters that list — and H10 exists precisely for a game with no
+            # pending pick, so the command would refresh nothing. An alert
+            # that prescribes a no-op teaches the reader to ignore the alert;
+            # ncaabase's cmd_grade takes the date unconditionally, so there
+            # it is real.
+            suggested_command=(
+                f"panthera-mvp ncaabase grade --date {oldest}"
+                if data.sport == "ncaabase"
+                else None
+            ),
+        )
+    ]
+
+
 # --------------------------------------------------------------------------
 # orchestration
 # --------------------------------------------------------------------------
@@ -820,6 +940,7 @@ WINDOW_CHECKS = (
     check_snapshot_coverage,
     check_pending_age,
     check_unmatched_slate,
+    check_scoreless_final,
 )
 
 #: H07/H08/H09 measure CORRECTNESS, not activity, and are deliberately NOT
@@ -831,7 +952,18 @@ WINDOW_CHECKS = (
 #: because nobody looked" from "stopped being reported because it is fixed".
 #: An idle sport holds its WINDOW findings open, but one of these going quiet
 #: really is a fix, and an issue that can never close is noise.
-ALWAYS_EVALUATED = ("lineage_drift", "credit_floor", "config_sanity")
+ALWAYS_EVALUATED = (
+    "lineage_drift",
+    "credit_floor",
+    "config_sanity",
+    # H10 reads games.csv, so it needs a sport's data and lives in
+    # WINDOW_CHECKS — but it measures CORRECTNESS, not activity. A row stored
+    # Final with no score is just as wrong in December as in July, and the
+    # offseason is when you want to find it rather than the morning of
+    # opening day. It is therefore exempt from the idle downgrade below and
+    # listed here so the issue reconciler closes it on its own merits.
+    "scoreless_final",
+)
 
 
 def run_checks(
@@ -876,10 +1008,12 @@ def run_checks(
         ]
         produced = _drop_subsumed(produced)
         if idle:
-            # Out of season nothing is wrong, so findings are recorded for the
-            # record and never alerted on.
+            # Out of season nothing is wrong, so ACTIVITY findings are
+            # recorded for the record and never alerted on. Correctness
+            # findings are not activity and keep their level.
             for f in produced:
-                f.level = "info"
+                if f.check not in ALWAYS_EVALUATED:
+                    f.level = "info"
         findings += produced
 
     if sport == "all" or sport == "mlb":
@@ -1019,10 +1153,17 @@ def cmd_doctor(
         cfg = load_health_config()
         result = run_checks(sport=sport, cfg=cfg, since=since)
     except DoctorConfigError as exc:
-        # Exit 3, never 0: "doctor could not run" must not be mistaken for
-        # "doctor found nothing wrong".
+        # Exit 3, never 0 — including under `--exit-zero`, which this branch
+        # deliberately ignores. That flag exists so FINDINGS do not redden the
+        # scheduled job; "doctor could not run" is not a finding, and the
+        # comment above this line promised exit 3 while the code returned 0
+        # for the one caller that matters: .github/workflows/health.yml passes
+        # `--exit-zero` to both doctor steps. They stayed green and printed
+        # `[doctor] cannot run: ...` into health.json, so the job failed one
+        # step later, in "Reconcile health issues", when JSON.parse hit that
+        # line — which reads as a broken issue bot, not a blind detector.
         print(f"[doctor] cannot run: {exc}")
-        return EXIT_OK if exit_zero else EXIT_BROKEN
+        return EXIT_BROKEN
 
     code = exit_code(result["findings"], strict=strict)
     print(render_json(result, code) if as_json else render_text(result))

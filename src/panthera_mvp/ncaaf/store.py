@@ -55,16 +55,24 @@ def load_games() -> pd.DataFrame:
 
 
 def upsert_games(df: pd.DataFrame) -> None:
-    """Replace rows by event_id — except that a stored Final is never
+    """Replace rows by event_id — except that a SETTLED final is never
     downgraded: a lagging feed (or a refresh after a fallback filled the
-    score) must not reopen a settled game."""
+    score) must not reopen a game whose result is complete.
+
+    "Settled" means Final with both scores, not Final alone. A row stored
+    Final WITHOUT a score is not a result — it is the fault this module's
+    finals fallback exists to repair — so a correction to it must land, and an
+    incoming scoreless Final must not overwrite a complete one. MLB and
+    college baseball key the same guard the same way."""
     if df.empty:
         return
     df = df.reindex(columns=GAMES_COLUMNS).astype({"event_id": str})
     existing = load_games()
     if not existing.empty:
-        finals = set(existing.loc[existing["status"] == "Final", "event_id"])
-        df = df[~(df["event_id"].isin(finals) & (df["status"] != "Final"))]
+        scored = existing["home_score"].notna() & existing["away_score"].notna()
+        finals = set(existing.loc[(existing["status"] == "Final") & scored, "event_id"])
+        incoming_scored = df["home_score"].notna() & df["away_score"].notna()
+        df = df[~(df["event_id"].isin(finals) & ~incoming_scored)]
         existing = existing[~existing["event_id"].isin(df["event_id"])]
         df = pd.concat([existing, df], ignore_index=True)
     _write(df.sort_values(["game_date_et", "start_time_utc", "event_id"]), paths.ncaaf_games_csv())
