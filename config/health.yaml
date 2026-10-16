@@ -168,6 +168,11 @@ catchup:
   max_lookback_days: 45
 
   mlb:
+    # DESCRIPTIVE, not a knob: `catchup.detect_mlb_gaps` always scopes to the
+    # enabled strategies whose `scope` contains `live`, and reads nothing
+    # here. Editing this line changes nothing; `--strategy` is the real
+    # scoping control. Recorded so an operator does not reach for it mid
+    # incident.
     strategies: live_enabled
 
     # Pass-reason prefixes that a config fix has INVALIDATED. A pass matching

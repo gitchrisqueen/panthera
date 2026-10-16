@@ -666,8 +666,13 @@ git revert -n -m 1 <sha>                   # merge commit form instead
 # every grade, and touch data/ncaaf several times a day. Keep HEAD for every
 # derived path (the table below) and let ONLY the two quarantine files take
 # the revert.
-git checkout HEAD -- reports/ data/ncaaf/ data/ncaabase/ \
-    data/picks/run_log.csv
+git checkout HEAD -- reports/ data/ncaaf/ data/picks/run_log.csv
+# data/ncaabase/ is NOT tracked until a college-baseball run commits one, and
+# git validates every pathspec before it acts — naming it unconditionally
+# aborts the whole checkout with "did not match any file(s) known to git".
+git ls-files --error-unmatch data/ncaabase >/dev/null 2>&1 \
+    && git checkout HEAD -- data/ncaabase/
+
 git status --short                         # expect only the two files below
 #   data/picks/shadow_picks.csv
 #   data/picks/catchup_log.csv
@@ -684,19 +689,24 @@ dates and replays them again. **Correct the cause first** — usually
 list of pass-reason prefixes a config fix has invalidated — or disable the
 workflow, or the revert is undone within the week.
 
-**The revert takes back more than the MLB repair**, because the commit step
+**The commit holds more than the MLB repair**, because the commit step
 stages all of `data` and `reports` and a scheduled run is `--sport all`.
-Also in that commit, and also reverted:
+That is what the `git checkout HEAD` line is for: these paths are in the
+commit, a BARE revert would take them back too, and keeping HEAD for them is
+what stops it. Follow the recipe and none of them changes.
 
-| also reverted | recovers by itself? |
+| also in the commit | if you did NOT keep HEAD for it, does it recover by itself? |
 |---|---|
 | `data/picks/run_log.csv` notes | no, but they are only operational notes; the next catch-up rewrites them for any date it repairs again |
 | `data/ncaaf/**` ticket settlements | **yes** — the daily `ncaaf grade` (`ncaaf.yml`, `15 13 * * *`) re-settles them |
 | `data/ncaabase/**` game refreshes | **yes** — `ncaabase grade` re-refreshes any date still unsettled |
 | `reports/**`, including `reports/NCAAF_REPORT.md` | **yes** — the next MLB morning run regenerates the MLB reports, and the NCAAF report follows the next time `data/ncaaf` changes |
 
-So the only thing a revert destroys for good is the MLB shadow repair, which
-is the point of reverting. Everything else is derived and comes back.
+Which is why the column exists at all: if a conflict ever forces you to let
+one of them take the revert, nothing is lost for good. After the procedure
+above, the only files that differ are `data/picks/shadow_picks.csv` and
+`data/picks/catchup_log.csv` — the MLB shadow repair, which is the point of
+reverting.
 
 **Undo the code.** Revert the PR commit, keeping `data/`, `reports/`, `docs/`
 and the `CLAUDE.md` files out of it, exactly as the three sections above do.
