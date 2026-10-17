@@ -333,11 +333,13 @@ def main() -> int:
         "**One known, intended non-identity.** The pre-refactor loop read the "
         "clock per game (`start_et <= now_utc()`); the extracted loop takes a "
         "single hoisted `as_of`. Both arms below use the hoisted form, so the "
-        "comparison cannot see it. The effect is that a game whose start time "
-        "passes mid-loop is now judged consistently across the slate instead "
-        "of flipping partway through — it cannot produce a pick the old code "
-        "would not have made earlier in the same loop, but it is a difference "
-        "and this proof is not evidence about it.",
+        "comparison cannot see it. The hoisted cutoff is strictly EARLIER "
+        "than the old per-game read, so strictly fewer games are skipped as "
+        "started: a game whose start time passes mid-loop is now evaluated "
+        "where the old loop would have skipped it, and CAN be picked after "
+        "first pitch. That is a real difference in live behaviour, and this "
+        "proof is not evidence about it. What it buys is consistency — every "
+        "strategy in a run now judges the same slate against one instant.",
         "",
         "**What the proof does NOT cover.** `build_dossier`, `pick_row` and "
         "`slot_map_for` moved modules unchanged, and BOTH arms import the new "
@@ -348,7 +350,10 @@ def main() -> int:
         "ledger-derived budget, and `already_picked_pks` — both arms get an "
         "empty set, so the one-pick-per-game skip that live runs drive from "
         "the ledger is never compared (it is covered by "
-        "`tests/test_slate.py::test_already_picked_game_is_skipped`).",
+        "`tests/test_slate.py::test_already_picked_game_is_skipped`). It covers "
+        "no behaviour outside the loop either, and this PR adds one: a "
+        "strategy that reaches the engine with no game now appends a "
+        "`slate_skipped` row to `data/picks/run_log.csv`.",
         "",
         f"_Data basis: `data/games/games.csv` at {games_rows} rows, latest "
         f"`game_date_et` {latest_day}; `data/splits/splits.csv` at "
@@ -380,8 +385,15 @@ def main() -> int:
         "",
         "**First, stop the bleeding.** Picks are append-once: a regressed",
         "loop keeps writing rows that cannot be un-written for as long as the",
-        "cron fires, and the revert does not land instantly. Disable the two",
-        "workflows that write picks BEFORE you investigate:",
+        "cron fires, and the revert does not land instantly.",
+        "",
+        "The cheap move first: set `enabled: false` under `strategy:` in each",
+        "`config/strategies/<id>.yaml`. `cmd_picks` filters on `enabled` +",
+        "`live` in scope, so the next run skips those strategies while",
+        "snapshots, grading and reporting carry on, and `enabled` sits under",
+        "the hash-excluded `strategy` block so no `config_hash` moves. It",
+        "needs a commit to `main`, so if you cannot push, or you want",
+        "everything stopped now, disable the workflows instead:",
         "",
         "```bash",
         "gh workflow disable mvp-morning.yml    # cron 35 14 * * * (10:35 ET)",
@@ -389,6 +401,16 @@ def main() -> int:
         "# ... revert, verify, then:",
         "gh workflow enable mvp-morning.yml && gh workflow enable mvp-pregame.yml",
         "```",
+        "",
+        "**Know what else that costs, per day disabled.** Those two jobs do",
+        "more than pick. Morning also runs `grade` and takes the `open` odds",
+        "snapshot and the morning Lumify splits call; pregame takes the",
+        "`pregame` snapshot and its splits. A disabled workflow cannot be",
+        "`workflow_dispatch`ed either, so there is no in-repo way to take the",
+        "snapshot while it is off — and `open`/`pregame` are the movement",
+        "baseline every strategy prices against, which The Odds API cannot",
+        "backfill. Grading catches up by itself on re-enable; a missed",
+        "snapshot never does. Disable for hours, not days.",
         "",
         "**Revert — the whole squash is NOT what you want.** PR #70 also",
         "carries `.github/workflows/ci.yml` (lint widened to all of",
@@ -402,12 +424,17 @@ def main() -> int:
         "```bash",
         "git checkout \"$BASE\" -- src/panthera_mvp/pipeline.py",
         "git rm src/panthera_mvp/strategy/slate.py",
-        "# tests/test_slate.py imports it, so it goes in the same commit:",
-        "git rm tests/test_slate.py",
+        "git rm tests/test_slate.py                   # imports it",
+        "git rm scripts/proof_slate_identity.py       # imports it",
+        "git checkout \"$BASE\" -- scripts/proof_refactor_identity.py",
+        "grep -rn strategy.slate src/ tests/ scripts/   # expect nothing",
         "```",
         "",
-        "`replay.py` is untouched by this PR and the 28-column pick schema",
-        "does not change, so nothing else moves with it.",
+        "FOUR files import `strategy.slate`, and `tests/test_scripts_import.py`",
+        "exec_modules every `scripts/proof_*.py` — so dropping the module",
+        "without all four reddens CI on the rollback push, while the incident",
+        "is still open. `replay.py` is untouched by this PR and the 28-column",
+        "pick schema does not change.",
         "",
         "**Detection is manual, and this is the important part.** `config_hash`",
         "is computed over the strategy YAML, NOT over code, so a behaviour",
@@ -451,6 +478,23 @@ def main() -> int:
         "  WT=$(mktemp -d); CHECK=$(mktemp -d)",
         "  git worktree add -q --detach \"$WT\" \"$REF\"",
         "  cp -R data config \"$CHECK\"/   # BOTH: paths.config_dir() is $ROOT/config",
+        "  # REQUIRED on a merge day: the scheduled run has already written",
+        "  # today's picks into the ledger you just copied, `append_picks`",
+        "  # dedupes on (strategy_id, game_pk, market, game_date_et), and the",
+        "  # per-day budget subtracts the same rows — so without this both",
+        "  # arms add nothing and the guard below aborts. Touches the COPY",
+        "  # only; never run it against the real data/.",
+        "  python3 - \"$CHECK\" <<'DROP'",
+        "import csv, datetime, pathlib, sys",
+        "today = datetime.date.today().isoformat()",
+        "f = pathlib.Path(sys.argv[1]) / 'data/picks/picks.csv'",
+        "rows = list(csv.DictReader(f.open()))",
+        "keep = [r for r in rows if r['game_date_et'] != today]",
+        "with f.open('w', newline='') as fh:",
+        "    w = csv.DictWriter(fh, fieldnames=rows[0].keys())",
+        "    w.writeheader(); w.writerows(keep)",
+        "print(f'dropped {len(rows) - len(keep)} row(s) dated {today}')",
+        "DROP",
         "  BEFORE=$(wc -l < \"$CHECK\"/data/picks/picks.csv)",
         "  (cd \"$WT\" && python3.12 -m venv .venv && .venv/bin/pip install -q -e .",
         "   export PANTHERA_ROOT=\"$CHECK\"",
@@ -488,6 +532,11 @@ def main() -> int:
         "PY",
         "```",
         "",
+        "Two strategies are therefore unwatched after merge: `fade_public`",
+        "and `sharp_split`, 1541 of the 5235 picks in the table above. The",
+        "proof covers them; this post-merge check does not, and the owner",
+        "named above accepts that.",
+        "",
         "**Containment for rows already written.** Picks are append-once and",
         "settle in place, and `config_hash` covers only the YAML — so picks",
         "made by a regressed loop cannot be un-written OR segmented out of a",
@@ -516,7 +565,9 @@ def main() -> int:
         "**Not a trigger:** the hoisted cutoff itself, which is the known",
         "non-identity recorded above. It is ONE clock per slate rather than",
         "one per game, so every strategy in a run now agrees about which games",
-        "have started; it used to be read once per strategy.",
+        "have started. (Against the pre-merge code the clock was read once",
+        "per GAME; a per-strategy read was an intermediate state of this",
+        "branch that never shipped.)",
         "",
     ]
     OUT.write_text("\n".join(report))

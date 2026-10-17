@@ -230,6 +230,11 @@ run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
 on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
 GitHub issue, and that issue is the page.
 
+The loop that decides every pick is `strategy/slate.py::evaluate_slate`,
+extracted from `pipeline._strategy_picks` so the live pipeline and the
+replay share one implementation; `docs/proofs/slate-identity.md` is the
+identity proof for that extraction and carries its own rollback runbook.
+
 **Stop pick generation without a code change.** Set `enabled: false` under
 `strategy:` in the relevant `config/strategies/<id>.yaml`. `cmd_picks` filters
 on `enabled` + `live` in scope, so the next scheduled run simply skips that
