@@ -370,11 +370,21 @@ def check_slate_shutout(data: SportData, cfg: dict, today: date, since: str) -> 
                 "last_pick_date": last_pick,
                 "last_slate_day": last_day,
             },
-            # Must name a command that EXISTS. An alert whose remediation is
-            # a typo teaches the reader to distrust the alert. `catchup` is
-            # planned, not shipped; until it is, point at the diagnostic and
-            # say what the manual repair is.
-            suggested_command=f"panthera-mvp doctor --sport {data.sport}",
+            # Must name a command that EXISTS — an alert whose remediation is
+            # a typo teaches the reader to distrust the alert, and
+            # test_every_suggested_command_names_a_real_subcommand enforces
+            # it. NOT `_cli_prefix` here: `catchup` is one top-level command
+            # for every sport, so `panthera-mvp ncaaf catchup` does not
+            # exist. `--sport` is what keeps the repair, which writes, on the
+            # finding's own sport.
+            # `--dry-run` because this is pasted out of a GitHub issue into
+            # whatever checkout the reader is sitting in, and `cmd_catchup`
+            # writes by default. Every other manual path in the repo opens
+            # the same way (.github/workflows/CLAUDE.md's testing convention).
+            suggested_command=(
+                f"panthera-mvp catchup --sport {data.sport} "
+                f"--from {first_day} --dry-run"
+            ),
         )
     ]
 

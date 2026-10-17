@@ -11,9 +11,9 @@ name: Health Check
 # and reports/daily/*.md printed the reason in plain text every day. The
 # evidence was there; the watching was not.
 #
-# This is the DETECTOR; it only reports. Remediation is manual today
-# (`panthera-mvp catchup` is planned, not shipped — do not point operators at
-# it until it exists).
+# This is the DETECTOR; it only reports. `panthera-mvp catchup` is the
+# remediator (weekly, .github/workflows/panthera-catchup.yml), and it repairs
+# into the quarantined shadow ledger, never picks.csv.
 #
 # Timing: `doctor` scores whole slate days and deliberately EXCLUDES today,
 # because today's slate is still being played and graded. So the earliest a

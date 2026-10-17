@@ -100,6 +100,36 @@ GAMES_COLUMNS = [
 
 RUN_LOG_COLUMNS = ["ts_utc", "game_date_et", "run_label", "kind", "note"]
 
+#: run_log.csv was the one writer in this module whose dedupe was an inline
+#: condition rather than a NAMED key — it always deduped; this constant only
+#: gives the key a name, so the rule is readable where the other writers'
+#: keys are. `ts_utc` is excluded so a re-run matches its own note.
+#:
+#: `run_label` is excluded DELIBERATELY, and that is load-bearing rather than
+#: an oversight: a game stuck in an unmapped terminal state is re-examined by
+#: every refresh — morning, pregame and close, indefinitely — and each note
+#: renders as a bullet in the daily report. Keying on the run label would
+#: record the same note once per label per day forever, which is the bug the
+#: dedupe exists to stop. The same holds for a weekly catch-up re-reporting
+#: dates it already repaired.
+RUN_LOG_KEY = ["game_date_et", "kind", "note"]
+
+#: One row per (sport, strategy, date) that catch-up has completed, under the
+#: config_hash that completed it. Gap detection is otherwise not
+#: self-limiting: catch-up writes to the SHADOW ledger, so `picks.csv` stays
+#: empty for a repaired date and the same gap is re-detected forever. Keying
+#: on the hash means a later config change correctly re-opens the date.
+CATCHUP_LOG_COLUMNS = [
+    "ts_utc",
+    "sport",
+    "strategy_id",
+    "game_date_et",
+    "outcome",
+    "shadow_rows_added",
+    "config_hash",
+]
+CATCHUP_LOG_KEY = ["sport", "strategy_id", "game_date_et", "config_hash"]
+
 
 def _load(path, columns: list[str] | None = None) -> pd.DataFrame:
     if path.exists():
@@ -111,7 +141,7 @@ def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> 
     """Persist an operational note so daily-report regeneration doesn't erase
     it. `kind` is one of `late_run`, `degraded_snapshot`, `engine_error`,
     `ambiguous_espn_match`, `espn_match_config_error`,
-    `unmapped_final_no_score` or `slate_skipped`; the schema is
+    `unmapped_final_no_score`, `slate_skipped` or `replay_shadow`; the schema is
     documented in `data/CLAUDE.md`, and every kind written anywhere in `src/`
     belongs there.
 
@@ -137,18 +167,73 @@ def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> 
     )
     existing = _load(path, RUN_LOG_COLUMNS)
     if not existing.empty:
-        same = (
-            (existing["game_date_et"].astype(str) == str(game_date_et))
-            & (existing["kind"].astype(str) == str(kind))
-            & (existing["note"].astype(str) == str(note))
-        )
-        if bool(same.any()):
-            return
+        seen = set(map(tuple, existing[RUN_LOG_KEY].astype(str).values))
+        if tuple(str(row.iloc[0][k]) for k in RUN_LOG_KEY) in seen:
+            return  # same note, same day: already recorded, whatever ran it
     pd.concat([existing, row], ignore_index=True).to_csv(path, index=False)
 
 
 def load_run_log() -> pd.DataFrame:
     return _load(paths.data_dir() / "picks" / "run_log.csv", RUN_LOG_COLUMNS)
+
+
+def catchup_log_path():
+    return paths.data_dir() / "picks" / "catchup_log.csv"
+
+
+def load_catchup_log() -> pd.DataFrame:
+    return _load(catchup_log_path(), CATCHUP_LOG_COLUMNS)
+
+
+def append_catchup_log(df: pd.DataFrame) -> int:
+    """Append-once on CATCHUP_LOG_KEY; returns rows added.
+
+    The completion marker that makes catch-up idempotent at the DETECTION
+    level, not just the write level: `append_shadow_picks` already dedupes
+    rows, but without this the same repaired dates would be re-detected as
+    gaps on every run forever, because the repair never touches `picks.csv`.
+    """
+    if df.empty:
+        return 0
+    path = catchup_log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    existing = _load(path, CATCHUP_LOG_COLUMNS)
+    df = df.reindex(columns=CATCHUP_LOG_COLUMNS)
+    if not existing.empty:
+        seen = set(map(tuple, existing[CATCHUP_LOG_KEY].astype(str).values))
+        mask = [
+            tuple(str(v) for v in row) not in seen
+            for row in df[CATCHUP_LOG_KEY].values
+        ]
+        df = df[mask]
+    if df.empty:
+        return 0
+    pd.concat([existing, df], ignore_index=True).to_csv(path, index=False)
+    return len(df)
+
+
+def drop_catchup_log(
+    sport: str, dates: set[str], strategy_ids: list[str] | None = None
+) -> int:
+    """Forget completion markers for these dates, so `--rebuild` re-detects
+    them. Removes markers only, never picks and never shadow rows.
+
+    `strategy_ids` narrows the removal: without it a rebuild aimed at one
+    strategy would re-open the date for every strategy that shares it.
+    """
+    existing = load_catchup_log()
+    if existing.empty or not dates:
+        return 0
+    hit = (existing["sport"].astype(str) == sport) & existing[
+        "game_date_et"
+    ].astype(str).isin(dates)
+    if strategy_ids:
+        hit &= existing["strategy_id"].astype(str).isin(strategy_ids)
+    keep = ~hit
+    dropped = int((~keep).sum())
+    if dropped:
+        existing[keep].to_csv(catchup_log_path(), index=False)
+    return dropped
 
 
 def load_lines() -> pd.DataFrame:

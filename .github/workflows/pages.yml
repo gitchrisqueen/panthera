@@ -31,7 +31,7 @@ name: Deploy Pages
 # including its push), already includes that commit.
 on:
   workflow_run:
-    workflows: ["MVP Morning Run", "MVP Pregame Run"]
+    workflows: ["MVP Morning Run", "MVP Pregame Run", "Panthera Catch-up"]
     types: [completed]
   workflow_dispatch: {}
 

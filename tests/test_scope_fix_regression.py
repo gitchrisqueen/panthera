@@ -173,7 +173,11 @@ def test_every_scope_reader_is_covered():
         # Validates the key eagerly at load time so a scope fault fails the
         # run instead of being isolated per-strategy.
         "panthera_mvp.config",
+        # Replays and repairs advance their own SeasonContext and decide which
+        # dates a strategy should have evaluated, so both read scope.
+        "panthera_mvp.catchup",
         "panthera_mvp.pipeline",
+        "panthera_mvp.replay",
         "panthera_mvp.strategy.orig_rules",
         "panthera_mvp.strategy.registry",
         "panthera_mvp.strategy.rules",

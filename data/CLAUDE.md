@@ -64,6 +64,35 @@ win|loss|push|void. `close_price`/`clv_cents` are filled once at grade time
 from the `close` snapshot (null = uncovered, never zero). Picks are never
 deleted or re-termed.
 
+### picks/shadow_picks.csv (the QUARANTINED ledger)
+Same columns as `picks.csv`, same append-once and settle-in-place rules, and
+written only by `panthera-mvp replay` and `panthera-mvp catchup`. It is NOT
+the ledger: a retroactive pick is not a forward paper trade — its result is
+already known when it is written, and `close_price`/`clv_cents` are
+structurally unfillable (`clv.py` needs a snapshot strictly after
+`created_ts_utc`). `report.py` and `dashboard.py` render it under an explicit
+non-evaluation banner and never pool it into a verdict. **Nothing may ever
+write a replayed pick into `picks.csv`**; `catchup` has no code path to that
+file, a test hashes it around a live run, and
+`.github/workflows/panthera-catchup.yml` fails its commit if the path is
+ever staged.
+
+### picks/catchup_log.csv (append-once per repaired date)
+`ts_utc, sport, strategy_id, game_date_et, outcome, shadow_rows_added,
+config_hash` — key `(sport, strategy_id, game_date_et, config_hash)`. The
+completion marker that stops `catchup` re-detecting a date it already
+repaired: the repair lands in the shadow ledger, so `picks.csv` stays empty
+for that date and gap detection would otherwise find it forever. Keyed on
+`config_hash`, so a later config change correctly re-opens the date.
+
+Two things it does not say, both deliberate. `shadow_rows_added` is the
+RUN's total, repeated on every marker row — it is not a per-date count, and
+a post-incident read should get per-date figures from `shadow_picks.csv`
+itself. And a marker is written for every detected gap, including one whose
+replay produced no rows at all (the engine passed, or the day's budget was
+already spent), which closes that date to re-detection; `catchup --rebuild`
+is the way to re-open it.
+
 ### picks/passes.csv (append-once per run)
 `ts_utc, run_label, strategy_id, game_pk, game_date_et, reason` — key
 `(strategy_id, game_pk, game_date_et, run_label)`. Durable pass records per
@@ -80,11 +109,18 @@ tolerances from `config/health.yaml`, so the doubleheader it was about went
 unfilled; the ordinary matchups on the same date are unaffected) or
 `unmapped_final_no_score` (a game stored `Final` with no score whose
 `detailedState` head is unknown to `clients/mlb.py::_CALLED_OFF` — it can
-settle nothing until the head is mapped) or `slate_skipped` (a strategy
+settle nothing until the head is mapped), `slate_skipped` (a strategy
 produced neither a pick nor a pass because no game reached its engine —
 every game was outside the run's window, already under way, or already
-picked; the note carries the per-reason counts). `run_label` is the run that
-wrote it: a snapshot label, `grade` or `refresh`.
+picked; the note carries the per-reason counts) or `replay_shadow` (a
+retroactive replay or catch-up wrote shadow picks for that date; the real
+ledger is untouched). `run_label` is the run that wrote it: a snapshot
+label, `grade`, `refresh`, `replay` or `catchup`.
+
+Identical notes collapse: the dedupe key is `(game_date_et, kind, note)` and
+deliberately excludes `run_label`, because a game stuck in an unmapped
+terminal state is re-examined by every refresh, several times a day,
+indefinitely.
 
 ### splits/splits.csv (upsert by game_date_et + snapshot_label + lumify_event_id + metric)
 `fetched_ts_utc, game_date_et, snapshot_label, lumify_event_id, event_name,

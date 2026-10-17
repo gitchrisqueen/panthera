@@ -138,3 +138,47 @@ def test_upsert_games_replaces_by_pk(tmp_root):
     games = store.load_games()
     assert len(games) == 1
     assert games.iloc[0]["status"] == "Final"
+
+
+def test_append_run_note_dedupes(tmp_root):
+    """Characterization test for behaviour that predates `RUN_LOG_KEY`, not a
+    regression test for a fix: `append_run_note` already collapsed the same
+    (game_date_et, kind, note) before the constant named that key. It is here
+    because a weekly catch-up re-reports dates it already repaired, so the
+    dedupe is now load-bearing for a caller that did not exist."""
+    store.append_run_note("2026-09-29", "catchup", "replay_shadow", "replayed pv_v3")
+    store.append_run_note("2026-09-29", "catchup", "replay_shadow", "replayed pv_v3")
+    assert len(store.load_run_log()) == 1
+
+    # A different note on the same day is still recorded.
+    store.append_run_note("2026-09-29", "catchup", "replay_shadow", "replayed pv_orig")
+    assert len(store.load_run_log()) == 2
+
+
+def test_catchup_log_append_once_and_rebuild(tmp_root):
+    """The completion marker that makes catch-up idempotent at the DETECTION
+    level: the repair goes to the shadow ledger, so picks.csv stays empty for
+    a repaired date and the gap would otherwise be re-found forever."""
+    rows = pd.DataFrame(
+        [
+            {
+                "ts_utc": "2026-10-15T16:00:00Z",
+                "sport": "mlb",
+                "strategy_id": "pv_v3",
+                "game_date_et": "2026-09-29",
+                "outcome": "voided_config",
+                "shadow_rows_added": 4,
+                "config_hash": "d29c3e501c",
+            }
+        ]
+    )
+    assert store.append_catchup_log(rows) == 1
+    assert store.append_catchup_log(rows) == 0, "marker appended twice"
+
+    # Keyed on config_hash, so a config change re-opens the date.
+    moved = rows.copy()
+    moved["config_hash"] = "deadbeef00"
+    assert store.append_catchup_log(moved) == 1
+
+    assert store.drop_catchup_log("mlb", {"2026-09-29"}) == 2
+    assert store.load_catchup_log().empty

@@ -339,9 +339,10 @@ def _strategy_picks(
 ) -> tuple[list[dict], list[Pass]]:
     """Run one strategy's engine over today's slate; returns (rows, passes).
 
-    The loop itself is `strategy/slate.py::evaluate_slate`. This is its only
-    caller today; the replay keeps its own copy until PR 3b converts it, so
-    the drift it was extracted to end is not ended yet. What stays here is
+    The loop itself is `strategy/slate.py::evaluate_slate`, shared with
+    `replay.replay_window`, so the drift it was extracted to end is ended:
+    cap, start-time window, H2H price label and stake are one
+    implementation for the live run and the replay. What stays here is
     about THIS run: reading the day's budget out of the live ledger, and
     turning "now" into the `as_of` cutoff.
 

@@ -38,7 +38,7 @@ checkpoints) pre-registered in its YAML.
 | [MVP Pregame Run](.github/workflows/mvp-pregame.yml) | 16:50 daily | Pregame snapshot, collects pregame betting splits, picks the evening slate on open→pregame line movement, regenerates reports |
 | [MVP Close Snapshot](.github/workflows/mvp-close.yml) | 18:20 daily | Closing-line-value snapshot only — never a movement endpoint for picks |
 | [MVP Historical Calibration](.github/workflows/mvp-calibrate.yml) | manual | Downloads free historical odds archives and derives strategy thresholds |
-| [Deploy Pages](.github/workflows/pages.yml) | after each morning and pregame run | Rebuilds and publishes the GitHub Pages dashboard |
+| [Deploy Pages](.github/workflows/pages.yml) | after each morning, pregame and weekly catch-up run | Rebuilds and publishes the GitHub Pages dashboard |
 | [MVP Splits Collection](.github/workflows/mvp-splits.yml) | manual | On-demand betting-splits fetch (key check, catch-up runs) |
 
 Picks are paper trades at a flat $100 stake (`staking.flat_stake` in every

@@ -1,0 +1,138 @@
+name: Panthera Catch-up
+
+# Weekly self-heal. `doctor` (health.yml, daily) DETECTS a stalled pipeline;
+# this REPAIRS it. Catch-up is retroactive by construction — a shadow pick
+# computed one day late and seven days late are the same artifact — so the
+# latency that matters is detection's, and that runs daily. Weekly here keeps
+# the commit churn down and the race window with the pick runs small.
+#
+# Monday 07:15 ET, which is the only genuinely quiet band. Picking it off
+# the MLB runs alone is not enough: `ncaaf` shares the `panthera-data`
+# concurrency group and fires half-hourly from 13:00 to 04:35 UTC, and
+# GitHub starts crons 15-50 min late — so a catch-up queued inside that band
+# can sit PENDING behind an in-progress ncaaf run and then be CANCELLED by
+# the next ncaaf run to queue (only one run per group may be pending). It
+# would be a repair that silently never ran, once a week, with nothing
+# watching. 11:15 UTC is outside every other cron in the group: ncaaf's last
+# is 04:35 and its first is 13:05, MVP Morning is 14:35, Pregame 20:50,
+# Close 22:20. See .github/workflows/CLAUDE.md for the cron<->ET table.
+#
+# Writes data/picks/shadow_picks.csv, data/picks/catchup_log.csv,
+# data/picks/run_log.csv and reports/ — never data/picks/picks.csv. A
+# backdated pick is not a forward paper trade (its result is already known,
+# and CLV is structurally unfillable for it), so it goes to the quarantined
+# shadow ledger that report.py renders as explicitly non-evaluable. The
+# commit step asserts that again before it pushes.
+#
+# Spends no Odds API or Lumify credits on the MLB path: it replays odds this
+# pipeline already captured.
+on:
+  schedule:
+    - cron: "15 11 * * 1"
+  workflow_dispatch:
+    inputs:
+      sport:
+        type: choice
+        options: [all, mlb, ncaaf, ncaabase]
+        default: all
+      from:
+        type: string
+        default: ""
+        description: "ET date, e.g. 2026-09-29 (blank = max_lookback_days)"
+      to:
+        type: string
+        default: ""
+        description: "ET date (blank = yesterday)"
+      dry_run:
+        type: boolean
+        default: true
+        description: "Detect and print only (default, per the testing convention)"
+
+permissions:
+  contents: write
+
+concurrency:
+  # REQUIRED: this commits. Serializes with morning/pregame/close/ncaaf so a
+  # write can never interleave. cancel-in-progress stays false so an
+  # in-progress catch-up is never killed by a pick run queueing behind it;
+  # nothing reaches the repo before the final commit step, so a cancellation
+  # discards the workspace rather than a half-written ledger.
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  catchup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Doctor (before)
+        run: panthera-mvp doctor --exit-zero
+
+      - name: Catch-up
+        env:
+          SPORT: ${{ inputs.sport || 'all' }}
+          FROM_ET: ${{ inputs.from }}
+          TO_ET: ${{ inputs.to }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          # `--sport all` grades NCAAF, whose finals fallback needs this
+          # key (ncaaf/pipeline.py::fill_finals_fallback). Without it the
+          # weekly run would settle NCAAF with that arm silently missing.
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: |
+          args=(--sport "${SPORT:-all}")
+          if [ -n "$FROM_ET" ]; then args+=(--from "$FROM_ET"); fi
+          if [ -n "$TO_ET" ]; then args+=(--to "$TO_ET"); fi
+          # Scheduled runs are live; a manual dispatch defaults to a dry run.
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          panthera-mvp catchup "${args[@]}"
+
+      - name: Regenerate reports
+        if: inputs.dry_run != true
+        run: panthera-mvp report
+
+      - name: Regenerate the NCAAF report
+        # `--sport all` settles NCAAF tickets and this job commits them, so
+        # ncaaf.yml's own conditional step (which regenerates only when
+        # data/ncaaf is dirty) would find nothing left to do and the markdown
+        # would stay stale. Same guard shape as ncaaf.yml.
+        if: inputs.dry_run != true
+        run: |
+          if [ -n "$(git status --porcelain -- data/ncaaf)" ]; then
+            panthera-mvp ncaaf report
+          else
+            echo "data/ncaaf unchanged; NCAAF report not regenerated."
+          fi
+
+      - name: Doctor (after)
+        run: panthera-mvp doctor --exit-zero
+
+      - name: Commit & push
+        if: inputs.dry_run != true
+        run: |
+          git config user.name "panthera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data reports
+          # Belt and braces for the one invariant that must never break. The
+          # command has no code path to picks.csv; this fails the commit if a
+          # future one ever does.
+          if git diff --cached --name-only | grep -q '^data/picks/picks\.csv$'; then
+            echo "::error::catchup must never modify data/picks/picks.csv"
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "data: weekly catch-up $(date -u +%FT%TZ) [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
