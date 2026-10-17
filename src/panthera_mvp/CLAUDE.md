@@ -55,6 +55,12 @@
 - `strategy/` — the IP: `daytype.py` (P/V/hybrid), `movement.py` (public vs
   Vegas line moves), `dossier.py` (ERA/first-meeting features), `rules.py`
   (R0–R8 rules engine; the rule-ID table is in its docstring),
+  `slate.py` (`evaluate_slate`: ONE day's slate through ONE engine — the
+  single evaluation loop, plus the `pick_row` / `build_dossier` /
+  `slot_map_for` helpers moved out of pipeline.py. Pure: the caller supplies
+  the day, the snapshot label, the budget, the already-picked set and the
+  `as_of` cutoff. `pipeline._strategy_picks` is its only caller today;
+  `replay.py` still runs its own copy until it is converted),
   `registry.py` (multi-strategy layer: engines are pure functions
   `StrategyContext -> Pick | Pass | None`; strategies are engine + YAML in
   `config/strategies/`; baselines fav_ml/dog_ml live here),

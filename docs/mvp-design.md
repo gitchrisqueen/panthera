@@ -201,12 +201,40 @@ Picks are segmentable by `config_hash` + `rule_id`, so eras never mix:
   disclosed by `BETTING_REPORT.md`'s regime caveat and the per-strategy
   by-phase split, not hidden behind the hash.
 
+#### One game the fix could not reach: 849818 (2026-10-15)
+
+The scope fix merged at 17:16:47Z. That day's morning run had already gone at
+14:44:45Z and, under the pre-fix whitelist, passed every postseason game with
+`game_type=L` — including game `849818`, which started at 17:00:00Z, i.e.
+**17 minutes before the fix landed**. The 20:56:39Z pregame run then picked
+normally, but could not reach 849818: a live run never picks a game already
+under way.
+
+So 849818 was evaluated exactly once, under the broken config, by a run that
+preceded the fix, and no live run can ever evaluate it correctly. It is the
+one game lost to the merge window.
+
+**Ruling (Christopher, 2026-10-16): leave it unrepaired, recorded here.** It
+is a finished game with a known result, so writing a pick for it now would be
+a retroactive bet with hindsight — the pre-registration violation the shadow
+ledger exists to prevent — and it would re-open that day's pick budget, which
+is why `catchup` — specified in PR #71, not merged at the time of writing —
+refuses partial gaps by design. `data/picks/passes.csv` already records what
+the old config did with it, so the history is honest as it stands. Once
+`catchup` ships it is specified to report this day as a partial gap and take
+no action; that is the detector working, not a gap in it.
+
 ### Rollback and ownership — postseason scope fix (2026-10-15)
 
 **Owner of the scope decision and of a red `mvp-morning` / `mvp-pregame`
 run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
 on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
 GitHub issue, and that issue is the page.
+
+The loop that decides every pick is `strategy/slate.py::evaluate_slate`,
+extracted from `pipeline._strategy_picks` so the live pipeline and the
+replay share one implementation; `docs/proofs/slate-identity.md` is the
+identity proof for that extraction and carries its own rollback runbook.
 
 **Stop pick generation without a code change.** Set `enabled: false` under
 `strategy:` in the relevant `config/strategies/<id>.yaml`. `cmd_picks` filters
@@ -457,8 +485,8 @@ that game's `detailedState` head into `clients/mlb.py::_CALLED_OFF` (and, if it
 means no score will ever exist, `VOID_STATUSES`), then let `grade` settle it,
 since `store.settle_picks` rewrites pending rows only. Whether a given
 abandoned game is treated that way is **Christopher's ruling**, raised as a
-`needs-chris` ClickUp task per the decision protocol in
-`00-Home/Working-With-Christopher.md`; record the answer here.
+`needs-chris` ClickUp task per the maintainer's own decision protocol;
+record the answer here.
 
 **Record the incident** in this section with the date, the trigger and what was
 reverted, the same way the section above does.

@@ -80,8 +80,11 @@ tolerances from `config/health.yaml`, so the doubleheader it was about went
 unfilled; the ordinary matchups on the same date are unaffected) or
 `unmapped_final_no_score` (a game stored `Final` with no score whose
 `detailedState` head is unknown to `clients/mlb.py::_CALLED_OFF` — it can
-settle nothing until the head is mapped). `run_label` is the run that wrote
-it: a snapshot label, `grade` or `refresh`.
+settle nothing until the head is mapped) or `slate_skipped` (a strategy
+produced neither a pick nor a pass because no game reached its engine —
+every game was outside the run's window, already under way, or already
+picked; the note carries the per-reason counts). `run_label` is the run that
+wrote it: a snapshot label, `grade` or `refresh`.
 
 ### splits/splits.csv (upsert by game_date_et + snapshot_label + lumify_event_id + metric)
 `fetched_ts_utc, game_date_et, snapshot_label, lumify_event_id, event_name,

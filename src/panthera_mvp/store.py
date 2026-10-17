@@ -110,8 +110,8 @@ def _load(path, columns: list[str] | None = None) -> pd.DataFrame:
 def append_run_note(game_date_et: str, run_label: str, kind: str, note: str) -> None:
     """Persist an operational note so daily-report regeneration doesn't erase
     it. `kind` is one of `late_run`, `degraded_snapshot`, `engine_error`,
-    `ambiguous_espn_match`, `espn_match_config_error` or
-    `unmapped_final_no_score`; the schema is
+    `ambiguous_espn_match`, `espn_match_config_error`,
+    `unmapped_final_no_score` or `slate_skipped`; the schema is
     documented in `data/CLAUDE.md`, and every kind written anywhere in `src/`
     belongs there.
 
