@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-17T13:21:57Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-17T15:21:34Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -80,10 +80,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 ### Decisions
 
-no_ticket: 5, ticket: 3, skip: 1
+no_ticket: 5, ticket: 3, skip: 2
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-10-17 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-16 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-15 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-14 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
