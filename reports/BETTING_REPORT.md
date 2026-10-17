@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-10-16T20:56:19Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-10-17T00:23:57Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -335,17 +335,38 @@ it carries none of the evidentiary weight of a forward paper-trade
 or a train/validate backtest split. Never pooled into any
 strategy's verdict, portfolio total, or the tables above._
 
-### pv_orig (retroactive)
+### fav_ml (retroactive)
 
-- Record 7-7-0, P/L $-135.83, ROI -9.70% (14 graded, descriptive only)
+- Record 3-1-0, P/L $+85.31, ROI +21.33% (4 graded, descriptive only)
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| O1_big_scam | 1-1-0 | $-3.85 | -1.93% |
+| B_FAV | 3-1-0 | $+85.31 | +21.33% |
+
+### pv_orig (retroactive)
+
+- Record 8-7-0, P/L $-51.08, ROI -3.41% (15 graded, descriptive only)
+
+**By rule**
+
+| rule_id | Record | P/L | ROI |
+|---|---|---|---|
+| O1_big_scam | 2-1-0 | $+80.90 | +26.97% |
 | O3_totals | 6-5-0 | $-31.98 | -2.91% |
 | O4 | 0-1-0 | $-100.00 | -100.00% |
+
+### pv_v3 (retroactive)
+
+- Record 2-2-0, P/L $+46.00, ROI +11.50% (4 graded, descriptive only)
+
+**By rule**
+
+| rule_id | Record | P/L | ROI |
+|---|---|---|---|
+| R3_era | 1-2-0 | $-74.00 | -24.67% |
+| R5 | 1-0-0 | $+120.00 | +120.00% |
 
 
 ## Glossary
