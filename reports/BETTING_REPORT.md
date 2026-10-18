@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-10-17T20:55:39Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-10-18T14:40:06Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
@@ -37,12 +37,12 @@ under each strategy is descriptive; no threshold is tested against it.
 | Strategy | Kind | Graded | Record | P/L | ROI (±SE) | Avg CLV | Overlap | Pending | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | fade_public | forward_test | 177 | 73-104-0 | $-1,285.38 | -7.26% ±8.5 | -0.9c (n=22, 32% pos, 12% cov) | 39% | 0 | screen only |
-| fav_ml | baseline | 420 | 250-170-0 | $-329.68 | -0.78% ±4.0 | +0.0c (n=61, 34% pos, 14% cov) | 35% | 1 | screen only |
+| fav_ml | baseline | 421 | 251-170-0 | $-240.39 | -0.57% ±4.0 | +0.0c (n=62, 34% pos, 15% cov) | 35% | 0 | screen only |
 | pv_orig | aligned | 34 | 15-19-0 | $-135.54 | -3.99% ±22.5 | — | 79% | 0 | collecting (34/100) |
 | pv_v2 | incumbent | 93 | 38-55-0 | $-1,446.65 | -15.56% ±10.9 | +17.6c (n=23, 48% pos, 100% cov) | 0% | 0 | collecting (93/100) |
-| pv_v3 | incumbent | 225 | 123-102-0 | $+1,823.93 | +8.11% ±6.8 | +9.7c (n=24, 50% pos, 11% cov) | 54% | 1 | SUPPORTED* |
+| pv_v3 | incumbent | 226 | 124-102-0 | $+1,913.22 | +8.47% ±6.8 | +9.3c (n=25, 48% pos, 11% cov) | 54% | 0 | SUPPORTED* |
 | sharp_split | forward_test | 114 | 64-50-0 | $+859.34 | +7.54% ±9.2 | -0.2c (n=10, 10% pos, 9% cov) | 82% | 0 | screen only |
-| _portfolio (informational — not an evaluation target)_ |  |  |  | $-513.98 | -0.48% |  |  |  |  |
+| _portfolio (informational — not an evaluation target)_ |  |  |  | $-335.40 | -0.31% |  |  |  |  |
 
 ## Strategy: fade_public
 
@@ -101,17 +101,17 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 
 **SCREEN segment** `da0e2b7cf3` — descriptive only, no inferential weight; no threshold is tested.
 
-- **Record:** 0-1-0 (1 void)
-- **P/L:** $-100.00 on $100 risked
-- **ROI:** -100.00%
-- **Pending:** 1
-- **By phase:** regular 0 graded · postseason 2 graded, ROI -100.00% (descriptive; see the caveat above)
+- **Record:** 1-1-0 (1 void)
+- **P/L:** $-10.71 on $200 risked
+- **ROI:** -5.36% (±94.6 pts SE, own SD)
+- **Pending:** 0
+- **By phase:** regular 0 graded · postseason 3 graded, ROI -5.36% (descriptive; see the caveat above)
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
-| B_FAV | 250-170-0 | $-329.68 | -0.78% |
+| B_FAV | 251-170-0 | $-240.39 | -0.57% |
 
 **Last 10 picks**
 
@@ -126,7 +126,7 @@ _No verdict criteria — descriptive SCREEN readouts only (baseline or budget-li
 | 2026-09-27 | St. Louis Cardinals @ Milwaukee Brewers | Milwaukee Brewers ML | -200 | B_FAV | win | $+50.00 |
 | 2026-10-15 | Milwaukee Brewers @ Los Angeles Dodgers | Los Angeles Dodgers ML | -154 | B_FAV | loss | $-100.00 |
 | 2026-10-16 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | B_FAV | void | $+0.00 |
-| 2026-10-17 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | B_FAV | pending |  |
+| 2026-10-17 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | B_FAV | win | $+89.29 |
 
 ## Strategy: pv_orig
 
@@ -232,20 +232,20 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 
 **Verdict segment** (config hashes: e7a93ebed7, d29c3e501c):
 
-**SUPPORTED** — ROI +8.11% over 225 graded picks. (Screen-grade evidence; see 'How to read this report'.)
+**SUPPORTED** — ROI +8.47% over 226 graded picks. (Screen-grade evidence; see 'How to read this report'.)
 
-- **Record:** 123-102-0 (2 void)
-- **P/L:** $+1,823.93 on $22,500 risked
-- **ROI:** +8.11% (±6.8 pts SE, own SD)
-- **Pending:** 1
-- **By phase:** regular 225 graded, ROI +8.59% · postseason 2 graded, ROI -100.00% (descriptive; see the caveat above)
+- **Record:** 124-102-0 (2 void)
+- **P/L:** $+1,913.22 on $22,600 risked
+- **ROI:** +8.47% (±6.8 pts SE, own SD)
+- **Pending:** 0
+- **By phase:** regular 225 graded, ROI +8.59% · postseason 3 graded, ROI -5.36% (descriptive; see the caveat above)
 
 **By rule**
 
 | rule_id | Record | P/L | ROI |
 |---|---|---|---|
 | R3 | 24-13-0 | $+1,150.60 | +31.10% |
-| R3_era | 64-59-0 | $-259.81 | -2.11% |
+| R3_era | 65-59-0 | $-170.52 | -1.38% |
 | R3_series | 0-2-0 | $-200.00 | -100.00% |
 | R4 | 9-3-0 | $+670.23 | +55.85% |
 | R5 | 19-18-0 | $+507.94 | +13.73% |
@@ -256,21 +256,21 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | day_type | Record | P/L | ROI |
 |---|---|---|---|
 | HYBRID | 18-16-0 | $+362.70 | +10.67% |
-| P | 73-56-0 | $+597.66 | +4.63% |
+| P | 74-56-0 | $+686.95 | +5.28% |
 | V | 32-30-0 | $+863.57 | +13.93% |
 
 **By slot**
 
 | slot_type | Record | P/L | ROI |
 |---|---|---|---|
-| P | 82-66-0 | $+486.48 | +3.29% |
+| P | 83-66-0 | $+575.77 | +3.86% |
 | V | 41-36-0 | $+1,337.45 | +17.37% |
 
 **By market**
 
 | market | Record | P/L | ROI |
 |---|---|---|---|
-| ml | 88-74-0 | $+690.79 | +4.26% |
+| ml | 89-74-0 | $+780.08 | +4.79% |
 | rl | 35-28-0 | $+1,133.14 | +17.99% |
 
 **Last 10 picks**
@@ -286,7 +286,7 @@ _The documented P/V strategy with its full dossier finally active: day/slot clas
 | 2026-09-27 | Tampa Bay Rays @ Philadelphia Phillies | Tampa Bay Rays ML | +145 | R3_era | loss | $-100.00 |
 | 2026-10-15 | Milwaukee Brewers @ Los Angeles Dodgers | Los Angeles Dodgers ML | -154 | R3_era | loss | $-100.00 |
 | 2026-10-16 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | R3_era | void | $+0.00 |
-| 2026-10-17 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | R3_era | pending |  |
+| 2026-10-17 | Tampa Bay Rays @ Cleveland Guardians | Tampa Bay Rays ML | -112 | R3_era | win | $+89.29 |
 
 ## Strategy: sharp_split
 
