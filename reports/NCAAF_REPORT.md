@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-18T23:19:08Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-20T21:41:08Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -16,11 +16,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 **In lineage:**
 
-- Tickets: 3 (0-3-0 W-L-P, 0 pending)
+- Tickets: 4 (0-3-0 W-L-P, 1 pending)
 - Staked $300, profit $-300.00, ROI -100.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-10-20 | Florida International Panthers -9.5 (pending)<br>Delaware Blue Hens -2 (pending)<br>Over 65.5 (pending) | +581 | pending |  |
 | 2026-10-16 | Under 50.5 (loss)<br>Memphis Tigers -6.5 (loss)<br>Under 49.5 (loss) | +566 | loss | $-100.00 |
 | 2026-10-10 | Maryland Terrapins +33.5 (win)<br>UCF Knights +10.5 (loss)<br>Under 48.5 (win) | +587 | loss | $-100.00 |
 | 2026-10-08 | Arkansas State Red Wolves -3 (loss)<br>Liberty Flames -13 (win)<br>South Florida Bulls +6.5 (loss) | +608 | loss | $-100.00 |
@@ -29,11 +30,14 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 44 (20-24-0 W-L-P, 0 pending)
+- Singles: 47 (20-24-0 W-L-P, 3 pending)
 - Staked $4,400, profit $-571.68, ROI -13.0%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-10-20 | Over 65.5 | South Alabama Jaguars @ Marshall Thundering Herd | -110 | S2 | pending |  |
+| 2026-10-20 | Florida International Panthers -9.5 | Middle Tennessee Blue Raiders @ Florida International Panthers | -112 | S6 | pending |  |
+| 2026-10-20 | Delaware Blue Hens -2 | Missouri State Bears @ Delaware Blue Hens | -113 | S6 | pending |  |
 | 2026-10-16 | Under 50.5 | Washington Huskies @ Purdue Boilermakers | -106 | S2+S5 | loss | $-100.00 |
 | 2026-10-16 | Under 49.5 | App State Mountaineers @ Coastal Carolina Chanticleers | -120 | S2 | loss | $-100.00 |
 | 2026-10-16 | Memphis Tigers -6.5 | Memphis Tigers @ Tulane Green Wave | -115 | S6 | loss | $-100.00 |
@@ -61,9 +65,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | Under 55.5 | Houston Cougars @ Kansas State Wildcats | -114 | S5 | win | $+87.72 |
 | 2026-10-10 | Georgia Tech Yellow Jackets +5.5 | Duke Blue Devils @ Georgia Tech Yellow Jackets | -105 | S1 | win | $+95.24 |
 | 2026-10-10 | Virginia Tech Hokies -9.5 | Virginia Tech Hokies @ California Golden Bears | -115 | S1 | loss | $-100.00 |
-| 2026-10-10 | UCLA Bruins +11 | UCLA Bruins @ Oregon Ducks | -110 | S1 | win | $+90.91 |
-| 2026-10-10 | Buffalo Bulls +19.5 | Buffalo Bulls @ Toledo Rockets | -110 | S1 | win | $+90.91 |
-| 2026-10-10 | Ohio Bobcats -2 | Central Michigan Chippewas @ Ohio Bobcats | -106 | S6 | win | $+94.34 |
 
 ### Qualifying legs by signal
 
@@ -72,18 +73,19 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
 | S1 | 10 | 5-5-0 | 50.0% | +2.4 pts |
-| S2 | 8 | 2-6-0 | 25.0% | -22.6 pts |
+| S2 | 9 | 2-6-0 | 25.0% | -22.6 pts |
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 25 | 11-14-0 | 44.0% | -3.6 pts |
+| S6 | 27 | 11-14-0 | 44.0% | -3.6 pts |
 
 ### Decisions
 
-no_ticket: 5, ticket: 3, skip: 2
+no_ticket: 5, ticket: 4, skip: 2
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-10-20 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-17 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-16 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-15 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
