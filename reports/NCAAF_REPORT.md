@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-21T23:21:08Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-10-22T21:40:59Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -30,11 +30,13 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 47 (21-26-0 W-L-P, 0 pending)
+- Singles: 49 (21-26-0 W-L-P, 2 pending)
 - Staked $4,700, profit $-683.18, ROI -14.5%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-10-22 | James Madison Dukes -12 | James Madison Dukes @ App State Mountaineers | -110 | S1 | pending |  |
+| 2026-10-22 | Liberty Flames -8.5 | Liberty Flames @ Kennesaw State Owls | -110 | S6 | pending |  |
 | 2026-10-20 | Over 65.5 | South Alabama Jaguars @ Marshall Thundering Herd | -110 | S2 | loss | $-100.00 |
 | 2026-10-20 | Florida International Panthers -9.5 | Middle Tennessee Blue Raiders @ Florida International Panthers | -112 | S6 | loss | $-100.00 |
 | 2026-10-20 | Delaware Blue Hens -2 | Missouri State Bears @ Delaware Blue Hens | -113 | S6 | win | $+88.50 |
@@ -63,8 +65,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | Maryland Terrapins +33.5 | Maryland Terrapins @ Ohio State Buckeyes | -110 | S1+S3+S4+S6 | win | $+90.91 |
 | 2026-10-10 | Vanderbilt Commodores +9.5 | Ole Miss Rebels @ Vanderbilt Commodores | -108 | S6 | loss | $-100.00 |
 | 2026-10-10 | Under 55.5 | Houston Cougars @ Kansas State Wildcats | -114 | S5 | win | $+87.72 |
-| 2026-10-10 | Georgia Tech Yellow Jackets +5.5 | Duke Blue Devils @ Georgia Tech Yellow Jackets | -105 | S1 | win | $+95.24 |
-| 2026-10-10 | Virginia Tech Hokies -9.5 | Virginia Tech Hokies @ California Golden Bears | -115 | S1 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -72,19 +72,20 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 10 | 5-5-0 | 50.0% | +2.4 pts |
+| S1 | 11 | 5-5-0 | 50.0% | +2.4 pts |
 | S2 | 9 | 2-7-0 | 22.2% | -25.4 pts |
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 27 | 12-15-0 | 44.4% | -3.2 pts |
+| S6 | 28 | 12-15-0 | 44.4% | -3.2 pts |
 
 ### Decisions
 
-no_ticket: 5, ticket: 4, skip: 3
+no_ticket: 6, ticket: 4, skip: 3
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-10-22 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-21 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-20 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-17 | skip | previous day's ticket lost (skip-day rule) |
