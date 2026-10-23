@@ -9,6 +9,9 @@ on:
       - "data/**"
       - "reports/**"
       - "badges/**"
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
   pull_request:
     branches:
       - main
@@ -17,11 +20,22 @@ on:
       - "data/**"
       - "reports/**"
       - "badges/**"
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4

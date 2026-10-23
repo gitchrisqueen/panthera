@@ -51,6 +51,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -132,9 +133,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ncaaf-capture
-          path: |
-            capture
-            data/ncaaf
+          path: capture/
+          retention-days: 14
 
       # Dry runs stamp synthetic fixture rows with today's date — never commit
       # them. Live and none-mode runs commit real data only.

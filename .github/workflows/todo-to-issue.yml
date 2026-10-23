@@ -2,12 +2,16 @@ name: "Run TODO to Issue"
 # Manual-only: the MVP data workflows push to main several times a day, and an
 # on-push trigger would re-scan the whole repo on every bot commit.
 on: ["workflow_dispatch"]
+permissions:
+  contents: read
+  issues: write
 jobs:
   build:
     runs-on: "ubuntu-latest"
+    timeout-minutes: 5
     steps:
       - uses: "actions/checkout@v4"
       - name: "TODO to Issue"
-        uses: "alstr/todo-to-issue-action@v4"
+        uses: "alstr/todo-to-issue-action@4120fdbb02461dd1abf18756a7464b8e45347863" # v4.13.1
         with:
           AUTO_ASSIGN: true

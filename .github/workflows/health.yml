@@ -36,9 +36,16 @@ permissions:
   contents: read
   issues: write
 
+# Its own group, never panthera-data: this job writes nothing and must not
+# queue behind the pick runs. Cancels a superseded PR run only.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   doctor:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -50,29 +57,42 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      # Human-readable copy in the run log, so a maintainer opening the run
-      # sees the findings without parsing JSON. --exit-zero on both: FINDINGS
-      # must not redden the job, because a red X every day is a red X nobody
-      # reads. The GitHub issue is the alert, not the job status.
+      # One doctor run: the JSON is the artifact and the issue bot's input, and
+      # the human-readable lines in the run log are derived from it, so the
+      # checks are not run twice. --exit-zero: FINDINGS must not redden the
+      # job, because a red X every day is a red X nobody reads. The GitHub
+      # issue is the alert, not the job status.
       #
       # One case still exits 3 and so reddens this job, by design (added
-      # 2026-10-16): `cmd_doctor`'s DoctorConfigError branch — a missing or
+      # 2026-10-16): `cmd_doctor`'s DoctorConfigError branch, i.e. a missing or
       # invalid config/health.yaml, or one with no `doctor:` block. That is
       # "doctor could not run", not a finding, and it must not be mistaken
-      # for a clean bill of health. When this step fails, no issue is opened,
-      # edited or closed on that run, and no health.json artifact is
-      # uploaded: the detector is down, and the red X IS the alert.
-      - name: Doctor (text)
-        run: panthera-mvp doctor --exit-zero
-
-      - name: Doctor (json)
-        run: panthera-mvp doctor --json --exit-zero > health.json
+      # for a clean bill of health. This step then prints what doctor wrote
+      # and exits with its code: no issue is opened, edited or closed on that
+      # run, and no health.json artifact is uploaded. The detector is down,
+      # and the red X IS the alert.
+      - name: Doctor
+        run: |
+          rc=0
+          panthera-mvp doctor --json --exit-zero > health.json || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            cat health.json
+            exit "$rc"
+          fi
+          python - <<'PY'
+          import json
+          r = json.load(open("health.json"))
+          s = r["summary"]
+          print(f"doctor: {s['fail']} fail, {s['warn']} warn, {s['info']} info (today_et {r['today_et']})")
+          for f in r["findings"]:
+              print(f"[{f['level']}] {f['fingerprint']}: {f['title']}")
+          PY
 
       - uses: actions/upload-artifact@v4
         with:
           name: health-${{ github.run_id }}
           path: health.json
-          retention-days: 90
+          retention-days: 14
 
       - name: Reconcile health issues
         uses: actions/github-script@v7
