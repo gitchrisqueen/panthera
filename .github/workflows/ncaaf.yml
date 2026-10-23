@@ -151,11 +151,13 @@ jobs:
       # Football results reach the site within minutes instead of waiting for
       # the next MLB morning/pregame run (pages.yml's workflow_run triggers).
       # Only after a real push, so the hourly no-op runs never deploy. Not after
-      # `grade`: the next MLB morning run deploys about 80 minutes later and
-      # carries the graded data.
+      # a SCHEDULED `grade`: the next successful MVP Morning run deploys about
+      # 80 minutes later (pages.yml runs only on success) and carries the graded
+      # data. A manual dispatch of `grade` still deploys, so it is never left
+      # waiting on that run.
       # GITHUB_TOKEN-dispatched runs do start (only pushes are suppressed).
       - name: Deploy dashboard
-        if: steps.commit.outputs.pushed == 'true' && steps.task.outputs.task != 'grade'
+        if: steps.commit.outputs.pushed == 'true' && !(steps.task.outputs.task == 'grade' && github.event_name == 'schedule')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref "${GITHUB_REF_NAME}"

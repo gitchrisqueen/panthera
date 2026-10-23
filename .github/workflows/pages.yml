@@ -40,10 +40,10 @@ permissions:
   pages: write
   id-token: write
 
-# The build job is serialized in its own `pages-build` group, never queued
-# against a cancel: a build in flight finishes, one more waits. This is NOT the
-# "github-pages" group, which actions/deploy-pages sets itself for the deploy
-# job; declaring that name here would conflict.
+# One pages run at a time, never cancelled: the group wraps the whole run (build
+# and deploy), a run in flight finishes, and when several are queued only the
+# newest pending one is kept (a build always reads the current tip, so nothing
+# is lost; the dropped run's --run-label is not shown on the site).
 concurrency:
   group: pages-build
   cancel-in-progress: false
