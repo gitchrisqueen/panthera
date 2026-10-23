@@ -8,7 +8,7 @@ name: Panthera Catch-up
 #
 # Monday 07:15 ET, which is the only genuinely quiet band. Picking it off
 # the MLB runs alone is not enough: `ncaaf` shares the `panthera-data`
-# concurrency group and fires half-hourly from 13:00 to 04:35 UTC, and
+# concurrency group and fires half-hourly from 13:00 to 04:35 UTC (Aug-Jan only), and
 # GitHub starts crons 15-50 min late — so a catch-up queued inside that band
 # can sit PENDING behind an in-progress ncaaf run and then be CANCELLED by
 # the next ncaaf run to queue (only one run per group may be pending). It

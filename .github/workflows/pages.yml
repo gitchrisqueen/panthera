@@ -40,8 +40,13 @@ permissions:
   pages: write
   id-token: write
 
-# No explicit concurrency.group here — actions/deploy-pages sets its own
-# "github-pages" group automatically; declaring one here would conflict.
+# One pages run at a time, never cancelled: the group wraps the whole run (build
+# and deploy), a run in flight finishes, and when several are queued only the
+# newest pending one is kept (a build always reads the current tip, so nothing
+# is lost; the dropped run's --run-label is not shown on the site).
+concurrency:
+  group: pages-build
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -49,6 +54,7 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -72,6 +78,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -3,8 +3,8 @@ name: NCAAF Strategy
 # Live paper-trading for config/ncaaf_strategies/ (cfb_spread_total_parlay).
 # One workflow, four crons, told apart by github.event.schedule:
 #
-#   5 13-23,0-4 * * *  hourly 9:05-00:05 ET, plus
-#   35 15-23,0-4 * * * 11:35-00:35 ET (EDT): `ncaaf picks --auto`. A no-op
+#   5 13-23,0-4 * 8-12,1 *   hourly 9:05-00:05 ET, plus
+#   35 15-23,0-4 * 8-12,1 *  11:35-00:35 ET (EDT): `ncaaf picks --auto`. A no-op
 #                      (no network, no credits, no commit) unless the day's
 #                      first kickoff is 15-90 min away; then
 #                      it takes one decision-<date> snapshot (3 cr) and
@@ -14,21 +14,30 @@ name: NCAAF Strategy
 #                      No :35 at 13-14 UTC: 14:35 is MLB morning, and a newer
 #                      queued run in the panthera-data group cancels an older
 #                      pending one (no kickoff is early enough to need it).
-#   10 23 * * 0,3      Sun + Wed 19:10 ET: `ncaaf prep` — ESPN games 8 days
+#   10 23 * 8-12,1 0,3  Sun + Wed 19:10 ET: `ncaaf prep` — ESPN games 8 days
 #                      back / 14 ahead (after Sunday's AP poll), an "open"
 #                      snapshot (3 cr; skipped when nothing is upcoming),
 #                      CFBD SP+ + venues when CFBD_API_KEY is set
-#   15 13 * * *        daily 9:15 ET: `ncaaf grade` (tickets + qualifying
+#   15 13 * 8-12,1 *   daily 9:15 ET: `ncaaf grade` (tickets + qualifying
 #                      legs) and the report
+#
+# Every cron carries the month filter 8-12,1 (Aug-Dec + Jan): the season runs
+# late Aug to the CFP final about Jan 20, and the offseason runs were all
+# no-ops. Cron months are UTC, so an ET evening game on Jan 31 would fall in
+# Feb 1 UTC hours 0-4 and be skipped; no game is that late. The hours and
+# weekdays are NOT narrowed: the committed kickoff data (Oct 1 - Nov 4, no
+# bowl or CFP weeks) does not support it, see the PR that added the filter.
+# The `Which task` case patterns below must equal these cron strings exactly;
+# a scheduled run that matches none exits 1 instead of silently doing nothing.
 #
 # Credits: ~2 open + ~4 game-day decision snapshots/week ≈ 78/month on top of
 # MLB's ≈ 270 (500 free; NCAAF reserve 60 so MLB keeps priority).
 on:
   schedule:
-    - cron: "5 13-23,0-4 * * *"
-    - cron: "35 15-23,0-4 * * *"
-    - cron: "10 23 * * 0,3"
-    - cron: "15 13 * * *"
+    - cron: "5 13-23,0-4 * 8-12,1 *"
+    - cron: "35 15-23,0-4 * 8-12,1 *"
+    - cron: "10 23 * 8-12,1 0,3"
+    - cron: "15 13 * 8-12,1 *"
   workflow_dispatch:
     inputs:
       task:
@@ -52,6 +61,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -67,12 +77,17 @@ jobs:
         id: task
         run: |
           case "${{ github.event.schedule }}" in
-            "5 13-23,0-4 * * *")  echo "task=auto" >> "$GITHUB_OUTPUT" ;;
-            "35 15-23,0-4 * * *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
-            "10 23 * * 0,3")     echo "task=prep" >> "$GITHUB_OUTPUT" ;;
-            "15 13 * * *")       echo "task=grade" >> "$GITHUB_OUTPUT" ;;
-            *)                   echo "task=${{ inputs.task }}" >> "$GITHUB_OUTPUT" ;;
+            "5 13-23,0-4 * 8-12,1 *")  echo "task=auto" >> "$GITHUB_OUTPUT" ;;
+            "35 15-23,0-4 * 8-12,1 *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
+            "10 23 * 8-12,1 0,3")      echo "task=prep" >> "$GITHUB_OUTPUT" ;;
+            "15 13 * 8-12,1 *")        echo "task=grade" >> "$GITHUB_OUTPUT" ;;
+            *)                         echo "task=${{ inputs.task }}" >> "$GITHUB_OUTPUT" ;;
           esac
+          if [ "${{ github.event_name }}" = "schedule" ] \
+             && [ -z "$(sed -n 's/^task=//p' "$GITHUB_OUTPUT" | tail -n 1)" ]; then
+            echo "::error::scheduled run matched no known cron string: ${{ github.event.schedule }}"
+            exit 1
+          fi
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             echo "dry=--dry-run" >> "$GITHUB_OUTPUT"; echo "odds=dry_run" >> "$GITHUB_OUTPUT"
           else
@@ -135,10 +150,14 @@ jobs:
 
       # Football results reach the site within minutes instead of waiting for
       # the next MLB morning/pregame run (pages.yml's workflow_run triggers).
-      # Only after a real push, so the hourly no-op runs never deploy.
+      # Only after a real push, so the hourly no-op runs never deploy. Not after
+      # a SCHEDULED `grade`: the next successful MVP Morning run deploys about
+      # 80 minutes later (pages.yml runs only on success) and carries the graded
+      # data. A manual dispatch of `grade` still deploys, so it is never left
+      # waiting on that run.
       # GITHUB_TOKEN-dispatched runs do start (only pushes are suppressed).
       - name: Deploy dashboard
-        if: steps.commit.outputs.pushed == 'true'
+        if: steps.commit.outputs.pushed == 'true' && !(steps.task.outputs.task == 'grade' && github.event_name == 'schedule')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref "${GITHUB_REF_NAME}"
