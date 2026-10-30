@@ -250,9 +250,16 @@ def _rebuild_markers(
     """Forget completion markers in the window so those dates are detected as
     gaps again.
 
+    The case this exists for is LATE DATA: odds or games arrive for a date
+    already marked complete, so the original replay skipped those games as
+    unpriced and a re-replay would now price them. Nothing else re-opens such
+    a date. It is specifically NOT for a config change — markers are keyed on
+    `config_hash`, so a changed config re-opens its dates with no flag at all
+    (`test_marker_reopens_the_date_after_a_config_change`).
+
     Markers only. Shadow rows stay: `append_shadow_picks` dedupes on
-    `pick_id`, so replaying an unchanged config adds none, and a changed
-    config legitimately adds the rows it now produces.
+    `pick_id`, so replaying an unchanged config adds none, and the late-data
+    case legitimately adds the rows the newly priced games now produce.
     """
     if not explicit:
         return ["--rebuild needs an explicit --from and --to; nothing removed"]
