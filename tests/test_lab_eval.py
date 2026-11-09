@@ -152,8 +152,9 @@ def test_a_naive_climber_chases_noise_where_the_guards_do_not():
 def _planted(seed: int):
     """400 games a week, 22 weeks, no daily cap, SP+ edges of 3.5-4 points (just under the
     champion's 4-point bar) really cover 65%: about +24% per planted bet. This checks the
-    PLUMBING at a volume ten times the real one (about 12 bets a week). It is not a power
-    estimate: at the real volume the loop is blind to anything this size is not, see
+    PLUMBING at more than twenty times the real volume (about 330 bets a week against about 14 in
+    the season-length null eval, both measured on this generator). It is not a power
+    estimate: at the real volume the loop cannot see an effect of this size, see
     PROGRAM.md."""
     def p_home(edge):
         return 0.5 + 0.15 * np.sign(edge) if 3.5 <= abs(edge) < 4.0 else 0.5
@@ -177,12 +178,13 @@ def _planted_seed(seed: int) -> tuple[bool, int]:
 def test_planted_edge_detection_and_false_promotions_over_20_seeds():
     """Measured 2026-11-09 over seeds 0-19: the planted change is promoted in 18 of 20 and
     a WRONG parameter is promoted twice (seeds 3 and 19, each in a run that also found the
-    planted one). So the guards do not make a false promotion impossible: at ten times the
-    real volume, which gives the loop many eligible runs, it happens about once in ten
+    planted one). So the guards do not make a false promotion impossible: at more than twenty
+    times the real volume, which gives the loop many eligible runs, it happens about once in ten
     seasons. Pinned, so a change in either number is a visible change in the loop."""
     with ProcessPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
         out = list(pool.map(_planted_seed, range(20)))
-    assert (sum(o[0] for o in out), sum(o[1] for o in out)) == (18, 2)
+    assert sum(o[0] for o in out) == 18
+    assert [seed for seed, o in enumerate(out) if o[1]] == [3, 19]  # one wrong promotion each
 
 
 # --- crafted pools: one challenger, a known story ----------------------------------------

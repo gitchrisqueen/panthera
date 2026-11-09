@@ -78,22 +78,22 @@ measurements of this procedure on that generator, not guarantees about real data
 | Eval | Configuration | Result |
 |---|---|---|
 | Null, shipped regime | Fair coins. Shipped guards (`min_bets` 100, `min_diff_bets` 30) and the shipped 18-path space. 17 weeks of 18 games, 300 simulated seasons. | **1 season in 300** promoted something (95% one-sided upper bound about 1.6%). 4,200 weekly runs, 1 promotion; 2,609 of those runs recorded `insufficient_data` and could not promote. |
-| Null, long horizon | Same guards and space, 40 weeks of 20 games, 100 simulated seasons. | **1 season in 100** (upper bound about 4.7%). 3,700 runs, 1 promotion; 747 `insufficient_data`. |
+| Null, long horizon | Same guards and space, 40 weeks of 20 games, 100 simulated seasons. | **1 season in 100** (upper bound about 4.7%, close to the conventional 5%, so read it as "no better than 5%", not "about 1%"). 3,700 runs, 1 promotion; 747 `insufficient_data`. |
 | Null, reduced stress | 4 of the 18 paths, `min_bets` 60, 200 simulated seasons x 37 runs. | Season-level upper bound under 5% (asserted), per-run rate under 0.2% (descriptive), no claimed in-sample edge of +10% per bet or more. |
-
-The unit of a false-promotion rate is the simulated **season**, not the weekly run: runs
-inside a season replay the same growing data, so they are not independent trials. The
-per-run figures are descriptive only.
-| Planted edge | A real +24% per bet edge in a 3.5-4 point SP+ band, **400 games a week** (ten times the real volume), 22 weeks, no daily cap, `min_bets` 150, 20 seeds. | Promoted in **18 of 20**; a **wrong parameter was promoted twice** (seeds 3 and 19, in seasons that also found the planted one). |
+| Planted edge | A real +24% per bet edge in a 3.5-4 point SP+ band, **400 games a week** (about 330 bets a week, against about 14 in the season-length null eval: more than twenty times the real volume; both measured on the generator), 22 weeks, no daily cap, `min_bets` 150, 20 seeds. | Promoted in **18 of 20** (a 95% interval of roughly 70% to 97%); a **wrong parameter was promoted twice** (seeds 3 and 19, pinned by seed in the test, each in a season that also found the planted one). |
 | Rare signal | 100 shared bets plus 7 winning bets from a rare signal. | Rejected by `min_diff_bets`; promoted if that guard is set to 1. |
 | Empty holdout | Challenger identical to the champion in the newest 3 weeks. | Rejected: the holdout confirms nothing. |
 | One winner | A coin-flip challenger plus one +1000 winner, z bar lowered to 0.4 so the pool sits just over the line. | Rejected by the best-game guard. A price that long cannot lift z to the shipped bar of 2.0 by itself, so that guard is only live near the threshold. |
 
+The unit of a false-promotion rate is the simulated **season**, not the weekly run: runs
+inside a season replay the same growing data, so they are not independent trials. The
+per-run figures are descriptive only.
+
 What this means:
 
-- The planted-edge case checks **plumbing at ten times the real volume**. It is not a power
-  estimate: at the real volume the loop is blind to an effect this size is not.
-- The guards do **not** make a false promotion impossible. At high volume, where the loop has
+- The planted-edge case checks **plumbing at more than twenty times the real volume**. It is not a power
+  estimate: at the real volume the loop cannot see an effect of this size.
+- The guards do **not** make a false promotion impossible. At that volume, where the loop has
   many eligible runs, a wrong change was promoted in 2 of 20 seasons. At the real volume the
   null measured 1 promoting season in 300 (95% upper bound about 1.6%), and 1 in 100 over a
   40-week horizon (about 4.7%).
@@ -102,8 +102,8 @@ What this means:
 - The best-game guard (4) only fires within about 0.4 z of the threshold: one bounded payoff
   also inflates the standard deviation, so a single game cannot lift z to the shipped bar on
   its own (the eval lowers the bar to show it works). It is a defensive check. Likewise the
-  `z_min` floor stops binding once `T` reaches about 18, because `sqrt(2 ln T)` is then
-  already above 2.4.
+  `z_min` floor stops binding once `T` exceeds about 7.4 (`sqrt(2 ln T)` is 2.0 at
+  `T = e^2`); by `T` = 18 the bar is already 2.4.
 - Late in a season the bar is high: with a few hundred challengers evaluated, `sqrt(2 ln T)`
   is about 3.4, so late promotions are rare by construction.
 - The z uses per-game differences and treats games as independent. Games on the same day
@@ -140,11 +140,14 @@ the iteration row is still written), so also glance at the run's annotations and
 **Undo a wrong promotion.** `champion.json` keeps the current parameters and `parent_hash`,
 not the parent's parameters; those are in the `data` branch history.
 
-1. Stop the weekly run (above) so nothing lands on top of you.
+1. Stop the weekly run (above) so nothing lands on top of you. Disabling does not stop a run
+   already started or queued in the `panthera-data` group: cancel those as the kill switch in
+   `.github/workflows/CLAUDE.md` describes.
 2. `bash scripts/ci/data_branch.sh pull`, then find the parent's parameters. Preferred, and
    needing no history: the bad champion's `change` field in `champion.json` reads
    `<param path>: <old> -> <new>`, and the promoted row in `iterations.csv` has the same
-   `old`; set that one parameter in `params` back to `<old>`. Alternative: the previous version
+   `old`; set that one parameter in `params` back to `<old>` (the text is Python-formatted; write JSON:
+   `true` or `false` for a toggle, a quoted string for a choice such as `"strength"`). Alternative: the previous version
    of the file in `git log -p origin/data -- data/lab/ncaaf/champion.json`. The pull fetches
    only the newest 50 commits of `data`, which several bot commits a day can outrun, so for an
    older promotion run `git fetch --unshallow origin data` first.
@@ -171,7 +174,8 @@ not the parent's parameters; those are in the `data` branch history.
 5. **The revert does not hold by itself.** The next run evaluates the same challenger on
    nearly the same data, so it can promote again, and nothing in the walk can ban a
    challenger. Either keep `lab.yml` disabled until a PR removes that parameter from the
-   search space in `config/lab/<sport>.yaml` (a new loop, procedure below), or re-enable it
+   search space in `config/lab/<sport>.yaml` (a new loop, procedure below: it restarts from the
+   yaml, so copy the restored `params` into the yaml in the same PR or the champion resets), or re-enable it
    and accept that you may revert again. Re-enable with `gh workflow enable lab.yml` only
    once you have chosen.
 
@@ -193,8 +197,15 @@ of the evaluator version, guards, space and feature constants, and a mismatch is
    the same version and would collide), rename `features.csv` the same way if its columns
    changed, and delete `champion.json`.
 3. Push with `bash scripts/ci/data_branch.sh push "data: lab new loop"` and re-enable the
-   workflow. The next real run writes the starting champion from `initial_champion`, then
-   walks (and can promote) in that same run.
+   workflow. The next real run writes the starting champion from the yaml's `initial_champion`
+   and `structure`, then walks (and can promote) in that same run.
+
+   **A new loop restarts from the yaml, not from the current champion.** Leaving the yaml
+   unchanged is a deliberate reset to the shipped starting point. To keep the live (or just
+   reverted) champion, the same PR must copy its `params` into the yaml first: the `signals` and
+   `legs` blocks go into `initial_champion`, and `params.ticket.max_bets_per_day`,
+   `max_price_american` and `rank_by` plus `params.bet_limits.skip_day_after_loss` go into
+   `structure` (`max_bets_per_day`, `max_price_american`, `rank_by`, `skip_day_after_loss`).
 
 These two procedures are the only sanctioned hand edits to `data/lab/`; everything else there
 is the bot's.
