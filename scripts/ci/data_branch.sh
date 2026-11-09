@@ -40,7 +40,8 @@ PATCH_OUT="${RUNNER_TEMP:-/tmp}/data-delta.patch"
 SECRET_RE='(api[_-]?key|apikey)["'"'"']?([ ]*[=:]|%3[dD])[ ]*["'"'"']?[A-Za-z0-9_-]{16,}'
 SECRET_RE+='|authorization["'"'"']?[ ]*[:=][ ]*["'"'"']?(bearer|basic) '
 # Filenames that mean a credential was swept into data/ or reports/.
-CRED_NAME_RE='(^|/)(\.env[^/]*|id_[a-z0-9]+|[^/]*\.(pem|key|p12|pfx))$'
+CRED_NAME_RE='(^|/)(\.env[^/]*|\.netrc|\.npmrc|id_[a-z0-9]+|credentials[^/]*\.json'
+CRED_NAME_RE+='|service-account[^/]*\.json|[^/]*\.(pem|key|p12|pfx|p8|jks))$'
 
 if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   echo "::error::DATA_BRANCH must not be a code branch"
@@ -61,6 +62,10 @@ open_worktree() {
     git worktree add --quiet --detach "$WT" "$sha"
   fi
 }
+
+# safe_names: echo file names without anything the runner could read as a workflow command
+# (a name may hold a newline followed by ::error::); every unusual byte becomes '?'.
+safe_names() { sed 's/[^[:alnum:]\/._-]/?/g; s/^/  /'; }
 
 # match_file <regex> <file> [grep flags]: 0 = match, 1 = no match; any other
 # grep status (bad regex, I/O) aborts the push. Reads a file, never a pipe, so
@@ -130,16 +135,20 @@ case "$mode" in
     scratch="$(mktemp -d)"
     trap 'rm -rf "$scratch"' EXIT
     git -C "$WT" diff --cached --no-renames --name-only -z | tr '\0' '\n' > "$scratch/names"
-    git -C "$WT" diff --cached -U0 --text --no-ext-diff --no-textconv | grep -aE '^\+' > "$scratch/added" || true
+    # To a file first: a failing git diff must abort (set -e), not leave an empty scan input.
+    git -C "$WT" diff --cached -U0 --text --no-ext-diff --no-textconv > "$scratch/diff"
+    rc=0
+    grep -aE '^\+' "$scratch/diff" > "$scratch/added" || rc=$?
+    if [ "$rc" -gt 1 ]; then echo "::error::could not scan the staged diff"; exit 1; fi
 
     if [ -n "$forbid" ] && match_file "$forbid" "$scratch/names"; then
       echo "::error::refusing to commit a path matching $forbid"
-      grep -E -e "$forbid" "$scratch/names" | sed 's/^/  /' || true
+      grep -E -e "$forbid" "$scratch/names" | safe_names || true
       exit 1
     fi
-    if match_file "$CRED_NAME_RE" "$scratch/names"; then
+    if match_file "$CRED_NAME_RE" "$scratch/names" -qi; then
       echo "::error::refusing to commit a credential-looking filename"
-      grep -E -e "$CRED_NAME_RE" "$scratch/names" | sed 's/^/  /' || true
+      grep -Ei -e "$CRED_NAME_RE" "$scratch/names" | safe_names || true
       exit 1
     fi
     if match_file "$SECRET_RE" "$scratch/added" -qi; then
@@ -148,15 +157,18 @@ case "$mode" in
     fi
     for var in ODDS_API_KEY LUMIFY_API_KEY CFBD_API_KEY; do
       val="${!var:-}"
+      val="${val%%$'\n'*}"
       if [ "${#val}" -ge 8 ] && grep -aFq -e "$val" "$scratch/added"; then
         echo "::error::staged data contains the value of $var; not pushing"
         exit 1
       fi
     done
 
-    # -c, not `git config`: in a linked worktree the latter rewrites the shared repo config.
-    git -C "$WT" -c user.name="panthera-bot" -c user.email="actions@users.noreply.github.com" \
-      commit --quiet -m "$msg"
+    # Env identity, not `git config`: a linked worktree would rewrite the shared repo config, and
+    # the rebase below also needs a committer (runners have none).
+    export GIT_AUTHOR_NAME=panthera-bot GIT_COMMITTER_NAME=panthera-bot
+    export GIT_AUTHOR_EMAIL=actions@users.noreply.github.com GIT_COMMITTER_EMAIL=actions@users.noreply.github.com
+    git -C "$WT" commit --quiet -m "$msg"
     git -C "$WT" format-patch -1 --binary --stdout > "$PATCH_OUT"
     nfiles="$(wc -l < "$scratch/names" | tr -d ' ')"
 

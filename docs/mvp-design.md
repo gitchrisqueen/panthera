@@ -342,7 +342,8 @@ scheduled writers, several times a day, so stop them before you push or the
 damage continues while you work:
 
 ```bash
-for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml; do
+for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml \
+         ncaaf-capture.yml ncaabase-capture.yml panthera-catchup.yml mvp-calibrate.yml; do
   gh workflow disable "$w"
 done
 ```
@@ -380,13 +381,14 @@ rebases onto whatever it finds, would cement the loss.
   git revert -n 6acd4e6
   git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
-  git push origin main
+  git push -u origin HEAD   # a branch off main; open a PR (main is protected)
   ```
 
-  **The push is the step that changes production.** Without it the revert is
-  local only and every scheduled run still uses the old code — GitHub Actions
-  reads `main`. Confirm with `git ls-remote origin main` that the revert sha
-  is what the remote now points at, then re-enable the workflows.
+  **The merge of that PR is the step that changes production.** Until it lands
+  every scheduled run still uses the old code — GitHub Actions reads `main`.
+  Confirm with `git ls-remote origin main` that the revert sha is what the
+  remote now points at, then re-enable the workflows. Containment lasts until
+  that merge, which needs GitGuardian and a manual merge.
 
 - **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
   first line. Keep the `-n`: without it the revert commits on its own,

@@ -87,48 +87,68 @@ the ledger, protected by a ruleset that blocks deletion and non-fast-forward pus
 ## Undoing or restoring bot data
 
 Run from a normal clone (git 2.42+ for `--orphan` worktrees; older git: `git switch --orphan`).
-`data` is an orphan branch with no history shared with `main`. Open or refresh the worktree first,
-every time (safe to repeat):
+`data` is an orphan branch with no history shared with `main`. **First stop the writers** (kill switch
+below) so nothing lands on top of your commit. Then open or refresh the worktree; repeatable, including
+after the directory was deleted or a revert or `git am` was left half done:
 
 ```bash
 git fetch origin data
-git worktree add --detach ../panthera-data origin/data 2>/dev/null \
-  || git -C ../panthera-data checkout --detach origin/data
-cd ../panthera-data
+git worktree prune
+git -C ../panthera-data revert --abort 2>/dev/null; git -C ../panthera-data am --abort 2>/dev/null
+git worktree add --detach ../panthera-data origin/data || git -C ../panthera-data checkout --detach origin/data
+cd ../panthera-data && git status --short   # must print nothing
 ```
+
+(In a `--single-branch` clone fetch explicitly: `git fetch origin data:refs/remotes/origin/data`.)
+If `git push origin HEAD:data` is rejected (a bot landed first), `git fetch origin data && git rebase FETCH_HEAD`
+and push again.
 
 - **Undo a bad bot commit** (it is on `data`, not `main`): in that worktree, `git revert <sha>` then
   `git push origin HEAD:data`. Appended CSVs often conflict when later bot commits touched the same
-  file; follow the "keep HEAD for derived paths" recipe in `docs/mvp-design.md` (catch-up section).
+  file; follow the "Keep HEAD for every derived path" recipe in `docs/mvp-design.md` (catch-up section).
 - **Replay data a failed push lost.** A writer whose push step fails after the commit uploads artifact
   `data-delta` (14 days). Prefer this over re-running the workflow, which spends 3 Odds API credits
-  again: `gh run download <run-id> -n data-delta`, then in the worktree `git am data-delta.patch`
-  (`git am --abort` on conflict and ask), then `git push origin HEAD:data`. Refusals (forbidden path,
-  secret-looking text) and failures before the commit leave no patch. A re-run attempt overwrites the
-  `data-delta` artifact of the same run, so download it before re-running.
+  again. `gh run download <run-id> -n data-delta -D /tmp/delta`, then in the worktree
+  `git am -3 /tmp/delta/data-delta.patch` and `git push origin HEAD:data`. A same-file append conflict is
+  the usual reason a patch exists: for append-only CSVs keep both sides (`git am --continue` after
+  editing); if that is not clean, run `panthera-mvp catchup` instead and tell Christopher Queen (repo
+  owner). Refusals (forbidden path, secret-looking text) and failures before the commit leave no patch.
+  A re-run attempt overwrites the `data-delta` artifact of the same run, so download it before re-running.
+  `git am` needs a git identity on your machine (`git config user.name`/`user.email`).
 - **Kill switch:** `for w in mvp-morning mvp-pregame mvp-close mvp-splits ncaaf ncaaf-capture ncaabase-capture panthera-catchup mvp-calibrate; do gh workflow disable $w.yml; done`
-  then `gh run list --status in_progress` and `gh run cancel <id>` for any writer still running.
-  Re-enable with `gh workflow enable`. Pages and health write nothing.
-- **Branch deleted or corrupted:** the ruleset blocks both, but if it happens, restore from the last good
-  SHA (`git push origin <sha>:refs/heads/data`; find it in a run's "data branch: pushed `<sha>`" summary
-  line or `git reflog` of a clone), or re-seed from `main`'s frozen copy (2026-10-23):
+  Disabling does not stop runs already started or waiting in the `panthera-data` group, so cancel them
+  and repeat until all three lists are empty: `for s in in_progress queued pending waiting; do gh run list --status $s; done`
+  then `gh run cancel <id>` for each writer. Re-enable with `gh workflow enable`. Pages and health write nothing.
+- **Branch deleted:** the ruleset blocks deletion, but if it happens, restore from the last good SHA
+  (`git push origin <sha>:refs/heads/data`; find it in a run's "data branch: pushed `<sha>`" summary line
+  or the reflog of a clone), or re-seed from `main`'s frozen copy (2026-10-23; use `git switch --orphan`
+  on git older than 2.42; skip the `-b` if a local `data` branch exists; add the branch README.md):
   `git worktree add --orphan -b data ../seed && git archive origin/main data reports | tar -x -C ../seed --exclude=data/CLAUDE.md --exclude=reports/CLAUDE.md`,
-  commit and push, then run `panthera-mvp catchup` to refill what it can.
+  commit and push. A corrupted but existing branch needs the ruleset disabled and a force push: see the
+  next item.
 - **Secret reached `data`.** The push script refuses staged key-looking text and the env values of
-  `ODDS_API_KEY`, `LUMIFY_API_KEY`, `CFBD_API_KEY`, but it is a pattern check. If one got through: treat the
-  key as burned. Disable the writers (kill switch), rotate it per `docs/secret-rotation.md`, then in
-  Settings → Rules → Rulesets disable "data branch: no delete, no force-push" (id 26871856), re-seed an
-  orphan `data` without the leaked commit, `git push --force origin data`, and re-enable the ruleset and
-  writers. The old commit stays fetchable by SHA (and in any fork) until GitHub Support removes it: file
-  a sensitive-data removal request. Also delete the affected Actions runs and `data-delta` artifacts.
+  `ODDS_API_KEY`, `LUMIFY_API_KEY`, `CFBD_API_KEY`, but it is a pattern check. If one got through, treat the
+  key as burned:
+  1. Kill switch (above). Rotate the key per `docs/secret-rotation.md`.
+  2. Back up first: `git branch backup-data origin/data` and `git bundle create ~/data-backup.bundle origin/data`.
+  3. Find the leaked commit `<leak>` (`git log -S'<string>' origin/data`) and rebuild the branch without it but
+     with everything after it: `git rebase --onto <leak>^ <leak> origin/data` in a local branch (or cherry-pick
+     the later commits onto `<leak>^`), then check `git log -S'<string>'` is empty and
+     `git diff --stat origin/data HEAD` shows only the leak's removal.
+  4. Settings → Rules → Rulesets: disable "data branch: no delete, no force-push" (id 26871856), then
+     `git push --force-with-lease=data:<old-tip-sha> origin HEAD:data`, then re-enable the ruleset and the writers.
+  5. The old commit stays fetchable by SHA (and in any fork) until GitHub Support removes it: file a
+     sensitive-data removal request. Delete the affected Actions runs and `data-delta` artifacts.
 - **Moving data back to `main`:** no automated path. Copy `data/` and `reports/` from a `data` worktree
   into a branch off `main` and open a PR (it needs GitGuardian and merges by hand).
 - **Gap to know about:** from the evening of 2026-10-23 (first rejected push: MVP Pregame run 40022747688)
   until the cutover, bot commits were rejected and are gone: odds snapshots, picks, CLV. `panthera-mvp
-  catchup` rebuilds games and a MLB shadow ledger only; it does not recreate `data/picks/picks.csv` rows or
-  raw odds. See `data/CLAUDE.md`.
+  catchup` cannot rebuild them: it replays only dates whose games and odds are already on disk, and both
+  stop at 2026-10-23. See `data/CLAUDE.md`.
 - **Size:** `data` grows with raw odds JSON; revisit (squash or prune) if the repo nears GitHub's size
-  guidance. There is no scheduled mirror: the ruleset plus Git history are the safeguard.
+  guidance. There is no scheduled mirror and no scheduled secret scan of the branch: the ruleset, the push
+  script's checks and Git history are the safeguards. `ncaaf-capture` and `ncaabase-capture` also upload
+  raw `capture/` payloads as public artifacts that the push script does not scan.
 
 ## Bot-commit loop guards (keep all three)
 

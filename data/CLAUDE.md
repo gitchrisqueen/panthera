@@ -9,9 +9,11 @@ that's what makes workflow re-runs safe.
 
 ## Known gap (evening of 2026-10-23 to the `data` branch cutover)
 
-Bot commits in that window were rejected by branch protection and lost. Gone for good: raw odds
-snapshots, `picks.csv` rows and CLV for those days. Rebuildable: games and finals, and the MLB
-shadow ledger via `panthera-mvp catchup`. Health findings for those days are expected, not new bugs.
+Bot commits in that window were rejected and lost. Gone for good: raw odds
+snapshots, `picks.csv` rows and CLV for those days. `panthera-mvp catchup` cannot rebuild them: it only
+replays dates whose games and odds are already on disk, and both stop at 2026-10-23. Games and finals
+may be re-ingested from the keyless sources by a separate recovery run; until then health findings
+for those days are expected, not new bugs.
 
 ## Schemas
 

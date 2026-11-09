@@ -425,4 +425,90 @@ def test_failed_push_uploads_the_delta_after_the_push_step(name):
     assert keep["if"] == "failure()"
     assert keep["uses"].startswith("actions/upload-artifact")
     assert keep["with"]["path"] == "${{ runner.temp }}/data-delta.patch"
+    assert keep["with"]["overwrite"] is True
+    assert keep["with"]["retention-days"] == 14
     assert {"ODDS_API_KEY", "LUMIFY_API_KEY", "CFBD_API_KEY"} <= set(steps[push]["env"])
+
+
+def _no_identity_env(tmp_path: Path) -> dict:
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    home = tmp_path / "emptyhome"
+    home.mkdir(exist_ok=True)
+    return {**env, "HOME": str(home), "GIT_CONFIG_NOSYSTEM": "1", "XDG_CONFIG_HOME": str(home)}
+
+
+def test_rebase_and_commit_work_with_no_git_identity_configured(repos, tmp_path):
+    """Runners have no git identity; the rebase after a lost race needs a committer too."""
+    origin, work = repos
+    env = _no_identity_env(tmp_path)
+    run = lambda *a: subprocess.run(  # noqa: E731
+        ["bash", str(SCRIPT), *a], cwd=work, env=env, capture_output=True, text=True
+    )
+    assert run("pull").returncode == 0
+    (work / "reports" / "R.md").write_text("mine\n")
+
+    other = tmp_path / "other4"
+    _git(tmp_path, "clone", "--quiet", "-b", "data", str(origin), str(other))
+    (other / "data" / "other.csv").write_text("theirs\n")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-m", "other writer")
+    _git(other, "push", "origin", "data")
+
+    proc = run("push", "data: mine")
+
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert _git(origin, "show", "data:reports/R.md") == "mine"
+    assert _git(origin, "show", "data:data/other.csv") == "theirs"
+
+
+def test_a_failing_git_diff_aborts_the_push(repos, tmp_path):
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    _run(work, "pull")
+    (work / "data" / "n.csv").write_text("n\n")
+    stub = tmp_path / "stub"
+    stub.mkdir()
+    real = shutil.which("git")
+    (stub / "git").write_text(
+        '#!/bin/bash\ncase "$*" in *"-U0"*) exit 1;; esac\nexec ' + real + ' "$@"\n'
+    )
+    (stub / "git").chmod(0o755)
+
+    proc = subprocess.run(
+        ["bash", str(SCRIPT), "push", "data: x"], cwd=work, capture_output=True, text=True,
+        env={**ENV, "PATH": f"{stub}:{os.environ['PATH']}"},
+    )
+
+    assert proc.returncode != 0
+    assert _git(origin, "rev-parse", "data") == before
+
+
+def test_hostile_filename_cannot_inject_a_workflow_command(repos):
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    _run(work, "pull")
+    (work / "data" / "x\n::error::pwned\n").mkdir()
+    (work / "data" / "x\n::error::pwned\n" / ".env").write_text("k\n")
+
+    proc = _run(work, "push", "data: bad", check=False)
+
+    assert proc.returncode == 1
+    assert _git(origin, "rev-parse", "data") == before
+    own = [line for line in proc.stdout.splitlines() if line.startswith("::")]
+    assert own == ["::error::refusing to commit a credential-looking filename"]
+
+
+def test_credential_filenames_are_matched_case_insensitively(repos):
+    _refused(repos, lambda w: (w / "data" / "ID_RSA").write_text("x\n"))
+    _refused(repos, lambda w: (w / "data" / "Service-Account-prod.json").write_text("x\n"))
+
+
+def test_env_secret_with_a_trailing_newline_does_not_refuse_every_push(repos):
+    origin, work = repos
+    _run(work, "pull")
+    (work / "data" / "ok.csv").write_text("fine\n")
+    proc = subprocess.run(
+        ["bash", str(SCRIPT), "push", "data: ok"], cwd=work, capture_output=True, text=True,
+        env={**ENV, "ODDS_API_KEY": "abcdefghijklmnop\n"},
+    )
+    assert proc.returncode == 0, proc.stdout
