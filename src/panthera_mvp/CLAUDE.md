@@ -161,11 +161,14 @@
   own `matching:` block. It used to filter to the unsettled rows before
   calling `match_espn`, so a settled game's event was never claimed and could
   be keyed onto an open row when the open row's own event was missing from the
-  feed (issue #75, fixed). `ncaabase/pipeline.py::_espn_fallback` now passes
-  EVERY row for the date to `match_espn` and writes only the rows its "needs a
-  final" test admits. `match_espn` claims greedily in row order, so the rows
-  that cannot be written are sorted first and claim their events before an
-  open row can see them. Do not reintroduce the filtering, in either sport.
+  feed (issue #75, fixed). `ncaabase/pipeline.py::_espn_fallback` now matches
+  EVERY row for the date and writes only the rows its "needs a final" test
+  admits (and whose start time has passed). `matching.assign_espn` claims
+  events globally, tightest pair first, never in row order: each round the
+  row whose event is nearest takes it, so a settled, open or not-yet-started
+  row cannot take an event that starts at a closer row (a fixed order fixes
+  one arrangement and breaks its mirror). The ambiguity arm still refuses.
+  Do not reintroduce the filtering, in either sport.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
   Preview | Live | Final, so it reports a called-off game as `Final` with no

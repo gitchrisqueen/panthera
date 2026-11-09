@@ -110,6 +110,61 @@ def match_odds_events(
     return matched, unmatched
 
 
+def assign_espn(
+    games: list[dict],
+    espn_games: list,
+    aliases: dict[str, str] | None = None,
+    window_hours: float = 4,
+    ambiguity_minutes: float = 60,
+) -> tuple[dict[str, tuple[object, bool]], dict[str, str]]:
+    """Key ESPN events onto stored rows: ({game_id: (event, swapped)}, {game_id: reason}).
+
+    Assignment is global, tightest pair first, never in row order. Each round every
+    still-unmatched row is decided on the events nobody has claimed yet (`nearest_start`,
+    so the ambiguity arm still refuses rather than guesses); of the rows that got a
+    definite answer, the one whose event is nearest in time claims it, and the round
+    repeats. A row therefore cannot take an event that belongs to a closer row, whether
+    that row is open, settled, or not yet started: a sole candidate two hours away
+    loses to the row that event starts at (issue #75). `reason` covers only rows left
+    without an event.
+    """
+    alias = alias_map(aliases)
+    by_id = {e.event_id: e for e in espn_games}
+    cands: dict[str, list[tuple[float, str, bool]]] = {}
+    for g in games:
+        start = parse_utc(g["start_time_utc"])
+        found = []
+        for e in espn_games:
+            swapped = orientation(e.home_names, e.away_names, g, alias)
+            if swapped is not None:
+                gap = abs((parse_utc(e.start_time_utc) - start).total_seconds())
+                found.append((gap, e.event_id, swapped))
+        cands[str(g["game_id"])] = found
+    matched: dict[str, tuple[object, bool]] = {}
+    used: set[str] = set()
+    pending = set(cands)
+    reasons: dict[str, str] = {}
+    while pending:
+        best = None
+        reasons = {}
+        for gid in sorted(pending):
+            live = [c for c in cands[gid] if c[1] not in used]
+            pick = _nearest(live, window_hours, ambiguity_minutes)
+            if isinstance(pick, str):
+                reasons[gid] = pick
+                continue
+            gap = next(c[0] for c in live if c[1] == pick[0])
+            if best is None or (gap, gid) < best[0]:
+                best = ((gap, gid), gid, pick)
+        if best is None:
+            break
+        _, gid, pick = best
+        matched[gid] = (by_id[pick[0]], pick[1])
+        used.add(pick[0])
+        pending.discard(gid)
+    return matched, reasons
+
+
 def match_espn(
     games: list[dict],
     espn_games: list,
@@ -118,27 +173,12 @@ def match_espn(
     ambiguity_minutes: float = 60,
 ) -> tuple[dict[str, tuple[object, bool]], list[str]]:
     """Return ({ncaa game_id: (EspnBaseballGame, swapped)}, [unmatched])."""
-    alias = alias_map(aliases)
-    matched: dict[str, tuple[object, bool]] = {}
-    unmatched: list[str] = []
-    used: set[str] = set()
-    by_id = {e.event_id: e for e in espn_games}
-    for g in games:
-        start = parse_utc(g["start_time_utc"])
-        cands = []
-        for e in espn_games:
-            if e.event_id in used:
-                continue
-            swapped = orientation(e.home_names, e.away_names, g, alias)
-            if swapped is not None:
-                gap = abs((parse_utc(e.start_time_utc) - start).total_seconds())
-                cands.append((gap, e.event_id, swapped))
-        pick = _nearest(cands, window_hours, ambiguity_minutes)
-        if isinstance(pick, str):
-            unmatched.append(f"{g['game_id']}: {g['away_team']} @ {g['home_team']}: {pick}")
-            continue
-        matched[str(g["game_id"])] = (by_id[pick[0]], pick[1])
-        used.add(pick[0])
+    matched, reasons = assign_espn(games, espn_games, aliases, window_hours, ambiguity_minutes)
+    by_gid = {str(g["game_id"]): g for g in games}
+    unmatched = [
+        f"{gid}: {by_gid[gid]['away_team']} @ {by_gid[gid]['home_team']}: {reason}"
+        for gid, reason in reasons.items()
+    ]
     return matched, unmatched
 
 
