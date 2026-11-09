@@ -28,11 +28,13 @@ def get_path(params: dict, path: str) -> Any:
 
 
 def set_path(params: dict, path: str, value: Any) -> dict:
-    """A deep copy of params with `path` set (the original is never touched)."""
-    out = copy.deepcopy(params)
-    cur = out
+    """A copy of params with `path` set. Only the dicts on the way down are copied;
+    the original is never touched."""
     parts = path.split(".")
+    out = dict(params)
+    cur = out
     for part in parts[:-1]:
+        cur[part] = dict(cur[part])
         cur = cur[part]
     cur[parts[-1]] = value
     return out
@@ -64,7 +66,9 @@ def validate(cfg: dict) -> None:
         try:
             cur = get_path(params, path)
         except KeyError:
-            raise LabConfigError(f"lab config: space path {path!r} is not in the champion") from None
+            raise LabConfigError(
+                f"lab config: space path {path!r} is not in the champion"
+            ) from None
         kinds = [k for k in ("toggle", "step", "choices") if k in item]
         if len(kinds) != 1:
             raise LabConfigError(f"lab config: {path}: exactly one of toggle/step/choices")

@@ -69,7 +69,7 @@ def build_feature_rows(
     for v in sorted(views, key=lambda x: (x.start_time_utc, x.event_id)):
         start = parse_utc(v.start_time_utc)
 
-        def prev_beat(team: str) -> float | None:
+        def prev_beat(team: str, start=start) -> float | None:
             g = parlay._prev_game(schedules.get(parlay._key(team, alias), []), start, gap)
             if (g is not None and g.status == "Final" and g.team_score is not None
                     and g.opp_score is not None and g.team_score > g.opp_score
@@ -77,7 +77,7 @@ def build_feature_rows(
                 return float(g.opp_rank)
             return None
 
-        def next_opp(team: str) -> float | None:
+        def next_opp(team: str, start=start) -> float | None:
             g = parlay._next_game(schedules.get(parlay._key(team, alias), []), start, gap)
             return None if g is None or g.opp_rank is None else float(g.opp_rank)
 

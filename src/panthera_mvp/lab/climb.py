@@ -30,7 +30,7 @@ import pandas as pd
 
 from . import EVAL_VERSION
 from .config import get_path, set_path
-from .ncaaf_rules import Arrays, qualify_frame, select_bets, settle_bets
+from .ncaaf_rules import Arrays, qualify_core, qualify_frame, select_bets, select_core, settle_core
 
 NAN = float("nan")
 
@@ -40,18 +40,26 @@ NAN = float("nan")
 
 @dataclass
 class Prepared:
-    """Feature rows joined to final scores, parsed once and reused by every sim."""
+    """Feature rows joined to final scores, parsed once and reused by every sim.
+    Rows are sorted by decision date, kickoff, event id, so a row's position is
+    the deterministic tie-break inside a day."""
 
     rows: pd.DataFrame
     arrays: Arrays
     hs: np.ndarray
     as_: np.ndarray
     final: np.ndarray
-    dates: np.ndarray
+    dates: np.ndarray       # ET decision date strings
+    day: np.ndarray         # the same as whole days (int), for ranking and the skip rule
     n: int = field(init=False)
 
     def __post_init__(self) -> None:
         self.n = len(self.rows)
+
+    def head(self, k: int) -> Prepared:
+        """The first k rows: with rows sorted by date, the data as of an earlier day."""
+        return Prepared(self.rows.iloc[:k], self.arrays.head(k), self.hs[:k], self.as_[:k],
+                        self.final[:k], self.dates[:k], self.day[:k])
 
 
 def prepare(rows: pd.DataFrame, games: pd.DataFrame) -> Prepared:
@@ -66,52 +74,65 @@ def prepare(rows: pd.DataFrame, games: pd.DataFrame) -> Prepared:
     aw = pd.to_numeric(rows["event_id"].map(g["away_score"]), errors="coerce").to_numpy(float)
     status = rows["event_id"].map(g["status"]).astype(str).to_numpy()
     final = (status == "Final") & ~np.isnan(hs) & ~np.isnan(aw)
-    return Prepared(rows, Arrays(rows), hs, aw, final, rows["decision_date_et"].astype(str).to_numpy())
+    dates = rows["decision_date_et"].astype(str).to_numpy()
+    day = pd.to_datetime(rows["decision_date_et"]).to_numpy().astype("datetime64[D]").astype(int)
+    return Prepared(rows, Arrays(rows), hs, aw, final, dates, day)
 
 
 @dataclass
 class SimResult:
-    bets: pd.DataFrame       # selected bets with a `profit` column (NaN = unresolved)
-    profit: np.ndarray       # per-row profit in units; 0 where no resolved bet
-    placed: np.ndarray       # per-row: a resolved bet was placed
+    profit: np.ndarray       # per feature row: units won or lost; 0 where no resolved bet
+    placed: np.ndarray       # per feature row: a resolved bet was placed
+    bets: pd.DataFrame | None = None   # selected bets with `profit` (simulate() only)
 
 
 def simulate_prepared(prep: Prepared, params: dict) -> SimResult:
-    bets = select_bets(qualify_frame(prep.rows, params, prep.arrays), params)
+    """The hot path: pure numpy, no DataFrames."""
+    core = qualify_core(prep.arrays, params)
+    sel = select_core(core, prep.day, params)
     profit = np.zeros(prep.n)
     placed = np.zeros(prep.n, dtype=bool)
-    if bets.empty:
-        return SimResult(bets.assign(profit=[]), profit, placed)
-    bets = bets.copy()
-    bets["profit"] = settle_bets(bets, prep.hs, prep.as_, prep.final)
+    if sel.size == 0:
+        return SimResult(profit, placed)
+    p = settle_core(core, sel, prep.hs, prep.as_, prep.final)
+    pos = core.idx[sel]
     if params.get("bet_limits", {}).get("skip_day_after_loss"):
-        bets = _skip_days_after_loss(bets)
-    ok = bets["profit"].notna().to_numpy()
-    pos = bets["pos"].to_numpy(dtype=int)[ok]
-    profit[pos] = bets["profit"].to_numpy()[ok]
-    placed[pos] = True
-    return SimResult(bets, profit, placed)
+        keep = _days_to_keep(prep.day[pos], p)
+        pos, p = pos[keep], p[keep]
+    ok = ~np.isnan(p)
+    profit[pos[ok]] = p[ok]
+    placed[pos[ok]] = True
+    return SimResult(profit, placed)
 
 
-def _skip_days_after_loss(bets: pd.DataFrame) -> pd.DataFrame:
-    """Drop a day's bets when the previous ET day's resolved bets lost money."""
-    dates = bets["decision_date_et"].to_numpy()
-    prof = bets["profit"].to_numpy(dtype=float)
-    keep = np.ones(len(bets), dtype=bool)
-    net: dict[str, float] = {}
-    for d in sorted(set(dates)):
-        prev = str((pd.Timestamp(d) - pd.Timedelta(days=1)).date())
-        m = dates == d
-        if net.get(prev, 0.0) < 0:
+def _days_to_keep(day: np.ndarray, profit: np.ndarray) -> np.ndarray:
+    """Drop a day's bets when the previous calendar day's resolved bets lost money."""
+    keep = np.ones(len(day), dtype=bool)
+    net: dict[int, float] = {}
+    for d in np.unique(day):
+        m = day == d
+        if net.get(int(d) - 1, 0.0) < 0:
             keep[m] = False
-            net[d] = 0.0
+            net[int(d)] = 0.0
         else:
-            net[d] = float(np.nansum(prof[m]))
-    return bets[keep]
+            net[int(d)] = float(np.nansum(profit[m]))
+    return keep
 
 
 def simulate(rows: pd.DataFrame, games: pd.DataFrame, params: dict) -> SimResult:
-    return simulate_prepared(prepare(rows, games), params)
+    """Readable form of the same simulation: also returns the selected bets as a frame.
+    Built from the DataFrame rules path, so tests can hold it to the hot path."""
+    prep = prepare(rows, games)
+    res = simulate_prepared(prep, params)
+    bets = select_bets(qualify_frame(prep.rows, params, prep.arrays), params).copy()
+    if not bets.empty:
+        core = qualify_core(prep.arrays, params)
+        sel = select_core(core, prep.day, params)
+        bets["profit"] = settle_core(core, sel, prep.hs, prep.as_, prep.final)
+    else:
+        bets["profit"] = []
+    res.bets = bets
+    return res
 
 
 # --- statistics ------------------------------------------------------------------
@@ -216,8 +237,18 @@ def walk(
 ) -> RunResult:
     """One weekly run. `ledger_state["trials_total"]` is the count of challengers
     evaluated in earlier runs; the returned `trials_total` is the new running total."""
-    before = int((ledger_state or {}).get("trials_total", 0))
     prep = prepare(rows, games) if len(rows) else None
+    return walk_prepared(prep, champion, space, guards, ledger_state)
+
+
+def walk_prepared(
+    prep: Prepared | None,
+    champion: dict,
+    space: list[dict],
+    guards: dict,
+    ledger_state: dict | None = None,
+) -> RunResult:
+    before = int((ledger_state or {}).get("trials_total", 0))
     if prep is None or prep.n == 0:
         return RunResult("insufficient_data", "no feature rows logged yet", trials_total=before)
     res = RunResult("insufficient_data", "", n_games=prep.n, n_graded=int(prep.final.sum()),

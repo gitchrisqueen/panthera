@@ -194,6 +194,17 @@ def main(argv: list[str] | None = None) -> int | None:
     c_picks.add_argument("--dry-run", action="store_true", help="Fixture odds, no credits")
     cfb.add_parser("report", help="Regenerate reports/NCAAF_REPORT.md")
 
+    p_lab = sub.add_parser(
+        "lab", help="Weekly champion/challenger hill-climb over logged features (exploratory)"
+    )
+    lab = p_lab.add_subparsers(dest="lab_command", required=True)
+    l_run = lab.add_parser("run", help="One weekly walk: maybe promote a challenger")
+    l_run.add_argument("--sport", default="ncaaf")
+    l_run.add_argument("--dry-run", action="store_true", help="Print the decision, write nothing")
+    l_run.add_argument("--force", action="store_true", help="Run outside the sport's season months")
+    l_status = lab.add_parser("status", help="Champion, runs and challengers evaluated so far")
+    l_status.add_argument("--sport", default=None)
+
     # --- NCAA D1 college baseball (issue #52) ---
     p_cbb = sub.add_parser(
         "ncaabase", help="NCAA D1 college baseball plumbing (games, finals, odds, grading)"
@@ -295,6 +306,13 @@ def main(argv: list[str] | None = None) -> int | None:
             from .ncaaf.report import write_report
 
             print(f"[ncaaf report] wrote {write_report()}")
+    elif args.command == "lab":
+        from .lab import run as lab_run
+
+        if args.lab_command == "run":
+            lab_run.cmd_run(args.sport, dry_run=args.dry_run, force=args.force)
+        elif args.lab_command == "status":
+            lab_run.cmd_status(args.sport)
     elif args.command == "ncaabase":
         from .ncaabase import pipeline as ncaabase
 

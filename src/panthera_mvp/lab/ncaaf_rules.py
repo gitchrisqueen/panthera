@@ -29,6 +29,8 @@ dropped bet never uses up a daily slot.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
 
@@ -64,6 +66,18 @@ class Arrays:
                       for k in ("spread_home", "spread_away", "over", "under")}
         ind = df["indoor"] if "indoor" in df.columns else [None] * n
         self.outdoor = np.array([str(v).strip().lower() == "false" for v in ind], dtype=bool)
+
+    def head(self, k: int) -> Arrays:
+        """The first k rows (a cheap prefix for replaying the loop week by week)."""
+        out = object.__new__(Arrays)
+        for name, val in vars(self).items():
+            if isinstance(val, np.ndarray):
+                setattr(out, name, val[:k])
+            elif isinstance(val, dict):
+                setattr(out, name, {key: (pt[:k], dc[:k]) for key, (pt, dc) in val.items()})
+            else:
+                setattr(out, name, k)
+        return out
 
 
 def _signals(a: Arrays, p: dict) -> list[tuple[str, str, np.ndarray, np.ndarray, np.ndarray]]:
@@ -113,15 +127,23 @@ def _min_decimal(max_price_american) -> float:
     return 1 + (100 / abs(m) if m < 0 else m / 100) - 5e-4
 
 
-def qualify_frame(
-    df: pd.DataFrame, params: dict, arrays: Arrays | None = None
-) -> pd.DataFrame:
-    """Every bet the params would place on these rows, before ranking and capping."""
-    if df.empty:
-        return pd.DataFrame(columns=BET_COLUMNS)
-    a = arrays or Arrays(df)
-    sigs = _signals(a, params)
+@dataclass
+class Core:
+    """The bets a params dict places, as parallel arrays over the kept rows."""
+
+    idx: np.ndarray        # row position
+    is_spread: np.ndarray
+    is_home: np.ndarray    # home side (spread) or over (total)
+    line: np.ndarray
+    dec: np.ndarray
+    n_sig: np.ndarray
+    strength: np.ndarray
+    mask: np.ndarray       # fired-signal bitmask over SIGNAL_ORDER
+
+
+def qualify_core(a: Arrays, params: dict) -> Core:
     n = a.n
+    sigs = _signals(a, params)
     zero_i, zero_f = np.zeros(n, dtype=int), np.zeros(n)
 
     def market(ids: tuple[str, ...]):
@@ -158,29 +180,86 @@ def qualify_frame(
     keep = valid & ~np.isnan(line) & ~np.isnan(dec)
     keep &= dec >= _min_decimal(params["ticket"].get("max_price_american"))
     idx = np.flatnonzero(keep)
-    if idx.size == 0:
-        return pd.DataFrame(columns=BET_COLUMNS)
 
-    fire_by = {sid: fire for sid, _m, fire, _c, _r in sigs}
-    rows = []
-    for i in idx:
-        ids = SPREAD_IDS if pick_spread[i] else TOTAL_IDS
-        fired = [s for s in SIGNAL_ORDER if s in ids and s in fire_by and fire_by[s][i]]
-        rows.append({
-            "pos": int(i),
-            "event_id": str(df["event_id"].iloc[i]),
-            "decision_date_et": str(df["decision_date_et"].iloc[i]),
-            "start_time_utc": str(df["start_time_utc"].iloc[i]),
-            "market": "spread" if pick_spread[i] else "total",
-            "side": (("home" if home_side[i] else "away") if pick_spread[i]
-                     else ("over" if home_side[i] else "under")),
-            "line": float(line[i]),
-            "price_decimal": float(dec[i]),
-            "signal_ids": "+".join(fired),
-            "n_signals": len(fired),
-            "strength": float((bs if pick_spread[i] else bt)[i]),
-        })
-    return pd.DataFrame(rows, columns=BET_COLUMNS)
+    mask = np.zeros(n, dtype=int)
+    for sid, _m, fire, _c, _r in sigs:
+        in_market = pick_spread if sid in SPREAD_IDS else pick_total
+        mask |= (fire & in_market).astype(int) << SIGNAL_ORDER.index(sid)
+    return Core(idx, pick_spread[idx], home_side[idx], line[idx], dec[idx],
+                np.where(pick_spread, n_s, n_t)[idx], np.where(pick_spread, bs, bt)[idx],
+                mask[idx])
+
+
+def select_core(core: Core, day: np.ndarray, params: dict) -> np.ndarray:
+    """Indices into `core` of the bets kept after ranking each day and capping it.
+    `day` is one integer per feature row. Ties break on row position, which is
+    kickoff then event id when the rows are sorted that way (climb.prepare does)."""
+    if core.idx.size == 0:
+        return np.empty(0, dtype=int)
+    rank_by = params["ticket"]["rank_by"]
+    d = day[core.idx]
+    if rank_by == "n_signals":
+        order = np.lexsort((core.idx, -core.n_sig, d))
+    elif rank_by == "strength":
+        order = np.lexsort((core.idx, -core.n_sig, -core.strength, d))
+    else:
+        raise ValueError(f"unknown ticket.rank_by {rank_by!r}")
+    cap = params["ticket"].get("max_bets_per_day")
+    if cap:
+        ds = d[order]
+        starts = np.flatnonzero(np.r_[True, ds[1:] != ds[:-1]])
+        counts = np.diff(np.r_[starts, len(ds)])
+        rank = np.arange(len(ds)) - np.repeat(starts, counts)
+        order = order[rank < int(cap)]
+    return order
+
+
+def settle_core(
+    core: Core, sel: np.ndarray, hs: np.ndarray, as_: np.ndarray, final: np.ndarray
+) -> np.ndarray:
+    """Profit per selected bet in units of a flat stake: win dec-1, loss -1, push 0,
+    NaN while the game has no final score (pending or void: excluded from ROI)."""
+    pos = core.idx[sel]
+    h, aw, ok = hs[pos], as_[pos], final[pos]
+    home, spread = core.is_home[sel], core.is_spread[sel]
+    line, dec = core.line[sel], core.dec[sel]
+    with np.errstate(invalid="ignore"):
+        margin = np.where(home, h - aw, aw - h)
+        total = h + aw
+        r_total = np.where(home, total - line, line - total)  # home = over on a total
+        r = np.where(spread, margin + line, r_total)
+        profit = np.where(r > 0, dec - 1.0, np.where(r < 0, -1.0, 0.0))
+    return np.where(ok, profit, np.nan)
+
+
+def qualify_frame(
+    df: pd.DataFrame, params: dict, arrays: Arrays | None = None
+) -> pd.DataFrame:
+    """Every bet the params would place on these rows, before ranking and capping."""
+    if df.empty:
+        return pd.DataFrame(columns=BET_COLUMNS)
+    core = qualify_core(arrays or Arrays(df), params)
+    if core.idx.size == 0:
+        return pd.DataFrame(columns=BET_COLUMNS)
+    idx = core.idx
+    uniq, inverse = np.unique(core.mask, return_inverse=True)
+    names = np.array(["+".join(s for b, s in enumerate(SIGNAL_ORDER) if m >> b & 1)
+                      for m in uniq], dtype=object)
+    side = np.where(core.is_spread, np.where(core.is_home, "home", "away"),
+                    np.where(core.is_home, "over", "under"))
+    return pd.DataFrame({
+        "pos": idx,
+        "event_id": df["event_id"].astype(str).to_numpy()[idx],
+        "decision_date_et": df["decision_date_et"].astype(str).to_numpy()[idx],
+        "start_time_utc": df["start_time_utc"].astype(str).to_numpy()[idx],
+        "market": np.where(core.is_spread, "spread", "total"),
+        "side": side,
+        "line": core.line,
+        "price_decimal": core.dec,
+        "signal_ids": names[inverse],
+        "n_signals": core.n_sig,
+        "strength": core.strength,
+    }, columns=BET_COLUMNS)
 
 
 def qualify_row(row: dict, params: dict) -> list[dict]:
@@ -208,20 +287,3 @@ def select_bets(bets: pd.DataFrame, params: dict) -> pd.DataFrame:
     if cap:
         out = out[out.groupby("decision_date_et").cumcount() < int(cap)]
     return out
-
-
-def settle_bets(bets: pd.DataFrame, hs: np.ndarray, as_: np.ndarray, final: np.ndarray) -> np.ndarray:
-    """Profit per bet in units of a flat stake: win dec-1, loss -1, push 0, and NaN
-    while the game has no final score (pending or void: excluded from ROI)."""
-    pos = bets["pos"].to_numpy(dtype=int)
-    h, aw, ok = hs[pos], as_[pos], final[pos]
-    side = bets["side"].to_numpy()
-    line = bets["line"].to_numpy(dtype=float)
-    dec = bets["price_decimal"].to_numpy(dtype=float)
-    with np.errstate(invalid="ignore"):
-        margin = np.where(side == "home", h - aw, aw - h)
-        total = h + aw
-        r_total = np.where(side == "over", total - line, line - total)
-        r = np.where(bets["market"].to_numpy() == "spread", margin + line, r_total)
-        profit = np.where(r > 0, dec - 1.0, np.where(r < 0, -1.0, 0.0))
-    return np.where(ok, profit, np.nan)

@@ -102,6 +102,20 @@
   a term-less build ships dead `#fragment` links. `tests/test_glossary.py`
   scans the engines for rule ids and the dashboard source for wired terms,
   so a new column or rule cannot ship undefined.
+- `lab/` — the weekly champion/challenger hill-climb (contract:
+  `docs/lab/PROGRAM.md`; search space and guards: `config/lab/<sport>.yaml`).
+  EXPLORATORY: a champion is selected on past data, never verdict-eligible,
+  outside the registration budget, and never touches a registered strategy.
+  `features.py` builds raw per-game feature rows at decision time (no
+  thresholds), `store.py` keeps them append-once under `data/lab/<sport>/`
+  with the champion and the iteration ledger (atomic writes),
+  `ncaaf_rules.py` is a vectorised copy of signals S1-S6 over those rows
+  (held to `parlay.decide_day` by `tests/test_lab_ncaaf_parity.py`: if they
+  disagree, the lab is wrong), `climb.py` simulates straight bets and runs one
+  guarded walk (n, paired z with a multiple-testing penalty, outlier, holdout),
+  `report.py` writes `reports/LAB_REPORT.md`, `run.py` is `panthera-mvp lab
+  run|status`. Zero API credits, no network. Changing the evaluator, the
+  feature columns or a guard starts a NEW loop (bump `lab_eval_vN`).
 - `backtest/` — `loader.py` (sbro-format archives), `engine.py` (replays the
   same `generate_pick`), `calibrate.py` (parameter sweep).
 
