@@ -391,7 +391,7 @@ def test_push_does_not_touch_the_shared_git_identity(repos):
 
 DATA_WORKFLOWS = [
     "mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits", "ncaaf",
-    "ncaaf-capture", "ncaabase-capture", "panthera-catchup", "mvp-calibrate",
+    "ncaaf-capture", "ncaabase-capture", "panthera-catchup", "mvp-calibrate", "lab",
 ]
 READERS = ["health", "pages"]
 

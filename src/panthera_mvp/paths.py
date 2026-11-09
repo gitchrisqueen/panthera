@@ -158,3 +158,17 @@ def ncaabase_raw_odds_dir(date_et: str) -> Path:
 
 def ncaabase_picks_csv() -> Path:
     return ncaabase_dir() / "picks" / "picks.csv"
+
+
+# --- Lab (weekly champion/challenger hill-climb) ---------------------------
+# Bot-owned like the rest of data/: features, the champion and the iteration
+# ledger live on the `data` branch. Its search space and guards are code
+# (config/lab/<sport>.yaml).
+
+
+def lab_dir(sport: str) -> Path:
+    return data_dir() / "lab" / sport
+
+
+def lab_report_md() -> Path:
+    return reports_dir() / "LAB_REPORT.md"

@@ -51,6 +51,8 @@ panthera-mvp ncaaf picks --dry-run [--auto]      # decide today for every enable
 panthera-mvp ncaabase games --date 2026-05-01    # NCAA D1 baseball (--force off-season)
 panthera-mvp ncaabase snapshot --label open --dry-run  # PANTHERA_NCAABASE_ODDS_FIXTURE
 panthera-mvp ncaabase grade | status
+panthera-mvp lab run --sport ncaaf [--dry-run]   # weekly exploratory hill-climb, no credits
+panthera-mvp lab status
 ```
 
 ## Secrets & credits

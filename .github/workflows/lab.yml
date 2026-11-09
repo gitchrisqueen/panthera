@@ -1,0 +1,100 @@
+name: NCAAF Lab
+
+# Weekly hill-climb for the NCAAF straight-bet strategy (docs/lab/PROGRAM.md).
+# Exploratory: it reads the per-game features that `ncaaf picks` logged, replays the
+# champion forward, evaluates one-parameter challengers with the fixed evaluator
+# (lab_eval_v1) and promotes at most one change, only when every guard holds. Most weeks
+# end in "no change", which is the intended result. It makes NO network call and spends
+# NO Odds API credits.
+#
+#   45 12 * 8-12,1 2   Tuesday 12:45 UTC (8:45 ET), Aug-Dec + Jan: after Sunday's grade
+#                      and Monday's games, clear of the other data crons in the
+#                      panthera-data group (ncaaf starts at 13:05 UTC, catch-up is Monday
+#                      11:15, MVP morning 14:35). The lab itself also no-ops out of season
+#                      (config/lab/ncaaf.yaml season_months), so the cron filter is a
+#                      second line, not the only one.
+#
+# Writes data/lab/ncaaf/* and reports/LAB_REPORT.md to the `data` branch through
+# scripts/ci/data_branch.sh, like every other writer.
+on:
+  schedule:
+    - cron: "45 12 * 8-12,1 2"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the decision, write and commit nothing"
+        type: boolean
+        default: true
+      force:
+        description: "Run outside the season months (smoke test)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: panthera-data
+  cancel-in-progress: false
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 10
+    env:
+      DRY_RUN_INPUT: ${{ inputs.dry_run }}
+      FORCE_INPUT: ${{ inputs.force }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # A schedule run has no inputs: it is a real run. Only a dispatch can be a dry run.
+      - name: Effective flags
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "$DRY_RUN_INPUT" != "false" ]; then
+            echo "DRY_RUN=true" >> "$GITHUB_ENV"
+          else
+            echo "DRY_RUN=false" >> "$GITHUB_ENV"
+          fi
+          if [ "$FORCE_INPUT" = "true" ]; then echo "LAB_FORCE=--force" >> "$GITHUB_ENV"; else echo "LAB_FORCE=" >> "$GITHUB_ENV"; fi
+
+      - name: Overlay bot data from the data branch
+        run: bash scripts/ci/data_branch.sh pull
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Weekly lab run
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            panthera-mvp lab run --sport ncaaf --dry-run $LAB_FORCE
+          else
+            panthera-mvp lab run --sport ncaaf $LAB_FORCE
+          fi
+
+      - name: Commit & push
+        id: commit
+        if: env.DRY_RUN != 'true'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
+        run: |
+          bash scripts/ci/data_branch.sh push "data: ncaaf lab $(date -u +%FT%TZ) [skip ci]"
+
+      # A failed push would otherwise discard the run's data with the runner.
+      - name: Keep the unpushed data commit
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-delta
+          path: ${{ runner.temp }}/data-delta.patch
+          if-no-files-found: ignore
+          overwrite: true
+          retention-days: 14

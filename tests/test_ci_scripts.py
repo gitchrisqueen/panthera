@@ -250,7 +250,7 @@ def _wf(name: str) -> dict:
 
 WRITERS = [
     "mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits", "mvp-calibrate",
-    "ncaaf-capture", "ncaabase-capture", "panthera-catchup", "ncaaf",
+    "ncaaf-capture", "ncaabase-capture", "panthera-catchup", "ncaaf", "lab",
 ]
 READ_ONLY = ["site-audit", "mvp-debug-era", "health", "pages", "ci", "todo-to-issue"]
 

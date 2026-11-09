@@ -242,6 +242,24 @@ def _write_decision(
         print(f"  ticket {decision.price_american:+g} (decimal {decision.price_decimal})")
 
 
+def _log_lab_features(views, schedules, sp_ratings, winds, day, snap_ts, now, aliases) -> None:
+    """Log every game's raw features for the weekly lab (docs/lab/PROGRAM.md). The lab is
+    exploratory and must never be able to break a live decision, so any failure here is
+    reported and swallowed. Idempotent: one row per (day, event)."""
+    try:
+        from ..lab import features
+        from ..lab import store as lab_store
+
+        rows = features.build_feature_rows(
+            views, schedules, sp_ratings, winds, day, snap_ts, now, aliases)
+        added = lab_store.append_features("ncaaf", rows)
+        print(f"[ncaaf picks] lab: logged {added} feature row(s) for {day}")
+    except Exception as exc:  # noqa: BLE001 - never let the lab sink a decision
+        msg = re.sub(r"[^\x20-\x7e]", "?", str(exc))[:300]
+        print(f"::warning::ncaaf picks: lab feature logging failed: {type(exc).__name__}: {msg}",
+              file=sys.stderr)
+
+
 def cmd_picks(
     strategy_id: str | None = None, auto: bool = False, dry_run: bool = False
 ) -> None:
@@ -307,6 +325,7 @@ def cmd_picks(
     schedules = parlay.team_schedules(games, aliases)
     sp_ratings = _sp_ratings(season)
     winds = _kickoff_winds(views, games_by_id)
+    _log_lab_features(views, schedules, sp_ratings, winds, day, snap_ts, now, aliases)
     tickets, legs = store.load_tickets(), store.load_legs()
     for sid in todo:
         scfg = strategies[sid]

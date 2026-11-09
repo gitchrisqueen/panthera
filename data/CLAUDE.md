@@ -159,6 +159,16 @@ mvp-calibrate); `historical/normalized/mlb_odds_all.csv` is loader output;
 Reports are derived from `picks.csv` — to change what a report says,
 regenerate it (`panthera-mvp report`), don't edit markdown.
 
+## lab/ (weekly hill-climb — `panthera-mvp lab ...`)
+
+Exploratory, bot-owned, written by `.github/workflows/lab.yml` and read by nothing live.
+Contract: `docs/lab/PROGRAM.md`. `lab/ncaaf/features.csv` (one row per game per decision
+day, raw values only, appended by `ncaaf picks`), `lab/ncaaf/champion.json` (the current
+parameters, their hash and the date they take effect) and `lab/ncaaf/iterations.csv` (one
+row per weekly run, including every "no change" and why). Never hand-edit, except the two
+procedures in `docs/lab/PROGRAM.md` (undo a promotion; start a new loop after changing the
+evaluator, feature columns, guards or search space).
+
 ## ncaaf/ (college football — `panthera-mvp ncaaf ...`)
 
 Separate tree so nothing NCAAF reaches the MLB ledger/report/dashboard.
