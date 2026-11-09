@@ -58,6 +58,33 @@ writes a durable run note; started games are skipped as always.
   burn before enabling the splits strategies** (their stopping rule is
   budget-based).
 
+## Gate, inputs, token permissions, Pages change detection (issues #79, #80)
+
+- **ncaaf pre-check gate (#79).** `ncaaf.yml` has a `gate` job that runs before the `run` job. For the two
+  half-hourly `auto` crons it reads `data/ncaaf/games/games.csv` and `tickets/decisions.csv` from the `data`
+  branch and skips the whole job (no `pip install`) when the day is already decided, no game is stored for
+  today, or the first eligible kickoff is not yet inside the decision window. `scripts/ci/ncaaf_gate.py` mirrors
+  `in_decision_window`; its `AUTO_CRONS` must equal the two `auto` cron strings (a test checks it). It
+  **fails open**: a dispatch, the prep and grade crons, an unknown cron, a failed checkout or fetch, a missing
+  or garbled file (wrong columns) or any exception is "go", and `run` also starts when the gate job itself
+  fails (`needs.gate.result != 'success'`). Manual test: dispatch with `gate_fixture` =
+  `tests/fixtures/ncaaf/gate_go.json` or `gate_nogo.json` (JSON with `now_utc`, `games`, `decided_days`),
+  `gh workflow run ncaaf.yml --ref <branch> -f gate_fixture=...`. A fixture always forces `dry_run` and writes
+  nothing; a path outside `tests/fixtures/ncaaf/` (absolute, `..`, symlink, not `.json`) is rejected and the
+  job does not run.
+- **Dispatch inputs (#80).** `ncaaf-capture`, `ncaabase-capture`, `mvp-calibrate`, `mvp-splits`,
+  `mvp-debug-era` and `ncaaf` pass inputs to their jobs through `env:` (`IN_*`, `TASK_INPUT`) and shell
+  scripts read `"$IN_DATE"` etc.; no `${{ inputs.* }}` is interpolated into a `run:` script (a test enforces it).
+  Free-text inputs are validated first (`scripts/ci/validate_inputs.sh`: date, week, year, season range;
+  `mvp-debug-era` has no checkout, so it validates inline).
+- **Token permissions (#80).** Every workflow declares top-level `permissions: contents: read`; the one job that
+  commits data raises to `contents: write` (and `ncaaf` also `actions: write` to dispatch pages). The repo
+  default (`default_workflow_permissions`) is a separate setting; see the repo's Actions settings.
+- **Pages change detection (#80).** `pages.yml` hashes the git tree ids of `src`, `config`, `pyproject.toml`
+  (checked-out ref) and `data`, `reports` (data branch) into a key, and the last deploy publishes it as
+  `build-key.txt`. A `workflow_run` whose key equals the live one skips the build and deploy. A manual dispatch
+  always builds; any problem reading the live key builds too. Nothing security-related is behind this check.
+
 ## Data lives on the `data` branch (2026-11-09)
 
 `main` is protected (PR + `GitGuardian Security Checks`), so a workflow cannot push

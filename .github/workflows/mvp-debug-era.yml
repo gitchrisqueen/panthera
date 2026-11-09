@@ -23,7 +23,15 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      IN_DATE: ${{ inputs.date }}
     steps:
+      - name: Validate dispatch inputs
+        run: |
+          if [ -n "$IN_DATE" ] && ! [[ "$IN_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::date must be YYYY-MM-DD"; exit 1
+          fi
+
       - name: Write inspector script
         # A file avoids python3 -c quoting: escaped quotes inside a
         # single-quoted -c string are a SyntaxError (run #1's failure mode).
@@ -50,7 +58,7 @@ jobs:
 
       - name: Probe hydrate variants
         run: |
-          DATE="${{ inputs.date }}"
+          DATE="$IN_DATE"
           [ -z "$DATE" ] && DATE=$(TZ=America/New_York date +%F)
           echo "Probing statsapi for $DATE"
           for HYDRATE in \
@@ -69,7 +77,7 @@ jobs:
 
       - name: Probe people endpoint (batch ERA fallback candidate)
         run: |
-          DATE="${{ inputs.date }}"
+          DATE="$IN_DATE"
           [ -z "$DATE" ] && DATE=$(TZ=America/New_York date +%F)
           IDS=$(curl -gsS "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=$DATE&hydrate=probablePitcher" \
             | python3 -c 'import json,sys;p=json.load(sys.stdin);ids=[str(g["teams"][s]["probablePitcher"]["id"]) for d in p.get("dates",[]) for g in d.get("games",[]) for s in ("home","away") if g["teams"][s].get("probablePitcher")];print(",".join(ids[:8]))')
