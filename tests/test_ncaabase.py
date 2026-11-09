@@ -644,6 +644,45 @@ def test_only_writable_rows_report_a_missing_event(cbb_root, monkeypatch, capsys
     assert G1 not in err
 
 
+def test_two_rows_with_the_same_start_and_one_event_both_refuse(cbb_root, monkeypatch):
+    """Equal start times, one event: neither row may take it. Game-id order must not decide an
+    irreversible settlement (the 'feed order picks the row' rule, mirrored onto rows)."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T19:05:00Z", "Scheduled"),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game2_only")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 0
+
+    games = store.load_games().set_index("game_id")
+    assert set(games["status"]) == {"Scheduled"}
+
+
+def test_assign_espn_refuses_rows_that_tie_for_one_event():
+    from panthera_mvp.ncaabase import matching
+
+    games = [
+        {"game_id": gid, "start_time_utc": "2026-05-01T19:05:00Z", "home_team": "LSU",
+         "away_team": "Texas A&M", "home_seo": "lsu", "away_seo": "texas-am"}
+        for gid in (G1, G2)
+    ]
+
+    class Ev:
+        event_id = "401800002"
+        home_names = ["LSU"]
+        away_names = ["Texas A&M"]
+        start_time_utc = "2026-05-01T19:05:00Z"
+
+    matched, reasons = matching.assign_espn(games, [Ev()], {}, 4, 60)
+
+    assert matched == {}
+    assert set(reasons) == {G1, G2}
+    assert all("ambiguous between rows" in r for r in reasons.values())
+
+
 def test_scoreless_final_does_not_overwrite_a_stored_final(tmp_root):
     """A college-baseball Final with no score must not blank a complete one.
 

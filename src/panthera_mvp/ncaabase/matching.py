@@ -125,8 +125,15 @@ def assign_espn(
     definite answer, the one whose event is nearest in time claims it, and the round
     repeats. A row therefore cannot take an event that belongs to a closer row, whether
     that row is open, settled, or not yet started: a sole candidate two hours away
-    loses to the row that event starts at (issue #75). `reason` covers only rows left
-    without an event.
+    loses to the row that event starts at (issue #75).
+
+    Rows compete too: if another row's answer is the SAME event and its gap is within
+    `ambiguity_minutes` of the best row's (equal start times included), the event cannot
+    be keyed onto either row, and neither may claim it. Gid order never decides.
+
+    Known limit: a row refused as ambiguous between two events can become a sole candidate
+    once a rival row claims one of them, and is then decided on what is left.
+    `reason` covers only rows left without an event.
     """
     alias = alias_map(aliases)
     by_id = {e.event_id: e for e in espn_games}
@@ -142,27 +149,39 @@ def assign_espn(
         cands[str(g["game_id"])] = found
     matched: dict[str, tuple[object, bool]] = {}
     used: set[str] = set()
+    banned: set[tuple[str, str]] = set()  # (game_id, event_id) refused as a row-vs-row tie
+    refused: dict[str, str] = {}
     pending = set(cands)
     reasons: dict[str, str] = {}
+    margin = ambiguity_minutes * 60
     while pending:
-        best = None
+        picks: dict[str, tuple[float, str, bool]] = {}
         reasons = {}
         for gid in sorted(pending):
-            live = [c for c in cands[gid] if c[1] not in used]
+            live = [c for c in cands[gid] if c[1] not in used and (gid, c[1]) not in banned]
             pick = _nearest(live, window_hours, ambiguity_minutes)
             if isinstance(pick, str):
-                reasons[gid] = pick
+                reasons[gid] = refused.get(gid, pick)
                 continue
             gap = next(c[0] for c in live if c[1] == pick[0])
-            if best is None or (gap, gid) < best[0]:
-                best = ((gap, gid), gid, pick)
-        if best is None:
+            picks[gid] = (gap, pick[0], pick[1])
+        if not picks:
             break
-        _, gid, pick = best
-        matched[gid] = (by_id[pick[0]], pick[1])
-        used.add(pick[0])
+        gid, (gap, event_id, swapped) = min(picks.items(), key=lambda kv: (kv[1][0], kv[0]))
+        rivals = sorted(
+            r for r, (g2, e2, _) in picks.items()
+            if r != gid and e2 == event_id and abs(g2 - gap) < margin
+        )
+        if rivals:
+            names = ", ".join([gid, *rivals])
+            for r in [gid, *rivals]:
+                banned.add((r, event_id))
+                refused[r] = f"ambiguous between rows {names} for event {event_id}"
+            continue
+        matched[gid] = (by_id[event_id], swapped)
+        used.add(event_id)
         pending.discard(gid)
-    return matched, reasons
+    return matched, {gid: refused.get(gid, why) for gid, why in reasons.items() if gid in pending}
 
 
 def match_espn(
