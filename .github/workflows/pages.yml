@@ -17,6 +17,11 @@ name: Deploy Pages
 # Settings -> Pages (or `gh api -X PUT repos/<owner>/<repo>/pages -f
 # build_type=workflow`) before the deploy job below can publish anything.
 #
+# DATA SOURCE (2026-11-09): data/ and reports/ come from the `data` branch, overlaid by
+# `scripts/ci/data_branch.sh pull` right after checkout, at the branch tip when this job
+# runs. That makes the head_sha problem below moot for data; the checkout still only
+# supplies code.
+#
 # CHECKOUT GOTCHA (fixed 2026-08-20, was live ~20h): do NOT pin the checkout
 # to `github.event.workflow_run.head_sha`. For a schedule-triggered run,
 # that field is the commit the run STARTED from, not what it pushed — the
@@ -57,6 +62,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Overlay bot data from the data branch
+        run: bash scripts/ci/data_branch.sh pull
 
       - uses: actions/setup-python@v5
         with:

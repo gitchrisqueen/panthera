@@ -67,3 +67,6 @@ typings/
 
 # Site-audit output (scripts/site_audit.py): reports + annotated screenshots
 /artifacts/
+
+# Local worktree of the bot `data` branch (scripts/ci/data_branch.sh)
+/.databranch/

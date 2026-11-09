@@ -68,7 +68,8 @@ Repo Actions secrets (Settings → Secrets and variables → Actions):
 
 - `CFBD_API_KEY` — optional. Free at [collegefootballdata.com/key](https://collegefootballdata.com/key). Primary source for the NCAAF week schedule, lines, SP+ and venues; responses are cached under `data/ncaaf/cfbd/`. If unset, NCAAF falls back to ESPN only.
 
-Everything else is keyless; workflows commit with the built-in `GITHUB_TOKEN`.
+Everything else is keyless; workflows commit with the built-in `GITHUB_TOKEN`, to the
+bot-owned `data` branch (`main` is protected and takes no bot commits).
 
 Who rotates each of these, how to prove a replacement works, and what a keyed
 failure in the log means: [docs/secret-rotation.md](docs/secret-rotation.md).
@@ -110,8 +111,8 @@ build on them in this phase.
   and commit data/reports to it.
 - Create a feature branch per change and open a PR to `main`. CI (ruff +
   pytest over `src/` and `tests/`) must pass.
-- `data/` and `reports/` are bot-owned — don't hand-edit them in PRs (see
-  [`data/CLAUDE.md`](data/CLAUDE.md)).
+- `data/` and `reports/` are bot-owned and live on the `data` branch — don't
+  hand-edit them in PRs (see [`data/CLAUDE.md`](data/CLAUDE.md)).
 
 ## 👥 Stakeholders and Investors
 

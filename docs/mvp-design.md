@@ -225,6 +225,11 @@ the detector working, not a gap in it.
 
 ### Rollback and ownership — postseason scope fix (2026-10-15)
 
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+
 **Owner of the scope decision and of a red `mvp-morning` / `mvp-pregame`
 run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
 on-call rotation; the daily health check (`panthera-mvp doctor`) opens a
@@ -301,6 +306,11 @@ was reverted, the same way the version history above records changes.
 
 ### Rollback and ownership — called-off game settlement (2026-10-15)
 
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+
 The change that taught the pipeline to store a called-off game under its
 `detailedState` (`clients/mlb.py::stored_status`), widened every sport's
 finals fallback to admit a `Final` row with a missing score, and repaired
@@ -332,12 +342,16 @@ scheduled writers, several times a day, so stop them before you push or the
 damage continues while you work:
 
 ```bash
-for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml; do
+for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml \
+         ncaaf-capture.yml ncaabase-capture.yml panthera-catchup.yml mvp-calibrate.yml; do
   gh workflow disable "$w"
 done
+# Disabling does not stop runs already started or waiting in the panthera-data group:
+for s in in_progress queued pending waiting; do gh run list --status "$s"; done
+# gh run cancel <id>   for every writer run listed; repeat until the lists are empty
 ```
 
-Re-enable with `gh workflow enable` once the revert is on `main`. The
+Re-enable each one by name (`gh workflow enable mvp-morning.yml`, and so on for the list above) once the revert is on `main`. The
 alternative, if you would rather not stop the pipeline, is to keep the
 `_is_settled_final` / `_has_both_scores` hunk in `store.upsert_games` OUT of
 the revert — it is independent of the called-off logic and nothing else
@@ -370,13 +384,14 @@ rebases onto whatever it finds, would cement the loss.
   git revert -n 6acd4e6
   git checkout HEAD -- docs/ data/ reports/ '**/CLAUDE.md'
   git commit -m "revert: called-off settlement code, keeping the 823490 repair"
-  git push origin main
+  git push -u origin HEAD   # a branch off main; open a PR (main is protected)
   ```
 
-  **The push is the step that changes production.** Without it the revert is
-  local only and every scheduled run still uses the old code — GitHub Actions
-  reads `main`. Confirm with `git ls-remote origin main` that the revert sha
-  is what the remote now points at, then re-enable the workflows.
+  **The merge of that PR is the step that changes production.** Until it lands
+  every scheduled run still uses the old code — GitHub Actions reads `main`.
+  Confirm with `git ls-remote origin main` that the revert sha is what the
+  remote now points at, then re-enable the workflows. Containment lasts until
+  that merge, which needs GitGuardian and a manual merge.
 
 - **Merge commit.** The same, with `git revert -n -m 1 <merge sha>` in the
   first line. Keep the `-n`: without it the revert commits on its own,
@@ -491,6 +506,11 @@ record the answer here.
 reverted, the same way the section above does.
 
 ### Rollback and ownership — doubleheader ESPN match (2026-10-15)
+
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
 
 The change that gave `clients/espn.py::EspnGame` a `start_time_utc` and taught
 the MLB finals fallback to key each ESPN event onto ONE stored row by start
@@ -637,6 +657,10 @@ candidates on purpose.
 
 ### Rollback and ownership — catch-up (2026-10-16)
 
+> Since 2026-11-09 the bot commit to undo is on the `data` branch, so run this whole recipe in a `data`
+> worktree (`.github/workflows/CLAUDE.md` § Undoing or restoring bot data) and push with
+> `git push origin HEAD:data`, as written below.
+
 `panthera-mvp catchup` plus `.github/workflows/panthera-catchup.yml`
 (Monday 07:15 ET) and the replay hardening under it. The command finds slate
 days the pipeline missed — never ran, or ran under a config since corrected —
@@ -683,8 +707,8 @@ git status --short                         # expect only the two files below
 #   data/picks/catchup_log.csv
 
 git commit
-git push origin main                       # NOTHING changes until this
-git ls-remote origin main                  # confirm the SHA you just pushed
+git push origin HEAD:data                  # NOTHING changes until this (the data branch, not main)
+git ls-remote origin data                  # confirm the SHA you just pushed
 ```
 
 That removes the shadow rows AND the `data/picks/catchup_log.csv` completion

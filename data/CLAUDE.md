@@ -1,9 +1,19 @@
 # data/ — the flat-file datastore (bot-owned)
 
-The GitHub Actions workflows commit here several times a day. **Never
+The GitHub Actions workflows commit here several times a day, **to the `data`
+branch**, not `main` (`main` is protected; this copy is frozen at 2026-10-23).
+Read the live data with `scripts/ci/data_branch.sh pull`. **Never
 hand-edit these files**; fix the code in `src/panthera_mvp/` instead.
 All writes go through `store.py`, which enforces the dedupe keys below —
 that's what makes workflow re-runs safe.
+
+## Known gap (evening of 2026-10-23 to the `data` branch cutover)
+
+Bot commits in that window were rejected and lost. Gone for good: raw odds
+snapshots, `picks.csv` rows and CLV for those days. `panthera-mvp catchup` cannot rebuild them: it only
+replays dates whose games and odds are already on disk, and both stop at 2026-10-23. Games and finals
+may be re-ingested from the keyless sources by a separate recovery run; until then health findings
+for those days are expected, not new bugs.
 
 ## Schemas
 
