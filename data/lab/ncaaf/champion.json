@@ -1,0 +1,52 @@
+{
+  "change": "initial",
+  "effective_from": "2026-11-09",
+  "eval_version": "lab_eval_v1",
+  "hash": "e050ea59da",
+  "loop_hash": "7c67e2361f",
+  "params": {
+    "bet_limits": {
+      "skip_day_after_loss": false
+    },
+    "legs": {
+      "min_signals": 1
+    },
+    "min_lead_minutes": 15,
+    "signals": {
+      "letdown": {
+        "enabled": false,
+        "max_rank": 25,
+        "min_fav_points": 10.0
+      },
+      "line_move_spread": {
+        "enabled": false,
+        "min_points": 1.5
+      },
+      "line_move_total": {
+        "enabled": false,
+        "min_points": 2.0
+      },
+      "look_ahead": {
+        "enabled": false,
+        "max_rank": 25,
+        "min_fav_points": 10.0
+      },
+      "sp_plus_edge": {
+        "enabled": true,
+        "min_edge_points": 4.0
+      },
+      "weather_wind_under": {
+        "enabled": true,
+        "min_wind_mph": 15.0
+      }
+    },
+    "ticket": {
+      "max_bets_per_day": 6,
+      "max_price_american": -115,
+      "rank_by": "strength"
+    }
+  },
+  "parent_hash": null,
+  "promoted_at": "2026-11-09T22:55:30Z",
+  "sport": "ncaaf"
+}
