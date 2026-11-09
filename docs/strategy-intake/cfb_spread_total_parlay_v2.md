@@ -25,8 +25,8 @@ independently re-derived except where stated.
 is 14.37% per ticket (52.38% cubed) against 52.38% per leg for a straight bet.
 If every leg has a true +2% ROI, a parlay of them has +6.1%; if the legs have no
 edge, the parlay loses about 13% against 4.5% for singles. A parlay amplifies a
-real edge and a missing edge by the same factor, and it carries about 2.5 times
-the risk per dollar. Correlation helps only same-game legs, which books price.
+real edge and a missing edge by about the same factor (3.05 times at +2%, 2.86 times at zero edge), and its
+standard deviation per dollar is about 2.9 times a single bet's (2.79 against 0.952). Correlation helps only same-game legs, which books price.
 No source found shows a parlay beating the same legs bet straight. College
 teasers are rarely +EV
 ([TheLines 2021](https://www.thelines.com/college-football-teasers-study-2021/),
@@ -36,10 +36,10 @@ analyst-level). So v2 bets straight.
 
 | Signal | Outside evidence | Strength | v2 |
 |---|---|---|---|
-| S5 wind under | [Borghesi 2008](https://www.tandfonline.com/doi/full/10.1080/09603100701335432) (NFL, 1984-2004: wind lowers scoring and the market under-reacts; read via summary); [Football Study Hall 2018](https://www.footballstudyhall.com/2018/6/25/17500384/football-betting-windy-conditions-effect) (7,323 games: unders hit 54.7% above 10 mph and about 58% above 15 mph, about 250 games; the lines used are not stated). | The best of the six, but blog-level for college and old. | staked |
-| S6 SP+ vs spread >= 4 | [Fair and Oster 2007](https://ideas.repec.org/a/sae/jospec/v8y2007i1p3-18.html): rankings add nothing once the spread is in the model (1,582 games). Connelly's SP+ records are anecdotal and not against closing lines. | Peer-reviewed says priced in; the SP+ record is anecdotal. Kept as a clean test, not retuned. | staked |
+| S5 wind under | [Borghesi 2008](https://www.tandfonline.com/doi/full/10.1080/09603100701335432) (NFL, 1984-2004: wind lowers scoring and the market under-reacts; read via summary); [Football Study Hall 2018](https://www.footballstudyhall.com/2018/6/25/17500384/football-betting-windy-conditions-effect) (figures read from a search summary and not confirmed against the article: 7,323 games; unders 54.7% above 10 mph; about 58% above 15 mph on about 250 games, which is a 95% interval of roughly 52% to 64% and includes break-even; the lines used are not stated). The 15 mph cut-off comes from this blog's own bins, so it may carry winner's-curse bias. | The best of the six, but blog-level for college and old. | staked |
+| S6 SP+ vs spread >= 4 | [Fair and Oster 2007](https://ideas.repec.org/a/sae/jospec/v8y2007i1p3-18.html): rankings add nothing once the spread is in the model (sample size not confirmed). Connelly's SP+ records are anecdotal and not against closing lines. | Peer-reviewed says priced in; the SP+ record is anecdotal. Kept as a clean test, not retuned. | staked |
 | S1, S2 line move | Peer-reviewed work is thin and mixed. The engine buys after the move, so the information is already in the price. | Thin. | off in v2; v1 still grades them |
-| S3, S4 letdown, look-ahead | No peer-reviewed study found; a 38-62 ATS claim rests on about 100 games and a self-reported method; one source says the spread usually prices these spots. | Folklore. | off in v2; v1 still grades them |
+| S3, S4 letdown, look-ahead | No peer-reviewed study found; a 38-62 ATS claim ([CypherOdds](https://cypherodds.com/news/football-ncaaf/275), not independently checked) rests on about 100 games and a self-reported method; one source says the spread usually prices these spots. | Folklore. | off in v2; v1 still grades them |
 
 No source shows a college-football edge that survives the vig except possibly
 the wind under, and those numbers are old.
@@ -81,23 +81,54 @@ extra Odds API credits).
 Every parlay-path value is untouched: v1's config hash is `e96612a177` before
 and after this change, and a test pins it.
 
-## Falsification and honest sample sizes
+## Falsification, review triggers and honest sample sizes
 
 No ROI verdict is reachable this season, so `verdict: null` (SCREEN only). These
-sample sizes are the research agent's calculations (SD 0.952 per $1 on a -110
-bet; alpha 0.05 two-sided, 80% power), not published figures:
+sample sizes are the research agent's calculations, re-derived in review (SD 0.952
+per $1 on a -110 bet; alpha 0.05 two-sided, 80% power), not published figures:
 
 | To tell this from zero | Straight bets needed |
 |---|---|
 | +5% ROI | about 2,800 |
 | +2% ROI | about 17,800 |
 
-Stated before the first bet, v2 is read as falsified if any of these holds:
+**How fast the bets arrive.** v1's ledger for 2026-10-08 to 2026-10-22 (about two
+weeks, `reports/NCAAF_REPORT.md` on the `data` branch, generated 2026-11-09) holds
+4 S5 legs and 28 S6 legs: about 2 and 14 a week. At those rates 300 placed bets
+take about 21 weeks for S6 and about 150 weeks for S5, so neither signal reaches
+300 this season. Expect on the order of 100 S6 bets and 20 S5 bets by the end of
+2026 (an estimate from two weeks of data). The 100-bet checkpoint is reachable
+for S6 only. Every statement below about 300 bets is about a later season.
 
-1. wind unders (S5) win 52.4% or less over 300 graded bets;
-2. SP+ legs (S6) win 52.4% or less over 300 graded bets;
-3. ROI is below -7% after 300 graded bets (about 1.28 standard errors below
-   zero at that sample, so a break-even bettor reaches it about one time in ten).
+**Population and break-even.** Every bar uses the placed bets only (the `tickets`
+ledger, one-leg tickets), never the report's "Qualifying legs by signal" table,
+which counts every qualifying leg including those the daily cap or the -115 floor
+did not place and is descriptive only. ROI is profit over staked, with a push
+returning the stake and a void leaving the sample, so each bet's own price sets
+its break-even. A game places at most one bet, and S5 (total) and S6 (spread) sit
+in different markets, so a bet carries one signal family and nothing is counted
+twice.
+
+**The one falsification bar.** v2 is read as falsified if ROI on all placed bets
+is below -7% after 300 placed bets. At 300 bets -7% is about 1.27 standard errors
+below zero, so a bettor who exactly breaks even reaches it about one time in ten.
+That 10% is the strategy's whole false-falsification rate, because this is the
+only bar.
+
+**Review triggers (not verdicts).** After 300 placed bets on one signal, ROI of
+zero or less on that signal's placed bets (`rule_id` on the ticket) means write
+up and review, not "falsified". The trigger fires about 50% of the time for a
+bettor at break-even, about 36% for a true +2% ROI and about 23% for a true +4%,
+so it cannot separate those cases. A signal with 300 bets is also a later-season
+event (above).
+
+**Limits of these numbers.** The standard errors assume independent bets. Up to 6
+bets a day, several of them wind unders from one weather system, are correlated,
+so the true standard error is larger and the bars are, if anything, easier to
+miss. v2 decides about 60 minutes before the first kickoff against a consensus
+line, not the closing line, so how much of Fair and Oster's closing-line null
+applies is unmeasured; with no NCAAF closing-line value the best early read of an
+edge is unavailable all season.
 
 ## Not done (follow-ups, not claims)
 

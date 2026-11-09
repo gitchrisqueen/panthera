@@ -23,10 +23,12 @@ strategy:
   # hash render as a separate SCREEN segment.
   hash_lineage: [827622ed7e]
   hypothesis: >
-    Straight $100 bets on the two college-football angles with the best
-    outside evidence beat the vig where a 3-leg parlay of the same legs cannot:
-    kickoff wind of 15+ mph on an outdoor game (take the under) and SP+
-    disagreeing with the spread by 4+ points (take the side SP+ favors).
+    Straight $100 bets on two college-football angles beat the vig where a
+    3-leg parlay of the same legs cannot: kickoff wind of 15+ mph on an
+    outdoor game (take the under), which has some weak outside support, and SP+
+    disagreeing with the spread by 4+ points (take the side SP+ favors), which
+    is staked as a test of a null that the peer-reviewed work predicts (rankings
+    add nothing beyond the spread).
     The author's parlay structure triples the vig (break-even 14.4% per ticket
     against 52.4% per straight bet) and the research found no evidence a
     parlay beats the same legs bet straight, so v2 bets straight. Line-move,
@@ -85,10 +87,12 @@ staking:
 # Pre-registered 2026-11-09, before the first bet. No ROI verdict is reachable:
 # about 2,800 bets are needed to tell +5% from zero and about 17,800 for +2%
 # (docs/strategy-intake/cfb_spread_total_parlay_v2.md). SCREEN only.
-# Stated before the first bet, the strategy is read as falsified if any holds:
-#   1. wind unders (S5) win 52.4% or less over 300 graded bets;
-#   2. SP+ legs (S6) win 52.4% or less over 300 graded bets;
-#   3. ROI is below -7% after 300 graded bets (an 80% upper bound that cannot
-#      be reached by chance for a break-even bettor).
+# The one falsification bar, stated before the first bet: ROI on all PLACED
+# bets below -7% after 300 placed bets. At that sample -7% is about 1.27
+# standard errors below zero, so a break-even bettor reaches it about one time
+# in ten; with one bar, 10% is the whole false-falsification rate. Per-signal
+# ROI of zero or less after 300 placed bets on that signal is a review trigger,
+# not a verdict (it fires about half the time at break-even). At today's rate
+# 300 bets are a later-season event for either signal; the doc has the math.
 verdict: null
 screen: {checkpoints: [50, 100, 300], leg_checkpoints: [100, 300]}

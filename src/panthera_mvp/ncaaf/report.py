@@ -204,7 +204,14 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
         out += [
             "Every leg the engine found qualifying, on the ticket or not, graded "
             "at its best-available line. A leg fired by several signals counts "
-            "under each.",
+            "under each."
+            + (
+                " Descriptive only: it includes legs the daily cap or the price "
+                "floor did not place, and it is not the strategy's review bar "
+                "(that uses placed bets)."
+                if singles
+                else ""
+            ),
             "",
             "| Signal | Legs | W-L-P | Win % | vs 52.4% |",
             "|---|---|---|---|---|",

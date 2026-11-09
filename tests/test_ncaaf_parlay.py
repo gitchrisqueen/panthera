@@ -489,3 +489,61 @@ def test_two_strategies_share_one_snapshot_and_v2_bets_straight(cfb_strategy_roo
     text = open(write_report()).read()
     assert "## cfb_spread_total_parlay_v2" in text and "### Bets" in text
     assert "- Bets: 3 (3-0-0 W-L-P, 0 pending)" in text
+
+
+def _cache_fixture_sp(monkeypatch):
+    from panthera_mvp.clients import cfbd
+
+    season = int(store.load_games()["season"].dropna().iloc[0])
+    sp = [{"year": season, "team": t, "rating": r} for t, r in
+          (("BYU", 20.0), ("TCU", 0.0), ("Miami", 30.0), ("Clemson", 5.0),
+           ("Texas Tech", 25.0), ("Colorado", 2.0))]
+    path = cfbd.cache_path("ratings/sp", {"year": season})
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(sp))
+
+
+def test_one_strategy_failing_does_not_sink_the_others(cfb_strategy_root, monkeypatch):
+    """The snapshot is bought once for everyone. If v2 raises, v1's ticket still
+    lands, v2 gets an error row (so the half-hourly cron does not retry it and
+    re-buy the snapshot), and the failure is annotated."""
+    from conftest import REPO
+    from panthera_mvp.ncaaf import picks, pipeline
+
+    broken = yaml.safe_load((REPO / V2_YAML).read_text())
+    del broken["ticket"]["max_price_american"]  # _decide_singles needs it: KeyError
+    (cfb_strategy_root / V2_YAML).write_text(yaml.safe_dump(broken))
+    monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
+    monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
+    picks.cmd_prep(odds_mode="dry_run")
+    _cache_fixture_sp(monkeypatch)
+    snapshots = []
+    real = picks.cmd_snapshot
+    monkeypatch.setattr(picks, "cmd_snapshot", lambda *a, **k: snapshots.append(a) or real(*a, **k))
+
+    picks.cmd_picks(dry_run=True)
+    d = store.load_decisions().set_index("strategy_id")
+    assert d.loc["cfb_spread_total_parlay", "status"] == "ticket"
+    assert d.loc["cfb_spread_total_parlay_v2", "status"] == "skip"
+    assert d.loc["cfb_spread_total_parlay_v2", "reason"] == "error: KeyError"
+    assert list(store.load_tickets()["strategy_id"]) == ["cfb_spread_total_parlay"]
+
+    picks.cmd_picks(dry_run=True)  # both rows exist: nothing retried, nothing bought
+    assert len(store.load_decisions()) == 2 and len(snapshots) == 1
+
+
+def test_a_dead_data_feed_is_named_in_the_decision_notes(cfb_strategy_root, monkeypatch):
+    """No cached SP+ and no venue coordinates look like a quiet day unless the
+    decision says so. v1 has S5 and S6 on too; v2 depends on nothing else."""
+    from conftest import REPO
+    from panthera_mvp.ncaaf import picks, pipeline
+
+    shutil.copy(REPO / V2_YAML, cfb_strategy_root / V2_YAML)
+    monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
+    monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
+    picks.cmd_prep(odds_mode="dry_run")
+    picks.cmd_picks(dry_run=True)  # no SP+ cache, no CFBD venues
+    d = store.load_decisions().set_index("strategy_id")
+    for sid in ("cfb_spread_total_parlay", "cfb_spread_total_parlay_v2"):
+        notes = str(d.loc[sid, "notes"])
+        assert "S6 cannot fire" in notes and "S5 cannot fire" in notes, sid

@@ -62,7 +62,7 @@ writes a durable run note; started games are skipped as always.
 
 - **ncaaf pre-check gate (#79).** `ncaaf.yml` has a `gate` job that runs before the `run` job. For the two
   half-hourly `auto` crons it reads `data/ncaaf/games/games.csv` and `tickets/decisions.csv` from the `data`
-  branch and skips the whole job (no `pip install`) when the day is already decided, no game is stored for
+  branch and skips the whole job (no `pip install`) when every enabled NCAAF strategy has already decided the day, no game is stored for
   today, or the first eligible kickoff is not yet inside the decision window. `scripts/ci/ncaaf_gate.py` mirrors
   `in_decision_window`; its `AUTO_CRONS` must equal the two `auto` cron strings (a test checks it). It
   **fails open**: a dispatch, the prep and grade crons, an unknown cron, a failed checkout or fetch, a missing
@@ -74,7 +74,7 @@ writes a durable run note; started games are skipped as always.
   gate and the job does not run. With a fixture, only `go=true` runs the job.
 - **A day looks wrongly skipped?** Open the run, job `gate`, step `Gate`: the log and the run summary
   carry `go=false (reason)`. Override with a dispatch, which always goes: `gh workflow run ncaaf.yml
-  -f task=picks -f dry_run=false` (decide today now) or `-f task=prep`. A broken gate (data branch
+  -f task=picks -f dry_run=false` (decide today now for every enabled strategy that has not decided; the 3-credit snapshot is bought once for all) or `-f task=prep`. A broken gate (data branch
   unreachable, bad files) shows as a red `gate` job with `run` still executing: that is the "detector is
   down" signal, not a skipped run. Rollback: revert the PR that added the gate. After any revert or replay
   on `data`, run `gh workflow run pages.yml --ref main` so the dashboard follows.

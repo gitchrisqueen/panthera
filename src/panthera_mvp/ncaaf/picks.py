@@ -309,13 +309,31 @@ def cmd_picks(
     tickets, legs = store.load_tickets(), store.load_legs()
     for sid in todo:
         scfg = strategies[sid]
-        today_tickets = tickets[(tickets["strategy_id"] == sid)
-                                & (tickets["game_date_et"] == day)]
-        decision = parlay.decide_day(
-            views, scfg, now, schedules=schedules, sp_ratings=sp_ratings, wind_mph=winds,
-            tickets_today=len(today_tickets),
-            lost_yesterday=parlay.prior_day_lost(tickets, legs, sid, day),
-            aliases=aliases,
-        )
-        chash = bases[sid]["config_hash"]
-        _write_decision(sid, scfg, decision, day, now, snap_ts, bases[sid], chash)
+        sigs = scfg["signals"]
+        # A quiet day and a dead data feed look the same in the ledger, so say which.
+        data_notes = []
+        if sigs["sp_plus_edge"]["enabled"] and not sp_ratings:
+            data_notes.append("no SP+ ratings cached: S6 cannot fire")
+        if sigs["weather_wind_under"]["enabled"] and not winds:
+            data_notes.append("no kickoff winds available: S5 cannot fire")
+        try:
+            today_tickets = tickets[(tickets["strategy_id"] == sid)
+                                    & (tickets["game_date_et"] == day)]
+            decision = parlay.decide_day(
+                views, scfg, now, schedules=schedules, sp_ratings=sp_ratings, wind_mph=winds,
+                tickets_today=len(today_tickets),
+                lost_yesterday=parlay.prior_day_lost(tickets, legs, sid, day),
+                aliases=aliases,
+            )
+            decision.skipped_games.extend(data_notes)
+            _write_decision(sid, scfg, decision, day, now, snap_ts, bases[sid],
+                            bases[sid]["config_hash"])
+        except Exception as exc:  # noqa: BLE001 - one strategy must not sink the others
+            # The snapshot is already paid for. Record the day as decided (an error
+            # row stops the half-hourly retry loop re-buying it) and carry on, so the
+            # other strategies' decisions still reach the push.
+            kind = type(exc).__name__
+            print(f"::error::ncaaf picks: {sid} failed on {day}: {kind}: {exc}", file=sys.stderr)
+            store.append_decision(
+                bases[sid] | {"snapshot_ts_utc": snap_ts, "status": "skip",
+                              "reason": f"error: {kind}", "n_qualifiers": 0}, [])

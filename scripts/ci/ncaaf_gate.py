@@ -3,8 +3,11 @@
 `ncaaf picks --auto` run provably has nothing to do (issue #79, Actions standard rule 10).
 
 Stdlib only, so it runs before any install. It mirrors the no-op arms of
-`ncaaf.picks.cmd_picks` / `in_decision_window` and is deliberately conservative:
-anything it cannot prove (a dispatch, a prep or grade cron, an unknown cron string,
+`ncaaf.picks.cmd_picks` / `in_decision_window` and is deliberately conservative.
+A day counts as decided only when EVERY enabled strategy in config/ncaaf_strategies/
+has a decision row for it. The decision window comes from STRATEGY's YAML, so every
+enabled strategy must share its timing (a test pins that). Anything it cannot prove
+(a dispatch, a prep or grade cron, an unknown cron string,
 a missing or unreadable file, any exception) is "go". Fail open, never closed.
 
 Inputs come from the environment, never from interpolated workflow text:
@@ -68,6 +71,27 @@ def config_number(path: Path, key: str) -> int:
     return int(match.group(1))
 
 
+def enabled_strategies() -> set[str]:
+    """Ids of the NCAAF strategies whose `strategy:` block says `enabled: true`. Raises
+    when none can be read, so the gate fails open instead of treating "no strategies" as
+    "everything decided"."""
+    ids: set[str] = set()
+    for path in sorted((ROOT / "config" / "ncaaf_strategies").glob("*.yaml")):
+        text = path.read_text()
+        block = re.search(r"^strategy:\s*\n((?:[ \t]+.*\n|\s*\n)+)", text, re.M)
+        if not block:
+            raise ValueError(f"no strategy block in {path.name}")
+        enabled = re.search(r"^\s+enabled:\s*(true|false)\b", block.group(1), re.M)
+        sid = re.search(r"^\s+id:\s*(\S+)", block.group(1), re.M)
+        if not enabled or not sid:
+            raise ValueError(f"strategy.id or strategy.enabled missing in {path.name}")
+        if enabled.group(1) == "true":
+            ids.add(sid.group(1))
+    if not ids:
+        raise ValueError("no enabled NCAAF strategy found")
+    return ids
+
+
 def load_settings() -> tuple[int, int, int]:
     strategy = ROOT / "config" / "ncaaf_strategies" / f"{STRATEGY}.yaml"
     return (
@@ -77,6 +101,15 @@ def load_settings() -> tuple[int, int, int]:
     )
 
 
+def decided_days(decisions: list[dict], enabled: set[str]) -> set[str]:
+    """Days on which EVERY enabled strategy has a decision row. A day one strategy has
+    not decided (a new strategy, or one whose decision failed before its row) stays "go"."""
+    by_day: dict[str, set[str]] = {}
+    for row in decisions:
+        by_day.setdefault(row["game_date_et"], set()).add(row["strategy_id"])
+    return {day for day, ids in by_day.items() if enabled <= ids}
+
+
 def decide(
     now: datetime, games: list[dict], decided_days: set[str], settings: tuple[int, int, int]
 ) -> tuple[bool, str]:
@@ -84,7 +117,7 @@ def decide(
     target, lead_min, half = settings
     day = now.astimezone(ET).date().isoformat()
     if day in decided_days:
-        return False, f"{STRATEGY} already decided {day}"
+        return False, f"every enabled strategy already decided {day}"
     lead = timedelta(minutes=lead_min)
     starts = sorted(
         start
@@ -169,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
             emit(True, "gate inputs missing (fail open)", False)
             return 0
         decisions = read_csv(args.decisions_csv, {"strategy_id", "game_date_et"})
-        decided = {r["game_date_et"] for r in decisions if r["strategy_id"] == STRATEGY}
+        decided = decided_days(decisions, enabled_strategies())
         games = read_csv(args.games_csv, {"game_date_et", "start_time_utc", "status"})
         go, why = decide(datetime.now(UTC), games, decided, load_settings())
         emit(go, why, False)
