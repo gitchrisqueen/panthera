@@ -66,7 +66,8 @@ space:
 
 # Promotion guards. Every one must hold; most weeks end in "no change".
 guards:
-  min_bets: 300                   # graded bets the challenger needs in the training window
+  min_bets: 100                   # graded bets the challenger needs in the training window.
+                                  # The z bar below, not this floor, is what keeps noise out.
   z_min: 2.0                      # floor for the paired-difference z
   holdout_weeks: 3                # newest weeks, never used to pick the challenger
   shrink_pseudo_bets: 625         # ROI shrink toward 0: roi * n / (n + this). An assumption.

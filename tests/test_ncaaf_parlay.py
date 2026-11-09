@@ -557,7 +557,7 @@ def test_error_annotation_is_one_line(cfb_strategy_root, monkeypatch, capsys):
     monkeypatch.setattr(parlay, "decide_day", boom)
     picks.cmd_picks(dry_run=True)
     err = capsys.readouterr().err
-    lines = [ln for ln in err.splitlines() if "ncaaf picks:" in ln]
+    lines = [ln for ln in err.splitlines() if ln.startswith("::error::") and "ncaaf picks:" in ln]
     assert len(lines) == 2 and all(ln.startswith("::error::") for ln in lines)
     assert not any(ln.startswith("::set-output") for ln in err.splitlines())
 

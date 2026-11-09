@@ -238,9 +238,16 @@ def test_champion_and_iterations_round_trip_and_count_trials(root):
 # --- the run and the report -----------------------------------------------------------------------
 
 
-def seed_root(root, weeks=8, per_week=60):
+def seed_root(root, weeks=8, per_week=60, min_bets=None):
     (root / "config" / "lab").mkdir(parents=True)
     shutil.copy("config/lab/ncaaf.yaml", root / "config" / "lab" / "ncaaf.yaml")
+    if min_bets is not None:  # pin the sample floor so the case does not depend on the default
+        import yaml
+
+        path = root / "config" / "lab" / "ncaaf.yaml"
+        cfg = yaml.safe_load(path.read_text())
+        cfg["guards"]["min_bets"] = min_bets
+        path.write_text(yaml.safe_dump(cfg, sort_keys=False))
     feats, games = synth(2, weeks, per_week)
     store.append_features("ncaaf", feats.to_dict("records"))
     gp = root / "data" / "ncaaf" / "games" / "games.csv"
@@ -249,9 +256,9 @@ def seed_root(root, weeks=8, per_week=60):
 
 
 def test_run_writes_champion_iteration_and_report_and_dry_run_writes_nothing(root, capsys):
-    seed_root(root)
+    seed_root(root, min_bets=100_000)
     dry = run.cmd_run("ncaaf", dry_run=True, force=True)
-    assert dry.decision == "insufficient_data"            # 300 graded bets is far away
+    assert dry.decision == "insufficient_data"            # the floor is out of reach
     assert store.load_champion("ncaaf") is None and store.load_iterations("ncaaf").empty
     assert not (root / "reports" / "LAB_REPORT.md").exists()
 

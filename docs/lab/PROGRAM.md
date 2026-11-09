@@ -63,10 +63,13 @@ how rarely it invents one: over 7,400 simulated weekly runs on fair coins it pro
 
 Volume matters as much as the guards. As an estimate, not a measurement: with
 `ticket.max_bets_per_day: 6` and two angles switched on, a 15-week NCAAF season yields
-about 12 bets a week once the daily cap binds, so roughly 180 a season. That is below the
-default `guards.min_bets: 300`, so until the cap is raised or more signals are on, the
-likely weekly answer is `insufficient_data`. Re-check the real volume after a few weeks
-of logged features and set `min_bets` and the cap on that evidence.
+about 12 bets a week once the daily cap binds, so roughly 180 a season. The default
+`guards.min_bets` is 100: low enough that the weekly run records a real comparison
+(champion and challenger ROI, z, required z) once a few weeks of features exist, while
+the z bar (raised by every challenger ever evaluated) and the outlier and holdout checks,
+not the floor, are what keep noise out. Until about 100 bets of volume exist the answer is
+`insufficient_data`. The null eval runs at an even lower floor (60), so it is the harder
+case. Re-check the real volume after a few weeks of logged features.
 
 ## Changing the evaluator starts a new loop
 
