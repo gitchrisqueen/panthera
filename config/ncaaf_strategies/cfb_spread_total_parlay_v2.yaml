@@ -90,7 +90,8 @@ staking:
 # The one falsification bar, stated before the first bet: ROI on all PLACED
 # bets below -7% after 300 placed bets. At that sample -7% is about 1.27
 # standard errors below zero, so a break-even bettor reaches it about one time
-# in ten; with one bar, 10% is the whole false-falsification rate. Per-signal
+# in ten; with one bar, 10% is the whole false-falsification rate at best (a floor:
+# correlated bets raise it). Per-signal
 # ROI of zero or less after 300 placed bets on that signal is a review trigger,
 # not a verdict (it fires about half the time at break-even). At v1's leg rates
 # (an upper bound for placed bets) 300 bets are a later-season event for either

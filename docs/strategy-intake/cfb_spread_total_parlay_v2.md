@@ -103,7 +103,7 @@ days. They are also lumpy (2026-10-10, a Saturday, alone holds about 10 S6 legs,
 and one October day shows none), and they rest on two weeks of data. At those
 upper-bound rates 300 bets would take at least about 21 weeks for S6 and about
 150 weeks for S5, so neither signal reaches 300 this season; the placed rate is
-lower and unmeasured. The 2026 season will end with at most a few dozen to about a
+lower and unmeasured. The 2026 season will end with roughly a few dozen to about a
 hundred S6 bets and fewer S5 bets. The 100-bet checkpoint is at best reachable
 for S6. Every statement below about 300 bets is about a later season.
 
@@ -119,8 +119,8 @@ twice.
 **The one falsification bar.** v2 is read as falsified if ROI on all placed bets
 is below -7% after 300 placed bets. At 300 bets -7% is about 1.27 standard errors
 below zero, so a bettor who exactly breaks even reaches it about one time in ten.
-That 10% is the strategy's whole false-falsification rate, because this is the
-only bar.
+That 10% is the strategy's whole false-falsification rate at best (see the
+limits below: it is a floor), because this is the only bar.
 
 **Review triggers (not verdicts).** After 300 placed bets on one signal, ROI of
 zero or less on that signal's placed bets (`rule_id` on the ticket) means write

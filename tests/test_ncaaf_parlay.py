@@ -34,6 +34,19 @@ def v2cfg():
         return yaml.safe_load(fh)
 
 
+def install_v2(root, mutate=None):
+    """Copy the shipped v2 YAML into a temp root, ENABLED whatever the shipped flag says:
+    the documented first incident move is `enabled: false`, and these tests are about how
+    v2 behaves when it runs, so they must not go red when it is switched off."""
+    from conftest import REPO
+
+    cfg = yaml.safe_load((REPO / V2_YAML).read_text())
+    cfg["strategy"]["enabled"] = True
+    if mutate:
+        mutate(cfg)
+    (root / V2_YAML).write_text(yaml.safe_dump(cfg))
+
+
 def game(eid, home, away, start, **kw):
     row = {
         "event_id": eid, "game_date_et": start[:10], "start_time_utc": start,
@@ -448,12 +461,11 @@ def test_two_strategies_share_one_snapshot_and_v2_bets_straight(cfb_strategy_roo
     """v1 and v2 decide the same day from ONE snapshot (no second purchase).
     On the 2026-10-03 fixture card SP+ favors BYU, Miami and Texas Tech by 4+
     over the spread: v1 builds one 3-leg ticket, v2 places three straight bets."""
-    from conftest import REPO
     from panthera_mvp.clients import cfbd
     from panthera_mvp.ncaaf import picks, pipeline
     from panthera_mvp.ncaaf.report import write_report
 
-    shutil.copy(REPO / V2_YAML, cfb_strategy_root / V2_YAML)
+    install_v2(cfb_strategy_root)
     monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
     monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
     picks.cmd_prep(odds_mode="dry_run")
@@ -507,12 +519,10 @@ def test_one_strategy_failing_does_not_sink_the_others(cfb_strategy_root, monkey
     """The snapshot is bought once for everyone. If v2 raises, v1's ticket still
     lands, v2 gets an error row (so the half-hourly cron does not retry it and
     re-buy the snapshot), and the failure is annotated."""
-    from conftest import REPO
     from panthera_mvp.ncaaf import picks, pipeline
 
-    broken = yaml.safe_load((REPO / V2_YAML).read_text())
-    del broken["ticket"]["max_price_american"]  # _decide_singles needs it: KeyError
-    (cfb_strategy_root / V2_YAML).write_text(yaml.safe_dump(broken))
+    # _decide_singles needs max_price_american: a KeyError when it is missing
+    install_v2(cfb_strategy_root, lambda c: c["ticket"].pop("max_price_american"))
     monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
     monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
     picks.cmd_prep(odds_mode="dry_run")
@@ -534,10 +544,9 @@ def test_one_strategy_failing_does_not_sink_the_others(cfb_strategy_root, monkey
 
 def test_error_annotation_is_one_line(cfb_strategy_root, monkeypatch, capsys):
     """A team name inside an exception message must not start a second workflow command."""
-    from conftest import REPO
     from panthera_mvp.ncaaf import parlay, picks, pipeline
 
-    shutil.copy(REPO / V2_YAML, cfb_strategy_root / V2_YAML)
+    install_v2(cfb_strategy_root)
     monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
     monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
     picks.cmd_prep(odds_mode="dry_run")
@@ -556,10 +565,9 @@ def test_error_annotation_is_one_line(cfb_strategy_root, monkeypatch, capsys):
 def test_a_dead_data_feed_is_named_in_the_decision_notes(cfb_strategy_root, monkeypatch):
     """No cached SP+ and no venue coordinates look like a quiet day unless the
     decision says so. v1 has S5 and S6 on too; v2 depends on nothing else."""
-    from conftest import REPO
     from panthera_mvp.ncaaf import picks, pipeline
 
-    shutil.copy(REPO / V2_YAML, cfb_strategy_root / V2_YAML)
+    install_v2(cfb_strategy_root)
     monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
     monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
     picks.cmd_prep(odds_mode="dry_run")
@@ -568,3 +576,15 @@ def test_a_dead_data_feed_is_named_in_the_decision_notes(cfb_strategy_root, monk
     for sid in ("cfb_spread_total_parlay", "cfb_spread_total_parlay_v2"):
         notes = str(d.loc[sid, "notes"])
         assert "S6 cannot fire" in notes and "S5 cannot fire" in notes, sid
+
+
+def test_a_disabled_v2_gets_no_decision_and_v1_still_decides(cfb_strategy_root, monkeypatch):
+    """The runbook's first move is `enabled: false` on v2: it must stop v2 only."""
+    from panthera_mvp.ncaaf import picks, pipeline
+
+    install_v2(cfb_strategy_root, lambda c: c["strategy"].update(enabled=False))
+    monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
+    monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
+    picks.cmd_prep(odds_mode="dry_run")
+    picks.cmd_picks(dry_run=True)
+    assert set(store.load_decisions()["strategy_id"]) == {"cfb_spread_total_parlay"}

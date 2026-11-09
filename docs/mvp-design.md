@@ -878,7 +878,9 @@ pushed as usual. Only the strategy loop is isolated: a failure earlier in the ru
 (the ESPN refresh, the snapshot, building the views, reading SP+ or venues) still
 ends the run before any decision row exists, and the next half-hourly run tries
 again and buys the snapshot again. A failure inside one strategy after it wrote
-part of a bet leaves that partial ticket and the error row side by side. The run stays green, so look for `error:` in `decisions.csv`
+part of a bet leaves that partial ticket and the error row side by side. The run
+stays green and nothing opens an issue for it (`health` watches data freshness,
+not this), so look for `error:` in `decisions.csv`
 (`data/ncaaf/tickets/decisions.csv` on the `data` branch) and for the annotation.
 `test_one_strategy_failing_does_not_sink_the_others` covers it.
 
@@ -891,7 +893,7 @@ part of a bet leaves that partial ticket and the error row side by side. The run
    enabled strategies, so disabling v2 does not leave the gate waiting on it.
    The same PR must keep the tests green with v2 off: the gate test accepts a
    disabled v2 (`test_a_day_is_decided_only_when_every_enabled_strategy_decided_it`).
-2. **Revert the whole change.** `git switch -c revert/cfb-v2 origin/main`, find
+2. **Revert the whole change.** `git fetch origin && git switch -c revert/cfb-v2 origin/main`, find
    the commit with `git log --oneline origin/main --grep '(#86)'`. This repo
    squash-merges, so the commit has one parent: run `git revert -n <sha>` then
    `git commit`. Use `git revert -m 1 <sha>` only if
