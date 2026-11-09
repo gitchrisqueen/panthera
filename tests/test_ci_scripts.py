@@ -172,8 +172,10 @@ def test_auto_run_with_no_games_is_no_go(tmp_path):
 
 def test_a_day_is_decided_only_when_every_enabled_strategy_decided_it():
     enabled = gate.enabled_strategies()
-    assert enabled == {"cfb_spread_total_parlay", "cfb_spread_total_parlay_v2"}
-    v1, v2 = sorted(enabled)
+    v1, v2 = "cfb_spread_total_parlay", "cfb_spread_total_parlay_v2"
+    # v2 may be disabled (the documented first incident move); v1 is the gate's timing source.
+    assert v1 in enabled and enabled <= {v1, v2}
+    enabled = {v1, v2}  # the two-strategy case this test is about
     rows = [
         {"strategy_id": v1, "game_date_et": "2026-11-07"},
         {"strategy_id": v1, "game_date_et": "2026-11-08"},

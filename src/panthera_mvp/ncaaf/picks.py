@@ -19,6 +19,7 @@ Idempotent: a day already decided is never re-decided.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from datetime import datetime, timedelta
 
@@ -333,7 +334,10 @@ def cmd_picks(
             # row stops the half-hourly retry loop re-buying it) and carry on, so the
             # other strategies' decisions still reach the push.
             kind = type(exc).__name__
-            print(f"::error::ncaaf picks: {sid} failed on {day}: {kind}: {exc}", file=sys.stderr)
+            # One line, printable ASCII: team names in the message come from outside feeds
+            # and must not be able to start a second workflow command.
+            msg = re.sub(r"[^\x20-\x7e]", "?", str(exc))[:300]
+            print(f"::error::ncaaf picks: {sid} failed on {day}: {kind}: {msg}", file=sys.stderr)
             store.append_decision(
                 bases[sid] | {"snapshot_ts_utc": snap_ts, "status": "skip",
                               "reason": f"error: {kind}", "n_qualifiers": 0}, [])

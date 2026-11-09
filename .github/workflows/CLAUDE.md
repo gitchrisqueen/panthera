@@ -74,7 +74,7 @@ writes a durable run note; started games are skipped as always.
   gate and the job does not run. With a fixture, only `go=true` runs the job.
 - **A day looks wrongly skipped?** Open the run, job `gate`, step `Gate`: the log and the run summary
   carry `go=false (reason)`. Override with a dispatch, which always goes: `gh workflow run ncaaf.yml
-  -f task=picks -f dry_run=false` (decide today now for every enabled strategy that has not decided; the 3-credit snapshot is bought once for all) or `-f task=prep`. A broken gate (data branch
+  -f task=picks -f dry_run=false` (decide today now for every enabled strategy that has not decided, `cfb_spread_total_parlay` and `cfb_spread_total_parlay_v2`; the 3-credit snapshot is bought once for all) or `-f task=prep`. A broken gate (data branch
   unreachable, bad files) shows as a red `gate` job with `run` still executing: that is the "detector is
   down" signal, not a skipped run. Rollback: revert the PR that added the gate. After any revert or replay
   on `data`, run `gh workflow run pages.yml --ref main` so the dashboard follows.

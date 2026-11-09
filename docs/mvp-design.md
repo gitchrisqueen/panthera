@@ -874,7 +874,11 @@ each strategy in turn. If one strategy raises, the run prints a
 `::error::ncaaf picks: <id> failed ...` annotation, writes a `skip` decision row
 for it (`reason: error: <ExceptionType>`, so the half-hourly cron does not retry
 it and re-buy the snapshot) and carries on; the other strategies' decisions are
-pushed as usual. The run stays green, so look for `error:` in `decisions.csv`
+pushed as usual. Only the strategy loop is isolated: a failure earlier in the run
+(the ESPN refresh, the snapshot, building the views, reading SP+ or venues) still
+ends the run before any decision row exists, and the next half-hourly run tries
+again and buys the snapshot again. A failure inside one strategy after it wrote
+part of a bet leaves that partial ticket and the error row side by side. The run stays green, so look for `error:` in `decisions.csv`
 (`data/ncaaf/tickets/decisions.csv` on the `data` branch) and for the annotation.
 `test_one_strategy_failing_does_not_sink_the_others` covers it.
 
@@ -885,9 +889,18 @@ pushed as usual. The run stays green, so look for `error:` in `decisions.csv`
    lists v2 as disabled. `enabled` is in the hash-excluded `strategy` block, so no
    `config_hash` moves. The pre-check gate (`scripts/ci/ncaaf_gate.py`) counts only
    enabled strategies, so disabling v2 does not leave the gate waiting on it.
-2. **Revert the whole change.** `git switch -c revert/cfb-v2 origin/main`, then
-   `git revert -m 1 <merge commit of the v2 PR>`, open a PR. Revert the code and
-   the v2 YAML TOGETHER: the pre-v2 engine reads `max_tickets_per_day`,
+   The same PR must keep the tests green with v2 off: the gate test accepts a
+   disabled v2 (`test_a_day_is_decided_only_when_every_enabled_strategy_decided_it`).
+2. **Revert the whole change.** `git switch -c revert/cfb-v2 origin/main`, find
+   the commit with `git log --oneline origin/main --grep '(#86)'`. This repo
+   squash-merges, so the commit has one parent: run `git revert -n <sha>` then
+   `git commit`. Use `git revert -m 1 <sha>` only if
+   `git show --no-patch --format=%p <sha>` lists two parents. Open a PR. The
+   revert also undoes the Playwright cache-key fix in
+   `.github/workflows/site-audit.yml` (the audit then fails again on a new
+   Playwright release): keep it with
+   `git checkout origin/main -- .github/workflows/site-audit.yml` before you
+   commit. Revert the code and the v2 YAML TOGETHER: the pre-v2 engine reads `max_tickets_per_day`,
    `legs_per_ticket` and `price_band_american`, which the v2 YAML does not have,
    so old code with the v2 YAML on `main` raises on every run (the isolation above
    then records an error row for v2 each day, but do not leave it that way). v1's

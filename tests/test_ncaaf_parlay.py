@@ -532,6 +532,27 @@ def test_one_strategy_failing_does_not_sink_the_others(cfb_strategy_root, monkey
     assert len(store.load_decisions()) == 2 and len(snapshots) == 1
 
 
+def test_error_annotation_is_one_line(cfb_strategy_root, monkeypatch, capsys):
+    """A team name inside an exception message must not start a second workflow command."""
+    from conftest import REPO
+    from panthera_mvp.ncaaf import parlay, picks, pipeline
+
+    shutil.copy(REPO / V2_YAML, cfb_strategy_root / V2_YAML)
+    monkeypatch.setattr(pipeline, "_today_et", lambda: "2026-10-03")
+    monkeypatch.setattr(picks, "_now", lambda: datetime(2026, 10, 3, 18, 0, tzinfo=UTC))
+    picks.cmd_prep(odds_mode="dry_run")
+
+    def boom(*a, **k):
+        raise RuntimeError("bad team\n::set-output name=x::y\x1b[0m")
+
+    monkeypatch.setattr(parlay, "decide_day", boom)
+    picks.cmd_picks(dry_run=True)
+    err = capsys.readouterr().err
+    lines = [ln for ln in err.splitlines() if "ncaaf picks:" in ln]
+    assert len(lines) == 2 and all(ln.startswith("::error::") for ln in lines)
+    assert not any(ln.startswith("::set-output") for ln in err.splitlines())
+
+
 def test_a_dead_data_feed_is_named_in_the_decision_notes(cfb_strategy_root, monkeypatch):
     """No cached SP+ and no venue coordinates look like a quiet day unless the
     decision says so. v1 has S5 and S6 on too; v2 depends on nothing else."""

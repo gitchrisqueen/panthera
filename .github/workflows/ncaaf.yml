@@ -42,7 +42,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "picks = decide today now for every enabled strategy (ignores the window); prep; grade"
+        description: "picks = decide cfb_spread_total_parlay and cfb_spread_total_parlay_v2 now (ignores the window); prep; grade"
         type: choice
         options: [picks, prep, grade]
         default: prep

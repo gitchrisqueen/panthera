@@ -25,8 +25,10 @@ independently re-derived except where stated.
 is 14.37% per ticket (52.38% cubed) against 52.38% per leg for a straight bet.
 If every leg has a true +2% ROI, a parlay of them has +6.1%; if the legs have no
 edge, the parlay loses about 13% against 4.5% for singles. A parlay amplifies a
-real edge and a missing edge by about the same factor (3.05 times at +2%, 2.86 times at zero edge), and its
-standard deviation per dollar is about 2.9 times a single bet's (2.79 against 0.952). Correlation helps only same-game legs, which books price.
+real edge and a missing edge by about the same factor (3.06 times at +2%, 2.86 times at zero edge), and its
+standard deviation per dollar is about 2.4 to 2.6 times a single bet's (2.3 to 2.5
+for the parlay against about 0.95, depending on whether the legs have an edge).
+Correlation helps only same-game legs, which books price.
 No source found shows a parlay beating the same legs bet straight. College
 teasers are rarely +EV
 ([TheLines 2021](https://www.thelines.com/college-football-teasers-study-2021/),
@@ -94,11 +96,16 @@ per $1 on a -110 bet; alpha 0.05 two-sided, 80% power), not published figures:
 
 **How fast the bets arrive.** v1's ledger for 2026-10-08 to 2026-10-22 (about two
 weeks, `reports/NCAAF_REPORT.md` on the `data` branch, generated 2026-11-09) holds
-4 S5 legs and 28 S6 legs: about 2 and 14 a week. At those rates 300 placed bets
-take about 21 weeks for S6 and about 150 weeks for S5, so neither signal reaches
-300 this season. Expect on the order of 100 S6 bets and 20 S5 bets by the end of
-2026 (an estimate from two weeks of data). The 100-bet checkpoint is reachable
-for S6 only. Every statement below about 300 bets is about a later season.
+4 S5 legs and 28 S6 legs: about 2 and 14 a week. Those are counts of v1's
+QUALIFYING legs, so they are an upper bound for v2's placed bets: the cap of 6 a
+day and the -115 floor can only remove bets, and v1's own skip-day rule hid some
+days. They are also lumpy (2026-10-10, a Saturday, alone holds about 10 S6 legs,
+and one October day shows none), and they rest on two weeks of data. At those
+upper-bound rates 300 bets would take at least about 21 weeks for S6 and about
+150 weeks for S5, so neither signal reaches 300 this season; the placed rate is
+lower and unmeasured. The 2026 season will end with at most a few dozen to about a
+hundred S6 bets and fewer S5 bets. The 100-bet checkpoint is at best reachable
+for S6. Every statement below about 300 bets is about a later season.
 
 **Population and break-even.** Every bar uses the placed bets only (the `tickets`
 ledger, one-leg tickets), never the report's "Qualifying legs by signal" table,
@@ -124,8 +131,13 @@ event (above).
 
 **Limits of these numbers.** The standard errors assume independent bets. Up to 6
 bets a day, several of them wind unders from one weather system, are correlated,
-so the true standard error is larger and the bars are, if anything, easier to
-miss. v2 decides about 60 minutes before the first kickoff against a consensus
+so the true standard error is larger. That makes -7% fewer standard errors below
+zero, so the 10% false-falsification rate is a floor: with a variance inflation
+of 1.3 it is about 13%. The 50% review-trigger rate is unaffected. Because S6 is
+most of the bets, "v2 falsified" will in practice be a verdict on S6, and a loss
+does not falsify S5, the only angle with any positive outside evidence. A bettor
+with no edge at all (about -4.5% ROI) reaches -7% about a third of the time; that
+is a correct "not profitable" call, and the 10% figure is for exactly 0% ROI. v2 decides about 60 minutes before the first kickoff against a consensus
 line, not the closing line, so how much of Fair and Oster's closing-line null
 applies is unmeasured; with no NCAAF closing-line value the best early read of an
 edge is unavailable all season.
