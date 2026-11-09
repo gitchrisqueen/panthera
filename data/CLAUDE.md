@@ -1,6 +1,8 @@
 # data/ — the flat-file datastore (bot-owned)
 
-The GitHub Actions workflows commit here several times a day. **Never
+The GitHub Actions workflows commit here several times a day, **to the `data`
+branch**, not `main` (`main` is protected; this copy is frozen at 2026-10-23).
+Read the live data with `scripts/ci/data_branch.sh pull`. **Never
 hand-edit these files**; fix the code in `src/panthera_mvp/` instead.
 All writes go through `store.py`, which enforces the dedupe keys below —
 that's what makes workflow re-runs safe.

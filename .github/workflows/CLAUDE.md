@@ -58,6 +58,29 @@ writes a durable run note; started games are skipped as always.
   burn before enabling the splits strategies** (their stopping rule is
   budget-based).
 
+## Data lives on the `data` branch (2026-11-09)
+
+`main` is protected (PR + `GitGuardian Security Checks`), so a workflow cannot push
+data to it: every data push from 2026-10-24 on was rejected with GH006 and the feeds
+went stale (health issues #81/#82). Bot data therefore lives on the orphan `data`
+branch (only `data/` and `reports/`). A GitHub Actions app bypass is not available on
+a personal-account repo, so the branch is the fix, not a ruleset.
+
+- Every workflow that reads or writes data runs `bash scripts/ci/data_branch.sh pull`
+  right after checkout (code and config still come from the ref it was started on).
+- Committing workflows end with `bash scripts/ci/data_branch.sh push "<message>"`;
+  it commits only this run's delta onto the pull baseline, rebases onto a concurrent
+  writer, retries 3 times, and sets `pushed=true` in `$GITHUB_OUTPUT` when it lands.
+  `--forbid <regex>` fails the push if a changed path matches (catch-up's picks.csv
+  guard).
+- `main`'s `CLAUDE.md` files in `data/` and `reports/` are never synced.
+- Change detection against the baseline is `diff -rq .databranch/data/ncaaf data/ncaaf`,
+  not `git status` (the overlay always differs from main's frozen copy).
+- `mvp-calibrate` also writes `config/`, which is code on `main`: it uploads
+  `calibrated-config.patch` as an artifact for a human PR instead of committing it.
+- Rollback: revert this change; `data` keeps every commit made since the cutover and
+  can be merged back into `main` by PR.
+
 ## Bot-commit loop guards (keep all three)
 
 1. Pushes made with the default `GITHUB_TOKEN` don't trigger new workflow runs.
@@ -67,7 +90,7 @@ writes a durable run note; started games are skipped as always.
 ## Race handling
 
 All data-writing workflows share `concurrency: group: panthera-data`
-(serialized, no cancel) and `git pull --rebase` before push. Keep both when
+(serialized, no cancel); the push script rebases onto `origin/data`. Keep both when
 adding a workflow that commits. Never add `cancel-in-progress: true` to a
 data-writing workflow. `pages.yml` has its own `pages-build` group (also no
 cancel). Every job has a `timeout-minutes`: a hung call in the `panthera-data`

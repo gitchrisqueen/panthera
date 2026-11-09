@@ -86,8 +86,13 @@ panthera-mvp ncaabase grade | status
   `site.api.espn.com`, and the odds/archive hosts (proxy 403). Develop
   against `tests/fixtures/`; verify live behavior by dispatching the MVP
   workflows on a GitHub runner.
-- `data/` and `reports/` are **bot-owned**: workflows commit to them several
-  times a day. Don't hand-edit; see `data/CLAUDE.md` and `reports/CLAUDE.md`.
+- `data/` and `reports/` are **bot-owned** and live on the **`data` branch**
+  (since 2026-11-09): `main` is protected (PR + GitGuardian) and rejects bot
+  pushes, which stalled every data feed from 2026-10-24. Workflows overlay the
+  branch before running and push back with `scripts/ci/data_branch.sh`. The
+  copies on `main` are frozen at 2026-10-23 and stale. Don't hand-edit; see
+  `data/CLAUDE.md` and `reports/CLAUDE.md`. Locally, `scripts/ci/data_branch.sh
+  pull` refreshes both from the branch.
 - All times are stored UTC; all game-day/slot logic is US/Eastern via
   `timeutil.py`. Never use naive datetimes.
 - College baseball runs Feb–Jun: `ncaabase` commands no-op outside

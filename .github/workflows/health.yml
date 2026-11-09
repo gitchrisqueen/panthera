@@ -49,6 +49,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Overlay bot data from the data branch
+        run: bash scripts/ci/data_branch.sh pull
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

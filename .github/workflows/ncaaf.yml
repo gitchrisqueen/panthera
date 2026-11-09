@@ -65,6 +65,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Overlay bot data from the data branch
+        run: bash scripts/ci/data_branch.sh pull
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -125,7 +128,7 @@ jobs:
       # NCAAF data changed — the hourly no-op must not commit.
       - name: Report
         run: |
-          if [ -n "$(git status --porcelain -- data/ncaaf)" ]; then
+          if ! diff -rq .databranch/data/ncaaf data/ncaaf >/dev/null 2>&1; then
             panthera-mvp ncaaf report
           fi
 
@@ -133,20 +136,7 @@ jobs:
         id: commit
         if: inputs.dry_run != true
         run: |
-          git config user.name "panthera-bot"
-          git config user.email "actions@users.noreply.github.com"
-          # One path at a time: a missing path would fail the whole `git add`.
-          for p in data/ncaaf data/odds/credit_log.csv reports/NCAAF_REPORT.md; do
-            if [ -e "$p" ]; then git add "$p"; fi
-          done
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-          git commit -m "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          bash scripts/ci/data_branch.sh push "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
 
       # Football results reach the site within minutes instead of waiting for
       # the next MLB morning/pregame run (pages.yml's workflow_run triggers).
