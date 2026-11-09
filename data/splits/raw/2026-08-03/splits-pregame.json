@@ -1,0 +1,467 @@
+[
+ {
+  "event": {
+   "id": 15205,
+   "name": "Washington Nationals @ Philadelphia Phillies",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-03T22:40:00Z",
+   "scheduled_start_at": "2026-08-03T22:40:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 78,
+    "name": "Citizens Bank Park",
+    "city": "Philadelphia",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 15205,
+   "available": true,
+   "captured_at": "2026-08-03T21:05:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 70,
+      "handle_pct": 33,
+      "price": -157
+     },
+     "away": {
+      "bets_pct": 30,
+      "handle_pct": 67,
+      "price": 130
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 88,
+      "handle_pct": 68,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 12,
+      "handle_pct": 32,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 72,
+      "handle_pct": 80,
+      "line": 9.0
+     },
+     "under": {
+      "bets_pct": 29,
+      "handle_pct": 20,
+      "line": 9.0
+     }
+    }
+   },
+   "books": [
+    {
+     "book": "circa",
+     "name": "Circa Sports",
+     "moneyline": {
+      "home": {
+       "bets_pct": 57,
+       "handle_pct": 9,
+       "price": -145
+      },
+      "away": {
+       "bets_pct": 43,
+       "handle_pct": 91,
+       "price": 130
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 88,
+       "handle_pct": 99,
+       "line": 9.0
+      },
+      "under": {
+       "bets_pct": 13,
+       "handle_pct": 1,
+       "line": 9.0
+      }
+     }
+    },
+    {
+     "book": "dk",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 82,
+       "handle_pct": 57,
+       "price": -157
+      },
+      "away": {
+       "bets_pct": 18,
+       "handle_pct": 43,
+       "price": 130
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 76,
+       "handle_pct": 37,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 24,
+       "handle_pct": 63,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 55,
+       "handle_pct": 61,
+       "line": 9.0
+      },
+      "under": {
+       "bets_pct": 45,
+       "handle_pct": 39,
+       "line": 9.0
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 15206,
+   "name": "St. Louis Cardinals @ New York Yankees",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-03T23:05:00Z",
+   "scheduled_start_at": "2026-08-03T23:05:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 62,
+    "name": "Yankee Stadium",
+    "city": "Bronx",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 15206,
+   "available": true,
+   "captured_at": "2026-08-03T21:05:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 80,
+      "handle_pct": 89,
+      "price": -224
+     },
+     "away": {
+      "bets_pct": 20,
+      "handle_pct": 11,
+      "price": 182
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 81,
+      "handle_pct": 63,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 19,
+      "handle_pct": 37,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 38,
+      "handle_pct": 16,
+      "line": 7.5
+     },
+     "under": {
+      "bets_pct": 62,
+      "handle_pct": 84,
+      "line": 7.5
+     }
+    }
+   },
+   "books": [
+    {
+     "book": "circa",
+     "name": "Circa Sports",
+     "moneyline": {
+      "home": {
+       "bets_pct": 69,
+       "handle_pct": 89,
+       "price": -211
+      },
+      "away": {
+       "bets_pct": 31,
+       "handle_pct": 11,
+       "price": 188
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 75,
+       "handle_pct": 58,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 25,
+       "handle_pct": 42,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 36,
+       "handle_pct": 1,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 64,
+       "handle_pct": 99,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "book": "dk",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 91,
+       "handle_pct": 89,
+       "price": -224
+      },
+      "away": {
+       "bets_pct": 9,
+       "handle_pct": 11,
+       "price": 182
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 87,
+       "handle_pct": 68,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 13,
+       "handle_pct": 32,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 41,
+       "handle_pct": 30,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 59,
+       "handle_pct": 70,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 15207,
+   "name": "Pittsburgh Pirates @ Milwaukee Brewers",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-03T23:40:00Z",
+   "scheduled_start_at": "2026-08-03T23:40:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 83,
+    "name": "American Family Field",
+    "city": "Milwaukee",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 15207,
+   "available": true,
+   "captured_at": "2026-08-03T21:05:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 79,
+      "handle_pct": 78,
+      "price": -156
+     },
+     "away": {
+      "bets_pct": 21,
+      "handle_pct": 22,
+      "price": 129
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 64,
+      "handle_pct": 81,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 36,
+      "handle_pct": 19,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 72,
+      "handle_pct": 56,
+      "line": 8.5
+     },
+     "under": {
+      "bets_pct": 28,
+      "handle_pct": 44,
+      "line": 8.5
+     }
+    }
+   },
+   "books": [
+    {
+     "book": "circa",
+     "name": "Circa Sports",
+     "moneyline": {
+      "home": {
+       "bets_pct": 77,
+       "handle_pct": 65,
+       "price": -145
+      },
+      "away": {
+       "bets_pct": 23,
+       "handle_pct": 35,
+       "price": 130
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 57,
+       "handle_pct": 69,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 43,
+       "handle_pct": 31,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 86,
+       "handle_pct": 25,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 14,
+       "handle_pct": 75,
+       "line": 8.5
+      }
+     }
+    },
+    {
+     "book": "dk",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 81,
+       "handle_pct": 92,
+       "price": -156
+      },
+      "away": {
+       "bets_pct": 19,
+       "handle_pct": 8,
+       "price": 129
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 70,
+       "handle_pct": 93,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 30,
+       "handle_pct": 7,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 59,
+       "handle_pct": 87,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 41,
+       "handle_pct": 13,
+       "line": 8.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]

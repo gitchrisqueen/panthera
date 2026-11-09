@@ -1,0 +1,489 @@
+[
+ {
+  "id": "e4c03eec29795f56b6b06c313d3af271",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-24T00:00:00Z",
+  "home_team": "Milwaukee Brewers",
+  "away_team": "Tampa Bay Rays",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-20T14:43:42Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:42Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -158
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 134
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:42Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 155,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -188,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:42Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 116,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": -142,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-20T14:43:05Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:05Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -162
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 134
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:05Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 154,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -188,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:05Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-20T14:43:44Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:44Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -160
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 135
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:44Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 154,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -190,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:44Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-20T14:43:04Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:04Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -157
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 128
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:04Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 159,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -180,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:04Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -102,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-20T14:43:26Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:26Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -147
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:26Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 163,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -186,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:26Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -109,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-20T14:43:24Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:24Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -147
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:24Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 162,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -186,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:24Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -108,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -112,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-20T14:43:29Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:29Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -170
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 141
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:29Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 150,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -175,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:29Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -115,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -105,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-20T14:43:03Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:03Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -162
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:03Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 150,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -186,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:03Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -105,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -117,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-20T14:43:43Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-20T14:43:43Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": -148
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 133
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-20T14:43:43Z",
+      "outcomes": [
+       {
+        "name": "Milwaukee Brewers",
+        "price": 160,
+        "point": -1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -185,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-20T14:43:43Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -110,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": -110,
+        "point": 6.0
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]

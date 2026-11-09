@@ -1,0 +1,932 @@
+[
+ {
+  "event": {
+   "id": 17400,
+   "name": "Texas Rangers @ Los Angeles Angels",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T02:10:00Z",
+   "scheduled_start_at": "2026-08-13T02:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "final",
+   "status_detail": null,
+   "result_type": "regulation",
+   "period": "9",
+   "period_label": "Inn 9",
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 72,
+    "name": "Angel Stadium of Anaheim",
+    "city": "Anaheim",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Los_Angeles"
+   }
+  },
+  "splits": {
+   "event_id": 17400,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 35,
+      "handle_pct": 23,
+      "price": 137
+     },
+     "away": {
+      "bets_pct": 65,
+      "handle_pct": 77,
+      "price": -147
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 73,
+      "handle_pct": 64,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 27,
+      "handle_pct": 36,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 55,
+      "handle_pct": 29,
+      "line": 7.5
+     },
+     "under": {
+      "bets_pct": 45,
+      "handle_pct": 71,
+      "line": 7.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 26,
+       "handle_pct": 16,
+       "price": 137
+      },
+      "away": {
+       "bets_pct": 74,
+       "handle_pct": 84,
+       "price": -147
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 46,
+       "handle_pct": 27,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 54,
+       "handle_pct": 73,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 53,
+       "handle_pct": 41,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 47,
+       "handle_pct": 59,
+       "line": 7.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 44,
+       "handle_pct": 30,
+       "price": 138
+      },
+      "away": {
+       "bets_pct": 56,
+       "handle_pct": 70,
+       "price": -154
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 57,
+       "handle_pct": 17,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 43,
+       "handle_pct": 83,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 17421,
+   "name": "Cleveland Guardians @ Detroit Tigers",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T17:10:00Z",
+   "scheduled_start_at": "2026-08-13T17:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "final",
+   "status_detail": null,
+   "result_type": "regulation",
+   "period": "9",
+   "period_label": "Inn 9",
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 68,
+    "name": "Comerica Park",
+    "city": "Detroit",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Detroit"
+   }
+  },
+  "splits": {
+   "event_id": 17421,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 50,
+      "handle_pct": 48,
+      "price": -105
+     },
+     "away": {
+      "bets_pct": 50,
+      "handle_pct": 52,
+      "price": -103
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 52,
+      "handle_pct": 64,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 48,
+      "handle_pct": 36,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 39,
+      "handle_pct": 54,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 61,
+      "handle_pct": 46,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 45,
+       "handle_pct": 17,
+       "price": -105
+      },
+      "away": {
+       "bets_pct": 55,
+       "handle_pct": 83,
+       "price": -103
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 72,
+       "handle_pct": 30,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 28,
+       "handle_pct": 70,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 53,
+       "handle_pct": 50,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 47,
+       "handle_pct": 50,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 54,
+       "handle_pct": 80,
+       "price": -104
+      },
+      "away": {
+       "bets_pct": 46,
+       "handle_pct": 20,
+       "price": -108
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 33,
+       "handle_pct": 99,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 67,
+       "handle_pct": 1,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 25,
+       "handle_pct": 59,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 75,
+       "handle_pct": 41,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 17422,
+   "name": "Pittsburgh Pirates @ Miami Marlins",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T17:10:00Z",
+   "scheduled_start_at": "2026-08-13T17:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "final",
+   "status_detail": null,
+   "result_type": "regulation",
+   "period": "9",
+   "period_label": "Inn 9",
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 77,
+    "name": "loanDepot park",
+    "city": "Miami",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 17422,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 58,
+      "handle_pct": 50,
+      "price": 111
+     },
+     "away": {
+      "bets_pct": 42,
+      "handle_pct": 50,
+      "price": -119
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 60,
+      "handle_pct": 42,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 40,
+      "handle_pct": 58,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 58,
+      "handle_pct": 34,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 42,
+      "handle_pct": 66,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 57,
+       "handle_pct": 26,
+       "price": 111
+      },
+      "away": {
+       "bets_pct": 43,
+       "handle_pct": 74,
+       "price": -119
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 71,
+       "handle_pct": 34,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 29,
+       "handle_pct": 66,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 67,
+       "handle_pct": 62,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 33,
+       "handle_pct": 38,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 58,
+       "handle_pct": 74,
+       "price": 108
+      },
+      "away": {
+       "bets_pct": 42,
+       "handle_pct": 26,
+       "price": -120
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 50,
+       "handle_pct": 7,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 50,
+       "handle_pct": 93,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 17424,
+   "name": "Cincinnati Reds @ Chicago White Sox",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T18:10:00Z",
+   "scheduled_start_at": "2026-08-13T18:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "final",
+   "status_detail": null,
+   "result_type": "regulation",
+   "period": "9",
+   "period_label": "Inn 9",
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 66,
+    "name": "Guaranteed Rate Field",
+    "city": "Chicago",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 17424,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 60,
+      "handle_pct": 34,
+      "price": -135
+     },
+     "away": {
+      "bets_pct": 40,
+      "handle_pct": 66,
+      "price": 125
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 79,
+      "handle_pct": 96,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 21,
+      "handle_pct": 4,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 61,
+      "handle_pct": 58,
+      "line": 8.5
+     },
+     "under": {
+      "bets_pct": 39,
+      "handle_pct": 42,
+      "line": 8.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 68,
+       "handle_pct": 36,
+       "price": -135
+      },
+      "away": {
+       "bets_pct": 32,
+       "handle_pct": 64,
+       "price": 125
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 58,
+       "handle_pct": 91,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 42,
+       "handle_pct": 9,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 52,
+       "handle_pct": 68,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 48,
+       "handle_pct": 32,
+       "line": 8.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 53,
+       "handle_pct": 32,
+       "price": -135
+      },
+      "away": {
+       "bets_pct": 47,
+       "handle_pct": 68,
+       "price": 121
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 70,
+       "handle_pct": 48,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 30,
+       "handle_pct": 52,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 17425,
+   "name": "Boston Red Sox @ Toronto Blue Jays",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T19:07:00Z",
+   "scheduled_start_at": "2026-08-13T19:07:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "final",
+   "status_detail": null,
+   "result_type": "regulation",
+   "period": "9",
+   "period_label": "Inn 9",
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 65,
+    "name": "Rogers Centre",
+    "city": "Toronto",
+    "surface": "artificial_turf",
+    "roof_type": "retractable",
+    "timezone": "America/Toronto"
+   }
+  },
+  "splits": {
+   "event_id": 17425,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 26,
+      "handle_pct": 28,
+      "price": 128
+     },
+     "away": {
+      "bets_pct": 74,
+      "handle_pct": 72,
+      "price": -138
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 60,
+      "handle_pct": 68,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 40,
+      "handle_pct": 32,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 56,
+      "handle_pct": 18,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 44,
+      "handle_pct": 82,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 29,
+       "handle_pct": 20,
+       "price": 128
+      },
+      "away": {
+       "bets_pct": 71,
+       "handle_pct": 80,
+       "price": -138
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 41,
+       "handle_pct": 42,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 59,
+       "handle_pct": 58,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 61,
+       "handle_pct": 29,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 39,
+       "handle_pct": 71,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 24,
+       "handle_pct": 36,
+       "price": 120
+      },
+      "away": {
+       "bets_pct": 76,
+       "handle_pct": 64,
+       "price": -134
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 80,
+       "handle_pct": 93,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 20,
+       "handle_pct": 7,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 50,
+       "handle_pct": 8,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 50,
+       "handle_pct": 92,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 17427,
+   "name": "Philadelphia Phillies @ Minnesota Twins",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-13T23:30:00Z",
+   "scheduled_start_at": "2026-08-13T23:30:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 70,
+    "name": "Target Field",
+    "city": "Minneapolis",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 17427,
+   "available": true,
+   "captured_at": "2026-08-13T21:05:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 44,
+      "handle_pct": 30,
+      "price": -104
+     },
+     "away": {
+      "bets_pct": 56,
+      "handle_pct": 70,
+      "price": -103
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 80,
+      "handle_pct": 74,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 20,
+      "handle_pct": 26,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 69,
+      "handle_pct": 53,
+      "line": 8.5
+     },
+     "under": {
+      "bets_pct": 31,
+      "handle_pct": 47,
+      "line": 8.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 39,
+       "handle_pct": 51,
+       "price": -104
+      },
+      "away": {
+       "bets_pct": 61,
+       "handle_pct": 49,
+       "price": -103
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 60,
+       "handle_pct": 48,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 40,
+       "handle_pct": 52,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 71,
+       "handle_pct": 90,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 29,
+       "handle_pct": 10,
+       "line": 8.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 10,
+       "price": -105
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 90,
+       "price": -107
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 67,
+       "handle_pct": 16,
+       "line": 8.5
+      },
+      "under": {
+       "bets_pct": 33,
+       "handle_pct": 84,
+       "line": 8.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]

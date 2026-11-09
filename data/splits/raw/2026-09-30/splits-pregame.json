@@ -1,0 +1,590 @@
+[
+ {
+  "event": {
+   "id": 20972,
+   "name": "Chicago White Sox @ Houston Astros",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-30T21:00:00Z",
+   "scheduled_start_at": "2026-09-30T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "AL Wild Card Series Game 1",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 71,
+    "name": "Minute Maid Park",
+    "city": "Houston",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 20972,
+   "available": true,
+   "captured_at": "2026-09-30T20:48:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 54,
+      "handle_pct": 57,
+      "price": -155
+     },
+     "away": {
+      "bets_pct": 46,
+      "handle_pct": 43,
+      "price": 128
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 53,
+      "handle_pct": 90,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 47,
+      "handle_pct": 10,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 65,
+      "handle_pct": 86,
+      "line": 7.5
+     },
+     "under": {
+      "bets_pct": 35,
+      "handle_pct": 14,
+      "line": 7.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 57,
+       "handle_pct": 60,
+       "price": -155
+      },
+      "away": {
+       "bets_pct": 43,
+       "handle_pct": 40,
+       "price": 128
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 51,
+       "handle_pct": 82,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 49,
+       "handle_pct": 18,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 66,
+       "handle_pct": 75,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 34,
+       "handle_pct": 25,
+       "line": 7.5
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 56,
+       "handle_pct": null,
+       "price": -150
+      },
+      "away": {
+       "bets_pct": 44,
+       "handle_pct": null,
+       "price": 125
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 42,
+       "handle_pct": null,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 58,
+       "handle_pct": null,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 70,
+       "handle_pct": null,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 30,
+       "handle_pct": null,
+       "line": 7.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 48,
+       "handle_pct": 54,
+       "price": -143
+      },
+      "away": {
+       "bets_pct": 52,
+       "handle_pct": 46,
+       "price": 133
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 98,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 2,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 58,
+       "handle_pct": 97,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 42,
+       "handle_pct": 3,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 20970,
+   "name": "Boston Red Sox @ New York Yankees",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-10-01T00:00:00Z",
+   "scheduled_start_at": "2026-09-30T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "AL Wild Card Series Game 1",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 62,
+    "name": "Yankee Stadium",
+    "city": "Bronx",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 20970,
+   "available": true,
+   "captured_at": "2026-09-30T20:48:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 58,
+      "handle_pct": 32,
+      "price": -136
+     },
+     "away": {
+      "bets_pct": 42,
+      "handle_pct": 68,
+      "price": 113
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 65,
+      "handle_pct": 48,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 35,
+      "handle_pct": 52,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 74,
+      "handle_pct": 92,
+      "line": 6.5
+     },
+     "under": {
+      "bets_pct": 26,
+      "handle_pct": 8,
+      "line": 6.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 43,
+       "handle_pct": 34,
+       "price": -136
+      },
+      "away": {
+       "bets_pct": 57,
+       "handle_pct": 66,
+       "price": 113
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 63,
+       "handle_pct": 83,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 37,
+       "handle_pct": 17,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 76,
+       "handle_pct": 89,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 24,
+       "handle_pct": 11,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 72,
+       "handle_pct": null,
+       "price": -140
+      },
+      "away": {
+       "bets_pct": 28,
+       "handle_pct": null,
+       "price": 120
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 65,
+       "handle_pct": null,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 35,
+       "handle_pct": null,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 75,
+       "handle_pct": null,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 25,
+       "handle_pct": null,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 60,
+       "handle_pct": 31,
+       "price": -132
+      },
+      "away": {
+       "bets_pct": 40,
+       "handle_pct": 69,
+       "price": 122
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 14,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 86,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 71,
+       "handle_pct": 95,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 29,
+       "handle_pct": 5,
+       "line": 6.5
+      }
+     }
+    }
+   ]
+  }
+ },
+ {
+  "event": {
+   "id": 20971,
+   "name": "Chicago Cubs @ San Diego Padres",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-10-01T02:00:00Z",
+   "scheduled_start_at": "2026-09-30T07:33:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "NL Wild Card Series Game 1",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 89,
+    "name": "Petco Park",
+    "city": "San Diego",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Los_Angeles"
+   }
+  },
+  "splits": {
+   "event_id": 20971,
+   "available": true,
+   "captured_at": "2026-09-30T20:48:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 66,
+      "handle_pct": 66,
+      "price": -149
+     },
+     "away": {
+      "bets_pct": 34,
+      "handle_pct": 34,
+      "price": 123
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 72,
+      "handle_pct": 94,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 28,
+      "handle_pct": 6,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 67,
+      "handle_pct": 69,
+      "line": 7.0
+     },
+     "under": {
+      "bets_pct": 33,
+      "handle_pct": 31,
+      "line": 7.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 64,
+       "handle_pct": 62,
+       "price": -149
+      },
+      "away": {
+       "bets_pct": 36,
+       "handle_pct": 38,
+       "price": 123
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 62,
+       "handle_pct": 88,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 38,
+       "handle_pct": 12,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 89,
+       "handle_pct": 95,
+       "line": 7.0
+      },
+      "under": {
+       "bets_pct": 11,
+       "handle_pct": 5,
+       "line": 7.0
+      }
+     }
+    },
+    {
+     "bookmaker": "betmgm",
+     "name": "BetMGM",
+     "moneyline": {
+      "home": {
+       "bets_pct": 65,
+       "handle_pct": null,
+       "price": -140
+      },
+      "away": {
+       "bets_pct": 35,
+       "handle_pct": null,
+       "price": 120
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 53,
+       "handle_pct": null,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 47,
+       "handle_pct": null,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 71,
+       "handle_pct": null,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 29,
+       "handle_pct": null,
+       "line": 7.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 69,
+       "handle_pct": 71,
+       "price": -137
+      },
+      "away": {
+       "bets_pct": 31,
+       "handle_pct": 29,
+       "price": 127
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 40,
+       "handle_pct": 43,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 60,
+       "handle_pct": 57,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]

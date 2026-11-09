@@ -1,0 +1,158 @@
+[
+ {
+  "event": {
+   "id": 20780,
+   "name": "Chicago Cubs @ Boston Red Sox",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-25T17:05:00Z",
+   "scheduled_start_at": "2026-09-27T19:05:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 61,
+    "name": "Fenway Park",
+    "city": "Boston",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 20780,
+   "available": true,
+   "captured_at": "2026-09-25T14:38:14Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 50,
+      "handle_pct": 63,
+      "price": 104
+     },
+     "away": {
+      "bets_pct": 51,
+      "handle_pct": 37,
+      "price": -125
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 49,
+      "handle_pct": 44,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 51,
+      "handle_pct": 56,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 84,
+      "handle_pct": 88,
+      "line": 6.5
+     },
+     "under": {
+      "bets_pct": 16,
+      "handle_pct": 12,
+      "line": 6.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 36,
+       "handle_pct": 46,
+       "price": 104
+      },
+      "away": {
+       "bets_pct": 64,
+       "handle_pct": 54,
+       "price": -125
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 48,
+       "handle_pct": 37,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 52,
+       "handle_pct": 63,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 69,
+       "handle_pct": 75,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 31,
+       "handle_pct": 25,
+       "line": 6.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 63,
+       "handle_pct": 80,
+       "price": 108
+      },
+      "away": {
+       "bets_pct": 38,
+       "handle_pct": 20,
+       "price": -120
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": 6.5
+      },
+      "under": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 6.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]

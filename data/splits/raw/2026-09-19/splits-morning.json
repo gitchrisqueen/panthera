@@ -1,0 +1,158 @@
+[
+ {
+  "event": {
+   "id": 20096,
+   "name": "Detroit Tigers @ Chicago White Sox",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-19T18:10:00Z",
+   "scheduled_start_at": "2026-09-19T23:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 66,
+    "name": "Guaranteed Rate Field",
+    "city": "Chicago",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 20096,
+   "available": true,
+   "captured_at": "2026-09-19T14:38:16Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 32,
+      "handle_pct": 18,
+      "price": -137
+     },
+     "away": {
+      "bets_pct": 68,
+      "handle_pct": 82,
+      "price": 114
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 58,
+      "handle_pct": 66,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 42,
+      "handle_pct": 34,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 64,
+      "handle_pct": 48,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 36,
+      "handle_pct": 52,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 65,
+       "handle_pct": 35,
+       "price": -137
+      },
+      "away": {
+       "bets_pct": 35,
+       "handle_pct": 65,
+       "price": 114
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 66,
+       "handle_pct": 81,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 34,
+       "handle_pct": 19,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 78,
+       "handle_pct": 46,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 22,
+       "handle_pct": 54,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "price": -132
+      },
+      "away": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "price": 119
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ }
+]

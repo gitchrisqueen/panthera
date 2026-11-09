@@ -1,0 +1,489 @@
+[
+ {
+  "id": "be50f6c59c20efa430eec6f146a0fcb1",
+  "sport_key": "baseball_mlb",
+  "sport_title": "MLB",
+  "commence_time": "2026-10-20T00:10:00Z",
+  "home_team": "Tampa Bay Rays",
+  "away_team": "Cleveland Guardians",
+  "bookmakers": [
+   {
+    "key": "fanduel",
+    "title": "FanDuel",
+    "last_update": "2026-10-19T22:27:08Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 132
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -156
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -182,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 150,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -128,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 104,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betrivers",
+    "title": "BetRivers",
+    "last_update": "2026-10-19T22:26:52Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 132
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -159
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 138,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -104,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -118,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "mybookieag",
+    "title": "MyBookie.ag",
+    "last_update": "2026-10-19T22:27:28Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 131
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -154
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -160,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 140,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -101,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betmgm",
+    "title": "BetMGM",
+    "last_update": "2026-10-19T22:27:28Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 130
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -155
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -175,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 145,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:27:28Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 100,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "bovada",
+    "title": "Bovada",
+    "last_update": "2026-10-19T22:26:33Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:26:33Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 131
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -157
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:26:33Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -165,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 140,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:26:33Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -125,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 105,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "draftkings",
+    "title": "DraftKings",
+    "last_update": "2026-10-19T22:25:47Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:25:47Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 130
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -158
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:25:47Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -169,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 139,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:25:47Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 100,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betus",
+    "title": "BetUS",
+    "last_update": "2026-10-19T22:27:08Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 134
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -165,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 144,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:27:08Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 100,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": -120,
+        "point": 7.0
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "betonlineag",
+    "title": "BetOnline.ag",
+    "last_update": "2026-10-19T22:26:52Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 136
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -165,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 145,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:26:52Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -128,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 108,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "lowvig",
+    "title": "LowVig.ag",
+    "last_update": "2026-10-19T22:27:10Z",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-10-19T22:27:10Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": 136
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": -150
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-10-19T22:27:10Z",
+      "outcomes": [
+       {
+        "name": "Cleveland Guardians",
+        "price": -165,
+        "point": 1.5
+       },
+       {
+        "name": "Tampa Bay Rays",
+        "price": 146,
+        "point": -1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-10-19T22:27:10Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": -126,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 110,
+        "point": 6.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]

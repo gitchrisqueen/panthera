@@ -1,0 +1,157 @@
+[
+ {
+  "event": {
+   "id": 18137,
+   "name": "Atlanta Braves @ Milwaukee Brewers",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-08-23T23:10:00Z",
+   "scheduled_start_at": "2026-08-23T23:10:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 83,
+    "name": "American Family Field",
+    "city": "Milwaukee",
+    "surface": "grass",
+    "roof_type": "retractable",
+    "timezone": "America/Chicago"
+   }
+  },
+  "splits": {
+   "event_id": 18137,
+   "available": true,
+   "captured_at": "2026-08-23T20:58:19Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 66,
+      "handle_pct": 54,
+      "price": -112
+     },
+     "away": {
+      "bets_pct": 34,
+      "handle_pct": 46,
+      "price": 104
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 80,
+      "handle_pct": 83,
+      "line": 1.5
+     },
+     "away": {
+      "bets_pct": 20,
+      "handle_pct": 17,
+      "line": -1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 82,
+      "handle_pct": 90,
+      "line": 7.5
+     },
+     "under": {
+      "bets_pct": 18,
+      "handle_pct": 10,
+      "line": 7.5
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 46,
+       "price": -112
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 54,
+       "price": 104
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 60,
+       "handle_pct": 66,
+       "line": 1.5
+      },
+      "away": {
+       "bets_pct": 40,
+       "handle_pct": 34,
+       "line": -1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 75,
+       "handle_pct": 82,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 25,
+       "handle_pct": 18,
+       "line": 7.5
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 64,
+       "handle_pct": 61,
+       "price": -112
+      },
+      "away": {
+       "bets_pct": 36,
+       "handle_pct": 39,
+       "price": 102
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 90,
+       "handle_pct": 99,
+       "line": 7.5
+      },
+      "under": {
+       "bets_pct": 10,
+       "handle_pct": 1,
+       "line": 7.5
+      }
+     }
+    }
+   ]
+  }
+ }
+]

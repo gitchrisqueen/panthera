@@ -1,0 +1,158 @@
+[
+ {
+  "event": {
+   "id": 8738,
+   "name": "Detroit Tigers @ Cleveland Guardians",
+   "sport": "mlb",
+   "league": "mlb",
+   "season_id": 6,
+   "starts_at": "2026-09-04T18:10:00Z",
+   "scheduled_start_at": "2026-06-14T17:40:00Z",
+   "resume_at": null,
+   "starts_at_qualifier": null,
+   "inprogress_since": null,
+   "status": "scheduled",
+   "status_detail": null,
+   "result_type": null,
+   "period": null,
+   "period_label": null,
+   "clock": null,
+   "round": "Regular Season",
+   "neutral_site": false,
+   "competition": null,
+   "venue": {
+    "id": 67,
+    "name": "Progressive Field",
+    "city": "Cleveland",
+    "surface": "grass",
+    "roof_type": "open",
+    "timezone": "America/New_York"
+   }
+  },
+  "splits": {
+   "event_id": 8738,
+   "available": true,
+   "captured_at": "2026-09-04T17:38:15Z",
+   "consensus": {
+    "moneyline": {
+     "home": {
+      "bets_pct": 82,
+      "handle_pct": 70,
+      "price": -143
+     },
+     "away": {
+      "bets_pct": 18,
+      "handle_pct": 30,
+      "price": 119
+     }
+    },
+    "spread": {
+     "home": {
+      "bets_pct": 84,
+      "handle_pct": 100,
+      "line": -1.5
+     },
+     "away": {
+      "bets_pct": 16,
+      "handle_pct": 0,
+      "line": 1.5
+     }
+    },
+    "total": {
+     "over": {
+      "bets_pct": 52,
+      "handle_pct": 72,
+      "line": 8.0
+     },
+     "under": {
+      "bets_pct": 48,
+      "handle_pct": 28,
+      "line": 8.0
+     }
+    }
+   },
+   "bookmakers": [
+    {
+     "bookmaker": "draftkings",
+     "name": "DraftKings",
+     "moneyline": {
+      "home": {
+       "bets_pct": 75,
+       "handle_pct": 97,
+       "price": -143
+      },
+      "away": {
+       "bets_pct": 25,
+       "handle_pct": 3,
+       "price": 119
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 67,
+       "handle_pct": 99,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 33,
+       "handle_pct": 1,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 53,
+       "handle_pct": 94,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 47,
+       "handle_pct": 6,
+       "line": 8.0
+      }
+     }
+    },
+    {
+     "bookmaker": "circa",
+     "name": "Circa",
+     "moneyline": {
+      "home": {
+       "bets_pct": 90,
+       "handle_pct": 43,
+       "price": -133
+      },
+      "away": {
+       "bets_pct": 10,
+       "handle_pct": 57,
+       "price": 123
+      }
+     },
+     "spread": {
+      "home": {
+       "bets_pct": 100,
+       "handle_pct": 100,
+       "line": -1.5
+      },
+      "away": {
+       "bets_pct": 0,
+       "handle_pct": 0,
+       "line": 1.5
+      }
+     },
+     "total": {
+      "over": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 8.0
+      },
+      "under": {
+       "bets_pct": 50,
+       "handle_pct": 50,
+       "line": 8.0
+      }
+     }
+    }
+   ]
+  }
+ }
+]
