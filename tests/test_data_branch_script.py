@@ -546,3 +546,13 @@ def test_a_symlinked_data_dir_on_the_branch_is_refused(repos, tmp_path):
 
     assert proc.returncode == 1
     assert "symlink" in proc.stdout
+
+
+def test_a_secret_refusal_names_the_file_but_never_the_value(repos):
+    def setup(work):
+        (work / "data" / "clean.csv").write_text("fine\n")
+        (work / "data" / "leaky.txt").write_text("apiKey=0123456789abcdef0123\n")
+
+    proc = _refused(repos, setup)
+    assert "leaky.txt" in proc.stdout
+    assert "0123456789abcdef0123" not in proc.stdout and "clean.csv" not in proc.stdout

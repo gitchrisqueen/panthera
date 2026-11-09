@@ -59,6 +59,7 @@ jobs:
           fi
 
       - name: Commit & push
+        if: inputs.dry_run != true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}

@@ -72,6 +72,22 @@ open_worktree() {
 # (a name may hold a newline followed by ::error::); every unusual byte becomes '?'.
 safe_names() { sed 's/[^[:alnum:]\/._-]/?/g; s/^/  /'; }
 
+# files_with <regex|fixed> <pattern>: the staged files whose ADDED text matches, names only
+# (never the matching text), so a refusal says where to look without leaking the value.
+files_with() {
+  local kind="$1" pat="$2" f
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    git -C "$WT" diff --cached -U0 --text --no-ext-diff --no-textconv -- "$f" 2>/dev/null \
+      | grep -aE '^\+' > "$scratch/one" || true
+    if [ "$kind" = regex ]; then
+      grep -aEiq -e "$pat" "$scratch/one" && echo "$f" || true
+    else
+      grep -aFq -e "$pat" "$scratch/one" && echo "$f" || true
+    fi
+  done < "$scratch/names" | safe_names
+}
+
 # match_file <regex> <file> [grep flags]: 0 = match, 1 = no match; any other
 # grep status (bad regex, I/O) aborts the push. Reads a file, never a pipe, so
 # an early grep exit cannot raise SIGPIPE and turn a match into "no match".
@@ -158,6 +174,8 @@ case "$mode" in
     fi
     if match_file "$SECRET_RE" "$scratch/added" -qi; then
       echo "::error::staged data looks like it contains an API key or auth header; not pushing"
+      echo "files to read (names only):"
+      files_with regex "$SECRET_RE"
       exit 1
     fi
     for var in ODDS_API_KEY LUMIFY_API_KEY CFBD_API_KEY; do
@@ -165,6 +183,8 @@ case "$mode" in
       val="${val%%$'\n'*}"
       if [ "${#val}" -ge 8 ] && grep -aFq -e "$val" "$scratch/added"; then
         echo "::error::staged data contains the value of $var; not pushing"
+        echo "files to read (names only):"
+        files_with fixed "$val"
         exit 1
       fi
     done

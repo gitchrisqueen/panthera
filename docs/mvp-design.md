@@ -681,8 +681,8 @@ writes nothing to the repo, so a rehearsal is always available while it stays
 enabled. One caveat: `pages.yml` triggers on this workflow's `workflow_run`
 and gates only on `conclusion == 'success'`, so even a dry rehearsal
 rebuilds the public dashboard only when the code, config or data changed since
-the last deploy (the `build-key.txt` check in `pages.yml`), so a dry rehearsal
-that committed nothing is skipped.
+the last deploy (the `build-key.txt` check in `pages.yml`); a dry rehearsal is
+skipped only if nothing changed, otherwise it republishes the current tip.
 
 **Undo one bad run.** Revert its bot commit (`data: weekly catch-up …`):
 
@@ -728,7 +728,7 @@ what stops it. Follow the recipe and none of them changes.
 | also in the commit | if you did NOT keep HEAD for it, does it recover by itself? |
 |---|---|
 | `data/picks/run_log.csv` notes | no, but they are only operational notes; the next catch-up rewrites them for any date it repairs again |
-| `data/ncaaf/**` ticket settlements | **yes** — the daily `ncaaf grade` (`ncaaf.yml`, `15 13 * * *`) re-settles them |
+| `data/ncaaf/**` ticket settlements | **yes** — the daily `ncaaf grade` (`ncaaf.yml`, `15 13 * 8-12,1 *`; in Feb-Jul the weekly `catchup --sport all` grade does it) re-settles them |
 | `data/ncaabase/**` game refreshes | **yes** — `ncaabase grade` re-refreshes any date still unsettled |
 | `reports/**`, including `reports/NCAAF_REPORT.md` | **yes** — the next MLB morning run regenerates the MLB reports, and the NCAAF report follows the next time `data/ncaaf` changes |
 

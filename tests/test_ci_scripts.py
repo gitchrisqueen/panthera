@@ -75,6 +75,8 @@ def test_live_settings_match_the_configs():
     "arg",
     [
         "/etc/passwd",
+        "./tests/fixtures/ncaaf/gate_go.json",
+        " tests/fixtures/ncaaf/gate_go.json",
         "tests/fixtures/ncaaf/../../../pyproject.toml",
         "tests/fixtures/odds_snapshot.json",
         "tests/fixtures/ncaaf/odds_ncaaf_snapshot.txt",
@@ -194,6 +196,8 @@ def _validate(*specs: str, **env: str) -> int:
         ("year", "2026", "20266"),
         ("range", "2014-2019", "2014"),
         ("range", "2014-2019", "0001-9999"),
+        ("range", "2014-2019", "2019-2014"),
+        ("seasons", "2015-2025", "2025-2015"),
         ("seasons", "2015-2025", "$(id)"),
         ("seasons", "2025", "2025\n2026"),
     ],
@@ -289,3 +293,10 @@ def test_output_values_cannot_start_a_new_output_line(tmp_path, capsys):
         del os.environ["GITHUB_OUTPUT"]
     assert out.read_text().count("\n") == 3
     assert "go=true\n" not in out.read_text().split("reason=", 1)[1]
+
+
+@pytest.mark.parametrize("name", ["mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits"])
+def test_a_dry_run_never_pushes_data(name):
+    steps = next(iter(_wf(name)["jobs"].values()))["steps"]
+    push = next(s for s in steps if "data_branch.sh push" in str(s.get("run", "")))
+    assert push["if"] == "inputs.dry_run != true"

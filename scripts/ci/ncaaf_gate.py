@@ -47,7 +47,7 @@ class FixtureRejected(ValueError):
 
 def resolve_fixture(arg: str) -> Path:
     """The fixture file, only if it is a real .json file under tests/fixtures/ncaaf/."""
-    if not arg or os.path.isabs(arg) or ".." in Path(arg).parts:
+    if not arg.startswith("tests/fixtures/ncaaf/") or ".." in Path(arg).parts:
         raise FixtureRejected(f"fixture path must be relative and under {FIXTURE_DIR}: {arg!r}")
     path = (ROOT / arg).resolve()
     if not path.is_relative_to(FIXTURE_DIR.resolve()) or path.suffix != ".json":

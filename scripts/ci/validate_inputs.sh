@@ -25,6 +25,9 @@ for spec in "$@"; do
   if ! [[ "$value" =~ $re ]]; then
     echo "::error::input $name does not match the expected '$kind' format"
     fail=1
+  elif [[ "$kind" =~ ^(range|seasons)$ && "$value" == *-* ]] && (( 10#${value%-*} > 10#${value#*-} )); then
+    echo "::error::input $name is a reversed range"
+    fail=1
   fi
 done
 exit "$fail"
