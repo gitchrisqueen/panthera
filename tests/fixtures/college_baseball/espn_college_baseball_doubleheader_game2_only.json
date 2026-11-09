@@ -1,0 +1,23 @@
+{
+ "events": [
+  {
+   "id": "401800002",
+   "date": "2026-05-01T19:05Z",
+   "competitions": [
+    {
+     "id": "401800002",
+     "date": "2026-05-01T19:05Z",
+     "status": {"type": {"name": "STATUS_FINAL", "completed": true}},
+     "competitors": [
+      {"id": "85", "homeAway": "home", "score": "3",
+       "team": {"id": "85", "location": "LSU", "displayName": "LSU Tigers",
+                "shortDisplayName": "LSU", "abbreviation": "LSU"}},
+      {"id": "123", "homeAway": "away", "score": "2",
+       "team": {"id": "123", "location": "Texas A&M", "displayName": "Texas A&M Aggies",
+                "shortDisplayName": "Texas A&M", "abbreviation": "TA&M"}}
+     ]
+    }
+   ]
+  }
+ ]
+}

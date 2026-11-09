@@ -93,12 +93,12 @@ def _espn_fallback(date_et: str, cfg: dict) -> int:
     final_hole = (games["status"] == "Final") & (
         games["home_score"].isna() | games["away_score"].isna()
     )
-    games = games[
-        (games["game_date_et"] == date_et)
-        & (games["status"].isin(UNSETTLED) | final_hole)
-        & (pd.to_datetime(games["start_time_utc"], utc=True) <= _now())
+    day = games[games["game_date_et"] == date_et]
+    writable = day[
+        (day["status"].isin(UNSETTLED) | final_hole.loc[day.index])
+        & (pd.to_datetime(day["start_time_utc"], utc=True) <= _now())
     ]
-    if games.empty:
+    if writable.empty:
         return 0
     try:
         espn = _espn_games(date_et, cfg)
@@ -106,14 +106,29 @@ def _espn_fallback(date_et: str, cfg: dict) -> int:
         print(f"[ncaabase] ESPN fallback failed for {date_et}: {exc}", file=sys.stderr)
         return 0
     mcfg = cfg["matching"]
-    rows = games.to_dict("records")
+    # EVERY row for the date goes to `match_espn`, not only the ones this run
+    # may write: a settled game must claim its own event, or that event is the
+    # sole candidate for an open row whose own event is missing from the feed
+    # and gets written onto it (issue #75; MLB's `_key_events_to_rows` keeps
+    # complete finals in the pool for the same reason). The claim is greedy in
+    # row order, so rows that cannot be written go first — otherwise an open
+    # game earlier in the day would see the settled game's event before its
+    # owner had claimed it. Only `writable` rows are written below.
+    writable_ids = set(writable["game_id"].astype(str))
+    rows = sorted(
+        day.to_dict("records"), key=lambda r: str(r["game_id"]) in writable_ids
+    )
     matched, unmatched = match_espn(
         rows, espn, _aliases(cfg), mcfg["window_hours"], mcfg["ambiguity_minutes"]
     )
     for msg in unmatched:
-        print(f"[ncaabase] no ESPN match: {msg}", file=sys.stderr)
+        # A row nothing may be written to is not a gap worth reporting.
+        if msg.split(":", 1)[0] in writable_ids:
+            print(f"[ncaabase] no ESPN match: {msg}", file=sys.stderr)
     updated = []
     for row in rows:
+        if str(row["game_id"]) not in writable_ids:
+            continue
         hit = matched.get(str(row["game_id"]))
         if hit is None:
             continue

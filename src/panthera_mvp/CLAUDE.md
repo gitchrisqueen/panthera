@@ -158,11 +158,14 @@
   pick the row. Neither may decide an irreversible settlement.
   NCAAF needs none of this: its fallbacks join by `event_id`, and a CFB team
   plays once a week. `ncaabase` runs the same `nearest_start` rule over its
-  own `matching:` block, but NOT over the same candidate set —
-  `ncaabase/pipeline.py::_espn_fallback` filters to the unsettled rows before
-  calling `match_espn`, so a settled game's event is never claimed and can be
-  keyed onto an open row when the open row's own event is missing from the
-  feed. Tracked as issue #75; do not copy that filtering back into MLB.
+  own `matching:` block. It used to filter to the unsettled rows before
+  calling `match_espn`, so a settled game's event was never claimed and could
+  be keyed onto an open row when the open row's own event was missing from the
+  feed (issue #75, fixed). `ncaabase/pipeline.py::_espn_fallback` now passes
+  EVERY row for the date to `match_espn` and writes only the rows its "needs a
+  final" test admits. `match_espn` claims greedily in row order, so the rows
+  that cannot be written are sorted first and claim their events before an
+  open row can see them. Do not reintroduce the filtering, in either sport.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
   Preview | Live | Final, so it reports a called-off game as `Final` with no
