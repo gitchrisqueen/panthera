@@ -98,8 +98,8 @@ panthera-mvp lab status      -> prints the champion and the last run (read-only)
 ```
 
 `lab run --dry-run` prints the decision and writes nothing. `--force` runs outside the
-season months (for backfills and tests). The feature logging hook and the weekly workflow
-are separate changes.
+season months (smoke tests). The feature logging hook is in `ncaaf picks`
+(`_log_lab_features`) and the weekly run is `.github/workflows/lab.yml`.
 
 ## Adding a sport or level
 
@@ -107,7 +107,9 @@ The loop is sport-agnostic above the rules module. A new sport adds, under its o
 a `config/lab/<sport>.yaml`, a features module (raw per-game values at decision time), a
 rules module that turns a feature frame and a params dict into bets, and a games source
 for `lab/report.py::games_for`. MLB and college baseball plug in this way and stay dormant
-out of season (MLB runs April to October, college baseball February to June). Parity with
+out of season (MLB runs April to October, college baseball February to June); they are
+tracked as #88 (MLB) and #89 (college baseball), and neither is covered until it has run
+in season. A history backfill for NCAAF, which must flag leaky signals, is #90. Parity with
 the sport's live engine must be proven by a test like `tests/test_lab_ncaaf_parity.py`
 before its first run.
 
