@@ -280,6 +280,115 @@ def test_changed_contract(repos):
     assert run("data/newdir") == 0  # present on one side only
 
 
+def _refused(repos, setup, *args, env=None):
+    """Run pull, apply `setup(work)`, push, and assert it was refused with origin unchanged."""
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    _run(work, "pull")
+    setup(work)
+    proc = subprocess.run(
+        ["bash", str(SCRIPT), "push", "data: x", *args], cwd=work, capture_output=True,
+        text=True, env={**ENV, **(env or {})},
+    )
+    assert proc.returncode != 0, proc.stdout
+    assert _git(origin, "rev-parse", "data") == before
+    return proc
+
+
+def _bulk(work: Path, n: int = 3000) -> None:
+    bulk = work / "data" / "bulk"
+    bulk.mkdir()
+    for i in range(n):
+        (bulk / f"{'p' * 40}_{i:05d}.csv").write_text(f"{i}\n")
+
+
+def test_forbidden_path_sorted_first_in_a_huge_list_is_still_refused(repos):
+    """grep -q stops at the first match; a pipe writer then dies of SIGPIPE (guard fails open)."""
+
+    def setup(work):
+        _bulk(work)
+        (work / "data" / "a_picks.csv").write_text("x\n")
+
+    proc = _refused(repos, setup, "--forbid", r"^data/a_picks\.csv$")
+    assert "refusing to commit a path" in proc.stdout
+
+
+def test_secret_on_the_first_line_of_a_huge_add_is_refused(repos):
+    def setup(work):
+        (work / "data" / "a_leak.txt").write_text("apiKey=0123456789abcdef0123\n")
+        _bulk(work)
+
+    proc = _refused(repos, setup)
+    assert "API key or auth header" in proc.stdout
+
+
+@pytest.mark.parametrize(
+    "arg", [["--forbid", "("], ["--forbidd", "x"], ["--forbid"], ["--forbid", "a", "extra"]]
+)
+def test_bad_forbid_arguments_are_rejected_not_ignored(repos, arg):
+    proc = _refused(repos, lambda w: (w / "data" / "n.csv").write_text("n\n"), *arg)
+    assert proc.returncode == 2
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "+apiKey=0123456789abcdef0123",
+        '{"Authorization": "Bearer abc.def"}',
+        "{'apiKey': 'ABCDEF-0123456789-abcdef'}",
+        "api_key = 0123456789abcdef0123",
+        "x?apiKey%3D0123456789abcdef0123",
+    ],
+)
+def test_more_secret_shapes_are_refused(repos, content):
+    _refused(repos, lambda w: (w / "data" / "s.txt").write_text(content + "\n"))
+
+
+def test_secret_in_a_file_with_a_nul_byte_is_refused(repos):
+    def setup(work):
+        (work / "data" / "bin.dat").write_bytes(b"\x00apiKey=0123456789abcdef0123\n")
+
+    _refused(repos, setup)
+
+
+def test_a_bare_api_key_column_header_is_not_a_false_positive(repos):
+    origin, work = repos
+    _run(work, "pull")
+    (work / "data" / "schema.csv").write_text("snapshot_ts,api_key,market\n")
+    assert "pushed to origin/data" in _run(work, "push", "data: header").stdout
+
+
+def test_env_secret_value_anywhere_in_the_delta_is_refused(repos):
+    def setup(work):
+        (work / "data" / "d.txt").write_text("blob zzTOPSECRETVALUEzz blob\n")
+
+    proc = _refused(repos, setup, env={"ODDS_API_KEY": "zzTOPSECRETVALUEzz"})
+    assert "value of ODDS_API_KEY" in proc.stdout
+
+
+@pytest.mark.parametrize("name", [".env", ".env.local", "id_rsa", "deploy.pem", "x.key"])
+def test_credential_looking_filenames_are_refused(repos, name):
+    _refused(repos, lambda w: (w / "data" / name).write_text("x\n"))
+
+
+def test_data_branch_may_not_be_main(repos):
+    _origin, work = repos
+    proc = subprocess.run(
+        ["bash", str(SCRIPT), "pull"], cwd=work, capture_output=True, text=True,
+        env={**ENV, "DATA_BRANCH": "main"},
+    )
+    assert proc.returncode == 2
+
+
+def test_push_does_not_touch_the_shared_git_identity(repos):
+    _origin, work = repos
+    _git(work, "config", "user.name", "Human")
+    _run(work, "pull")
+    (work / "reports" / "R.md").write_text("new\n")
+    _run(work, "push", "data: ident")
+    assert _git(work, "config", "user.name") == "Human"
+
+
 DATA_WORKFLOWS = [
     "mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits", "ncaaf",
     "ncaaf-capture", "ncaabase-capture", "panthera-catchup", "mvp-calibrate",
@@ -305,3 +414,15 @@ def test_workflow_pushes_through_the_script_not_to_its_own_ref(name):
     assert "git push" not in text, f"{name}: direct push to a protected ref"
     assert "git add data" not in text
     assert "data_branch.sh push" in text
+
+
+@pytest.mark.parametrize("name", DATA_WORKFLOWS)
+def test_failed_push_uploads_the_delta_after_the_push_step(name):
+    job = next(iter(yaml.safe_load((WORKFLOWS / f"{name}.yml").read_text())["jobs"].values()))
+    steps = job["steps"]
+    push = next(i for i, s in enumerate(steps) if "data_branch.sh push" in str(s.get("run", "")))
+    keep = steps[push + 1]
+    assert keep["if"] == "failure()"
+    assert keep["uses"].startswith("actions/upload-artifact")
+    assert keep["with"]["path"] == "${{ runner.temp }}/data-delta.patch"
+    assert {"ODDS_API_KEY", "LUMIFY_API_KEY", "CFBD_API_KEY"} <= set(steps[push]["env"])

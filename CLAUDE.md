@@ -88,7 +88,7 @@ panthera-mvp ncaabase grade | status
   workflows on a GitHub runner.
 - `data/` and `reports/` are **bot-owned** and live on the **`data` branch**
   (since 2026-11-09): `main` is protected (PR + GitGuardian) and rejects bot
-  pushes, which stalled every data feed from 2026-10-24. Workflows overlay the
+  pushes, which stalled every data feed from the evening of 2026-10-23. Workflows overlay the
   branch before running and push back with `scripts/ci/data_branch.sh`. The
   copies on `main` are frozen at 2026-10-23 and stale. Don't hand-edit; see
   `data/CLAUDE.md` and `reports/CLAUDE.md`. Locally, `scripts/ci/data_branch.sh

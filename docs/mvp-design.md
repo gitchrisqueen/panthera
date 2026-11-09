@@ -225,8 +225,10 @@ the detector working, not a gap in it.
 
 ### Rollback and ownership — postseason scope fix (2026-10-15)
 
-> Since 2026-11-09 bot commits live on the `data` branch, not `main`. Run the undo steps in a
-> `data` worktree: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
 
 **Owner of the scope decision and of a red `mvp-morning` / `mvp-pregame`
 run:** the repo owner, Christopher Queen (`@gitchrisqueen`). There is no
@@ -304,8 +306,10 @@ was reverted, the same way the version history above records changes.
 
 ### Rollback and ownership — called-off game settlement (2026-10-15)
 
-> Since 2026-11-09 bot commits live on the `data` branch, not `main`. Run the undo steps in a
-> `data` worktree: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
 
 The change that taught the pipeline to store a called-off game under its
 `detailedState` (`clients/mlb.py::stored_status`), widened every sport's
@@ -498,8 +502,10 @@ reverted, the same way the section above does.
 
 ### Rollback and ownership — doubleheader ESPN match (2026-10-15)
 
-> Since 2026-11-09 bot commits live on the `data` branch, not `main`. Run the undo steps in a
-> `data` worktree: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+> Since 2026-11-09 bot data lives on the `data` branch, not `main`. This is a CODE revert: do it on a
+> branch off `main` and land it by PR (`main` is protected; a direct `git push origin main` is
+> rejected with GH006). The `data/`, `reports/` checkout lines below are now no-ops on `main`.
+> Reverting a bot DATA commit is different: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
 
 The change that gave `clients/espn.py::EspnGame` a `start_time_utc` and taught
 the MLB finals fallback to key each ESPN event onto ONE stored row by start
@@ -646,8 +652,9 @@ candidates on purpose.
 
 ### Rollback and ownership — catch-up (2026-10-16)
 
-> Since 2026-11-09 bot commits live on the `data` branch, not `main`. Run the undo steps in a
-> `data` worktree: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+> Since 2026-11-09 the bot commit to undo is on the `data` branch, so run this whole recipe in a `data`
+> worktree (`.github/workflows/CLAUDE.md` § Undoing or restoring bot data) and push with
+> `git push origin HEAD:data`, as written below.
 
 `panthera-mvp catchup` plus `.github/workflows/panthera-catchup.yml`
 (Monday 07:15 ET) and the replay hardening under it. The command finds slate
@@ -695,8 +702,8 @@ git status --short                         # expect only the two files below
 #   data/picks/catchup_log.csv
 
 git commit
-git push origin main                       # NOTHING changes until this
-git ls-remote origin main                  # confirm the SHA you just pushed
+git push origin HEAD:data                  # NOTHING changes until this (the data branch, not main)
+git ls-remote origin data                  # confirm the SHA you just pushed
 ```
 
 That removes the shadow rows AND the `data/picks/catchup_log.csv` completion

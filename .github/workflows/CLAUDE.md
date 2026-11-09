@@ -61,7 +61,7 @@ writes a durable run note; started games are skipped as always.
 ## Data lives on the `data` branch (2026-11-09)
 
 `main` is protected (PR + `GitGuardian Security Checks`), so a workflow cannot push
-data to it: every data push from 2026-10-24 on was rejected with GH006 and the feeds
+data to it: every data push from the evening of 2026-10-23 on was rejected with GH006 and the feeds
 went stale (health issues #81/#82). Bot data therefore lives on the orphan `data`
 branch (`data/`, `reports/` and a README.md). Bypassing the protection for the Actions app
 is not possible on a personal-account repo (`POST /rulesets` returned 422 "Actor GitHub
@@ -73,12 +73,12 @@ the ledger, protected by a ruleset that blocks deletion and non-fast-forward pus
   right after checkout (code and config still come from the ref it was started on).
 - Committing workflows end with `bash scripts/ci/data_branch.sh push "<message>"`;
   it commits only this run's delta onto the pull baseline, rebases onto a concurrent
-  writer, retries 3 times, and sets `pushed=true` in `$GITHUB_OUTPUT` when it lands.
+  writer, makes up to 3 push attempts, and sets `pushed=true` in `$GITHUB_OUTPUT` when it lands.
   `--forbid <regex>` fails the push if a changed path matches (catch-up's picks.csv
   guard).
 - `main`'s `CLAUDE.md` files in `data/` and `reports/` are never synced.
-- Change detection against the baseline is `diff -rq .databranch/data/ncaaf data/ncaaf`,
-  not `git status` (the overlay always differs from main's frozen copy).
+- Change detection against the baseline is `bash scripts/ci/data_branch.sh changed data/ncaaf`
+  (exit 0 = changed), not `git status` (the overlay always differs from main's frozen copy).
 - `mvp-calibrate` also writes `config/`, which is code on `main`: it uploads
   `calibrated-config.patch` as an artifact for a human PR instead of committing it.
 - Rollback and incident steps: § Undoing or restoring bot data, below. Reverting this change
@@ -86,32 +86,49 @@ the ledger, protected by a ruleset that blocks deletion and non-fast-forward pus
 
 ## Undoing or restoring bot data
 
-Everything runs from a normal clone; `data` is an orphan branch with no history shared with `main`.
+Run from a normal clone (git 2.42+ for `--orphan` worktrees; older git: `git switch --orphan`).
+`data` is an orphan branch with no history shared with `main`. Open or refresh the worktree first,
+every time (safe to repeat):
 
-- **Undo a bad bot commit** (it is on `data`, not `main`):
-  `git fetch origin data && git worktree add -b data-fix ../panthera-data origin/data && cd ../panthera-data && git revert <sha> && git push origin HEAD:data`.
-  The older "Undo one bad run" sections in `docs/mvp-design.md` describe the same revert; run them
-  in this worktree, not in a `main` checkout.
-- **Replay data a failed push lost:** every writer uploads artifact `data-delta` on failure.
-  Download it, then in the worktree above run `git am data-delta.patch && git push origin HEAD:data`.
+```bash
+git fetch origin data
+git worktree add --detach ../panthera-data origin/data 2>/dev/null \
+  || git -C ../panthera-data checkout --detach origin/data
+cd ../panthera-data
+```
+
+- **Undo a bad bot commit** (it is on `data`, not `main`): in that worktree, `git revert <sha>` then
+  `git push origin HEAD:data`. Appended CSVs often conflict when later bot commits touched the same
+  file; follow the "keep HEAD for derived paths" recipe in `docs/mvp-design.md` (catch-up section).
+- **Replay data a failed push lost.** A writer whose push step fails after the commit uploads artifact
+  `data-delta` (14 days). Prefer this over re-running the workflow, which spends 3 Odds API credits
+  again: `gh run download <run-id> -n data-delta`, then in the worktree `git am data-delta.patch`
+  (`git am --abort` on conflict and ask), then `git push origin HEAD:data`. Refusals (forbidden path,
+  secret-looking text) and failures before the commit leave no patch. A re-run attempt overwrites the
+  `data-delta` artifact of the same run, so download it before re-running.
 - **Kill switch:** `for w in mvp-morning mvp-pregame mvp-close mvp-splits ncaaf ncaaf-capture ncaabase-capture panthera-catchup mvp-calibrate; do gh workflow disable $w.yml; done`
-  (re-enable with `gh workflow enable`). Pages and health write nothing.
+  then `gh run list --status in_progress` and `gh run cancel <id>` for any writer still running.
+  Re-enable with `gh workflow enable`. Pages and health write nothing.
 - **Branch deleted or corrupted:** the ruleset blocks both, but if it happens, restore from the last good
-  SHA (`git push origin <sha>:refs/heads/data`), or re-seed from `main`'s frozen copy (2026-10-23):
+  SHA (`git push origin <sha>:refs/heads/data`; find it in a run's "data branch: pushed `<sha>`" summary
+  line or `git reflog` of a clone), or re-seed from `main`'s frozen copy (2026-10-23):
   `git worktree add --orphan -b data ../seed && git archive origin/main data reports | tar -x -C ../seed --exclude=data/CLAUDE.md --exclude=reports/CLAUDE.md`,
   commit and push, then run `panthera-mvp catchup` to refill what it can.
-- **Secret reached `data`** (the push script refuses staged `apiKey=`/`Authorization:` text, but it
-  is a pattern check): disable the writers (kill switch), rotate the key per `docs/secret-rotation.md`,
-  disable the `data` ruleset, re-seed an orphan `data` without the leaked commit and
-  `git push --force origin data`, re-enable the ruleset and writers, then delete the affected Actions
-  runs and artifacts (history on GitHub keeps forks and caches until you do).
+- **Secret reached `data`.** The push script refuses staged key-looking text and the env values of
+  `ODDS_API_KEY`, `LUMIFY_API_KEY`, `CFBD_API_KEY`, but it is a pattern check. If one got through: treat the
+  key as burned. Disable the writers (kill switch), rotate it per `docs/secret-rotation.md`, then in
+  Settings → Rules → Rulesets disable "data branch: no delete, no force-push" (id 26871856), re-seed an
+  orphan `data` without the leaked commit, `git push --force origin data`, and re-enable the ruleset and
+  writers. The old commit stays fetchable by SHA (and in any fork) until GitHub Support removes it: file
+  a sensitive-data removal request. Also delete the affected Actions runs and `data-delta` artifacts.
 - **Moving data back to `main`:** no automated path. Copy `data/` and `reports/` from a `data` worktree
   into a branch off `main` and open a PR (it needs GitGuardian and merges by hand).
-- **Gap to know about:** 2026-10-24 up to the cutover, bot commits were rejected and are gone: odds
-  snapshots, picks, CLV. `panthera-mvp catchup` rebuilds games and a MLB shadow ledger only; it does not
-  recreate `data/picks/picks.csv` rows or raw odds. See `data/CLAUDE.md`.
-- **Size:** `data` grows with raw odds JSON; revisit (squash or prune) if the repo nears GitHub's
-  size guidance. There is no scheduled mirror: the ruleset plus Git history are the safeguard.
+- **Gap to know about:** from the evening of 2026-10-23 (first rejected push: MVP Pregame run 40022747688)
+  until the cutover, bot commits were rejected and are gone: odds snapshots, picks, CLV. `panthera-mvp
+  catchup` rebuilds games and a MLB shadow ledger only; it does not recreate `data/picks/picks.csv` rows or
+  raw odds. See `data/CLAUDE.md`.
+- **Size:** `data` grows with raw odds JSON; revisit (squash or prune) if the repo nears GitHub's size
+  guidance. There is no scheduled mirror: the ruleset plus Git history are the safeguard.
 
 ## Bot-commit loop guards (keep all three)
 

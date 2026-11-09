@@ -8,14 +8,16 @@
 #
 #   data_branch.sh push "<commit message>" [--forbid <extended-regex>]
 #       Commit this run's delta (workspace vs. what `pull` left) and push it to
-#       origin/data: 3 tries, rebasing onto a concurrent writer. No change = no
-#       commit. Needs a prior `pull` (it refuses otherwise: a push built from a
-#       stale baseline would erase newer data). --forbid fails the push when a
-#       changed path matches the regex (catch-up's picks.csv guard). A staged
-#       change that looks like an API key or auth header also fails it: the
-#       branch is public and its history is permanent. On any failure the
-#       commit is saved as ${RUNNER_TEMP:-/tmp}/data-delta.patch so the
-#       workflow can upload it (replay with `git am`).
+#       origin/data: 3 push attempts, rebasing onto a concurrent writer between
+#       them. No change = no commit. Needs a prior `pull` (it refuses
+#       otherwise: a push built from a stale baseline would erase newer data).
+#       Refused before committing, so no patch is saved: a path matching
+#       --forbid (catch-up's picks.csv guard), a credential-looking filename,
+#       or added text that looks like an API key, an auth header, or the value
+#       of ODDS_API_KEY / LUMIFY_API_KEY / CFBD_API_KEY in the environment (the
+#       branch is public and its history is permanent). If the push step fails
+#       AFTER the commit, the commit is saved as ${RUNNER_TEMP:-/tmp}/data-delta.patch
+#       and the workflows upload it (replay with `git am`).
 #
 #   data_branch.sh changed <path>
 #       Exit 0 if <path> (e.g. data/ncaaf) differs between the workspace and the
@@ -24,7 +26,7 @@
 #
 # CLAUDE.md files in data/ and reports/ are docs owned by `main`; symlinks are
 # never copied. Prerequisites: git, rsync, bash (all present on ubuntu-latest).
-# Env: DATA_BRANCH (default data), DATA_WORKTREE (default .databranch).
+# Env: DATA_BRANCH (default data, never main), DATA_WORKTREE (default .databranch).
 set -euo pipefail
 
 BRANCH="${DATA_BRANCH:-data}"
@@ -33,8 +35,17 @@ DIRS=(data reports)
 # --checksum: never trust size+mtime to skip a same-size edit made in the same second.
 RSYNC=(rsync -a --no-links --checksum --delete --exclude=CLAUDE.md)
 PATCH_OUT="${RUNNER_TEMP:-/tmp}/data-delta.patch"
-# Added lines that must never reach the public branch.
-SECRET_RE='(api[_-]?key|apikey)=[A-Za-z0-9]{16,}|authorization: *(bearer|basic) '
+# Added text that must never reach the public branch: key=value / key: value in
+# plain, JSON, repr or URL-encoded form, and bearer/basic auth headers.
+SECRET_RE='(api[_-]?key|apikey)["'"'"']?([ ]*[=:]|%3[dD])[ ]*["'"'"']?[A-Za-z0-9_-]{16,}'
+SECRET_RE+='|authorization["'"'"']?[ ]*[:=][ ]*["'"'"']?(bearer|basic) '
+# Filenames that mean a credential was swept into data/ or reports/.
+CRED_NAME_RE='(^|/)(\.env[^/]*|id_[a-z0-9]+|[^/]*\.(pem|key|p12|pfx))$'
+
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo "::error::DATA_BRANCH must not be a code branch"
+  exit 2
+fi
 
 mode="${1:-}"
 shift || true
@@ -51,6 +62,19 @@ open_worktree() {
   fi
 }
 
+# match_file <regex> <file> [grep flags]: 0 = match, 1 = no match; any other
+# grep status (bad regex, I/O) aborts the push. Reads a file, never a pipe, so
+# an early grep exit cannot raise SIGPIPE and turn a match into "no match".
+match_file() {
+  local rc=0
+  grep -aE "${3:--q}" -e "$1" "$2" >/dev/null 2>&1 || rc=$?
+  if [ "$rc" -gt 1 ]; then
+    echo "::error::grep failed (status $rc) on a safety check; not pushing"
+    exit 1
+  fi
+  return "$rc"
+}
+
 case "$mode" in
   pull)
     open_worktree
@@ -65,7 +89,7 @@ case "$mode" in
     path="${1:?path required}"
     if [ ! -e "$path" ] && [ ! -e "$WT/$path" ]; then exit 1; fi
     rc=0
-    diff -rq -x CLAUDE.md "$WT/$path" "$path" >/dev/null 2>&1 || rc=$?
+    diff -rq -x CLAUDE.md -- "$WT/$path" "$path" >/dev/null 2>&1 || rc=$?
     if [ "$rc" -eq 0 ]; then exit 1; fi
     exit 0
     ;;
@@ -74,7 +98,19 @@ case "$mode" in
     msg="${1:?commit message required}"
     shift
     forbid=""
-    if [ "${1:-}" = "--forbid" ]; then forbid="${2:?--forbid needs a regex}"; fi
+    if [ "$#" -gt 0 ]; then
+      if [ "$1" != "--forbid" ] || [ "$#" -ne 2 ]; then
+        echo "::error::unknown arguments to push: $*"
+        exit 2
+      fi
+      forbid="$2"
+      rc=0
+      printf '' | grep -E -e "$forbid" >/dev/null 2>&1 || rc=$?
+      if [ "$rc" -gt 1 ]; then
+        echo "::error::--forbid is not a valid extended regex: $forbid"
+        exit 2
+      fi
+    fi
     if [ ! -e "$WT/.git" ]; then
       echo "::error::data_branch.sh push needs a prior pull (no $WT worktree)"
       exit 1
@@ -90,26 +126,43 @@ case "$mode" in
       echo "No changes to commit."
       exit 0
     fi
-    names="$(git -C "$WT" diff --cached --no-renames --name-only -z | tr '\0' '\n')"
-    if [ -n "$forbid" ] && printf '%s\n' "$names" | grep -Eq -e "$forbid"; then
+
+    scratch="$(mktemp -d)"
+    trap 'rm -rf "$scratch"' EXIT
+    git -C "$WT" diff --cached --no-renames --name-only -z | tr '\0' '\n' > "$scratch/names"
+    git -C "$WT" diff --cached -U0 --text --no-ext-diff --no-textconv | grep -aE '^\+' > "$scratch/added" || true
+
+    if [ -n "$forbid" ] && match_file "$forbid" "$scratch/names"; then
       echo "::error::refusing to commit a path matching $forbid"
-      printf '%s\n' "$names" | grep -E -e "$forbid" || true
+      grep -E -e "$forbid" "$scratch/names" | sed 's/^/  /' || true
       exit 1
     fi
-    added="$(git -C "$WT" diff --cached -U0 | grep -E '^\+[^+]' || true)"
-    if printf '%s\n' "$added" | grep -Eiq -e "$SECRET_RE"; then
+    if match_file "$CRED_NAME_RE" "$scratch/names"; then
+      echo "::error::refusing to commit a credential-looking filename"
+      grep -E -e "$CRED_NAME_RE" "$scratch/names" | sed 's/^/  /' || true
+      exit 1
+    fi
+    if match_file "$SECRET_RE" "$scratch/added" -qi; then
       echo "::error::staged data looks like it contains an API key or auth header; not pushing"
       exit 1
     fi
-    git -C "$WT" config user.name "panthera-bot"
-    git -C "$WT" config user.email "actions@users.noreply.github.com"
-    git -C "$WT" commit --quiet -m "$msg"
+    for var in ODDS_API_KEY LUMIFY_API_KEY CFBD_API_KEY; do
+      val="${!var:-}"
+      if [ "${#val}" -ge 8 ] && grep -aFq -e "$val" "$scratch/added"; then
+        echo "::error::staged data contains the value of $var; not pushing"
+        exit 1
+      fi
+    done
+
+    # -c, not `git config`: in a linked worktree the latter rewrites the shared repo config.
+    git -C "$WT" -c user.name="panthera-bot" -c user.email="actions@users.noreply.github.com" \
+      commit --quiet -m "$msg"
     git -C "$WT" format-patch -1 --binary --stdout > "$PATCH_OUT"
+    nfiles="$(wc -l < "$scratch/names" | tr -d ' ')"
 
     for attempt in 1 2 3; do
       if git -C "$WT" push --quiet origin "HEAD:refs/heads/$BRANCH"; then
         sha="$(git -C "$WT" rev-parse --short HEAD)"
-        nfiles="$(printf '%s\n' "$names" | wc -l | tr -d ' ')"
         echo "data_branch: pushed to origin/$BRANCH@$sha ($nfiles files)"
         if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
           echo "data branch: pushed \`$sha\` ($nfiles files)" >> "$GITHUB_STEP_SUMMARY"

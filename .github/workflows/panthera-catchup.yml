@@ -121,6 +121,10 @@ jobs:
 
       - name: Commit & push
         if: inputs.dry_run != true
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: |
           bash scripts/ci/data_branch.sh push "data: weekly catch-up $(date -u +%FT%TZ) [skip ci]" --forbid '^data/picks/picks\.csv$'
 
@@ -133,4 +137,5 @@ jobs:
           name: data-delta
           path: ${{ runner.temp }}/data-delta.patch
           if-no-files-found: ignore
+          overwrite: true
           retention-days: 14

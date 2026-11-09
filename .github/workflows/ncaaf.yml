@@ -135,6 +135,10 @@ jobs:
       - name: Commit & push
         id: commit
         if: inputs.dry_run != true
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: |
           bash scripts/ci/data_branch.sh push "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
 
@@ -146,6 +150,7 @@ jobs:
           name: data-delta
           path: ${{ runner.temp }}/data-delta.patch
           if-no-files-found: ignore
+          overwrite: true
           retention-days: 14
 
       # Football results reach the site within minutes instead of waiting for

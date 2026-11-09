@@ -86,6 +86,10 @@ jobs:
           retention-days: 14
 
       - name: Commit & push
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}
         run: |
           bash scripts/ci/data_branch.sh push "data: historical calibration sweep [skip ci]"
 
@@ -98,4 +102,5 @@ jobs:
           name: data-delta
           path: ${{ runner.temp }}/data-delta.patch
           if-no-files-found: ignore
+          overwrite: true
           retention-days: 14
