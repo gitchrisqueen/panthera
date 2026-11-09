@@ -77,16 +77,24 @@ def enabled_strategies() -> set[str]:
     "everything decided"."""
     ids: set[str] = set()
     for path in sorted((ROOT / "config" / "ncaaf_strategies").glob("*.yaml")):
-        text = path.read_text()
-        block = re.search(r"^strategy:\s*\n((?:[ \t]+.*\n|\s*\n)+)", text, re.M)
-        if not block:
-            raise ValueError(f"no strategy block in {path.name}")
-        enabled = re.search(r"^\s+enabled:\s*(true|false)\b", block.group(1), re.M)
-        sid = re.search(r"^\s+id:\s*(\S+)", block.group(1), re.M)
-        if not enabled or not sid:
+        block: list[str] = []
+        in_block = False
+        for line in path.read_text().splitlines():
+            if line.rstrip() == "strategy:":
+                in_block = True
+            elif in_block and line.strip() and not line[0].isspace():
+                break  # next top-level key
+            elif in_block:
+                block.append(line)
+        fields = {}
+        for line in block:
+            key, _, value = line.strip().partition(":")
+            if key in ("id", "enabled") and key not in fields:
+                fields[key] = value.split("#")[0].strip()
+        if "id" not in fields or fields.get("enabled") not in ("true", "false"):
             raise ValueError(f"strategy.id or strategy.enabled missing in {path.name}")
-        if enabled.group(1) == "true":
-            ids.add(sid.group(1))
+        if fields["enabled"] == "true":
+            ids.add(fields["id"])
     if not ids:
         raise ValueError("no enabled NCAAF strategy found")
     return ids
