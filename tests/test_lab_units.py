@@ -280,10 +280,12 @@ def test_run_writes_champion_iteration_and_report_and_dry_run_writes_nothing(roo
 
 def test_run_promotes_and_the_new_champion_starts_tomorrow(root, monkeypatch):
     seed_root(root)
+    import yaml
+
     cfg_path = root / "config" / "lab" / "ncaaf.yaml"
-    text = cfg_path.read_text().replace("min_bets: 300", "min_bets: 1")
-    text = text.replace("z_min: 2.0", "z_min: -100.0")
-    cfg_path.write_text(text)
+    cfg = yaml.safe_load(cfg_path.read_text())
+    cfg["guards"].update(min_bets=1, min_diff_bets=1, z_min=-100.0)
+    cfg_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
     monkeypatch.setattr(climb, "z_required", lambda g, t: -100.0)
     res = run.cmd_run("ncaaf", force=True)
     if res.decision == "promoted":
@@ -329,3 +331,40 @@ def test_report_with_no_runs_says_so(root):
     text = open(path).read()
     assert "No run yet" in text and report.BANNER in text
     assert json.dumps  # keep the import honest
+
+
+def test_a_guard_or_space_change_starts_a_new_loop(root):
+    """Editing the guards or the space by PR must not silently continue the old loop."""
+    import yaml
+
+    seed_root(root, min_bets=100_000)
+    run.cmd_run("ncaaf", force=True)  # writes the champion with its loop hash
+    assert store.load_champion("ncaaf")["loop_hash"]
+    cfg_path = root / "config" / "lab" / "ncaaf.yaml"
+    cfg = yaml.safe_load(cfg_path.read_text())
+    cfg["guards"]["min_diff_bets"] = 5
+    cfg_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
+    with pytest.raises(LabConfigError, match="new loop"):
+        run.cmd_run("ncaaf", force=True)
+    with pytest.raises(LabConfigError, match="new loop"):
+        run.cmd_run("ncaaf", dry_run=True, force=True)
+
+
+def test_a_second_real_run_in_one_week_is_refused(root, capsys):
+    seed_root(root, min_bets=100_000)
+    run.cmd_run("ncaaf", force=True)
+    assert len(store.load_iterations("ncaaf")) == 1
+    assert run.cmd_run("ncaaf") is None  # same ISO week, no --force: nothing written
+    assert "already ran in" in capsys.readouterr().out
+    assert len(store.load_iterations("ncaaf")) == 1
+    run.cmd_run("ncaaf", dry_run=True)  # a dry run is never refused
+    run.cmd_run("ncaaf", force=True)    # --force repeats on purpose
+    assert len(store.load_iterations("ncaaf")) == 2
+
+
+def test_a_report_failure_does_not_discard_the_run(root, monkeypatch, capsys):
+    seed_root(root, min_bets=100_000)
+    monkeypatch.setattr(run, "write_report", lambda: (_ for _ in ()).throw(RuntimeError("boom")))
+    res = run.cmd_run("ncaaf", force=True)
+    assert res is not None and len(store.load_iterations("ncaaf")) == 1
+    assert "::warning::lab report failed" in capsys.readouterr().err

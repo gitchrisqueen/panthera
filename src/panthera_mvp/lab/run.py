@@ -8,6 +8,7 @@ ledger, promotes the champion when every guard holds, and rewrites the report.
 from __future__ import annotations
 
 import math
+import sys
 
 from ..timeutil import ET, now_utc, utc_iso
 from . import climb, store
@@ -15,12 +16,23 @@ from .config import LabConfigError, initial_params, lab_sports, load_lab_config
 from .report import games_for, write_report
 
 
+def loop_hash(cfg: dict) -> str:
+    """Identity of the experiment: evaluator version, guards, search space and feature
+    constants. A champion written under another hash belongs to another loop, because the
+    multiple-testing count `trials_total` was earned under the old one."""
+    from ..config import config_hash
+
+    return config_hash({"eval": cfg["eval_version"], "guards": cfg["guards"],
+                        "space": cfg["space"], "feature": cfg["feature"]})
+
+
 def _champion_record(cfg: dict, params: dict, effective_from: str, change: str,
                      parent: str | None) -> dict:
     from ..config import config_hash
 
     return {
-        "sport": cfg["sport"], "eval_version": cfg["eval_version"], "params": params,
+        "sport": cfg["sport"], "eval_version": cfg["eval_version"], "loop_hash": loop_hash(cfg),
+        "params": params,
         "hash": config_hash(params), "effective_from": effective_from,
         "promoted_at": utc_iso(now_utc()), "parent_hash": parent, "change": change,
     }
@@ -41,6 +53,20 @@ def cmd_run(
             f"champion was written under {champ.get('eval_version')}, the config says "
             f"{cfg['eval_version']}: a new evaluator starts a new loop (docs/lab/PROGRAM.md)"
         )
+    if champ is not None and champ.get("loop_hash") != loop_hash(cfg):
+        raise LabConfigError(
+            "the guards, search space or feature constants changed since this champion was "
+            "written (loop hash differs): that starts a new loop. See 'Changing the evaluator "
+            "starts a new loop' in docs/lab/PROGRAM.md"
+        )
+    iso = today.isocalendar()
+    week = f"{iso.year}-W{iso.week:02d}"
+    if not dry_run and not force:
+        prior = store.load_iterations(sport)
+        if not prior.empty and str(prior.iloc[-1]["week_label"]) == week:
+            print(f"[lab {sport}] already ran in {week}; a second real run would count the "
+                  f"same challengers twice (--force to repeat)")
+            return None
     params = initial_params(cfg) if champ is None else champ["params"]
     res = climb.walk(
         store.load_features(sport), games_for(sport), params, cfg["space"], cfg["guards"],
@@ -53,9 +79,8 @@ def cmd_run(
     if champ is None:
         champ = _champion_record(cfg, params, str(today), "initial", None)
         store.save_champion(sport, champ)
-    iso = today.isocalendar()
     store.append_iteration(sport, {
-        "run_ts": utc_iso(now), "week_label": f"{iso.year}-W{iso.week:02d}",
+        "run_ts": utc_iso(now), "week_label": week,
         "eval_version": cfg["eval_version"], "n_games": res.n_games, "n_graded": res.n_graded,
         "champion_hash": champ["hash"], "best_challenger_param": res.param, "old": res.old,
         "new": res.new, "train_n": res.train_n, "champion_roi": res.champion_roi,
@@ -71,7 +96,11 @@ def cmd_run(
         store.save_champion(sport, _champion_record(
             cfg, res.new_params, nxt, f"{res.param}: {res.old} -> {res.new}", champ["hash"]))
         print(f"[lab {sport}] new champion effective {nxt}")
-    print(f"[lab {sport}] wrote {write_report()}")
+    try:
+        print(f"[lab {sport}] wrote {write_report()}")
+    except Exception as exc:  # noqa: BLE001 - a report failure must not discard the run
+        print(f"::warning::lab report failed (the run itself is recorded): "
+              f"{type(exc).__name__}: {exc}", file=sys.stderr)
     return res
 
 

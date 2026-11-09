@@ -5,9 +5,11 @@
 # lives on the data branch (data/lab/ncaaf/champion.json), never here.
 # `initial_champion` + `structure` are only the starting point of the climb.
 #
-# Evaluator version: lab_eval_v1. Changing the evaluator, the feature columns
-# or the guards below starts a NEW loop (bump the version in PROGRAM.md and
-# reset data/lab/ncaaf/iterations.csv); scores across versions do not compare.
+# Evaluator version: lab_eval_v1. Changing the evaluator, the feature columns, the
+# guards or the search space below starts a NEW loop: bump EVAL_VERSION in
+# src/panthera_mvp/lab/__init__.py and `eval_version` here, and follow "Changing the
+# evaluator starts a new loop" in docs/lab/PROGRAM.md. `lab run` refuses to continue a
+# champion written under a different guards/space/feature hash.
 
 sport: ncaaf
 level: college
@@ -68,7 +70,8 @@ space:
 guards:
   min_bets: 100                   # graded bets the challenger needs in the training window.
                                   # The z bar below, not this floor, is what keeps noise out.
+  min_diff_bets: 30               # games where the challenger differs from the champion: the
+                                  # z rests on these, not on the bets the two share
   z_min: 2.0                      # floor for the paired-difference z
-  holdout_weeks: 3                # newest weeks, never used to pick the challenger
-  shrink_pseudo_bets: 625         # ROI shrink toward 0: roi * n / (n + this). An assumption.
+  holdout_weeks: 3                # newest weeks, which did not pick the challenger
   min_graded_games_for_run: 50    # below this the run records insufficient_data

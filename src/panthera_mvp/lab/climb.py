@@ -5,19 +5,24 @@ one bet per game. A challenger (the champion with ONE parameter moved) replaces
 the champion only when every guard holds:
 
   1. n    it has at least guards.min_bets graded bets in the training window.
-  2. z    its paired profit difference to the champion, over the games where either
+  2. diff it differs from the champion on at least guards.min_diff_bets games: the z
+          below rests only on those, however many bets the two share.
+  3. z    its paired profit difference to the champion, over the games where either
           places a bet, has z >= max(guards.z_min, sqrt(2 ln trials_total)). The
           second term is a multiple-testing penalty in the spirit of Harvey, Liu and
           Zhu (2016); it is a heuristic, not a proof. trials_total counts every
           challenger ever evaluated, this run's included.
-  3. one  the z still reaches guards.z_min after the single best game is dropped.
-  4. hold the newest guards.holdout_weeks, which never picked the challenger, do not
-          score it below the champion (mean profit per pool game).
-  5. one  at most one promotion per run, one parameter per challenger.
+  4. one  the z still reaches that same required bar after the single best game is
+          dropped.
+  5. hold the newest guards.holdout_weeks, which did not pick the challenger, contain
+          at least one game where the two differ and score the challenger strictly
+          above the champion (mean profit per game where either bets). The window
+          slides weekly, so last week's holdout is this week's training: it is a
+          confirmation, not an untouched test set.
+  6. one  at most one promotion per run, one parameter per challenger.
 
-The shrunk ROI (roi * n / (n + shrink_pseudo_bets)) is reported next to the raw one.
-The 625 pseudo-bets are an assumption (a prior SD of 2 points on a true win rate),
-not a measurement.
+ROI is reported raw (mean profit per bet). It is not shrunk: a shrinkage target would
+have to be the no-skill return at the bet prices (about -4.5% at -110), not zero.
 """
 
 from __future__ import annotations
@@ -157,10 +162,6 @@ def roi(res: SimResult, mask: np.ndarray) -> tuple[int, float]:
     return n, (float(res.profit[sel].sum()) / n if n else NAN)
 
 
-def shrunk(value: float, n: int, pseudo: float) -> float:
-    return value * n / (n + pseudo) if n and not math.isnan(value) else NAN
-
-
 # --- neighbours ------------------------------------------------------------------
 
 
@@ -212,8 +213,6 @@ class RunResult:
     train_n: int = 0
     champion_roi: float = NAN
     challenger_roi: float = NAN
-    champion_roi_shrunk: float = NAN
-    challenger_roi_shrunk: float = NAN
     paired_z: float = NAN
     z_required: float = NAN
     n_neighbours: int = 0
@@ -266,14 +265,13 @@ def walk_prepared(
         return res
 
     champ = simulate_prepared(prep, champion)
-    cn, c_roi = roi(champ, train_pool)
-    hn, hc_roi = roi(champ, hold_pool)
+    _cn, c_roi = roi(champ, train_pool)
+    _hn, hc_roi = roi(champ, hold_pool)
     cands = neighbours(champion, space)
     res.n_neighbours = len(cands)
     res.trials_total = before + len(cands)
     res.z_required = z_required(guards, res.trials_total)
     res.champion_roi = c_roi
-    res.champion_roi_shrunk = shrunk(c_roi, cn, guards["shrink_pseudo_bets"])
     res.holdout_champion_roi = hc_roi
 
     best = None  # (z, order, path, old, new, params, sim, d, n)
@@ -287,13 +285,17 @@ def walk_prepared(
         entry = (z, order, path, old, new, params, sim, d, n_k)
         if best_any is None or z > best_any[0]:
             best_any = entry
-        if n_k >= int(guards["min_bets"]) and (best is None or z > best[0]):
+        n_diff = int(np.count_nonzero(d))
+        if (n_k >= int(guards["min_bets"]) and n_diff >= int(guards["min_diff_bets"])
+                and (best is None or z > best[0])):
             best = entry
 
     if best is None:
-        res.reason = (f"no challenger reaches min_bets={guards['min_bets']} graded bets "
-                      f"in training"
-                      + (f" (best z {_fmt(best_any[0])} on {best_any[8]} bets, "
+        res.reason = (f"no challenger has min_bets={guards['min_bets']} graded bets and "
+                      f"min_diff_bets={guards['min_diff_bets']} games that differ from the "
+                      f"champion in training"
+                      + (f" (highest z {_fmt(best_any[0])} on {best_any[8]} bets, "
+                         f"{int(np.count_nonzero(best_any[7]))} differing, "
                          f"{best_any[2]} {best_any[3]} -> {best_any[4]})" if best_any else ""))
         if best_any:
             _fill(res, best_any, guards, champ, train_pool, hold_pool)
@@ -309,22 +311,27 @@ def walk_prepared(
         return res
     drop = np.delete(d, int(np.argmax(d)))
     z_wo = paired_z(drop)
-    if z_wo < float(guards["z_min"]):
+    if z_wo < res.z_required:
         res.reason = (f"best challenger {tag}: driven by one game (z {_fmt(z)} falls to "
-                      f"{_fmt(z_wo)} without it, floor {guards['z_min']})")
+                      f"{_fmt(z_wo)} without it, required {_fmt(res.z_required)})")
         return res
     if not hold_pool.any():
         res.reason = f"best challenger {tag}: no holdout games to confirm it"
         return res
-    diff_hold = sim.profit[hold_pool] - champ.profit[hold_pool]
-    if float(np.mean(diff_hold)) < 0:
-        res.reason = (f"best challenger {tag}: holdout worse than the champion "
-                      f"({_fmt(res.holdout_challenger_roi)} vs {_fmt(res.holdout_champion_roi)} "
-                      f"per bet)")
+    hold_union = hold_pool & (sim.placed | champ.placed)
+    diff_hold = sim.profit[hold_union] - champ.profit[hold_union]
+    if int(np.count_nonzero(diff_hold)) == 0:
+        res.reason = (f"best challenger {tag}: the holdout has no game where it differs from "
+                      f"the champion, so it confirms nothing")
+        return res
+    if float(np.mean(diff_hold)) <= 0:
+        res.reason = (f"best challenger {tag}: holdout not better than the champion "
+                      f"(mean difference {_fmt(float(np.mean(diff_hold)))} per game where "
+                      f"either bets, on {diff_hold.size} games)")
         return res
     res.decision = "promoted"
     res.reason = (f"{tag}: z {_fmt(z)} >= {_fmt(res.z_required)}, {_fmt(z_wo)} without the "
-                  f"best game, holdout not worse")
+                  f"best game, holdout better ({_fmt(float(np.mean(diff_hold)))} per game)")
     res.new_params = params
     return res
 
@@ -335,7 +342,6 @@ def _fill(res, entry, guards, champ, train_pool, hold_pool) -> None:
     res.paired_z = z
     res.train_n = n_k
     _n, res.challenger_roi = roi(sim, train_pool)
-    res.challenger_roi_shrunk = shrunk(res.challenger_roi, n_k, guards["shrink_pseudo_bets"])
     _n, res.holdout_challenger_roi = roi(sim, hold_pool)
 
 

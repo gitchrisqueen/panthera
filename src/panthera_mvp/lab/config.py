@@ -10,7 +10,7 @@ import yaml
 from .. import paths
 
 REQUIRED = ("sport", "feature", "initial_champion", "structure", "space", "guards")
-GUARD_KEYS = ("min_bets", "z_min", "holdout_weeks", "shrink_pseudo_bets",
+GUARD_KEYS = ("min_bets", "min_diff_bets", "z_min", "holdout_weeks",
               "min_graded_games_for_run")
 
 

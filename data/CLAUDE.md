@@ -165,8 +165,9 @@ Exploratory, bot-owned, written by `.github/workflows/lab.yml` and read by nothi
 Contract: `docs/lab/PROGRAM.md`. `lab/ncaaf/features.csv` (one row per game per decision
 day, raw values only, appended by `ncaaf picks`), `lab/ncaaf/champion.json` (the current
 parameters, their hash and the date they take effect) and `lab/ncaaf/iterations.csv` (one
-row per weekly run, including every "no change" and why). Never hand-edit; changing the
-evaluator or the feature columns starts a new loop.
+row per weekly run, including every "no change" and why). Never hand-edit, except the two
+procedures in `docs/lab/PROGRAM.md` (undo a promotion; start a new loop after changing the
+evaluator, feature columns, guards or search space).
 
 ## ncaaf/ (college football — `panthera-mvp ncaaf ...`)
 

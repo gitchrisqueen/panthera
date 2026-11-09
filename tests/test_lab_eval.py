@@ -41,19 +41,65 @@ def _null_seed(seed: int) -> tuple[int, int, list[float]]:
     return len(results), len(claimed), claimed
 
 
-def test_null_eval_rarely_promotes_and_never_claims_a_big_edge():
-    # 200 seeds x 37 weekly runs. min_bets is lowered to 60 (the real default is 300) so a
-    # promotion is as easy as it can be: this is the hard version of the test.
+def test_null_eval_reduced_space_long_horizon():
+    """200 seeds x 37 weekly runs over a REDUCED space (4 of the 18 shipped paths: the
+    fast version) with min_bets lowered to 60 (shipped: 100). It is a stress test of the
+    z bar, not a measurement of the shipped loop: see the shipped-regime test below."""
     with ProcessPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
         out = list(pool.map(_null_seed, range(200), chunksize=10))
     runs = sum(o[0] for o in out)
     promoted = sum(o[1] for o in out)
     claimed = [c for o in out for c in o[2]]
     assert runs == 200 * 37
-    # 0.04% measured. Taking the z bar out raises it to 0.7% and the largest claimed
-    # in-sample edge to +20% per bet, which these two lines catch.
-    assert promoted / runs < 0.002
+    assert promoted / runs < 0.002   # a bound; the measured rate is lower (~0.04%)
     assert all(c < 0.10 for c in claimed)
+
+
+def _shipped_seed(args: tuple[int, int, int]) -> tuple[int, int, int]:
+    """(runs, promotions, insufficient_data runs) under the SHIPPED guards and space."""
+    seed, weeks, per_week = args
+    cfg = eval_config()
+    feats, games = synth(seed, weeks, per_week)
+    _p, results = run_weekly(feats, games, weeks, cfg, cfg["space"])
+    return (len(results), sum(r.decision == "promoted" for r in results),
+            sum(r.decision == "insufficient_data" for r in results))
+
+
+def cp_upper(k: int, n: int, conf: float = 0.95) -> float:
+    """One-sided Clopper-Pearson upper bound for k events in n trials (bisection)."""
+    from math import comb
+
+    def cdf(p):  # P(X <= k)
+        return sum(comb(n, i) * p**i * (1 - p) ** (n - i) for i in range(k + 1))
+
+    lo, hi = k / n, 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if cdf(mid) > 1 - conf else (lo, mid)
+    return hi
+
+
+@pytest.mark.parametrize(
+    "name,seeds,weeks,per_week,expect",
+    [
+        # A season-length run at the real volume (about 12-14 bets a week): 17 weeks, 18 games
+        # a week. Measured 2026-11-09: 1 promotion in 4,200 runs, 2,609 of them insufficient.
+        ("season", 300, 17, 18, (4200, 1, 2609)),
+        # The long stress case: 40 weeks, 20 games a week. Measured: 1 in 3,700 runs.
+        ("long", 100, 40, 20, (3700, 1, 747)),
+    ],
+)
+def test_null_eval_with_the_shipped_guards_and_space(name, seeds, weeks, per_week, expect):
+    """Fair coins, nothing to find, the SHIPPED guards (min_bets 100, min_diff_bets 30) and
+    the SHIPPED 18-path space. Pinned to the measured counts: a change here means the guards,
+    the rules or the generator changed, and PROGRAM.md's quoted rate must be updated."""
+    with ProcessPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
+        out = list(pool.map(_shipped_seed, [(s, weeks, per_week) for s in range(seeds)],
+                            chunksize=5))
+    runs, promoted, insufficient = (sum(o[i] for o in out) for i in range(3))
+    assert (runs, promoted, insufficient) == expect, (name, runs, promoted, insufficient)
+    # With 1 promotion, the 95% upper bound on the per-run rate stays small.
+    assert cp_upper(promoted, runs) < 0.002
 
 
 def test_a_naive_climber_chases_noise_where_the_guards_do_not():
@@ -94,34 +140,47 @@ def test_a_naive_climber_chases_noise_where_the_guards_do_not():
 # --- (b) a planted edge is found ------------------------------------------------------
 
 
-def test_planted_edge_is_found_and_nothing_else_is_promoted():
-    # SP+ edges of 3.5-4 points (just under the champion's 4-point bar) really cover 65%.
+def _planted(seed: int):
+    """400 games a week, 22 weeks, no daily cap, SP+ edges of 3.5-4 points (just under the
+    champion's 4-point bar) really cover 65%: about +24% per planted bet. This checks the
+    PLUMBING at a volume ten times the real one (about 12 bets a week). It is not a power
+    estimate: at the real volume the loop is blind to anything this size is not, see
+    PROGRAM.md."""
     def p_home(edge):
         return 0.5 + 0.15 * np.sign(edge) if 3.5 <= abs(edge) < 4.0 else 0.5
 
     cfg = eval_config(min_bets=150, min_graded_games_for_run=100)
-    # No daily cap here: a cap of 6 would only ever keep the strongest edges, and the
-    # planted 3.5-4 point band would never make a day's list.
     cfg["structure"]["max_bets_per_day"] = 1000
-    feats, games = synth(5, 22, 400, p_home_cover=p_home)
-    space = small_space(cfg, [p for p in NULL_SPACE if p != "ticket.max_bets_per_day"])
-    params, results = run_weekly(feats, games, 22, cfg, space)
-    promos = [r for r in results if r.decision == "promoted"]
-    assert [(r.param, r.new) for r in promos] == [("signals.sp_plus_edge.min_edge_points", 3.5)]
+    feats, games = synth(seed, 22, 400, p_home_cover=p_home)
+    paths_ = [p for p in NULL_SPACE if p != "ticket.max_bets_per_day"]
+    params, results = run_weekly(feats, games, 22, cfg, small_space(cfg, paths_))
     start = initial_params(cfg)
-    start["ticket"]["max_bets_per_day"] = 1000
-    changed = [p for p in NULL_SPACE if p != "ticket.max_bets_per_day"
-               and get_path(params, p) != get_path(start, p)]
-    assert changed == ["signals.sp_plus_edge.min_edge_points"]
-    # The claimed gain is real: the planted bets pay about +24% per bet.
-    assert promos[0].challenger_roi > promos[0].champion_roi
+    changed = [p for p in paths_ if get_path(params, p) != get_path(start, p)]
+    return [(r.param, r.new) for r in results if r.decision == "promoted"], changed
+
+
+def _planted_seed(seed: int) -> tuple[bool, int]:
+    promos, _changed = _planted(seed)
+    right = "signals.sp_plus_edge.min_edge_points"
+    return any(p == right and new < 4.0 for p, new in promos), sum(p != right for p, _ in promos)
+
+
+def test_planted_edge_detection_and_false_promotions_over_20_seeds():
+    """Measured 2026-11-09 over seeds 0-19: the planted change is promoted in 18 of 20 and
+    a WRONG parameter is promoted twice (seeds 3 and 19, each in a run that also found the
+    planted one). So the guards do not make a false promotion impossible: at ten times the
+    real volume, which gives the loop many eligible runs, it happens about once in ten
+    seasons. Pinned, so a change in either number is a visible change in the loop."""
+    with ProcessPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
+        out = list(pool.map(_planted_seed, range(20)))
+    assert (sum(o[0] for o in out), sum(o[1] for o in out)) == (18, 2)
 
 
 # --- crafted pools: one challenger, a known story ----------------------------------------
 
 
 def craft(win_rate_by_week: dict[int, float], per_week: int = 40, seed: int = 3,
-          spike_week: int | None = None):
+          spike_week: int | None = None, s1_weeks=None):
     """Every game fires S1 (home, -3.5, -110); S5/S6 never fire, so the champion bets
     nothing and the challenger 'S1 on' is the whole story."""
     rng = np.random.default_rng(seed)
@@ -133,11 +192,12 @@ def craft(win_rate_by_week: dict[int, float], per_week: int = 40, seed: int = 3,
             dec = DEC
             win = rng.random() < p
             if spike_week is not None and (w, i) == (spike_week, 0):
-                dec, win = 400.0, True
+                dec, win = 11.0, True  # +1000
             rows.append({
                 "decision_date_et": date, "decision_ts_utc": date, "event_id": eid,
                 "start_time_utc": f"{date}T19:00:00Z", "neutral_site": False, "indoor": False,
-                "spread_open": -1.5, "spread_now": -3.5, "total_open": 50.5, "total_now": 50.5,
+                "spread_open": -1.5 if (s1_weeks is None or w in s1_weeks) else -3.5,
+                "spread_now": -3.5, "total_open": 50.5, "total_now": 50.5,
                 "wind_mph": np.nan, "sp_margin_home": np.nan,
                 "spread_home_point": -3.5, "spread_home_dec": dec,
                 "spread_away_point": 3.5, "spread_away_dec": DEC,
@@ -170,14 +230,17 @@ def test_control_a_real_and_lasting_edge_is_promoted():
 
 
 def test_one_huge_winner_does_not_buy_a_promotion():
+    """A coin-flip challenger plus ONE winner at a realistic long price (+1000). A price
+    that long cannot lift z to the shipped bar of 2.0 by itself, so the bar is lowered to
+    0.4 to put the pool just over the line: the guard is only live near the threshold, and
+    that is where this checks it. Without the winner the same data fails on z alone."""
     wins = {w: 0.5 for w in range(13)}
     feats, games = craft(wins, spike_week=2)
-    res = one_run(feats, games, min_bets=100, min_graded_games_for_run=50, z_min=0.8)
-    assert res.paired_z >= res.z_required          # the spike alone clears the z bar
+    res = one_run(feats, games, min_bets=100, min_graded_games_for_run=50, z_min=0.4)
+    assert res.paired_z >= res.z_required          # the winner alone clears the z bar
     assert res.decision == "no_change"
     assert "one game" in res.reason
-    # Without the spike the same data is a null result for another reason.
-    plain = one_run(*craft(wins), min_bets=100, min_graded_games_for_run=50, z_min=0.8)
+    plain = one_run(*craft(wins), min_bets=100, min_graded_games_for_run=50, z_min=0.4)
     assert plain.decision == "no_change" and "one game" not in plain.reason
 
 
@@ -209,3 +272,58 @@ def test_the_multiple_testing_bar_rises_with_every_challenger_tried():
     assert climb.z_required(g, 1) == g["z_min"]
     assert climb.z_required(g, 10_000) > climb.z_required(g, 100) > g["z_min"]
     assert climb.z_required(g, 100) == pytest.approx(np.sqrt(2 * np.log(100)))
+
+
+# --- the two guards the first review found missing ----------------------------------------------
+
+
+def rare_signal_pool():
+    """The champion (S5/S6 on) bets 100 shared games, coin flips. A rare signal (S1, off)
+    would add 7 more bets, all winners. The two rule sets differ on those 7 games only."""
+    rng = np.random.default_rng(4)
+    rows, games = [], []
+
+    def add(eid, date, shared, win):
+        rows.append({
+            "decision_date_et": date, "decision_ts_utc": date, "event_id": eid,
+            "start_time_utc": f"{date}T19:00:00Z", "neutral_site": False, "indoor": False,
+            "spread_open": -3.5 if shared else -1.5, "spread_now": -3.5,
+            "total_open": 50.5, "total_now": 50.5, "wind_mph": np.nan,
+            "sp_margin_home": 20.0 if shared else np.nan,
+            "spread_home_point": -3.5, "spread_home_dec": DEC,
+            "spread_away_point": 3.5, "spread_away_dec": DEC,
+            "over_point": 50.5, "over_dec": DEC, "under_point": 50.5, "under_dec": DEC,
+            "lead_minutes": 600.0,
+        })
+        games.append({"event_id": eid, "status": "Final", "away_score": 10,
+                      "home_score": 10 + (4 if win else 3)})
+
+    for i in range(100):
+        w = i % 13
+        add(f"s{i}", str((START + pd.Timedelta(days=7 * w + (i // 13) % 3)).date()), True,
+            rng.random() < 0.5)
+    for k, w in enumerate((2, 3, 5, 6, 8, 11, 12)):
+        add(f"r{k}", str((START + pd.Timedelta(days=7 * w)).date()), False, True)
+    return pd.DataFrame(rows), pd.DataFrame(games)
+
+
+def test_a_rare_signal_cannot_buy_a_promotion_on_the_bets_it_shares():
+    feats, games = rare_signal_pool()
+    shipped = one_run(feats, games, min_bets=60, min_graded_games_for_run=50)
+    assert shipped.decision != "promoted"
+    assert "min_diff_bets" in shipped.reason
+    # The guard is the only thing standing: with it out of the way the same pool promotes.
+    loose = one_run(feats, games, min_bets=60, min_graded_games_for_run=50, min_diff_bets=1)
+    assert loose.decision == "promoted", loose.reason
+    assert loose.paired_z >= loose.z_required
+
+
+def test_a_challenger_identical_to_the_champion_in_the_holdout_is_rejected():
+    # S1 fires only in weeks 0-9, so in the newest 3 weeks the challenger bets nothing,
+    # exactly like the champion: the holdout confirms nothing, however good training looked.
+    wins = {w: 0.65 for w in range(13)}
+    res = one_run(*craft(wins, s1_weeks=set(range(10))), min_bets=100,
+                  min_graded_games_for_run=50)
+    assert res.paired_z >= res.z_required
+    assert res.decision == "no_change"
+    assert "holdout has no game where it differs" in res.reason
