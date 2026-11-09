@@ -177,14 +177,14 @@ def _planted_seed(seed: int) -> tuple[bool, int]:
 
 def test_planted_edge_detection_and_false_promotions_over_20_seeds():
     """Measured 2026-11-09 over seeds 0-19: the planted change is promoted in 18 of 20 and
-    a WRONG parameter is promoted twice (seeds 3 and 19, each in a run that also found the
+    a WRONG parameter is promoted twice (seeds 3 and 19, each in a season that also found the
     planted one). So the guards do not make a false promotion impossible: at more than twenty
     times the real volume, which gives the loop many eligible runs, it happens about once in ten
     seasons. Pinned, so a change in either number is a visible change in the loop."""
     with ProcessPoolExecutor(max_workers=min(4, os.cpu_count() or 1)) as pool:
         out = list(pool.map(_planted_seed, range(20)))
     assert sum(o[0] for o in out) == 18
-    assert [seed for seed, o in enumerate(out) if o[1]] == [3, 19]  # one wrong promotion each
+    assert {seed: o[1] for seed, o in enumerate(out) if o[1]} == {3: 1, 19: 1}  # once each
 
 
 # --- crafted pools: one challenger, a known story ----------------------------------------
@@ -338,3 +338,25 @@ def test_a_challenger_identical_to_the_champion_in_the_holdout_is_rejected():
     assert res.paired_z >= res.z_required
     assert res.decision == "no_change"
     assert "holdout has no game where it differs" in res.reason
+
+
+# --- the volume the evals run at ------------------------------------------------------------------
+
+
+def _bets_per_week(weeks: int, games_per_week: int, cap: int | None = None) -> float:
+    cfg = eval_config()
+    if cap:
+        cfg["structure"]["max_bets_per_day"] = cap
+    feats, games = synth(5, weeks, games_per_week)
+    sim = climb.simulate_prepared(climb.prepare(feats, games), initial_params(cfg))
+    return float(sim.placed.sum()) / weeks
+
+
+def test_the_planted_case_runs_at_more_than_twenty_times_the_null_volume():
+    """PROGRAM.md says the planted-edge case runs at 'about 330 bets a week against about 14
+    in the season-length null eval, more than twenty times'. Measured 2026-11-09 on this
+    generator: 328.9 and 14.4 (seed 5). This pins those figures."""
+    planted = _bets_per_week(22, 400, cap=1000)  # the planted case: 400 games a week, no cap
+    null = _bets_per_week(17, 18)                # the season-length null eval, shipped cap of 6
+    assert 300 < planted < 360 and 13 < null < 16
+    assert planted / null > 20
