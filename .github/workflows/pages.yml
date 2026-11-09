@@ -70,7 +70,7 @@ jobs:
 
       # Change detection (issue #80). The dashboard is a pure function of the code and
       # config on the checked-out ref and the data on the `data` branch. The key below
-      # is hashed from those git tree ids, and the last deploy publishes it as
+      # is hashed from those git object ids, and the last deploy publishes it as
       # build-key.txt. Equal key = nothing to rebuild. A manual dispatch always builds,
       # and any problem reading the live key (404, timeout, first run) builds too.
       # This job runs no security gate, so there is nothing here a filter could hide.

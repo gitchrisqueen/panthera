@@ -86,7 +86,7 @@ writes a durable run note; started games are skipped as always.
 - **Token permissions (#80).** Every workflow declares top-level `permissions: contents: read`; the one job that
   commits data raises to `contents: write` (and `ncaaf` also `actions: write` to dispatch pages). The repo
   default (`default_workflow_permissions`) is a separate setting; see the repo's Actions settings.
-- **Pages change detection (#80).** `pages.yml` hashes the git tree ids of `src`, `config`, `pyproject.toml`
+- **Pages change detection (#80).** `pages.yml` hashes the git object ids of `src`, `config`, `pyproject.toml`
   (checked-out ref) and `data`, `reports` (data branch) into a key, and the last deploy publishes it as
   `build-key.txt`. A `workflow_run` whose key equals the live one skips the build and deploy. A manual dispatch
   always builds; any problem reading the live key builds too. Nothing security-related is behind this check.
@@ -176,10 +176,14 @@ and push again.
      `git push --force-with-lease=data:<old-tip-sha> origin HEAD:data`, then re-enable the ruleset and the writers.
   5. The old commit stays fetchable by SHA (and in any fork) until GitHub Support removes it: file a
      sensitive-data removal request. Delete the affected Actions runs and `data-delta` artifacts.
-- **A push was refused** (`::error::refusing to commit ...` or `staged data looks like ... API key`): the run's
-  data is gone with the runner and no patch is saved. The log lists the file names (never the matching text).
-  Read those files in the next run's output or by reproducing locally, then fix the producer; if it is a
-  false positive, push the data by hand from a `data` worktree after a human read.
+- **A push was refused** (`::error::refusing to commit ...` or `staged data looks like ... API key`):
+  that run's delta is not recoverable and no artifact exists (a refusal happens before the commit). The
+  log lists the file names (never the matching text) and that is the only pointer. Find out what the
+  producer wrote there by running it locally with the same inputs (for example `panthera-mvp snapshot
+  --label open --dry-run`, or the NCAAF fixture commands in the writer's workflow), then fix the producer
+  or, for a false positive, change `SECRET_RE` or `CRED_NAME_RE` in `scripts/ci/data_branch.sh` by PR.
+  There is no bypass flag. The lost data is replaced only by a manual re-dispatch of that workflow (a
+  snapshot spends Odds API credits again) or, for the MLB shadow ledger, `panthera-mvp catchup`.
 - **Moving data back to `main`:** no automated path. Copy `data/` and `reports/` from a `data` worktree
   into a branch off `main` and open a PR (it needs GitGuardian and merges by hand).
 - **Gap to know about:** from the evening of 2026-10-23 (first rejected push: MVP Pregame run 40022747688)

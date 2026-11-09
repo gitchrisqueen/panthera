@@ -86,6 +86,7 @@ files_with() {
       grep -aFq -e "$pat" "$scratch/one" && echo "$f" || true
     fi
   done < "$scratch/names" | safe_names
+  echo "  (if the list is empty the name could not be resolved; inspect the staged diff in the data worktree)"
 }
 
 # match_file <regex> <file> [grep flags]: 0 = match, 1 = no match; any other

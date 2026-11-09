@@ -295,7 +295,9 @@ def test_output_values_cannot_start_a_new_output_line(tmp_path, capsys):
     assert "go=true\n" not in out.read_text().split("reason=", 1)[1]
 
 
-@pytest.mark.parametrize("name", ["mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits"])
+@pytest.mark.parametrize(
+    "name", ["mvp-morning", "mvp-pregame", "mvp-close", "mvp-splits", "panthera-catchup"]
+)
 def test_a_dry_run_never_pushes_data(name):
     steps = next(iter(_wf(name)["jobs"].values()))["steps"]
     push = next(s for s in steps if "data_branch.sh push" in str(s.get("run", "")))
