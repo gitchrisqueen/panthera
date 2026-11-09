@@ -94,7 +94,7 @@ after the directory was deleted or a revert or `git am` was left half done:
 ```bash
 git fetch origin data
 git worktree prune
-git -C ../panthera-data revert --abort 2>/dev/null; git -C ../panthera-data am --abort 2>/dev/null
+for c in revert am rebase cherry-pick; do git -C ../panthera-data "$c" --abort 2>/dev/null; done
 git worktree add --detach ../panthera-data origin/data || git -C ../panthera-data checkout --detach origin/data
 cd ../panthera-data && git status --short   # must print nothing
 ```
@@ -120,12 +120,14 @@ and push again.
   and repeat until all three lists are empty: `for s in in_progress queued pending waiting; do gh run list --status $s; done`
   then `gh run cancel <id>` for each writer. Re-enable with `gh workflow enable`. Pages and health write nothing.
 - **Branch deleted:** the ruleset blocks deletion, but if it happens, restore from the last good SHA
-  (`git push origin <sha>:refs/heads/data`; find it in a run's "data branch: pushed `<sha>`" summary line
-  or the reflog of a clone), or re-seed from `main`'s frozen copy (2026-10-23; use `git switch --orphan`
-  on git older than 2.42; skip the `-b` if a local `data` branch exists; add the branch README.md):
+  (`git push origin <full-sha>:refs/heads/data`; find it in a run's "data branch: pushed `<sha>`" summary
+  line, expand the 7-character SHA with `gh api repos/gitchrisqueen/panthera/commits/<sha> --jq .sha` and
+  `git fetch origin <full-sha>`; or use the reflog of a clone), or re-seed from `main`'s frozen copy (2026-10-23; use `git switch --orphan`
+  on git older than 2.42; delete a stale local `data` branch first; the branch README.md is optional). Re-seeding
+  from `main` loses everything pushed to `data` since the cutover:
   `git worktree add --orphan -b data ../seed && git archive origin/main data reports | tar -x -C ../seed --exclude=data/CLAUDE.md --exclude=reports/CLAUDE.md`,
-  commit and push. A corrupted but existing branch needs the ruleset disabled and a force push: see the
-  next item.
+  commit, then `git push origin HEAD:refs/heads/data`. A corrupted but existing branch needs the ruleset
+  disabled and a force push: see the next item.
 - **Secret reached `data`.** The push script refuses staged key-looking text and the env values of
   `ODDS_API_KEY`, `LUMIFY_API_KEY`, `CFBD_API_KEY`, but it is a pattern check. If one got through, treat the
   key as burned:
@@ -135,6 +137,8 @@ and push again.
      with everything after it: `git rebase --onto <leak>^ <leak> origin/data` in a local branch (or cherry-pick
      the later commits onto `<leak>^`), then check `git log -S'<string>'` is empty and
      `git diff --stat origin/data HEAD` shows only the leak's removal.
+     This drops that whole bot commit, picks and CLV included, and later commits that settle those rows
+     may conflict: to remove only the string, use `git rebase -i <leak>^` and `edit` that commit instead.
   4. Settings → Rules → Rulesets: disable "data branch: no delete, no force-push" (id 26871856), then
      `git push --force-with-lease=data:<old-tip-sha> origin HEAD:data`, then re-enable the ruleset and the writers.
   5. The old commit stays fetchable by SHA (and in any fork) until GitHub Support removes it: file a

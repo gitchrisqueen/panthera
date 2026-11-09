@@ -346,9 +346,12 @@ for w in mvp-morning.yml mvp-pregame.yml mvp-close.yml mvp-splits.yml ncaaf.yml 
          ncaaf-capture.yml ncaabase-capture.yml panthera-catchup.yml mvp-calibrate.yml; do
   gh workflow disable "$w"
 done
+# Disabling does not stop runs already started or waiting in the panthera-data group:
+for s in in_progress queued pending waiting; do gh run list --status "$s"; done
+# gh run cancel <id>   for every writer run listed; repeat until the lists are empty
 ```
 
-Re-enable with `gh workflow enable` once the revert is on `main`. The
+Re-enable each one by name (`gh workflow enable mvp-morning.yml`, and so on for the list above) once the revert is on `main`. The
 alternative, if you would rather not stop the pipeline, is to keep the
 `_is_settled_final` / `_has_both_scores` hunk in `store.upsert_games` OUT of
 the revert — it is independent of the called-off logic and nothing else
