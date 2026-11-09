@@ -63,7 +63,9 @@ def sport_section(sport: str) -> list[str]:
         "",
         f"Challengers evaluated so far: {trials}. The next run needs z >= {z_next:.2f} "
         f"(floor {cfg['guards']['z_min']}, raised by the multiple-testing penalty), at least "
-        f"{cfg['guards']['min_bets']} graded training bets, and a holdout that is not worse.",
+        f"{cfg['guards']['min_bets']} graded training bets, at least "
+        f"{cfg['guards']['min_diff_bets']} games where it differs from the champion, and a "
+        f"holdout strictly better than the champion with at least one differing game.",
         "",
     ]
     feats = store.load_features(sport)

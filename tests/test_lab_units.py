@@ -271,6 +271,9 @@ def test_run_writes_champion_iteration_and_report_and_dry_run_writes_nothing(roo
     md = (root / "reports" / "LAB_REPORT.md").read_text()
     assert report.BANNER in md and champ["hash"] in md and "Last 12 runs" in md
     assert "selected on past data" in md
+    # The sentence names the guards the code enforces (PROGRAM.md, promotion guards 1-5).
+    assert "holdout strictly better than the champion with at least one differing game" in md
+    assert "games where it differs from the champion" in md
 
     run.cmd_run("ncaaf", force=True)
     assert len(store.load_iterations("ncaaf")) == 2
