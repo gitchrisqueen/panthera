@@ -838,7 +838,7 @@ ERA-active), `pv_orig` (aligned engine, registered 2026-08-19 — see
 baseline, uncapped by design), `dog_ml` (backtest-only baseline),
 `sharp_split` + `fade_public` (splits forward-tests, disabled until their
 volume-rule thresholds are set on post-fetch-fix data — see their YAMLs).
-**Registered beyond the launch set (budget: 1 of 2 used for 2026):**
+**Registered beyond the launch set (budget: 2 of 2 used for 2026):**
 `cfb_spread_total_parlay` (2026-10-05) — an outside author's NCAAF parlay
 method, the first non-MLB strategy. Its YAML is
 `config/ncaaf_strategies/cfb_spread_total_parlay.yaml` (outside the MLB
@@ -847,7 +847,73 @@ registry), its ledger `data/ncaaf/tickets/`, its report
 put SE(ROI) near 33 points even at 50 tickets, so the per-signal grading of
 every qualifying leg is the faster read. Intake, the author's answers and
 every proxy: `docs/strategy-intake/cfb_spread_total_parlay.md`.
+`cfb_spread_total_parlay_v2` (2026-11-09) — the same engine with the open
+design questions settled by research after the author could not answer round 3
+of issue #55: straight $100 bets (no parlay) on the wind-under (S5) and
+SP+-vs-spread (S6) angles only, strongest first, at most 6 a day, nothing priced
+worse than -115. SCREEN only (`verdict: null`); falsification bars were fixed
+before the first bet. v1 keeps running as the control. It uses the last 2026
+slot; any further NCAAF registration waits for the 2027 season. Intake and
+sources: `docs/strategy-intake/cfb_spread_total_parlay_v2.md`.
 Explicitly rejected: registering any further sweep-derived P/V *day-map*
 variant as a "winner" for the `pv_rules` engine (that sweep is retired; the
 day map is now a documented constant, not a calibrated unknown — see
 above).
+
+### Rollback and ownership — cfb_spread_total_parlay_v2 (2026-11-09)
+
+**Owner of v2 and of a red `ncaaf` run:** the repo owner, Christopher Queen
+(`@gitchrisqueen`). There is no on-call rotation; `health` opens a GitHub issue
+and that issue is the page. All three procedures below are CODE changes: do them
+on a branch off `main` and land them by PR (`main` is protected; a direct push is
+rejected with GH006). Bot DATA lives on the `data` branch and is undone with
+`.github/workflows/CLAUDE.md` § Undoing or restoring bot data.
+
+**A v2 failure no longer stops v1.** `ncaaf picks` buys one snapshot and decides
+each strategy in turn. If one strategy raises, the run prints a
+`::error::ncaaf picks: <id> failed ...` annotation, writes a `skip` decision row
+for it (`reason: error: <ExceptionType>`, so the half-hourly cron does not retry
+it and re-buy the snapshot) and carries on; the other strategies' decisions are
+pushed as usual. Only the strategy loop is isolated: a failure earlier in the run
+(the ESPN refresh, the snapshot, building the views, reading SP+ or venues) still
+ends the run before any decision row exists, and the next half-hourly run tries
+again and buys the snapshot again. A failure inside one strategy after it wrote
+part of a bet leaves that partial ticket and the error row side by side. The run
+stays green and nothing opens an issue for it (`health` watches data freshness,
+not this), so look for `error:` in `decisions.csv`
+(`data/ncaaf/tickets/decisions.csv` on the `data` branch) and for the annotation.
+`test_one_strategy_failing_does_not_sink_the_others` covers it.
+
+1. **Stop v2 only (first move, reversible).** In a PR set `enabled: false` under
+   `strategy:` in `config/ncaaf_strategies/cfb_spread_total_parlay_v2.yaml`. The
+   next `ncaaf picks` skips it, v1 keeps deciding, v2's existing bets keep
+   settling (grading reads the tickets ledger, not the registry), and the report
+   lists v2 as disabled. `enabled` is in the hash-excluded `strategy` block, so no
+   `config_hash` moves. The pre-check gate (`scripts/ci/ncaaf_gate.py`) counts only
+   enabled strategies, so disabling v2 does not leave the gate waiting on it.
+   The same PR must keep the tests green with v2 off: the gate test accepts a
+   disabled v2 (`test_a_day_is_decided_only_when_every_enabled_strategy_decided_it`).
+2. **Revert the whole change.** `git fetch origin && git switch -c revert/cfb-v2 origin/main`, find
+   the commit with `git log --oneline origin/main --grep '(#86)'`. This repo
+   squash-merges, so the commit has one parent: run `git revert -n <sha>` then
+   `git commit`. Use `git revert -m 1 <sha>` only if
+   `git show --no-patch --format=%p <sha>` lists two parents. Open a PR. The
+   revert also undoes the Playwright cache-key fix in
+   `.github/workflows/site-audit.yml` (the audit then fails again on a new
+   Playwright release): keep it with
+   `git checkout origin/main -- .github/workflows/site-audit.yml` before you
+   commit. Revert the code and the v2 YAML TOGETHER: the pre-v2 engine reads `max_tickets_per_day`,
+   `legs_per_ticket` and `price_band_american`, which the v2 YAML does not have,
+   so old code with the v2 YAML on `main` raises on every run (the isolation above
+   then records an error row for v2 each day, but do not leave it that way). v1's
+   config hash is the same before and after, so v1's ledger is unaffected.
+3. **v2 rows already written.** They stay on the `data` branch
+   (`data/ncaaf/tickets/*.csv`, `strategy_id = cfb_spread_total_parlay_v2`);
+   nothing deletes them. After a revert the report and dashboard iterate the
+   registry only, so v2 stops rendering, and grading still settles its open
+   bets silently. To remove them, follow the data-branch recipe above and tell the
+   repo owner first.
+
+Pre-check gate: it treats a day as decided only when EVERY enabled strategy has a
+decision row, and every enabled strategy must share v1's `decision` timing
+(`test_every_enabled_strategy_shares_the_gates_decision_timing`).

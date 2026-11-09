@@ -170,6 +170,35 @@ def test_auto_run_with_no_games_is_no_go(tmp_path):
     assert code == 0 and out["go"] == "false"
 
 
+def test_a_day_is_decided_only_when_every_enabled_strategy_decided_it():
+    enabled = gate.enabled_strategies()
+    v1, v2 = "cfb_spread_total_parlay", "cfb_spread_total_parlay_v2"
+    # v2 may be disabled (the documented first incident move); v1 is the gate's timing source.
+    assert v1 in enabled and enabled <= {v1, v2}
+    enabled = {v1, v2}  # the two-strategy case this test is about
+    rows = [
+        {"strategy_id": v1, "game_date_et": "2026-11-07"},
+        {"strategy_id": v1, "game_date_et": "2026-11-08"},
+        {"strategy_id": v2, "game_date_et": "2026-11-08"},
+    ]
+    assert gate.decided_days(rows, enabled) == {"2026-11-08"}  # v1 alone is not enough
+    # A day only v1 decided is "go" even though v1's row exists.
+    go, _ = gate.decide(NOW, [_game("2026-11-07T16:45:00Z")], gate.decided_days(rows, enabled),
+                        SETTINGS)
+    assert go is True
+    # A day with no decision rows at all never reads as decided.
+    assert gate.decided_days([], enabled) == set()
+
+
+def test_every_enabled_strategy_shares_the_gates_decision_timing():
+    """The gate takes its window from one strategy's YAML; the rest must agree."""
+    sdir = ROOT / "config" / "ncaaf_strategies"
+    base = sdir / f"{gate.STRATEGY}.yaml"
+    for path in sorted(sdir.glob("*.yaml")):
+        for key in ("minutes_before_first_kickoff", "min_lead_minutes"):
+            assert gate.config_number(path, key) == gate.config_number(base, key), (path.name, key)
+
+
 def test_gate_crons_are_the_auto_crons_of_ncaaf_yml():
     text = (WORKFLOWS / "ncaaf.yml").read_text()
     auto = re.findall(r'"([^"]+)"\)\s+echo "task=auto"', text)

@@ -1,0 +1,100 @@
+# cfb_spread_total_parlay_v2 — the completed, evidence-based successor to
+# cfb_spread_total_parlay (v1). Written 2026-11-09 after the strategy's author
+# could not answer the open round-3 questions on issue #55 (comments locked;
+# the 2026-10-18 decision date had passed with no answers). Every UNKNOWN is
+# now settled by research, not by the author. Research record and sources:
+# docs/strategy-intake/cfb_spread_total_parlay_v2.md.
+#
+# Same engine as v1 (`cfb_parlay`), different structure and a narrower signal
+# set. v1 keeps running unchanged as the control: its YAML, hash and ledger are
+# untouched.
+#
+# Every key is tagged RESEARCH (chosen from the research record, not from the
+# author) or CARRIED (same number as v1, which came from the author or a v1
+# proxy).
+strategy:
+  id: cfb_spread_total_parlay_v2
+  engine: cfb_parlay
+  enabled: true
+  kind: forward_test
+  scope: [live]
+  registered_at: "2026-11-09"
+  # Filled with this file's config_hash at registration; bets under any other
+  # hash render as a separate SCREEN segment.
+  hash_lineage: [827622ed7e]
+  hypothesis: >
+    Straight $100 bets on two college-football angles beat the vig where a
+    3-leg parlay of the same legs cannot: kickoff wind of 15+ mph on an
+    outdoor game (take the under), which has some weak outside support, and SP+
+    disagreeing with the spread by 4+ points (take the side SP+ favors), which
+    is staked as a test of a null that the peer-reviewed work predicts (rankings
+    add nothing beyond the spread).
+    The author's parlay structure triples the vig (break-even 14.4% per ticket
+    against 52.4% per straight bet) and the research found no evidence a
+    parlay beats the same legs bet straight, so v2 bets straight. Line-move,
+    letdown and look-ahead angles stay in v1 as a control and are not staked
+    here: line moves are bought after the move, and letdown and look-ahead
+    spots have no credible published edge.
+
+decision:
+  # CARRIED (author): decide 60 minutes before the earliest kickoff, any day.
+  minutes_before_first_kickoff: 60
+  min_lead_minutes: 15
+  leg_pricing: best_available
+  signal_line: consensus_median
+
+signals:
+  # RESEARCH: S1-S4 stay off here. v1 still grades them, so the evidence on
+  # them keeps accumulating without a stake from v2.
+  line_move_spread: {enabled: false, min_points: 1.5}
+  line_move_total: {enabled: false, min_points: 2.0}
+  letdown: {enabled: false, min_fav_points: 10.0, max_rank: 25, max_gap_days: 15}
+  look_ahead: {enabled: false, min_fav_points: 10.0, max_rank: 25, max_gap_days: 15}
+  # CARRIED (author, S5). RESEARCH: the best-supported angle; forecast wind at
+  # kickoff for outdoor games, from Open-Meteo at the CFBD venue coordinates.
+  weather_wind_under: {enabled: true, min_wind_mph: 15.0}
+  # CARRIED (author, S6). RESEARCH: kept at the author's 4 points on purpose;
+  # retuning it on a few dozen legs would be overfitting.
+  sp_plus_edge: {enabled: true, min_edge_points: 4.0, home_field_points: 2.5}
+  qb_out_skip: {enabled: false}
+
+legs:
+  min_signals: 1
+  conflict: skip_game
+  same_game_legs: false     # RESEARCH: one bet per game keeps results independent
+  moneyline_legs: false     # RESEARCH: no trigger exists and moneylines add vig
+
+ticket:
+  # RESEARCH: straight bets. Each leg is placed as its own one-leg ticket.
+  structure: singles
+  # RESEARCH: strongest first. A leg's strength is its biggest signal strength:
+  # wind in mph (S5) or the SP+ gap in points (S6).
+  rank_by: strength
+  # RESEARCH: skip a bet whose best price is worse than -115 (a bet at -120
+  # needs 54.5% to break even, against 52.4% at -110).
+  max_price_american: -115
+
+bet_limits:
+  # RESEARCH: bounded exposure, fixed in advance.
+  max_bets_per_day: 6
+  # RESEARCH: results of different days are independent, so the v1 skip-day
+  # rule has no basis; v2 does not use it.
+  skip_day_after_loss: false
+
+staking:
+  flat_stake: 100
+
+# Pre-registered 2026-11-09, before the first bet. No ROI verdict is reachable:
+# about 2,800 bets are needed to tell +5% from zero and about 17,800 for +2%
+# (docs/strategy-intake/cfb_spread_total_parlay_v2.md). SCREEN only.
+# The one falsification bar, stated before the first bet: ROI on all PLACED
+# bets below -7% after 300 placed bets. At that sample -7% is about 1.27
+# standard errors below zero, so a break-even bettor reaches it about one time
+# in ten; with one bar, 10% is the whole false-falsification rate at best (a floor:
+# correlated bets raise it). Per-signal
+# ROI of zero or less after 300 placed bets on that signal is a review trigger,
+# not a verdict (it fires about half the time at break-even). At v1's leg rates
+# (an upper bound for placed bets) 300 bets are a later-season event for either
+# signal; the doc has the math.
+verdict: null
+screen: {checkpoints: [50, 100, 300], leg_checkpoints: [100, 300]}

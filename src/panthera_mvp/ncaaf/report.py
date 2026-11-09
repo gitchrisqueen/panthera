@@ -79,7 +79,7 @@ def leg_label(selection, market, line) -> str:
     return f"{selection} {float(v):+g}" if market == "spread" else f"{selection} {float(v):g}"
 
 
-def _ticket_block(t: pd.DataFrame) -> list[str]:
+def _ticket_block(t: pd.DataFrame, label: str = "Tickets") -> list[str]:
     settled = t[t["status"].isin(["win", "loss", "push"])]
     w, lo, p = _record(settled["status"])
     staked = settled["stake"].astype(float).sum()
@@ -87,7 +87,7 @@ def _ticket_block(t: pd.DataFrame) -> list[str]:
     roi = f"{100 * profit / staked:+.1f}%" if staked else "n/a"
     pending = int((t["status"] == "pending").sum())
     return [
-        f"- Tickets: {len(t)} ({w}-{lo}-{p} W-L-P, {pending} pending)",
+        f"- {label}: {len(t)} ({w}-{lo}-{p} W-L-P, {pending} pending)",
         f"- Staked ${staked:,.0f}, profit ${profit:+,.2f}, ROI {roi}",
     ]
 
@@ -102,6 +102,8 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
     decisions = store.load_decisions()
     decisions = decisions[decisions["strategy_id"] == sid]
     lineage = [str(h) for h in meta.get("hash_lineage") or []]
+    singles = (cfg.get("ticket") or {}).get("structure", "parlay") == "singles"
+    noun = "Bets" if singles else "Tickets"
 
     out = [
         f"## {sid}",
@@ -116,22 +118,29 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
         + ("no verdict (SCREEN only). " if cfg.get("verdict") is None else "")
         + f"Ticket checkpoints {screen.get('checkpoints', [])}; "
         f"qualifying-leg checkpoints {screen.get('leg_checkpoints', [])}. "
-        "A 3-leg ticket at -110 legs pays +596, so tickets break even at a "
-        "14.4% hit rate; single legs at 52.4%.",
+        + (
+            "Every bet is a straight bet: at -110 it breaks even at a 52.4% "
+            "win rate."
+            if singles
+            else "A 3-leg ticket at -110 legs pays +596, so tickets break even at a "
+            "14.4% hit rate; single legs at 52.4%."
+        ),
         "",
-        "### Tickets",
+        "### Bets" if singles else "### Tickets",
         "",
     ]
-    if tickets.empty:
+    if tickets.empty and singles:
+        out += ["No bets yet. See Decisions below.", ""]
+    elif tickets.empty:
         n_legs = (cfg.get("ticket") or {}).get("legs_per_ticket", 3)
         out += [f"No tickets yet: a ticket needs {n_legs} qualifying legs from "
                 "different games. See Single bets and Decisions below.", ""]
     else:
         in_lineage = tickets["config_hash"].astype(str).isin(lineage)
-        out += ["**In lineage:**", ""] + _ticket_block(tickets[in_lineage]) + [""]
+        out += ["**In lineage:**", ""] + _ticket_block(tickets[in_lineage], noun) + [""]
         for h, seg in tickets[~in_lineage].groupby(tickets["config_hash"].astype(str)):
             out += [f"**SCREEN segment {h}** (outside the lineage; descriptive only):", ""]
-            out += _ticket_block(seg) + [""]
+            out += _ticket_block(seg, noun) + [""]
         out += [
             "| Date | Legs | Price | Status | Profit |",
             "|---|---|---|---|---|",
@@ -161,8 +170,13 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
         roi = f"{st['roi']:+.1f}%" if st["roi"] is not None else "n/a"
         out += [
             f"Every qualifying leg as a ${stake:,.0f} straight bet at its "
-            "best-available price (break-even 52.4% at -110). Descriptive: the "
-            "strategy's bet is still the ticket.",
+            "best-available price (break-even 52.4% at -110). "
+            + (
+                "Includes legs the daily cap or the price floor kept off the "
+                "placed bets above."
+                if singles
+                else "Descriptive: the strategy's bet is still the ticket."
+            ),
             "",
             f"- Singles: {st['n']} ({rec['wins']}-{rec['losses']}-{rec['pushes']} "
             f"W-L-P, {st['pending']} pending)",
@@ -190,7 +204,14 @@ def _strategy_section(sid: str, cfg: dict) -> list[str]:
         out += [
             "Every leg the engine found qualifying, on the ticket or not, graded "
             "at its best-available line. A leg fired by several signals counts "
-            "under each.",
+            "under each."
+            + (
+                " Descriptive only: it includes legs the daily cap or the price "
+                "floor did not place, and it is not the strategy's review bar "
+                "(that uses placed bets)."
+                if singles
+                else ""
+            ),
             "",
             "| Signal | Legs | W-L-P | Win % | vs 52.4% |",
             "|---|---|---|---|---|",

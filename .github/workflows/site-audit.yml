@@ -59,12 +59,22 @@ jobs:
       - name: Install package + audit extra
         run: pip install -e ".[audit]"
 
+      # The extra is `playwright>=1.47`, so pip installs whatever is newest, and each
+      # Playwright release wants its own Chromium build. Keying the browser cache on
+      # pyproject.toml alone let a new release find an old browser ("Executable doesn't
+      # exist", 2026-11-09, Playwright 1.65.0) and skip the install on the cache hit.
+      - name: Read the installed Playwright version
+        id: pw-version
+        run: |
+          version="$(python -m pip show playwright | sed -n 's/^Version: //p')"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: Cache the Playwright browser
         id: pw-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          key: playwright-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
 
       # Split: the apt system libraries are never cached (~25s either way),
       # while the ~100MB browser download is skipped on a cache hit.

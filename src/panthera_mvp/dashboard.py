@@ -462,6 +462,7 @@ def build_ncaaf_data(generated_by_run: str = "manual") -> dict:
                 for h, seg in t[~in_lineage].groupby(t["config_hash"].astype(str))
             ],
             "legs_per_ticket": (cfg.get("ticket") or {}).get("legs_per_ticket"),
+            "structure": (cfg.get("ticket") or {}).get("structure", "parlay"),
             "singles": single_bet_stats(q, stake),
             "signals": _ncaaf_signal_rows(q),
             "decisions": {

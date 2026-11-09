@@ -33,6 +33,7 @@
     return `${lg.selection} ${lg.line == null ? "" : lg.line}`;
   }
   function noTickets(s) {
+    if (s && s.structure === "singles") return "No bets yet. See Decisions below.";
     const n = s && s.legs_per_ticket ? s.legs_per_ticket : 3;
     return `No tickets yet: a ticket needs ${n} qualifying legs from different games. ` +
       "See Single bets and Decisions below.";

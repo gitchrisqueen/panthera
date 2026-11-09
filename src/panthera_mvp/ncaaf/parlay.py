@@ -22,6 +22,13 @@ points the opposite way in the same market (a conflict skips the game).
 Lines are signed from the ESPN home team throughout: spread < 0 = home
 favored. Every qualifying leg is returned (graded later as evidence per
 signal), and the top `ticket.legs_per_ticket` form the day's ticket.
+
+`ticket.structure: singles` (v2, absent = parlay) replaces the parlay with one
+straight bet per qualifying leg: legs are ranked by `strength` (the biggest
+signal strength on the leg: points moved, favorite size, mph, or SP+ edge in
+points), legs priced worse than `ticket.max_price_american` are dropped, and the
+top `bet_limits.max_bets_per_day` are placed. Every parlay-path value is
+untouched, so a parlay strategy's config_hash and decisions do not move.
 """
 
 from __future__ import annotations
@@ -75,6 +82,7 @@ class Signal:
     market: str  # spread | total
     side: str  # home | away | over | under
     detail: str
+    strength: float = 0.0  # ranks legs for the singles structure; units differ per signal
 
 
 @dataclass
@@ -91,6 +99,10 @@ class Leg:
     price_decimal: float
     bookmaker: str
     signals: list[Signal]
+
+    @property
+    def strength(self) -> float:
+        return max((sg.strength for sg in self.signals), default=0.0)
 
     @property
     def signal_ids(self) -> str:
@@ -305,14 +317,15 @@ def game_signals(
         if abs(move) >= c["min_points"]:
             side = "home" if move < 0 else "away"
             out.append(Signal("S1", SPREAD, side,
-                              f"spread {v.spread_open:+g} -> {v.spread_now:+g} (home)"))
+                              f"spread {v.spread_open:+g} -> {v.spread_now:+g} (home)",
+                              abs(move)))
 
     c = s["line_move_total"]
     if c["enabled"] and v.total_open is not None and v.total_now is not None:
         move = v.total_now - v.total_open
         if abs(move) >= c["min_points"]:
             out.append(Signal("S2", TOTAL, "over" if move > 0 else "under",
-                              f"total {v.total_open:g} -> {v.total_now:g}"))
+                              f"total {v.total_open:g} -> {v.total_now:g}", abs(move)))
 
     start = parse_utc(v.start_time_utc)
     for sid, key in (("S3", "letdown"), ("S4", "look_ahead")):
@@ -340,12 +353,13 @@ def game_signals(
                 why = "ranked opponent next game"
             if fired:
                 out.append(Signal(sid, SPREAD, other,
-                                  f"fade {team} ({spread:+g}): {why} (#{int(g.opp_rank)})"))
+                                  f"fade {team} ({spread:+g}): {why} (#{int(g.opp_rank)})",
+                                  abs(spread)))
 
     c = s["weather_wind_under"]
     wind = wind_mph.get(v.event_id)
     if c["enabled"] and v.indoor is False and wind is not None and wind >= c["min_wind_mph"]:
-        out.append(Signal("S5", TOTAL, "under", f"kickoff wind {wind:.0f} mph"))
+        out.append(Signal("S5", TOTAL, "under", f"kickoff wind {wind:.0f} mph", wind))
 
     c = s["sp_plus_edge"]
     if c["enabled"] and v.spread_now is not None:
@@ -357,7 +371,8 @@ def game_signals(
             edge = sp_margin + v.spread_now  # vs the market's -spread
             if abs(edge) >= c["min_edge_points"]:
                 out.append(Signal("S6", SPREAD, "home" if edge > 0 else "away",
-                                  f"SP+ home margin {sp_margin:+.1f} vs spread {v.spread_now:+g}"))
+                                  f"SP+ home margin {sp_margin:+.1f} vs spread {v.spread_now:+g}",
+                                  abs(edge)))
     return out
 
 
@@ -445,6 +460,31 @@ def prior_day_lost(tickets: pd.DataFrame, legs: pd.DataFrame, strategy_id: str, 
     return bool((legs["ticket_id"].astype(str).isin(ids) & (legs["status"] == "loss")).any())
 
 
+def _decide_singles(
+    qualifiers: list[Leg], cfg: dict, bets_today: int, notes: list[str]
+) -> DayDecision:
+    """Straight bets: price floor, then strongest first, capped per day."""
+    tc, limits = cfg["ticket"], cfg["bet_limits"]
+    if tc.get("rank_by") != "strength":
+        raise ValueError(f"unknown ticket.rank_by {tc.get('rank_by')!r}")
+    floor = tc["max_price_american"]  # e.g. -115: anything more negative is skipped
+    priced = [lg for lg in qualifiers if lg.price_american >= floor]
+    dropped = len(qualifiers) - len(priced)
+    ranked = sorted(priced, key=lambda lg: (-lg.strength, lg.start_time_utc, lg.event_id))
+    room = limits["max_bets_per_day"] - bets_today
+    legs = ranked[:room]
+    extra = f"; {dropped} priced worse than {floor:g}" if dropped else ""
+    if not legs:
+        return DayDecision(
+            "no_ticket", f"{len(qualifiers)} qualifying leg(s); none to place{extra}",
+            qualifiers, [], skipped_games=notes,
+        )
+    return DayDecision(
+        "ticket", f"{len(qualifiers)} qualifying leg(s); {len(legs)} placed{extra}",
+        qualifiers, legs, skipped_games=notes,
+    )
+
+
 def decide_day(
     views: list[GameView],
     cfg: dict,
@@ -457,7 +497,11 @@ def decide_day(
     aliases: dict[str, str] | None = None,
 ) -> DayDecision:
     limits = cfg["bet_limits"]
-    if tickets_today >= limits["max_tickets_per_day"]:
+    singles = cfg["ticket"].get("structure", "parlay") == "singles"
+    if singles:
+        if tickets_today >= limits["max_bets_per_day"]:
+            return DayDecision("skip", "daily bet limit reached", [], [])
+    elif tickets_today >= limits["max_tickets_per_day"]:
         return DayDecision("skip", "daily ticket limit reached", [], [])
     if limits["skip_day_after_loss"] and lost_yesterday:
         return DayDecision("skip", "previous day's ticket lost (skip-day rule)", [], [])
@@ -476,6 +520,8 @@ def decide_day(
             qualifiers.append(leg)
 
     tc = cfg["ticket"]
+    if singles:
+        return _decide_singles(qualifiers, cfg, tickets_today, notes)
     if tc["selection"] != ["n_signals_desc", "kickoff_asc"]:
         raise ValueError(f"unknown ticket.selection {tc['selection']!r}")
     ranked = sorted(qualifiers, key=lambda lg: (-len(lg.signals), lg.start_time_utc, lg.event_id))

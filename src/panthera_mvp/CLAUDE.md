@@ -29,10 +29,12 @@
   fallback chain ESPN → CFBD → ncaa-api, filling only unsettled games), and
   a parlay-ticket ledger (`grading.py`: spread/total/moneyline legs;
   push/void legs drop out and the ticket price is re-figured).
-  `parlay.py` is the `cfb_spread_total_parlay` engine (pure: GameViews +
-  schedule context + SP+ + kickoff wind -> one day's qualifying legs and
-  ticket; signal ids S1-S7 in its docstring), `picks.py` runs it
-  (`ncaaf prep` / `ncaaf picks [--auto]`), `report.py` writes
+  `parlay.py` is the `cfb_parlay` engine behind `cfb_spread_total_parlay` and
+  its v2 (pure: GameViews + schedule context + SP+ + kickoff wind -> one day's
+  qualifying legs and a parlay ticket, or with `ticket.structure: singles` one
+  straight bet per leg; signal ids S1-S7 in its docstring), `picks.py` runs
+  every enabled strategy from ONE shared snapshot
+  (`ncaaf prep` / `ncaaf picks [--strategy id] [--auto]`), `report.py` writes
   `reports/NCAAF_REPORT.md`. NCAAF strategies are YAMLs in
   `config/ncaaf_strategies/` loaded by `ncaaf/config.py`, never by the MLB
   registry; same `config_hash` / `hash_lineage` protocol.

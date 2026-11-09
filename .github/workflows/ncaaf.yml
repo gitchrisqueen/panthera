@@ -1,6 +1,7 @@
 name: NCAAF Strategy
 
-# Live paper-trading for config/ncaaf_strategies/ (cfb_spread_total_parlay).
+# Live paper-trading for config/ncaaf_strategies/ (cfb_spread_total_parlay and
+# cfb_spread_total_parlay_v2: one shared snapshot, each strategy decides once a day).
 # One workflow, four crons, told apart by github.event.schedule:
 #
 #   5 13-23,0-4 * 8-12,1 *   hourly 9:05-00:05 ET, plus
@@ -41,7 +42,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "picks = decide today now (ignores the window); prep; grade"
+        description: "picks = decide cfb_spread_total_parlay and cfb_spread_total_parlay_v2 now (ignores the window); prep; grade"
         type: choice
         options: [picks, prep, grade]
         default: prep
