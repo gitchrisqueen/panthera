@@ -116,13 +116,18 @@ def read_csv(path: str, required: set[str]) -> list[dict]:
 
 
 def emit(go: bool, reason: str, fixture: bool) -> None:
-    reason = reason.replace("\n", " ")
+    # No raw newline may start a new output line.
+    reason = re.sub(r"[^\x20-\x7e]", "?", reason)[:300]
     line = f"go={str(go).lower()}\nfixture={str(fixture).lower()}\nreason={reason}\n"
     print(line, end="")
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a") as handle:
             handle.write(line)
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a") as handle:
+            handle.write(f"ncaaf gate: go={str(go).lower()} ({reason})\n")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -138,13 +143,18 @@ def main(argv: list[str] | None = None) -> int:
         except FixtureRejected as exc:
             print(f"::error::{exc}")
             return 2
-        data = json.loads(path.read_text())
-        go, why = decide(
-            parse_utc(data["now_utc"]),
-            data["games"],
-            set(data.get("decided_days", [])),
-            load_settings(),
-        )
+        try:
+            data = json.loads(path.read_text())
+            go, why = decide(
+                parse_utc(data["now_utc"]),
+                data["games"],
+                set(data.get("decided_days", [])),
+                load_settings(),
+            )
+        except (ValueError, KeyError, TypeError, AttributeError, OSError) as exc:
+            kind = type(exc).__name__
+            print(f"::error::fixture {fixture_arg} is not a valid gate fixture: {kind}")
+            return 2
         emit(go, f"fixture {fixture_arg}: {why}", True)
         return 0
 

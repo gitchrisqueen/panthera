@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate dispatch inputs
-        run: bash scripts/ci/validate_inputs.sh IN_SEASONS:range IN_TRAIN:range IN_VALIDATE:range
+        run: bash scripts/ci/validate_inputs.sh IN_SEASONS:range IN_TRAIN:seasons IN_VALIDATE:seasons
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull

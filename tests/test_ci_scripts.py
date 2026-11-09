@@ -189,8 +189,11 @@ def _validate(*specs: str, **env: str) -> int:
     [
         ("date", "2026-11-07", "2026-11-07; echo pwned"),
         ("week", "10", "1 2"),
+        ("week", "9", "08"),
+        ("week", "9", "0"),
         ("year", "2026", "20266"),
         ("range", "2014-2019", "2014"),
+        ("range", "2014-2019", "0001-9999"),
         ("seasons", "2015-2025", "$(id)"),
         ("seasons", "2025", "2025\n2026"),
     ],
@@ -246,7 +249,7 @@ def test_ncaaf_job_is_gated_fail_open():
     spec = _wf("ncaaf")["jobs"]
     assert spec["run"]["needs"] == "gate"
     cond = " ".join(str(spec["run"]["if"]).split())
-    assert "needs.gate.result != 'success'" in cond
+    assert "inputs.gate_fixture == '' && needs.gate.result != 'success'" in cond
     assert "needs.gate.outputs.go == 'true'" in cond
     assert "!cancelled()" in cond
     assert spec["run"]["env"]["GATE_FIXTURE"] == "${{ inputs.gate_fixture }}"
@@ -261,3 +264,28 @@ def test_pages_build_is_skipped_only_when_unchanged():
     assert spec["deploy"]["if"] == "needs.build.outputs.build == 'true'"
     change = next(s for s in spec["build"]["steps"] if s.get("id") == "change")
     assert "workflow_dispatch" in change["run"] and "build=true" in change["run"]
+
+
+def test_a_broken_fixture_is_a_rejection_not_a_traceback(tmp_path):
+    bad = gate.FIXTURE_DIR / "zz_bad_fixture.json"
+    bad.write_text("{not json")
+    try:
+        code, out = _run_gate(
+            tmp_path, GATE_EVENT="workflow_dispatch",
+            GATE_FIXTURE="tests/fixtures/ncaaf/zz_bad_fixture.json",
+        )
+    finally:
+        bad.unlink()
+    assert code == 2 and "go" not in out
+
+
+def test_output_values_cannot_start_a_new_output_line(tmp_path, capsys):
+    out = tmp_path / "o"
+    out.write_text("")
+    os.environ["GITHUB_OUTPUT"] = str(out)
+    try:
+        gate.emit(False, "x\ngo=true\r\nfixture=true", False)
+    finally:
+        del os.environ["GITHUB_OUTPUT"]
+    assert out.read_text().count("\n") == 3
+    assert "go=true\n" not in out.read_text().split("reason=", 1)[1]

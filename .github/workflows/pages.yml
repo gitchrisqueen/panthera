@@ -79,8 +79,9 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
         run: |
-          key="$( { git rev-parse HEAD:src HEAD:config HEAD:pyproject.toml; \
-                    git -C .databranch rev-parse HEAD:data HEAD:reports; } | sha256sum | cut -d' ' -f1)"
+          code="$(git rev-parse HEAD:src HEAD:config HEAD:pyproject.toml)"
+          data="$(git -C .databranch rev-parse HEAD:data HEAD:reports)"
+          key="$(printf '%s\n%s\n' "$code" "$data" | sha256sum | cut -d' ' -f1)"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           live="$(curl -fsS --max-time 15 "https://gitchrisqueen.github.io/panthera/build-key.txt" 2>/dev/null || true)"
           if [ "$EVENT" != "workflow_dispatch" ] && [ -n "$live" ] && [ "$live" = "$key" ]; then

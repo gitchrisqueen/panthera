@@ -518,3 +518,31 @@ def test_env_secret_with_a_trailing_newline_does_not_refuse_every_push(repos):
         env={**ENV, "ODDS_API_KEY": "abcdefghijklmnop\n"},
     )
     assert proc.returncode == 0, proc.stdout
+
+
+def test_a_successful_push_leaves_no_patch_behind(repos, tmp_path):
+    _origin, work = repos
+    env = {**ENV, "RUNNER_TEMP": str(tmp_path)}
+    run = lambda *a: subprocess.run(  # noqa: E731
+        ["bash", str(SCRIPT), *a], cwd=work, env=env, capture_output=True, text=True, check=True
+    )
+    run("pull")
+    (work / "reports" / "R.md").write_text("changed\n")
+    run("push", "data: ok")
+    assert not (tmp_path / "data-delta.patch").exists()
+
+
+def test_a_symlinked_data_dir_on_the_branch_is_refused(repos, tmp_path):
+    origin, work = repos
+    other = tmp_path / "evil"
+    _git(tmp_path, "clone", "--quiet", "-b", "data", str(origin), str(other))
+    _git(other, "rm", "-r", "--quiet", "reports")
+    (other / "reports").symlink_to("/etc")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-m", "symlink")
+    _git(other, "push", "origin", "data")
+
+    proc = _run(work, "pull", check=False)
+
+    assert proc.returncode == 1
+    assert "symlink" in proc.stdout

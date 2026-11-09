@@ -61,6 +61,11 @@ open_worktree() {
   else
     git worktree add --quiet --detach "$WT" "$sha"
   fi
+  # rsync would follow a top-level symlink on the data branch out of the repo.
+  if [ -L "$WT/data" ] || [ -L "$WT/reports" ]; then
+    echo "::error::origin/$BRANCH has a symlink where data/ or reports/ should be; not using it"
+    exit 1
+  fi
 }
 
 # safe_names: echo file names without anything the runner could read as a workflow command
@@ -181,6 +186,8 @@ case "$mode" in
         fi
         # Lets a later step read steps.<id>.outputs.pushed.
         if [ -n "${GITHUB_OUTPUT:-}" ]; then echo "pushed=true" >> "$GITHUB_OUTPUT"; fi
+        # The data is on origin now: a later failing step must not upload a patch to replay.
+        rm -f "$PATCH_OUT"
         exit 0
       fi
       if [ "$attempt" -eq 3 ]; then break; fi

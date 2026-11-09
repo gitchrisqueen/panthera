@@ -95,14 +95,16 @@ jobs:
 
   run:
     needs: gate
-    # Runs when the gate said go OR the gate itself failed (fail open). A fixture
-    # path outside tests/fixtures/ncaaf/ never runs the job (the gate also rejects it).
+    # Runs when the gate said go, or when the gate itself failed and no fixture was asked
+    # for (fail open). With a fixture the gate's verdict is the test: a rejected or broken
+    # fixture never runs the job.
     if: >-
       ${{ !cancelled()
       && (inputs.gate_fixture == ''
           || (startsWith(inputs.gate_fixture, 'tests/fixtures/ncaaf/')
               && !contains(inputs.gate_fixture, '..')))
-      && (needs.gate.result != 'success' || needs.gate.outputs.go == 'true') }}
+      && ((inputs.gate_fixture == '' && needs.gate.result != 'success')
+          || needs.gate.outputs.go == 'true') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -118,6 +120,7 @@ jobs:
       # A gate fixture always means a dry run: nothing is committed or spent.
       - name: Effective dry run
         run: |
+          case "$TASK_INPUT" in picks|prep|grade|"") ;; *) echo "::error::unknown task"; exit 1 ;; esac
           if [ "$DRY_RUN_INPUT" = "true" ] || [ -n "$GATE_FIXTURE" ]; then
             echo "DRY_RUN=true" >> "$GITHUB_ENV"
           else

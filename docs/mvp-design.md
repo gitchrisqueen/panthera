@@ -680,8 +680,9 @@ manual dispatch defaults to `dry_run: true`, which detects and prints and
 writes nothing to the repo, so a rehearsal is always available while it stays
 enabled. One caveat: `pages.yml` triggers on this workflow's `workflow_run`
 and gates only on `conclusion == 'success'`, so even a dry rehearsal
-redeploys the public dashboard — from the current default-branch tip, with
-nothing of its own in it.
+rebuilds the public dashboard only when the code, config or data changed since
+the last deploy (the `build-key.txt` check in `pages.yml`), so a dry rehearsal
+that committed nothing is skipped.
 
 **Undo one bad run.** Revert its bot commit (`data: weekly catch-up …`):
 
