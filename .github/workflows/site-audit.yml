@@ -65,7 +65,9 @@ jobs:
       # exist", 2026-11-09, Playwright 1.65.0) and skip the install on the cache hit.
       - name: Read the installed Playwright version
         id: pw-version
-        run: echo "version=$(python -m pip show playwright | sed -n 's/^Version: //p')" >> "$GITHUB_OUTPUT"
+        run: |
+          version="$(python -m pip show playwright | sed -n 's/^Version: //p')"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Cache the Playwright browser
         id: pw-cache
