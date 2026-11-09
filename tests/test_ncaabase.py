@@ -683,6 +683,48 @@ def test_assign_espn_refuses_rows_that_tie_for_one_event():
     assert all("ambiguous between rows" in r for r in reasons.values())
 
 
+def _tie_rows(*starts):
+    return [
+        {"game_id": f"900{i}", "start_time_utc": st, "home_team": "LSU",
+         "away_team": "Texas A&M", "home_seo": "lsu", "away_seo": "texas-am"}
+        for i, st in enumerate(starts)
+    ]
+
+
+class _Ev:
+    home_names = ["LSU"]
+    away_names = ["Texas A&M"]
+
+    def __init__(self, event_id, start):
+        self.event_id = event_id
+        self.start_time_utc = start
+
+
+def test_assign_espn_rows_within_the_ambiguity_window_both_refuse():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T18:25:00Z", "2026-05-01T19:05:00Z")  # 40 minutes apart
+    matched, reasons = matching.assign_espn(games, [_Ev("e", "2026-05-01T19:05:00Z")], {}, 4, 60)
+    assert matched == {} and set(reasons) == {"9000", "9001"}
+
+
+def test_assign_espn_the_nearer_row_wins_when_rows_are_far_apart():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T17:05:00Z", "2026-05-01T19:05:00Z")  # 2 hours apart
+    matched, reasons = matching.assign_espn(games, [_Ev("e", "2026-05-01T19:05:00Z")], {}, 4, 60)
+    assert set(matched) == {"9001"} and "9000" in reasons
+
+
+def test_assign_espn_same_start_two_events_never_decides_by_game_id():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T17:05:00Z", "2026-05-01T17:05:00Z")
+    events = [_Ev("e1", "2026-05-01T17:05:00Z"), _Ev("e2", "2026-05-01T19:05:00Z")]
+    matched, reasons = matching.assign_espn(games, events, {}, 4, 60)
+    assert matched == {} and set(reasons) == {"9000", "9001"}
+
+
 def test_scoreless_final_does_not_overwrite_a_stored_final(tmp_root):
     """A college-baseball Final with no score must not blank a complete one.
 

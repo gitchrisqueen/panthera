@@ -119,7 +119,9 @@ def assign_espn(
 ) -> tuple[dict[str, tuple[object, bool]], dict[str, str]]:
     """Key ESPN events onto stored rows: ({game_id: (event, swapped)}, {game_id: reason}).
 
-    Assignment is global, tightest pair first, never in row order. Each round every
+    Assignment is global, tightest pair first, never in row order (written for the real
+    shape: at most two rows of one matchup per date; three or more rows on one event is not
+    handled beyond the refusal below). Each round every
     still-unmatched row is decided on the events nobody has claimed yet (`nearest_start`,
     so the ambiguity arm still refuses rather than guesses); of the rows that got a
     definite answer, the one whose event is nearest in time claims it, and the round

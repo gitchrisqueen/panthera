@@ -167,7 +167,9 @@
   events globally, tightest pair first, never in row order: each round the
   row whose event is nearest takes it, so a settled, open or not-yet-started
   row cannot take an event that starts at a closer row (a fixed order fixes
-  one arrangement and breaks its mirror). The ambiguity arm still refuses.
+  one arrangement and breaks its mirror). The ambiguity arm still refuses, and two
+  rows whose gaps to one event are within `ambiguity_minutes` both refuse it (game-id
+  order never decides). Built for at most two rows per matchup per date.
   Do not reintroduce the filtering, in either sport.
 - **A game's stored status comes from `clients/mlb.py::stored_status`, not
   from `abstractGameState`** (added 2026-10-15). The abstract state is only
