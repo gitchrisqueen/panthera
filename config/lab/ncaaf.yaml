@@ -1,0 +1,73 @@
+# Weekly hill-climb ("lab") for NCAAF straight bets. Read by panthera_mvp/lab.
+# Contract and honesty rules: docs/lab/PROGRAM.md.
+#
+# This file is code: edit it by PR. The champion that the weekly run promotes
+# lives on the data branch (data/lab/ncaaf/champion.json), never here.
+# `initial_champion` + `structure` are only the starting point of the climb.
+#
+# Evaluator version: lab_eval_v1. Changing the evaluator, the feature columns
+# or the guards below starts a NEW loop (bump the version in PROGRAM.md and
+# reset data/lab/ncaaf/iterations.csv); scores across versions do not compare.
+
+sport: ncaaf
+level: college
+eval_version: lab_eval_v1
+season_months: [8, 9, 10, 11, 12, 1]   # ET months the weekly run is allowed to act
+
+# Raw-feature settings. They shape the logged features, so they are fixed.
+feature:
+  home_field_points: 2.5   # SP+ expected home margin includes this unless neutral
+  max_gap_days: 15         # previous / next game window for letdown, look-ahead
+
+# Starting champion: the research-backed v2 core. Wind unders (S5) and SP+ vs
+# the spread (S6) on; the line-move, letdown and look-ahead angles are shadow
+# signals the climb may switch on once the data supports it.
+initial_champion:
+  min_lead_minutes: 15
+  signals:
+    line_move_spread: {enabled: false, min_points: 1.5}
+    line_move_total: {enabled: false, min_points: 2.0}
+    letdown: {enabled: false, min_fav_points: 10.0, max_rank: 25}
+    look_ahead: {enabled: false, min_fav_points: 10.0, max_rank: 25}
+    weather_wind_under: {enabled: true, min_wind_mph: 15.0}
+    sp_plus_edge: {enabled: true, min_edge_points: 4.0}
+  legs:
+    min_signals: 1
+
+# Straight-bet structure ($100 flat = 1 unit). A bet whose best price is worse
+# than max_price_american is dropped before ranking and capping.
+structure:
+  max_bets_per_day: 6
+  max_price_american: -115
+  rank_by: strength        # strength | n_signals
+  skip_day_after_loss: false
+
+# One parameter changes per challenger. `toggle` flips a boolean, `step` moves a
+# number inside [min, max], `choices` switches to another listed value.
+space:
+  - {path: signals.line_move_spread.enabled, toggle: true}
+  - {path: signals.line_move_spread.min_points, step: 0.5, min: 0.5, max: 5.0}
+  - {path: signals.line_move_total.enabled, toggle: true}
+  - {path: signals.line_move_total.min_points, step: 0.5, min: 0.5, max: 6.0}
+  - {path: signals.letdown.enabled, toggle: true}
+  - {path: signals.letdown.min_fav_points, step: 1.0, min: 3.0, max: 21.0}
+  - {path: signals.letdown.max_rank, step: 5, min: 5, max: 25}
+  - {path: signals.look_ahead.enabled, toggle: true}
+  - {path: signals.look_ahead.min_fav_points, step: 1.0, min: 3.0, max: 21.0}
+  - {path: signals.look_ahead.max_rank, step: 5, min: 5, max: 25}
+  - {path: signals.weather_wind_under.enabled, toggle: true}
+  - {path: signals.weather_wind_under.min_wind_mph, step: 1.0, min: 8.0, max: 25.0}
+  - {path: signals.sp_plus_edge.enabled, toggle: true}
+  - {path: signals.sp_plus_edge.min_edge_points, step: 0.5, min: 1.0, max: 10.0}
+  - {path: legs.min_signals, step: 1, min: 1, max: 3}
+  - {path: ticket.max_bets_per_day, step: 1, min: 1, max: 10}
+  - {path: ticket.max_price_american, step: 5, min: -130, max: -105}
+  - {path: ticket.rank_by, choices: [strength, n_signals]}
+
+# Promotion guards. Every one must hold; most weeks end in "no change".
+guards:
+  min_bets: 300                   # graded bets the challenger needs in the training window
+  z_min: 2.0                      # floor for the paired-difference z
+  holdout_weeks: 3                # newest weeks, never used to pick the challenger
+  shrink_pseudo_bets: 625         # ROI shrink toward 0: roi * n / (n + this). An assumption.
+  min_graded_games_for_run: 50    # below this the run records insufficient_data
