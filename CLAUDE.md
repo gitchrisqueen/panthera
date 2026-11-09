@@ -24,7 +24,8 @@ database.
   chat): send them the prompt in `docs/strategy-intake/EXPORT_PROMPT.md`;
   the same file lists the intake steps for the YAML it returns.
 - **NCAAF strategies** (first: `cfb_spread_total_parlay`, an outside
-  author's parlay method) register in `config/ncaaf_strategies/`, not
+  author's parlay method; then its research-completed straight-bet successor
+  `cfb_spread_total_parlay_v2`) register in `config/ncaaf_strategies/`, not
   `config/strategies/` (the MLB registry), and report to
   `reports/NCAAF_REPORT.md`.
 

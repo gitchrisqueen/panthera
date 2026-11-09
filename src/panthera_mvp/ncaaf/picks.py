@@ -5,9 +5,10 @@
          for the cron), an "open" odds snapshot (first-seen lines: line
          movement is measured from here), and CFBD SP+ + venues when
          CFBD_API_KEY is set (S6 and S5 need them)
-  picks  one decision per (strategy, ET day): refresh today's games, take a
-         "decision-<ET date>" snapshot, build the day's GameViews, run the engine,
-         write the ticket (if any), every qualifying leg, and the decision.
+  picks  one decision per (strategy, ET day): refresh today's games, take ONE
+         "decision-<ET date>" snapshot shared by every enabled strategy (a second
+         strategy costs no credits), build the day's GameViews, run each engine,
+         write the ticket(s) (if any), every qualifying leg, and the decision.
          `--auto` (the half-hourly cron) does nothing — no network, no credits,
          no writes — unless the day's first unstarted kickoff is within the
          decision window around the strategy's minutes_before_first_kickoff
@@ -31,8 +32,6 @@ from .config import load_ncaaf_config, load_ncaaf_strategies
 from .matching import normalize_name
 from .pipeline import cmd_snapshot, default_season, refresh_games
 from .sources import school_key
-
-DEFAULT_STRATEGY = "cfb_spread_total_parlay"
 
 
 def _now() -> datetime:
@@ -154,73 +153,44 @@ def in_decision_window(
     return False, f"first kickoff in {minutes:.0f} min (decide under {target + half})"
 
 
-def cmd_picks(
-    strategy_id: str = DEFAULT_STRATEGY, auto: bool = False, dry_run: bool = False
+def _write_decision(
+    sid: str, scfg: dict, decision: parlay.DayDecision, day: str, now: datetime,
+    snap_ts: str, base: dict, chash: str,
 ) -> None:
-    cfg = load_ncaaf_config()
-    scfg = load_ncaaf_strategies().get(strategy_id)
-    if scfg is None:
-        raise SystemExit(f"unknown NCAAF strategy {strategy_id!r}")
-    if not scfg["strategy"].get("enabled"):
-        print(f"[ncaaf picks] {strategy_id} is disabled")
-        return
-    now = _now()
-    day = str(now.astimezone(ET).date())
-    if store.decided(strategy_id, day):
-        print(f"[ncaaf picks] {strategy_id} already decided {day}")
-        return
-    if auto:
-        ok, why = in_decision_window(store.load_games(), day, now, scfg, cfg)
-        if not ok:
-            print(f"[ncaaf picks] not deciding: {why}")
-            return
-        print(f"[ncaaf picks] deciding: {why}")
-
-    try:
-        refresh_games(day, cfg)
-    except Exception as exc:
-        print(f"[ncaaf picks] ESPN refresh failed ({exc}); using stored games",
-              file=sys.stderr)
-    chash = config_hash(scfg)
-    # One label per day: lines.csv dedupes on (event date, label, ...), so a
-    # shared "decision" label would drop Saturday's rows for any game an
-    # earlier day's decision snapshot had already priced.
-    snap_ts = cmd_snapshot(f"decision-{day}", dry_run=dry_run)
-    base = {"strategy_id": strategy_id, "game_date_et": day,
-            "decided_ts_utc": utc_iso(now), "config_hash": chash}
-    if snap_ts is None:
-        store.append_decision(base | {"status": "skip", "reason": "no odds snapshot",
-                                      "n_qualifiers": 0}, [])
-        print(f"[ncaaf picks] {day}: skip (no odds snapshot)")
-        return
-
-    aliases = cfg["matching"].get("team_aliases") or {}
-    games, lines = store.load_games(), store.load_lines()
-    games_today = games[games["game_date_et"] == day]
-    views = parlay.build_views(games_today, lines, snap_ts, aliases)
-    games_by_id = {str(r["event_id"]): r for r in games_today.to_dict("records")}
-    seasons = games_today["season"].dropna()
-    season = int(seasons.iloc[0]) if not seasons.empty else default_season()
-    tickets, legs = store.load_tickets(), store.load_legs()
-    today_tickets = tickets[(tickets["strategy_id"] == strategy_id)
-                            & (tickets["game_date_et"] == day)]
-    decision = parlay.decide_day(
-        views, scfg, now,
-        schedules=parlay.team_schedules(games, aliases),
-        sp_ratings=_sp_ratings(season),
-        wind_mph=_kickoff_winds(views, games_by_id),
-        tickets_today=len(today_tickets),
-        lost_yesterday=parlay.prior_day_lost(tickets, legs, strategy_id, day),
-        aliases=aliases,
-    )
-
-    ticket_id = f"{strategy_id}-{day}" if decision.status == "ticket" else ""
-    if ticket_id:
-        stake = float(scfg["staking"]["flat_stake"])
+    singles = scfg["ticket"].get("structure", "parlay") == "singles"
+    stake = float(scfg["staking"]["flat_stake"])
+    ticket_ids: list[str] = []
+    if decision.status == "ticket" and singles:
+        # One straight bet per leg, each a one-leg ticket so grading, the
+        # report and the dashboard need no second ledger.
+        for lg in decision.ticket_legs:
+            tid = f"{sid}-{day}-{lg.event_id}"
+            ticket_ids.append(tid)
+            store.append_ticket(
+                {
+                    "ticket_id": tid, "strategy_id": sid, "game_date_et": day,
+                    "created_ts_utc": utc_iso(now), "n_legs": 1,
+                    "price_american": lg.price_american, "price_decimal": lg.price_decimal,
+                    "stake": stake, "rule_id": lg.signal_ids,
+                    "rationale": f"straight bet: {lg.label} ({lg.signal_ids}, "
+                                 f"strength {lg.strength:g})",
+                    "config_hash": chash,
+                },
+                [{
+                    "ticket_id": tid, "leg_no": 1, "event_id": lg.event_id,
+                    "matchup": lg.matchup, "start_time_utc": lg.start_time_utc,
+                    "market": lg.market, "selection": lg.selection, "line": lg.line,
+                    "price_american": lg.price_american, "price_decimal": lg.price_decimal,
+                    "bookmaker": lg.bookmaker,
+                }],
+            )
+    elif decision.status == "ticket":
+        tid = f"{sid}-{day}"
+        ticket_ids.append(tid)
         lo, hi = scfg["ticket"]["price_band_american"]
         store.append_ticket(
             {
-                "ticket_id": ticket_id, "strategy_id": strategy_id, "game_date_et": day,
+                "ticket_id": tid, "strategy_id": sid, "game_date_et": day,
                 "created_ts_utc": utc_iso(now), "n_legs": len(decision.ticket_legs),
                 "price_american": decision.price_american,
                 "price_decimal": decision.price_decimal, "stake": stake,
@@ -233,7 +203,7 @@ def cmd_picks(
             },
             [
                 {
-                    "ticket_id": ticket_id, "leg_no": n, "event_id": lg.event_id,
+                    "ticket_id": tid, "leg_no": n, "event_id": lg.event_id,
                     "matchup": lg.matchup, "start_time_utc": lg.start_time_utc,
                     "market": lg.market, "selection": lg.selection, "line": lg.line,
                     "price_american": lg.price_american, "price_decimal": lg.price_decimal,
@@ -246,12 +216,12 @@ def cmd_picks(
     store.append_decision(
         base | {
             "snapshot_ts_utc": snap_ts, "status": decision.status, "reason": decision.reason,
-            "n_qualifiers": len(decision.qualifiers), "ticket_id": ticket_id,
+            "n_qualifiers": len(decision.qualifiers), "ticket_id": "|".join(ticket_ids),
             "notes": " | ".join(decision.skipped_games),
         },
         [
             {
-                "strategy_id": strategy_id, "game_date_et": day, "event_id": lg.event_id,
+                "strategy_id": sid, "game_date_et": day, "event_id": lg.event_id,
                 "matchup": lg.matchup, "start_time_utc": lg.start_time_utc,
                 "market": lg.market, "selection": lg.selection, "line": lg.line,
                 "consensus_line": lg.consensus_line, "price_american": lg.price_american,
@@ -263,9 +233,89 @@ def cmd_picks(
             for lg in decision.qualifiers
         ],
     )
-    print(f"[ncaaf picks] {strategy_id} {day}: {decision.status} — {decision.reason}")
+    print(f"[ncaaf picks] {sid} {day}: {decision.status} — {decision.reason}")
     for lg in decision.ticket_legs:
         print(f"  {lg.label} ({lg.price_american:+g} {lg.bookmaker}) "
               f"[{lg.signal_ids}] {lg.matchup}")
-    if decision.price_american is not None and ticket_id:
+    if decision.price_american is not None and not singles and ticket_ids:
         print(f"  ticket {decision.price_american:+g} (decimal {decision.price_decimal})")
+
+
+def cmd_picks(
+    strategy_id: str | None = None, auto: bool = False, dry_run: bool = False
+) -> None:
+    """Decide today for one strategy, or (no id) for every enabled one. The
+    day's games, odds snapshot, schedules, SP+ and winds are built once and
+    shared, so a second strategy adds no credits and no network calls."""
+    cfg = load_ncaaf_config()
+    strategies = load_ncaaf_strategies()
+    if strategy_id is not None:
+        if strategy_id not in strategies:
+            raise SystemExit(f"unknown NCAAF strategy {strategy_id!r}")
+        if not strategies[strategy_id]["strategy"].get("enabled"):
+            print(f"[ncaaf picks] {strategy_id} is disabled")
+            return
+        ids = [strategy_id]
+    else:
+        ids = [i for i, c in strategies.items() if c["strategy"].get("enabled")]
+    now = _now()
+    day = str(now.astimezone(ET).date())
+    todo: list[str] = []
+    for sid in ids:
+        if store.decided(sid, day):
+            print(f"[ncaaf picks] {sid} already decided {day}")
+            continue
+        if auto:
+            ok, why = in_decision_window(store.load_games(), day, now, strategies[sid], cfg)
+            if not ok:
+                print(f"[ncaaf picks] {sid} not deciding: {why}")
+                continue
+            print(f"[ncaaf picks] {sid} deciding: {why}")
+        todo.append(sid)
+    if not todo:
+        return
+
+    try:
+        refresh_games(day, cfg)
+    except Exception as exc:
+        print(f"[ncaaf picks] ESPN refresh failed ({exc}); using stored games",
+              file=sys.stderr)
+    # One label per day: lines.csv dedupes on (event date, label, ...), so a
+    # shared "decision" label would drop Saturday's rows for any game an
+    # earlier day's decision snapshot had already priced.
+    snap_ts = cmd_snapshot(f"decision-{day}", dry_run=dry_run)
+    bases = {
+        sid: {"strategy_id": sid, "game_date_et": day, "decided_ts_utc": utc_iso(now),
+              "config_hash": config_hash(strategies[sid])}
+        for sid in todo
+    }
+    if snap_ts is None:
+        for sid in todo:
+            store.append_decision(bases[sid] | {"status": "skip", "reason": "no odds snapshot",
+                                                "n_qualifiers": 0}, [])
+            print(f"[ncaaf picks] {sid} {day}: skip (no odds snapshot)")
+        return
+
+    aliases = cfg["matching"].get("team_aliases") or {}
+    games, lines = store.load_games(), store.load_lines()
+    games_today = games[games["game_date_et"] == day]
+    views = parlay.build_views(games_today, lines, snap_ts, aliases)
+    games_by_id = {str(r["event_id"]): r for r in games_today.to_dict("records")}
+    seasons = games_today["season"].dropna()
+    season = int(seasons.iloc[0]) if not seasons.empty else default_season()
+    schedules = parlay.team_schedules(games, aliases)
+    sp_ratings = _sp_ratings(season)
+    winds = _kickoff_winds(views, games_by_id)
+    tickets, legs = store.load_tickets(), store.load_legs()
+    for sid in todo:
+        scfg = strategies[sid]
+        today_tickets = tickets[(tickets["strategy_id"] == sid)
+                                & (tickets["game_date_et"] == day)]
+        decision = parlay.decide_day(
+            views, scfg, now, schedules=schedules, sp_ratings=sp_ratings, wind_mph=winds,
+            tickets_today=len(today_tickets),
+            lost_yesterday=parlay.prior_day_lost(tickets, legs, sid, day),
+            aliases=aliases,
+        )
+        chash = bases[sid]["config_hash"]
+        _write_decision(sid, scfg, decision, day, now, snap_ts, bases[sid], chash)

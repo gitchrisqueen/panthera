@@ -1,5 +1,11 @@
 # Intake: `cfb_spread_total_parlay` (college football)
 
+**Superseded 2026-11-09 for new work:** round 3 was never answered (the author
+could not answer it), so the pre-committed 2026-10-18 decision on a corrected
+v2 was settled by research instead: see
+`docs/strategy-intake/cfb_spread_total_parlay_v2.md`. v1 still runs unchanged
+as the control.
+
 **Status:** **registered 2026-10-05** as a SCREEN-only forward test
 (`config/ncaaf_strategies/cfb_spread_total_parlay.yaml`, engine
 `src/panthera_mvp/ncaaf/parlay.py`, runs in `.github/workflows/ncaaf.yml`,

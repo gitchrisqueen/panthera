@@ -184,7 +184,9 @@ def main(argv: list[str] | None = None) -> int | None:
     )
     c_prep.add_argument("--odds", default="live", choices=["live", "dry_run", "none"])
     c_picks = cfb.add_parser("picks", help="Decide today's ticket for an NCAAF strategy")
-    c_picks.add_argument("--strategy", default="cfb_spread_total_parlay")
+    c_picks.add_argument(
+        "--strategy", default=None, help="One NCAAF strategy id (default: every enabled one)"
+    )
     c_picks.add_argument(
         "--auto", action="store_true",
         help="Only decide inside the decision window (the hourly cron)",
