@@ -523,9 +523,9 @@ def test_espn_fallback_does_not_key_a_settled_games_event_onto_an_open_row(
 
 def test_espn_fallback_claim_does_not_depend_on_row_order(cbb_root, monkeypatch):
     """The mirror: the EARLIER game is the hole and the later one is settled,
-    ESPN returns only the later game's 19:05Z event. Rows reach `match_espn` in
-    start-time order, so the hole is seen first and, unless the settled game
-    has already claimed its event, takes it (2h gap, inside the window)."""
+    ESPN returns only the later game's 19:05Z event. A row-order claim would
+    see the hole first and let it take the settled game's event (2h gap, inside the window);
+    `assign_espn` gives the event to the nearest row instead."""
     from panthera_mvp.ncaabase import pipeline
 
     _store_doubleheader(
