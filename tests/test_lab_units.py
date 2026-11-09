@@ -368,3 +368,9 @@ def test_a_report_failure_does_not_discard_the_run(root, monkeypatch, capsys):
     res = run.cmd_run("ncaaf", force=True)
     assert res is not None and len(store.load_iterations("ncaaf")) == 1
     assert "::warning::lab report failed" in capsys.readouterr().err
+
+
+def test_the_evaluator_version_constant_matches_the_config():
+    from panthera_mvp.lab import EVAL_VERSION
+
+    assert load_lab_config("ncaaf")["eval_version"] == EVAL_VERSION

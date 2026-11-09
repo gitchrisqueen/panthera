@@ -51,7 +51,11 @@ def test_null_eval_reduced_space_long_horizon():
     promoted = sum(o[1] for o in out)
     claimed = [c for o in out for c in o[2]]
     assert runs == 200 * 37
-    assert promoted / runs < 0.002   # a bound; the measured rate is lower (~0.04%)
+    seasons_hit = sum(o[1] > 0 for o in out)
+    # Runs inside a season replay the same growing data, so they are not independent trials:
+    # the honest unit is the simulated season.
+    assert cp_upper(seasons_hit, 200) < 0.05
+    assert promoted / runs < 0.002   # descriptive only, per run
     assert all(c < 0.10 for c in claimed)
 
 
@@ -98,8 +102,13 @@ def test_null_eval_with_the_shipped_guards_and_space(name, seeds, weeks, per_wee
                             chunksize=5))
     runs, promoted, insufficient = (sum(o[i] for o in out) for i in range(3))
     assert (runs, promoted, insufficient) == expect, (name, runs, promoted, insufficient)
-    # With 1 promotion, the 95% upper bound on the per-run rate stays small.
-    assert cp_upper(promoted, runs) < 0.002
+    # The unit is the simulated SEASON (the runs inside one replay the same growing data, so
+    # they are not independent, and 62% of them could not promote at all). One promotion in
+    # `seeds` seasons: 95% one-sided Clopper-Pearson upper bound about 1.6% (300) / 4.7% (100).
+    seasons_hit = sum(o[1] > 0 for o in out)
+    assert seasons_hit == 1
+    upper = {300: 0.0157, 100: 0.0466}[seeds]
+    assert cp_upper(seasons_hit, seeds) == pytest.approx(upper, abs=2e-3)
 
 
 def test_a_naive_climber_chases_noise_where_the_guards_do_not():

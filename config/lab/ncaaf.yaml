@@ -6,10 +6,11 @@
 # `initial_champion` + `structure` are only the starting point of the climb.
 #
 # Evaluator version: lab_eval_v1. Changing the evaluator, the feature columns, the
-# guards or the search space below starts a NEW loop: bump EVAL_VERSION in
-# src/panthera_mvp/lab/__init__.py and `eval_version` here, and follow "Changing the
-# evaluator starts a new loop" in docs/lab/PROGRAM.md. `lab run` refuses to continue a
-# champion written under a different guards/space/feature hash.
+# guards or the search space below starts a NEW loop: follow "Changing the evaluator
+# starts a new loop" in docs/lab/PROGRAM.md. Only an evaluator or feature-column change
+# also needs EVAL_VERSION (src/panthera_mvp/lab/__init__.py) and `eval_version` here bumped;
+# a guards or space change alone does not (the loop hash catches it). `lab run` refuses to
+# continue a champion written under a different guards/space/feature hash.
 
 sport: ncaaf
 level: college

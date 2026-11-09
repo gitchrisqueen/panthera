@@ -40,8 +40,9 @@ tell us".
    Liu and Zhu (2016) and is a heuristic, not a proof.
 4. The z still reaches that same required bar after the single best game is dropped.
 5. The newest `guards.holdout_weeks` weeks, which did not pick the challenger, contain at
-   least one game where the two rule sets differ and score the challenger strictly above the
-   champion (mean profit per game where either bets). The window slides weekly, so last
+   least one game where the two rule sets differ, and the mean profit difference over the
+   games where either bets is above zero. (One differing game is a weak confirmation; a
+   challenger that fails can retry next week on a new window.) The window slides weekly, so last
    week's holdout is this week's training: it is a confirmation, not an untouched test set.
 6. At most one promotion per run, one parameter per challenger.
 
@@ -76,9 +77,13 @@ measurements of this procedure on that generator, not guarantees about real data
 
 | Eval | Configuration | Result |
 |---|---|---|
-| Null, shipped regime | Fair coins. Shipped guards (`min_bets` 100, `min_diff_bets` 30) and the shipped 18-path space. 17 weeks of 18 games, 300 seeds. | 4,200 runs, **1 promotion** (95% upper bound on the per-run rate under 0.2%); 2,609 of the runs recorded `insufficient_data`. |
-| Null, long horizon | Same guards and space, 40 weeks of 20 games, 100 seeds. | 3,700 runs, **1 promotion**; 747 `insufficient_data`. |
-| Null, reduced stress | 4 of the 18 paths, `min_bets` 60, 200 seeds x 37 runs. | Rate under 0.2% (measured about 0.04% when written), no claimed in-sample edge of +10% per bet or more. |
+| Null, shipped regime | Fair coins. Shipped guards (`min_bets` 100, `min_diff_bets` 30) and the shipped 18-path space. 17 weeks of 18 games, 300 simulated seasons. | **1 season in 300** promoted something (95% one-sided upper bound about 1.6%). 4,200 weekly runs, 1 promotion; 2,609 of those runs recorded `insufficient_data` and could not promote. |
+| Null, long horizon | Same guards and space, 40 weeks of 20 games, 100 simulated seasons. | **1 season in 100** (upper bound about 4.7%). 3,700 runs, 1 promotion; 747 `insufficient_data`. |
+| Null, reduced stress | 4 of the 18 paths, `min_bets` 60, 200 simulated seasons x 37 runs. | Season-level upper bound under 5% (asserted), per-run rate under 0.2% (descriptive), no claimed in-sample edge of +10% per bet or more. |
+
+The unit of a false-promotion rate is the simulated **season**, not the weekly run: runs
+inside a season replay the same growing data, so they are not independent trials. The
+per-run figures are descriptive only.
 | Planted edge | A real +24% per bet edge in a 3.5-4 point SP+ band, **400 games a week** (ten times the real volume), 22 weeks, no daily cap, `min_bets` 150, 20 seeds. | Promoted in **18 of 20**; a **wrong parameter was promoted twice** (seeds 3 and 19, in seasons that also found the planted one). |
 | Rare signal | 100 shared bets plus 7 winning bets from a rare signal. | Rejected by `min_diff_bets`; promoted if that guard is set to 1. |
 | Empty holdout | Challenger identical to the champion in the newest 3 weeks. | Rejected: the holdout confirms nothing. |
@@ -90,7 +95,15 @@ What this means:
   estimate: at the real volume the loop is blind to an effect this size is not.
 - The guards do **not** make a false promotion impossible. At high volume, where the loop has
   many eligible runs, a wrong change was promoted in 2 of 20 seasons. At the real volume the
-  null measured about 1 promotion in 300 simulated seasons.
+  null measured 1 promoting season in 300 (95% upper bound about 1.6%), and 1 in 100 over a
+  40-week horizon (about 4.7%).
+- `insufficient_data` also covers "no challenger had enough differing games", not only too
+  few graded games, so most quiet weeks will read that way.
+- The best-game guard (4) only fires within about 0.4 z of the threshold: one bounded payoff
+  also inflates the standard deviation, so a single game cannot lift z to the shipped bar on
+  its own (the eval lowers the bar to show it works). It is a defensive check. Likewise the
+  `z_min` floor stops binding once `T` reaches about 18, because `sqrt(2 ln T)` is then
+  already above 2.4.
 - Late in a season the bar is high: with a few hundred challengers evaluated, `sqrt(2 ln T)`
   is about 3.4, so late promotions are rare by construction.
 - The z uses per-game differences and treats games as independent. Games on the same day
@@ -120,16 +133,22 @@ A healthy last row has a `run_ts` from this week and a `decision` of `no_change`
 `insufficient_data` with a stated reason (or `promoted`). Each in-season week has one row; a
 missing `week_label` means the run failed or was dropped: open the Actions run list for
 `lab.yml`. A red run is the only alert (GitHub emails the last cron editor); nothing else
-notifies anyone.
+notifies anyone. A report failure does not turn the run red (it prints a `::warning::` and
+the iteration row is still written), so also glance at the run's annotations and the date on
+`reports/LAB_REPORT.md`.
 
 **Undo a wrong promotion.** `champion.json` keeps the current parameters and `parent_hash`,
 not the parent's parameters; those are in the `data` branch history.
 
 1. Stop the weekly run (above) so nothing lands on top of you.
-2. `bash scripts/ci/data_branch.sh pull`, then find the parent's parameters:
-   `git log -p origin/data -- data/lab/ncaaf/champion.json` (the previous version of the file
-   is the parent champion).
-3. Put that `params` block into `data/lab/ncaaf/champion.json` and recompute its hash:
+2. `bash scripts/ci/data_branch.sh pull`, then find the parent's parameters. Preferred, and
+   needing no history: the bad champion's `change` field in `champion.json` reads
+   `<param path>: <old> -> <new>`, and the promoted row in `iterations.csv` has the same
+   `old`; set that one parameter in `params` back to `<old>`. Alternative: the previous version
+   of the file in `git log -p origin/data -- data/lab/ncaaf/champion.json`. The pull fetches
+   only the newest 50 commits of `data`, which several bot commits a day can outrun, so for an
+   older promotion run `git fetch --unshallow origin data` first.
+3. Edit `data/lab/ncaaf/champion.json` (the `params`) and recompute its hash:
 
    ```bash
    .venv/bin/python - <<'PY'
@@ -146,8 +165,15 @@ not the parent's parameters; those are in the `data` branch history.
 
 4. Leave `iterations.csv` untouched: its `trials_total` is the multiple-testing count and
    must not be reset. Push with `bash scripts/ci/data_branch.sh push "data: lab revert"`
-   (or the worktree recipe in `.github/workflows/CLAUDE.md` § Undoing or restoring bot data),
-   re-enable the workflow, and check `lab status` shows the restored hash.
+   (or the worktree recipe in `.github/workflows/CLAUDE.md` § Undoing or restoring bot data)
+   and check `lab status` shows the restored hash. `parent_hash` and `promoted_at` keep the
+   bad champion's values; that is cosmetic.
+5. **The revert does not hold by itself.** The next run evaluates the same challenger on
+   nearly the same data, so it can promote again, and nothing in the walk can ban a
+   challenger. Either keep `lab.yml` disabled until a PR removes that parameter from the
+   search space in `config/lab/<sport>.yaml` (a new loop, procedure below), or re-enable it
+   and accept that you may revert again. Re-enable with `gh workflow enable lab.yml` only
+   once you have chosen.
 
 **Changing the evaluator, the feature columns, the guards or the search space starts a new
 loop.** Scores from different evaluators do not compare, and the multiple-testing count `T`
@@ -155,13 +181,17 @@ was earned under the old experiment. `lab run` enforces it: a champion carries a
 of the evaluator version, guards, space and feature constants, and a mismatch is an error
 (`LabConfigError`), not a silent continuation. Procedure:
 
-1. Make the change by PR. If the evaluator or its meaning changed, bump `EVAL_VERSION` in
-   `src/panthera_mvp/lab/__init__.py` and `eval_version` in `config/lab/<sport>.yaml`. (A guard
-   or space change alone needs no version bump: the loop hash already catches it. A feature
-   column change needs the bump, and the old `features.csv` rows are no longer comparable.)
-2. After the merge, stop the weekly run, `bash scripts/ci/data_branch.sh pull`, and in
-   `data/lab/<sport>/` rename `iterations.csv` to `iterations.<old version>.csv`, rename
-   `features.csv` the same way if its columns changed, and delete `champion.json`.
+1. Stop the weekly run first (`gh workflow disable lab.yml`), then make the change by PR. If
+   the evaluator or its meaning changed, or a feature column changed, bump `EVAL_VERSION` in
+   `src/panthera_mvp/lab/__init__.py` and `eval_version` in `config/lab/<sport>.yaml` (a test
+   keeps the two equal; the old `features.csv` rows are no longer comparable). A guard or
+   search-space change alone needs no version bump: the loop hash already catches it.
+   (If the change was an accident, reverting that config PR resumes the old loop and loses
+   nothing.)
+2. After the merge, `bash scripts/ci/data_branch.sh pull`, and in `data/lab/<sport>/` rename
+   `iterations.csv` to `iterations.<UTC date>.csv` (a date, because a guards-only restart keeps
+   the same version and would collide), rename `features.csv` the same way if its columns
+   changed, and delete `champion.json`.
 3. Push with `bash scripts/ci/data_branch.sh push "data: lab new loop"` and re-enable the
    workflow. The next real run writes the starting champion from `initial_champion`, then
    walks (and can promote) in that same run.
@@ -174,8 +204,8 @@ is the bot's.
 | Symptom | Cause | What to do |
 |---|---|---|
 | Red `lab` run, log says `LabConfigError ... new evaluator` or `... loop hash differs` | The config or evaluator changed since the champion was written. | "Changing the evaluator ... starts a new loop" above. |
-| Red `lab` run before any push | An exception in the walk, or in `lab.yml` setup. The run (and any promotion) is discarded: nothing was pushed. | Reproduce: `bash scripts/ci/data_branch.sh pull`, then `panthera-mvp lab run --sport ncaaf --dry-run`. A failure in the report alone does not discard the run: it prints a `::warning::` and the iteration row is still written. |
-| A `week_label` is missing | The run failed, or it was superseded in the `panthera-data` group (GitHub keeps only one pending run per group, so a queued lab run can be replaced by a newer one). | Dispatch the workflow with `dry_run` false. A second real run in the same week is refused unless `force` is set. |
+| Red `lab` run before any push | An exception in the walk, or in `lab.yml` setup. The run (and any promotion) is discarded: nothing was pushed. | Reproduce: `bash scripts/ci/data_branch.sh pull`, then `panthera-mvp lab run --sport ncaaf --dry-run` (add `--force` outside the season months). A failure in the report alone does not discard the run: it prints a `::warning::` and the iteration row is still written. |
+| A `week_label` is missing | The run failed, or it was superseded in the `panthera-data` group (GitHub keeps only one pending run per group, so a queued lab run can be replaced by a newer one). | `gh workflow run lab.yml -f dry_run=false`. A second real run in the same week is refused unless `-f force=true` is set. |
 | Push failed | A concurrent writer or a refused file. | Download the `data-delta` artifact and replay it: `.github/workflows/CLAUDE.md` § Undoing or restoring bot data. |
 | `lab status` says "no champion yet" on a checkout | You read the stale local copy. | Pull first (above). |
 
