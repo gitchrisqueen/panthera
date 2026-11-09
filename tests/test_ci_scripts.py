@@ -249,7 +249,9 @@ def test_ncaaf_job_is_gated_fail_open():
     assert "needs.gate.result != 'success'" in cond
     assert "needs.gate.outputs.go == 'true'" in cond
     assert "!cancelled()" in cond
-    assert "inputs.gate_fixture != ''" in spec["run"]["env"]["DRY_RUN"]
+    assert spec["run"]["env"]["GATE_FIXTURE"] == "${{ inputs.gate_fixture }}"
+    dry = next(s for s in spec["run"]["steps"] if s.get("name") == "Effective dry run")
+    assert '-n "$GATE_FIXTURE"' in dry["run"]
     gate_step = next(s for s in spec["gate"]["steps"] if s.get("id") == "gate")
     assert gate_step["env"]["GATE_FIXTURE"] == "${{ inputs.gate_fixture }}"
 

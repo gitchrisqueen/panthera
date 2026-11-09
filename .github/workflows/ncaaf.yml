@@ -109,11 +109,20 @@ jobs:
       actions: write   # dispatch pages.yml after a real push (see the last step)
     timeout-minutes: 10
     env:
-      # A gate fixture always means a dry run: nothing is committed or spent.
-      DRY_RUN: ${{ (inputs.dry_run == true || inputs.gate_fixture != '') && 'true' || 'false' }}
       TASK_INPUT: ${{ inputs.task }}
+      DRY_RUN_INPUT: ${{ inputs.dry_run }}
+      GATE_FIXTURE: ${{ inputs.gate_fixture }}
     steps:
       - uses: actions/checkout@v4
+
+      # A gate fixture always means a dry run: nothing is committed or spent.
+      - name: Effective dry run
+        run: |
+          if [ "$DRY_RUN_INPUT" = "true" ] || [ -n "$GATE_FIXTURE" ]; then
+            echo "DRY_RUN=true" >> "$GITHUB_ENV"
+          else
+            echo "DRY_RUN=false" >> "$GITHUB_ENV"
+          fi
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
