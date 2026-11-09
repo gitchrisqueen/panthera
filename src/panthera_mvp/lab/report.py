@@ -61,9 +61,16 @@ def sport_section(sport: str) -> list[str]:
         f"`{champ['hash']}`, effective from {champ['effective_from']} "
         f"({champ.get('change', 'initial')}).",
         "",
-        f"Challengers evaluated so far: {trials}. The next run needs z >= {z_next:.2f} "
-        f"(floor {cfg['guards']['z_min']}, raised by the multiple-testing penalty), at least "
-        f"{cfg['guards']['min_bets']} graded training bets, and a holdout that is not worse.",
+        f"Challengers evaluated so far: {trials}. To be promoted, a challenger needs at least "
+        f"{cfg['guards']['min_bets']} graded training bets; at least "
+        f"{cfg['guards']['min_diff_bets']} games where the challenger differs from the champion; "
+        f"a paired z >= {z_next:.2f} (floor {cfg['guards']['z_min']}, raised by the "
+        f"multiple-testing penalty) that still holds with its single best game removed; and a "
+        f"holdout (the newest {cfg['guards']['holdout_weeks']} weeks) where it is strictly "
+        f"better than the champion in mean profit per game where either bets, with at least "
+        f"one differing game. With fewer than {cfg['guards']['min_graded_games_for_run']} "
+        f"graded training games the run records `insufficient_data`. Details: "
+        f"`docs/lab/PROGRAM.md`.",
         "",
     ]
     feats = store.load_features(sport)
