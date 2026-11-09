@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-10-23T13:26:52Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-09T17:53:50Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
