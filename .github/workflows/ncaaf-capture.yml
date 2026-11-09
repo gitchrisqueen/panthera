@@ -42,7 +42,7 @@ on:
         default: ""
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: panthera-data
@@ -51,9 +51,20 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 15
+    env:
+      IN_DATE: ${{ inputs.date }}
+      IN_WEEK: ${{ inputs.week }}
+      IN_YEAR: ${{ inputs.year }}
+      IN_ODDS: ${{ inputs.odds }}
+      IN_CFBD_SEASONS: ${{ inputs.cfbd_seasons }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate dispatch inputs
+        run: bash scripts/ci/validate_inputs.sh IN_DATE:date IN_WEEK:week IN_YEAR:year IN_CFBD_SEASONS:seasons
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
@@ -69,12 +80,12 @@ jobs:
       - name: Week-mode arguments
         id: wk
         run: |
-          W="${{ inputs.week }}"; Y="${{ inputs.year }}"
+          W="$IN_WEEK"; Y="$IN_YEAR"
           if [ -n "$W" ]; then
             Y="${Y:-$(TZ=America/New_York date +%Y)}"
             echo "args=--week $W --year $Y" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ inputs.date }}" ]; then
-            echo "args=--date ${{ inputs.date }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "$IN_DATE" ]; then
+            echo "args=--date $IN_DATE" >> "$GITHUB_OUTPUT"
           fi
           echo "week=$W" >> "$GITHUB_OUTPUT"; echo "year=$Y" >> "$GITHUB_OUTPUT"
 
@@ -91,7 +102,7 @@ jobs:
             curl -sS --fail "https://ncaa-api.henrygd.me/scoreboard/football/fbs/${Y}/$(printf %02d "$W")/all-conf" \
               -o "capture/ncaa_api_${Y}_wk${W}.json" || echo "ncaa-api unavailable"
           else
-            D="${{ inputs.date }}"; D="${D:-$(TZ=America/New_York date +%F)}"
+            D="$IN_DATE"; D="${D:-$(TZ=America/New_York date +%F)}"
             curl -sS --fail "${ESPN}?dates=${D//-/}&groups=80&limit=300" \
               -o "capture/espn_cfb_${D}.json"
           fi
@@ -112,7 +123,7 @@ jobs:
           if [ -n "${{ steps.wk.outputs.week }}" ]; then
             WEEK="--week ${{ steps.wk.outputs.week }} --year ${{ steps.wk.outputs.year }}"
           fi
-          if [ "${{ inputs.odds }}" = "live" ]; then
+          if [ "$IN_ODDS" = "live" ]; then
             panthera-mvp ncaaf snapshot --label open $WEEK
             cp -r data/ncaaf/odds/raw capture/odds_raw
           else
@@ -128,7 +139,7 @@ jobs:
             echo "CFBD_API_KEY not set; skipping."
             exit 0
           fi
-          panthera-mvp ncaaf cfbd-pull --seasons "${{ inputs.cfbd_seasons }}"
+          panthera-mvp ncaaf cfbd-pull --seasons "$IN_CFBD_SEASONS"
 
       - name: Status
         run: panthera-mvp ncaaf status

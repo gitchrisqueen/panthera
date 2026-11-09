@@ -60,31 +60,65 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      build: ${{ steps.change.outputs.build }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
 
+      # Change detection (issue #80). The dashboard is a pure function of the code and
+      # config on the checked-out ref and the data on the `data` branch. The key below
+      # is hashed from those git object ids, and the last deploy publishes it as
+      # build-key.txt. Equal key = nothing to rebuild. A manual dispatch always builds,
+      # and any problem reading the live key (404, timeout, first run) builds too.
+      # This job runs no security gate, so there is nothing here a filter could hide.
+      - name: Detect changes since the last deploy
+        id: change
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          code="$(git rev-parse HEAD:src HEAD:config HEAD:pyproject.toml)"
+          data="$(git -C .databranch rev-parse HEAD:data HEAD:reports)"
+          key="$(printf '%s\n%s\n' "$code" "$data" | sha256sum | cut -d' ' -f1)"
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          live="$(curl -fsS --max-time 15 "https://gitchrisqueen.github.io/panthera/build-key.txt" 2>/dev/null || true)"
+          if [ "$EVENT" != "workflow_dispatch" ] && [ -n "$live" ] && [ "$live" = "$key" ]; then
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "Nothing changed since the last deploy (key $key); skipping the build."
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-python@v5
+        if: steps.change.outputs.build == 'true'
         with:
           python-version: "3.12"
           cache: pip
 
       - name: Install package
+        if: steps.change.outputs.build == 'true'
         run: pip install -e .
 
       - name: Build dashboard
+        if: steps.change.outputs.build == 'true'
         run: >-
           panthera-mvp pages
           --run-label ${{ github.event.workflow_run.name == 'MVP Pregame Run' && 'pregame' || github.event.workflow_run.name == 'MVP Morning Run' && 'morning' || 'manual' }}
 
+      - name: Stamp the build key
+        if: steps.change.outputs.build == 'true'
+        run: echo "${{ steps.change.outputs.key }}" > site/build-key.txt
+
       - uses: actions/upload-pages-artifact@v3
+        if: steps.change.outputs.build == 'true'
         with:
           path: site/
 
   deploy:
     needs: build
+    if: needs.build.outputs.build == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:

@@ -398,8 +398,11 @@ READERS = ["health", "pages"]
 
 @pytest.mark.parametrize("name", DATA_WORKFLOWS + READERS)
 def test_workflow_overlays_data_before_it_runs(name):
-    steps = yaml.safe_load((WORKFLOWS / f"{name}.yml").read_text())["jobs"]
-    job = next(iter(steps.values()))["steps"]
+    jobs = yaml.safe_load((WORKFLOWS / f"{name}.yml").read_text())["jobs"]
+    job = next(  # the job that pulls data (ncaaf.yml also has a gate job before it)
+        j["steps"] for j in jobs.values()
+        if any("data_branch.sh pull" in str(s.get("run", "")) for s in j["steps"])
+    )
     runs = [str(s.get("run", "")) for s in job]
     pull = next(i for i, r in enumerate(runs) if "data_branch.sh pull" in r)
     checkout = next(
@@ -418,8 +421,11 @@ def test_workflow_pushes_through_the_script_not_to_its_own_ref(name):
 
 @pytest.mark.parametrize("name", DATA_WORKFLOWS)
 def test_failed_push_uploads_the_delta_after_the_push_step(name):
-    job = next(iter(yaml.safe_load((WORKFLOWS / f"{name}.yml").read_text())["jobs"].values()))
-    steps = job["steps"]
+    jobs = yaml.safe_load((WORKFLOWS / f"{name}.yml").read_text())["jobs"]
+    steps = next(
+        j["steps"] for j in jobs.values()
+        if any("data_branch.sh push" in str(s.get("run", "")) for s in j["steps"])
+    )
     push = next(i for i, s in enumerate(steps) if "data_branch.sh push" in str(s.get("run", "")))
     keep = steps[push + 1]
     assert keep["if"] == "failure()"
@@ -512,3 +518,41 @@ def test_env_secret_with_a_trailing_newline_does_not_refuse_every_push(repos):
         env={**ENV, "ODDS_API_KEY": "abcdefghijklmnop\n"},
     )
     assert proc.returncode == 0, proc.stdout
+
+
+def test_a_successful_push_leaves_no_patch_behind(repos, tmp_path):
+    _origin, work = repos
+    env = {**ENV, "RUNNER_TEMP": str(tmp_path)}
+    run = lambda *a: subprocess.run(  # noqa: E731
+        ["bash", str(SCRIPT), *a], cwd=work, env=env, capture_output=True, text=True, check=True
+    )
+    run("pull")
+    (work / "reports" / "R.md").write_text("changed\n")
+    run("push", "data: ok")
+    assert not (tmp_path / "data-delta.patch").exists()
+
+
+def test_a_symlinked_data_dir_on_the_branch_is_refused(repos, tmp_path):
+    origin, work = repos
+    other = tmp_path / "evil"
+    _git(tmp_path, "clone", "--quiet", "-b", "data", str(origin), str(other))
+    _git(other, "rm", "-r", "--quiet", "reports")
+    (other / "reports").symlink_to("/etc")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-m", "symlink")
+    _git(other, "push", "origin", "data")
+
+    proc = _run(work, "pull", check=False)
+
+    assert proc.returncode == 1
+    assert "symlink" in proc.stdout
+
+
+def test_a_secret_refusal_names_the_file_but_never_the_value(repos):
+    def setup(work):
+        (work / "data" / "clean.csv").write_text("fine\n")
+        (work / "data" / "leaky.txt").write_text("apiKey=0123456789abcdef0123\n")
+
+    proc = _refused(repos, setup)
+    assert "leaky.txt" in proc.stdout
+    assert "0123456789abcdef0123" not in proc.stdout and "clean.csv" not in proc.stdout

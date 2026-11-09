@@ -19,7 +19,7 @@ on:
         default: "2021-2023"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: panthera-data
@@ -28,9 +28,18 @@ concurrency:
 jobs:
   calibrate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 60
+    env:
+      IN_SEASONS: ${{ inputs.seasons }}
+      IN_TRAIN: ${{ inputs.train }}
+      IN_VALIDATE: ${{ inputs.validate }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate dispatch inputs
+        run: bash scripts/ci/validate_inputs.sh IN_SEASONS:range IN_TRAIN:seasons IN_VALIDATE:seasons
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
@@ -46,7 +55,7 @@ jobs:
       - name: Download historical odds archives
         run: |
           mkdir -p data/historical/raw
-          IFS=- read LO HI <<< "${{ inputs.seasons }}"
+          IFS=- read LO HI <<< "$IN_SEASONS"
           for Y in $(seq $LO $HI); do
             [ "$Y" = "2020" ] && continue  # 60-game COVID season skews rates
             OUT="data/historical/raw/mlb odds $Y.xlsx"
@@ -67,8 +76,8 @@ jobs:
       - name: Run calibration sweep
         run: |
           panthera-mvp calibrate \
-            --train "${{ inputs.train }}" \
-            --validate "${{ inputs.validate }}" \
+            --train "$IN_TRAIN" \
+            --validate "$IN_VALIDATE" \
             --write-config
 
       # config/ is code on protected main: ship the calibrated config as an

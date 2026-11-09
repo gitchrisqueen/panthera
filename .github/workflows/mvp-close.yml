@@ -21,7 +21,7 @@ on:
         default: false
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: panthera-data
@@ -30,6 +30,8 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -57,6 +59,7 @@ jobs:
           fi
 
       - name: Commit & push
+        if: inputs.dry_run != true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}

@@ -61,11 +61,33 @@ open_worktree() {
   else
     git worktree add --quiet --detach "$WT" "$sha"
   fi
+  # rsync would follow a top-level symlink on the data branch out of the repo.
+  if [ -L "$WT/data" ] || [ -L "$WT/reports" ]; then
+    echo "::error::origin/$BRANCH has a symlink where data/ or reports/ should be; not using it"
+    exit 1
+  fi
 }
 
 # safe_names: echo file names without anything the runner could read as a workflow command
 # (a name may hold a newline followed by ::error::); every unusual byte becomes '?'.
 safe_names() { sed 's/[^[:alnum:]\/._-]/?/g; s/^/  /'; }
+
+# files_with <regex|fixed> <pattern>: the staged files whose ADDED text matches, names only
+# (never the matching text), so a refusal says where to look without leaking the value.
+files_with() {
+  local kind="$1" pat="$2" f
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    git -C "$WT" diff --cached -U0 --text --no-ext-diff --no-textconv -- "$f" 2>/dev/null \
+      | grep -aE '^\+' > "$scratch/one" || true
+    if [ "$kind" = regex ]; then
+      grep -aEiq -e "$pat" "$scratch/one" && echo "$f" || true
+    else
+      grep -aFq -e "$pat" "$scratch/one" && echo "$f" || true
+    fi
+  done < "$scratch/names" | safe_names
+  echo "  (if the list is empty the name could not be resolved; inspect the staged diff in the data worktree)"
+}
 
 # match_file <regex> <file> [grep flags]: 0 = match, 1 = no match; any other
 # grep status (bad regex, I/O) aborts the push. Reads a file, never a pipe, so
@@ -153,6 +175,8 @@ case "$mode" in
     fi
     if match_file "$SECRET_RE" "$scratch/added" -qi; then
       echo "::error::staged data looks like it contains an API key or auth header; not pushing"
+      echo "files to read (names only):"
+      files_with regex "$SECRET_RE"
       exit 1
     fi
     for var in ODDS_API_KEY LUMIFY_API_KEY CFBD_API_KEY; do
@@ -160,6 +184,8 @@ case "$mode" in
       val="${val%%$'\n'*}"
       if [ "${#val}" -ge 8 ] && grep -aFq -e "$val" "$scratch/added"; then
         echo "::error::staged data contains the value of $var; not pushing"
+        echo "files to read (names only):"
+        files_with fixed "$val"
         exit 1
       fi
     done
@@ -181,6 +207,8 @@ case "$mode" in
         fi
         # Lets a later step read steps.<id>.outputs.pushed.
         if [ -n "${GITHUB_OUTPUT:-}" ]; then echo "pushed=true" >> "$GITHUB_OUTPUT"; fi
+        # The data is on origin now: a later failing step must not upload a patch to replay.
+        rm -f "$PATCH_OUT"
         exit 0
       fi
       if [ "$attempt" -eq 3 ]; then break; fi

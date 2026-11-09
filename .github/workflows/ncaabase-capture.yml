@@ -30,7 +30,7 @@ on:
         default: none
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: panthera-data
@@ -39,9 +39,17 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 15
+    env:
+      IN_DATE: ${{ inputs.date }}
+      IN_ODDS: ${{ inputs.odds }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate dispatch inputs
+        run: bash scripts/ci/validate_inputs.sh IN_DATE:date
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
@@ -61,7 +69,7 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          D="${{ inputs.date }}"; D="${D:-$(TZ=America/New_York date +%F)}"
+          D="$IN_DATE"; D="${D:-$(TZ=America/New_York date +%F)}"
           Y="${D:0:4}"; M="${D:5:2}"; DD="${D:8:2}"
           mkdir -p capture
           NCAA=https://ncaa-api.henrygd.me
@@ -90,7 +98,7 @@ jobs:
           EOF
 
       - name: Games (+ ESPN finals fallback)
-        run: panthera-mvp ncaabase games --force ${{ inputs.date && format('--date {0}', inputs.date) || '' }}
+        run: panthera-mvp ncaabase games --force ${IN_DATE:+--date "$IN_DATE"}
 
       - name: Odds snapshot
         if: inputs.odds != 'none'
@@ -98,7 +106,7 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           PANTHERA_NCAABASE_ODDS_FIXTURE: tests/fixtures/college_baseball/odds_ncaabase_snapshot.json
         run: |
-          if [ "${{ inputs.odds }}" = "live" ]; then
+          if [ "$IN_ODDS" = "live" ]; then
             panthera-mvp ncaabase snapshot --label open --force
             cp -r data/ncaabase/odds/raw capture/odds_raw 2>/dev/null || true
           else

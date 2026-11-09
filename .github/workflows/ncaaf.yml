@@ -49,21 +49,83 @@ on:
         description: "Fixture odds, 0 credits, nothing committed"
         type: boolean
         default: true
+      gate_fixture:
+        description: "Test the pre-check gate: a JSON file under tests/fixtures/ncaaf/ (forces dry_run)"
+        type: string
+        default: ""
 
 permissions:
-  contents: write
-  actions: write   # dispatch pages.yml after a real push (see the last step)
+  contents: read
 
 concurrency:
   group: panthera-data
   cancel-in-progress: false
 
 jobs:
-  run:
+  # Fail-open pre-check (issue #79): a scheduled half-hourly `picks --auto` run that
+  # provably has nothing to do exits here, before `pip install`. Anything the gate
+  # cannot prove, including a failed checkout, fetch or script, counts as "go".
+  # scripts/ci/ncaaf_gate.py has the rules; keep its AUTO_CRONS in step with the
+  # `Which task` case below.
+  gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    outputs:
+      go: ${{ steps.gate.outputs.go }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Fetch the data files the gate reads
+        run: |
+          git fetch --quiet --depth=1 origin data
+          git show FETCH_HEAD:data/ncaaf/games/games.csv > "$RUNNER_TEMP/games.csv"
+          git show FETCH_HEAD:data/ncaaf/tickets/decisions.csv > "$RUNNER_TEMP/decisions.csv"
+
+      - name: Gate
+        id: gate
+        env:
+          GATE_EVENT: ${{ github.event_name }}
+          GATE_SCHEDULE: ${{ github.event.schedule }}
+          GATE_FIXTURE: ${{ inputs.gate_fixture }}
+        run: >-
+          python3 scripts/ci/ncaaf_gate.py
+          --games-csv "$RUNNER_TEMP/games.csv" --decisions-csv "$RUNNER_TEMP/decisions.csv"
+
+  run:
+    needs: gate
+    # Runs when the gate said go, or when the gate itself failed and no fixture was asked
+    # for (fail open). With a fixture the gate's verdict is the test: a rejected or broken
+    # fixture never runs the job.
+    if: >-
+      ${{ !cancelled()
+      && (inputs.gate_fixture == ''
+          || (startsWith(inputs.gate_fixture, 'tests/fixtures/ncaaf/')
+              && !contains(inputs.gate_fixture, '..')))
+      && ((inputs.gate_fixture == '' && needs.gate.result != 'success')
+          || needs.gate.outputs.go == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write   # dispatch pages.yml after a real push (see the last step)
+    timeout-minutes: 10
+    env:
+      TASK_INPUT: ${{ inputs.task }}
+      DRY_RUN_INPUT: ${{ inputs.dry_run }}
+      GATE_FIXTURE: ${{ inputs.gate_fixture }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # A gate fixture always means a dry run: nothing is committed or spent.
+      - name: Effective dry run
+        run: |
+          case "$TASK_INPUT" in picks|prep|grade|"") ;; *) echo "::error::unknown task"; exit 1 ;; esac
+          if [ "$DRY_RUN_INPUT" = "true" ] || [ -n "$GATE_FIXTURE" ]; then
+            echo "DRY_RUN=true" >> "$GITHUB_ENV"
+          else
+            echo "DRY_RUN=false" >> "$GITHUB_ENV"
+          fi
 
       - name: Overlay bot data from the data branch
         run: bash scripts/ci/data_branch.sh pull
@@ -84,14 +146,14 @@ jobs:
             "35 15-23,0-4 * 8-12,1 *") echo "task=auto" >> "$GITHUB_OUTPUT" ;;
             "10 23 * 8-12,1 0,3")      echo "task=prep" >> "$GITHUB_OUTPUT" ;;
             "15 13 * 8-12,1 *")        echo "task=grade" >> "$GITHUB_OUTPUT" ;;
-            *)                         echo "task=${{ inputs.task }}" >> "$GITHUB_OUTPUT" ;;
+            *)                         echo "task=${TASK_INPUT}" >> "$GITHUB_OUTPUT" ;;
           esac
           if [ "${{ github.event_name }}" = "schedule" ] \
              && [ -z "$(sed -n 's/^task=//p' "$GITHUB_OUTPUT" | tail -n 1)" ]; then
             echo "::error::scheduled run matched no known cron string: ${{ github.event.schedule }}"
             exit 1
           fi
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
+          if [ "$DRY_RUN" = "true" ]; then
             echo "dry=--dry-run" >> "$GITHUB_OUTPUT"; echo "odds=dry_run" >> "$GITHUB_OUTPUT"
           else
             echo "dry=" >> "$GITHUB_OUTPUT"; echo "odds=live" >> "$GITHUB_OUTPUT"
@@ -134,7 +196,7 @@ jobs:
 
       - name: Commit & push
         id: commit
-        if: inputs.dry_run != true
+        if: env.DRY_RUN != 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}

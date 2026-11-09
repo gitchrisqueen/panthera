@@ -17,7 +17,7 @@ on:
         default: manual
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: panthera-data
@@ -26,7 +26,12 @@ concurrency:
 jobs:
   splits:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 10
+    env:
+      IN_LABEL: ${{ inputs.label }}
+      IN_DRY_RUN: ${{ inputs.dry_run }}
     steps:
       - uses: actions/checkout@v4
 
@@ -46,16 +51,17 @@ jobs:
           LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
           PANTHERA_SPLITS_FIXTURE: tests/fixtures/lumify_splits.json
         run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            panthera-mvp splits --label "${{ inputs.label }}" --dry-run
+          if [ "$IN_DRY_RUN" = "true" ]; then
+            panthera-mvp splits --label "$IN_LABEL" --dry-run
           else
-            panthera-mvp splits --label "${{ inputs.label }}"
+            panthera-mvp splits --label "$IN_LABEL"
           fi
 
       - name: Regenerate reports
         run: panthera-mvp report
 
       - name: Commit & push
+        if: inputs.dry_run != true
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LUMIFY_API_KEY: ${{ secrets.LUMIFY_API_KEY }}
