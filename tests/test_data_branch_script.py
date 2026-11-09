@@ -20,10 +20,10 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "ci" / "data_branch.sh"
 WORKFLOWS = ROOT / ".github" / "workflows"
 
-pytestmark = pytest.mark.skipif(
-    not (shutil.which("git") and shutil.which("rsync") and shutil.which("bash")),
-    reason="git, rsync and bash required",
-)
+_TOOLS_OK = bool(shutil.which("git") and shutil.which("rsync") and shutil.which("bash"))
+if os.environ.get("CI") and not _TOOLS_OK:  # a runner without rsync must not pass silently
+    raise RuntimeError("git, rsync and bash are required in CI")
+pytestmark = pytest.mark.skipif(not _TOOLS_OK, reason="git, rsync and bash required")
 
 ENV = {
     **os.environ,
@@ -165,6 +165,119 @@ def test_push_rebases_onto_a_concurrent_writer(repos, tmp_path):
 
     assert _git(origin, "show", "data:reports/R.md") == "mine"
     assert _git(origin, "show", "data:data/other.csv") == "theirs", "concurrent file was lost"
+
+
+def test_second_pull_sees_what_was_pushed_in_between(repos):
+    origin, work = repos
+    _run(work, "pull")
+    (work / "reports" / "R.md").write_text("v2 from first run\n")
+    _run(work, "push", "data: first")
+
+    other = work.parent / "other2"
+    _git(work.parent, "clone", "--quiet", "-b", "data", str(origin), str(other))
+    (other / "data" / "later.csv").write_text("later\n")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-m", "later")
+    _git(other, "push", "origin", "data")
+
+    _run(work, "pull")
+
+    assert (work / "data" / "later.csv").read_text() == "later\n"
+    assert _git(work / ".databranch", "rev-parse", "HEAD") == _git(origin, "rev-parse", "data")
+
+
+def test_push_without_pull_is_refused(repos):
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    (work / "data").mkdir()
+    (work / "data" / "x.csv").write_text("x\n")
+
+    proc = _run(work, "push", "data: no pull", check=False)
+
+    assert proc.returncode == 1
+    assert "needs a prior pull" in proc.stdout
+    assert _git(origin, "rev-parse", "data") == before
+
+
+def test_same_file_conflict_fails_cleanly_and_saves_the_delta(repos, tmp_path):
+    origin, work = repos
+    env = {**ENV, "RUNNER_TEMP": str(tmp_path)}
+    run = lambda *a, **k: subprocess.run(  # noqa: E731
+        ["bash", str(SCRIPT), *a], cwd=work, env=env, capture_output=True, text=True, **k
+    )
+    assert run("pull").returncode == 0
+    (work / "reports" / "R.md").write_text("mine\n")
+
+    other = tmp_path / "other3"
+    _git(tmp_path, "clone", "--quiet", "-b", "data", str(origin), str(other))
+    (other / "reports" / "R.md").write_text("theirs\n")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-m", "conflicting writer")
+    _git(other, "push", "origin", "data")
+    theirs = _git(origin, "rev-parse", "data")
+
+    proc = run("push", "data: mine")
+
+    assert proc.returncode == 1
+    assert "conflicted" in proc.stdout
+    assert _git(origin, "rev-parse", "data") == theirs
+    assert _git(work / ".databranch", "status", "--porcelain") == ""
+    assert "mine" in (tmp_path / "data-delta.patch").read_text()
+
+
+def test_forbid_survives_a_huge_path_list_and_a_rename_away(repos):
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    _run(work, "pull")
+    bulk = work / "data" / "bulk"
+    bulk.mkdir()
+    for i in range(3000):
+        (bulk / f"{'p' * 40}_{i:05d}.csv").write_text(f"{i}\n")
+    (work / "data" / "picks" / "picks.csv").rename(work / "data" / "picks" / "moved.csv")
+
+    proc = _run(work, "push", "data: big", "--forbid", r"^data/picks/picks\.csv$", check=False)
+
+    assert proc.returncode == 1
+    assert _git(origin, "rev-parse", "data") == before
+
+
+@pytest.mark.parametrize(
+    "line",
+    ["https://x.example/odds?apiKey=0123456789abcdef0123", "Authorization: Bearer abc.def"],
+)
+def test_secret_looking_data_is_refused(repos, line):
+    origin, work = repos
+    before = _git(origin, "rev-parse", "data")
+    _run(work, "pull")
+    (work / "data" / "odds").mkdir()
+    (work / "data" / "odds" / "log.txt").write_text(line + "\n")
+
+    proc = _run(work, "push", "data: leak", check=False)
+
+    assert proc.returncode == 1
+    assert "API key or auth header" in proc.stdout
+    assert _git(origin, "rev-parse", "data") == before
+
+
+def test_symlinks_are_never_copied_in_either_direction(repos):
+    origin, work = repos
+    _run(work, "pull")
+    (work / "data" / "link").symlink_to("/etc/hostname")
+    _run(work, "push", "data: link")
+    assert "data/link" not in _git(origin, "ls-tree", "-r", "--name-only", "data")
+
+
+def test_changed_contract(repos):
+    _origin, work = repos
+    run = lambda *a: _run(work, "changed", *a, check=False).returncode  # noqa: E731
+    _run(work, "pull")
+    assert run("data/picks") == 1  # identical
+    assert run("data/nowhere") == 1  # absent on both sides
+    (work / "data" / "picks" / "picks.csv").write_text("changed\n")
+    assert run("data/picks") == 0  # different
+    (work / "data" / "newdir").mkdir()
+    (work / "data" / "newdir" / "a.csv").write_text("a\n")
+    assert run("data/newdir") == 0  # present on one side only
 
 
 DATA_WORKFLOWS = [

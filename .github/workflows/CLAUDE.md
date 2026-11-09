@@ -63,8 +63,11 @@ writes a durable run note; started games are skipped as always.
 `main` is protected (PR + `GitGuardian Security Checks`), so a workflow cannot push
 data to it: every data push from 2026-10-24 on was rejected with GH006 and the feeds
 went stale (health issues #81/#82). Bot data therefore lives on the orphan `data`
-branch (only `data/` and `reports/`). A GitHub Actions app bypass is not available on
-a personal-account repo, so the branch is the fix, not a ruleset.
+branch (`data/`, `reports/` and a README.md). Bypassing the protection for the Actions app
+is not possible on a personal-account repo (`POST /rulesets` returned 422 "Actor GitHub
+Actions integration must be part of the ruleset source or owner organization"), so the
+branch is the fix. Owner: Christopher Queen; the `data` branch is the only live copy of
+the ledger, protected by a ruleset that blocks deletion and non-fast-forward pushes.
 
 - Every workflow that reads or writes data runs `bash scripts/ci/data_branch.sh pull`
   right after checkout (code and config still come from the ref it was started on).
@@ -78,8 +81,37 @@ a personal-account repo, so the branch is the fix, not a ruleset.
   not `git status` (the overlay always differs from main's frozen copy).
 - `mvp-calibrate` also writes `config/`, which is code on `main`: it uploads
   `calibrated-config.patch` as an artifact for a human PR instead of committing it.
-- Rollback: revert this change; `data` keeps every commit made since the cutover and
-  can be merged back into `main` by PR.
+- Rollback and incident steps: § Undoing or restoring bot data, below. Reverting this change
+  is not a rollback: the workflows would push to protected `main` again and fail with GH006.
+
+## Undoing or restoring bot data
+
+Everything runs from a normal clone; `data` is an orphan branch with no history shared with `main`.
+
+- **Undo a bad bot commit** (it is on `data`, not `main`):
+  `git fetch origin data && git worktree add -b data-fix ../panthera-data origin/data && cd ../panthera-data && git revert <sha> && git push origin HEAD:data`.
+  The older "Undo one bad run" sections in `docs/mvp-design.md` describe the same revert; run them
+  in this worktree, not in a `main` checkout.
+- **Replay data a failed push lost:** every writer uploads artifact `data-delta` on failure.
+  Download it, then in the worktree above run `git am data-delta.patch && git push origin HEAD:data`.
+- **Kill switch:** `for w in mvp-morning mvp-pregame mvp-close mvp-splits ncaaf ncaaf-capture ncaabase-capture panthera-catchup mvp-calibrate; do gh workflow disable $w.yml; done`
+  (re-enable with `gh workflow enable`). Pages and health write nothing.
+- **Branch deleted or corrupted:** the ruleset blocks both, but if it happens, restore from the last good
+  SHA (`git push origin <sha>:refs/heads/data`), or re-seed from `main`'s frozen copy (2026-10-23):
+  `git worktree add --orphan -b data ../seed && git archive origin/main data reports | tar -x -C ../seed --exclude=data/CLAUDE.md --exclude=reports/CLAUDE.md`,
+  commit and push, then run `panthera-mvp catchup` to refill what it can.
+- **Secret reached `data`** (the push script refuses staged `apiKey=`/`Authorization:` text, but it
+  is a pattern check): disable the writers (kill switch), rotate the key per `docs/secret-rotation.md`,
+  disable the `data` ruleset, re-seed an orphan `data` without the leaked commit and
+  `git push --force origin data`, re-enable the ruleset and writers, then delete the affected Actions
+  runs and artifacts (history on GitHub keeps forks and caches until you do).
+- **Moving data back to `main`:** no automated path. Copy `data/` and `reports/` from a `data` worktree
+  into a branch off `main` and open a PR (it needs GitGuardian and merges by hand).
+- **Gap to know about:** 2026-10-24 up to the cutover, bot commits were rejected and are gone: odds
+  snapshots, picks, CLV. `panthera-mvp catchup` rebuilds games and a MLB shadow ledger only; it does not
+  recreate `data/picks/picks.csv` rows or raw odds. See `data/CLAUDE.md`.
+- **Size:** `data` grows with raw odds JSON; revisit (squash or prune) if the repo nears GitHub's
+  size guidance. There is no scheduled mirror: the ruleset plus Git history are the safeguard.
 
 ## Bot-commit loop guards (keep all three)
 

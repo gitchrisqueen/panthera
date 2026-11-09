@@ -128,7 +128,7 @@ jobs:
       # NCAAF data changed — the hourly no-op must not commit.
       - name: Report
         run: |
-          if ! diff -rq .databranch/data/ncaaf data/ncaaf >/dev/null 2>&1; then
+          if bash scripts/ci/data_branch.sh changed data/ncaaf; then
             panthera-mvp ncaaf report
           fi
 
@@ -137,6 +137,16 @@ jobs:
         if: inputs.dry_run != true
         run: |
           bash scripts/ci/data_branch.sh push "data: ncaaf ${{ steps.task.outputs.task }} $(date -u +%FT%TZ) [skip ci]"
+
+      # A failed push would otherwise discard the run's data with the runner.
+      - name: Keep the unpushed data commit
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-delta
+          path: ${{ runner.temp }}/data-delta.patch
+          if-no-files-found: ignore
+          retention-days: 14
 
       # Football results reach the site within minutes instead of waiting for
       # the next MLB morning/pregame run (pages.yml's workflow_run triggers).

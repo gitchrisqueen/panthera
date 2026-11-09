@@ -7,6 +7,12 @@ hand-edit these files**; fix the code in `src/panthera_mvp/` instead.
 All writes go through `store.py`, which enforces the dedupe keys below —
 that's what makes workflow re-runs safe.
 
+## Known gap (2026-10-24 to the `data` branch cutover)
+
+Bot commits in that window were rejected by branch protection and lost. Gone for good: raw odds
+snapshots, `picks.csv` rows and CLV for those days. Rebuildable: games and finals, and the MLB
+shadow ledger via `panthera-mvp catchup`. Health findings for those days are expected, not new bugs.
+
 ## Schemas
 
 ### odds/lines.csv (append-only)

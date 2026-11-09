@@ -145,3 +145,14 @@ jobs:
         if: inputs.odds != 'dry_run'
         run: |
           bash scripts/ci/data_branch.sh push "data: ncaaf capture $(date -u +%FT%TZ) [skip ci]"
+
+
+      # A failed push would otherwise discard the run's data with the runner.
+      - name: Keep the unpushed data commit
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-delta
+          path: ${{ runner.temp }}/data-delta.patch
+          if-no-files-found: ignore
+          retention-days: 14

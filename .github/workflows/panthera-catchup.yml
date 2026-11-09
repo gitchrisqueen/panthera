@@ -110,7 +110,7 @@ jobs:
         # would stay stale. Same guard shape as ncaaf.yml.
         if: inputs.dry_run != true
         run: |
-          if ! diff -rq .databranch/data/ncaaf data/ncaaf >/dev/null 2>&1; then
+          if bash scripts/ci/data_branch.sh changed data/ncaaf; then
             panthera-mvp ncaaf report
           else
             echo "data/ncaaf unchanged; NCAAF report not regenerated."
@@ -123,3 +123,14 @@ jobs:
         if: inputs.dry_run != true
         run: |
           bash scripts/ci/data_branch.sh push "data: weekly catch-up $(date -u +%FT%TZ) [skip ci]" --forbid '^data/picks/picks\.csv$'
+
+
+      # A failed push would otherwise discard the run's data with the runner.
+      - name: Keep the unpushed data commit
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-delta
+          path: ${{ runner.temp }}/data-delta.patch
+          if-no-files-found: ignore
+          retention-days: 14

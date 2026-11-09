@@ -1,5 +1,5 @@
 name: "Run TODO to Issue"
-# Manual-only: the MVP data workflows push to main several times a day, and an
+# Manual-only: the MVP data workflows push to the `data` branch several times a day, and an
 # on-push trigger would re-scan the whole repo on every bot commit.
 on: ["workflow_dispatch"]
 permissions:
