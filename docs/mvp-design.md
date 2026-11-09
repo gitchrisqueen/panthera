@@ -648,12 +648,13 @@ counters never question it.
   without being called off" above: what the correct result was, which picks
   settled wrong, and what it does to the affected strategy's ledger segment.
 
-**Known gap, not fixed here.** `ncaabase/pipeline.py::_espn_fallback` filters
-to the unsettled rows before calling `match_espn`, so a settled game's event
-is never claimed and can be keyed onto an open row when the open row's own
-event is missing from the feed. Tracked as issue #75. Do not copy that
-filtering into the MLB path: `_key_events_to_rows` keeps complete finals as
-candidates on purpose.
+**Fixed (issue #75).** `ncaabase/pipeline.py::_espn_fallback` used to filter to the
+unsettled rows before matching, so a settled game's event was never claimed and could be
+keyed onto an open row when the open row's own event was missing from the feed. It now
+matches EVERY row for the date with `matching.assign_espn` (tightest pair first, never in
+row order; two rows competing for one event within `ambiguity_minutes` both refuse) and
+writes only the rows its "needs a final" test admits. Do not copy the old filtering into
+the MLB path: `_key_events_to_rows` keeps complete finals as candidates on purpose.
 
 ### Rollback and ownership — catch-up (2026-10-16)
 

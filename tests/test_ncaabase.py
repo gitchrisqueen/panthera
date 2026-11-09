@@ -458,6 +458,273 @@ def test_espn_fallback_does_not_reopen_a_called_off_game(cbb_root):
     assert pd.isna(g["home_score"])
 
 
+def _dh_row(game_id, start, status, home_score=None, away_score=None):
+    """One LSU (home) v Texas A&M game of the 2026-05-01 doubleheader."""
+    return cb.BaseballGame(
+        game_id=game_id, game_date_et=DAY, start_time_utc=start, start_time_tba=False,
+        home_team="LSU", away_team="Texas A&M", home_seo="lsu", away_seo="texas-am",
+        home_char6="LSU", away_char6="TXAM", home_rank=None, away_rank=None,
+        home_conference="sec", away_conference="sec", status=status,
+        current_period="FINAL" if status == "Final" else "", home_score=home_score,
+        away_score=away_score, score_source="ncaa" if home_score is not None else "",
+    ).__dict__
+
+
+def _store_doubleheader(game1, game2):
+    store.upsert_games(pd.DataFrame([game1, game2]))
+
+
+def _dh_feed(monkeypatch, name):
+    monkeypatch.setenv(
+        "PANTHERA_NCAABASE_ESPN_FIXTURE",
+        str(FIXTURES / "college_baseball" / f"espn_college_baseball_doubleheader_{name}.json"),
+    )
+
+
+G1 = "6700001"  # 17:05Z
+G2 = "6700002"  # 19:05Z
+
+
+@pytest.mark.parametrize(
+    "hole",
+    [
+        pytest.param(("Scheduled", None, None), id="never-final"),
+        pytest.param(("Final", None, None), id="final-with-no-score"),
+    ],
+)
+def test_espn_fallback_does_not_key_a_settled_games_event_onto_an_open_row(
+    cbb_root, monkeypatch, hole
+):
+    """Issue #75. Game 1 (17:05Z) is settled; game 2 (19:05Z) is a score hole;
+    ESPN returns ONLY the 17:05Z event. Filtering the rows to the unsettled
+    ones before `match_espn` meant game 1 never claimed its own event, so it
+    was the sole candidate inside `window_hours` (a 2h gap, no rival to make it
+    ambiguous) and game 1's score was written onto game 2 — the mis-fill PR #73
+    closed for MLB, reached here through a missing event."""
+    from panthera_mvp.ncaabase import pipeline
+
+    cfg = _repo_cfg()
+    assert (cfg["matching"]["window_hours"], cfg["matching"]["ambiguity_minutes"]) == (4, 60)
+    # Stored 6-4, ESPN says 7-5: a complete final must also never be rewritten.
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Final", 6, 4),
+        _dh_row(G2, "2026-05-01T19:05:00Z", *hole),
+    )
+    _dh_feed(monkeypatch, "game1_only")
+
+    assert pipeline._espn_fallback(DAY, cfg) == 0
+
+    games = store.load_games().set_index("game_id")
+    assert pd.isna(games.loc[G2, "home_score"]) and pd.isna(games.loc[G2, "away_score"])
+    assert games.loc[G2, "score_source"] != "espn"
+    assert (games.loc[G1, "home_score"], games.loc[G1, "away_score"]) == (6, 4)
+    assert games.loc[G1, "score_source"] == "ncaa"
+
+
+def test_espn_fallback_claim_does_not_depend_on_row_order(cbb_root, monkeypatch):
+    """The mirror: the EARLIER game is the hole and the later one is settled,
+    ESPN returns only the later game's 19:05Z event. A row-order claim would
+    see the hole first and let it take the settled game's event (2h gap, inside the window);
+    `assign_espn` gives the event to the nearest row instead."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Final"),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Final", 3, 2),
+    )
+    _dh_feed(monkeypatch, "game2_only")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 0
+
+    games = store.load_games().set_index("game_id")
+    assert pd.isna(games.loc[G1, "home_score"]) and pd.isna(games.loc[G1, "away_score"])
+    assert (games.loc[G2, "home_score"], games.loc[G2, "away_score"]) == (3, 2)
+
+
+def test_espn_fallback_still_fills_an_open_row_whose_own_event_is_present(
+    cbb_root, monkeypatch
+):
+    """Regression arm: claiming for every row must not stop the normal case.
+    Game 1 settled, game 2 a hole, ESPN has BOTH events: game 2 takes its own
+    19:05Z event (3-2) and game 1 is untouched."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Final", 7, 5),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "both")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 1
+
+    games = store.load_games().set_index("game_id")
+    g2 = games.loc[G2]
+    assert (g2["status"], g2["home_score"], g2["away_score"]) == ("Final", 3, 2)
+    assert (g2["score_source"], g2["espn_event_id"]) == ("espn", "401800002")
+    g1 = games.loc[G1]
+    assert (g1["home_score"], g1["away_score"], g1["score_source"]) == (7, 5, "ncaa")
+
+
+def test_open_row_keeps_its_event_when_the_settled_games_event_is_missing(cbb_root, monkeypatch):
+    """The arrangement a fixed claim ORDER gets wrong: the EARLIER game is settled and its
+    own event is missing from the feed, the later game is open and its event is present.
+    Row order alone would let the settled game take the later event (2h gap, sole candidate)
+    and starve the open row, forever. Tightest pair first gives the event to its own row."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Final", 6, 4),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game2_only")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 1
+
+    games = store.load_games().set_index("game_id")
+    assert (games.loc[G2, "status"], games.loc[G2, "home_score"]) == ("Final", 3)
+    assert (games.loc[G1, "home_score"], games.loc[G1, "away_score"]) == (6, 4)
+    assert games.loc[G1, "score_source"] == "ncaa"
+
+
+def test_two_open_rows_one_event_goes_to_the_row_it_starts_at(cbb_root, monkeypatch):
+    """Both games are open and ESPN has only the 19:05Z event. The earlier row must not take
+    it just because it comes first: only game 2 is filled, game 1 stays open."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Scheduled"),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game2_only")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 1
+
+    games = store.load_games().set_index("game_id")
+    assert (games.loc[G2, "status"], games.loc[G2, "home_score"]) == ("Final", 3)
+    assert games.loc[G1, "status"] == "Scheduled" and pd.isna(games.loc[G1, "home_score"])
+
+
+def test_a_game_not_yet_started_cannot_take_an_started_rows_event(cbb_root, monkeypatch):
+    """Game 1 has started and is open with its event in the feed; game 2 is still in the
+    future and not writable, and its own event is not in the feed yet. Game 2 must not
+    claim game 1's event, which would leave game 1 unfilled until game 2's start time passes."""
+    from datetime import UTC, datetime
+
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Scheduled"),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game1_only")
+    monkeypatch.setattr(pipeline, "_now", lambda: datetime(2026, 5, 1, 18, 0, tzinfo=UTC))
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 1
+
+    games = store.load_games().set_index("game_id")
+    assert games.loc[G1, "status"] == "Final" and games.loc[G1, "score_source"] == "espn"
+    assert games.loc[G2, "status"] == "Scheduled"
+
+
+def test_only_writable_rows_report_a_missing_event(cbb_root, monkeypatch, capsys):
+    """The log names the writable row that found no event, by id (not parsed back out of
+    a message), and stays silent for a settled row nothing may be written to."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T17:05:00Z", "Final", 6, 4),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game1_only")
+
+    pipeline._espn_fallback(DAY, _repo_cfg())
+
+    err = capsys.readouterr().err
+    assert f"no ESPN match: {G2}:" in err
+    assert G1 not in err
+
+
+def test_two_rows_with_the_same_start_and_one_event_both_refuse(cbb_root, monkeypatch):
+    """Equal start times, one event: neither row may take it. Game-id order must not decide an
+    irreversible settlement (the 'feed order picks the row' rule, mirrored onto rows)."""
+    from panthera_mvp.ncaabase import pipeline
+
+    _store_doubleheader(
+        _dh_row(G1, "2026-05-01T19:05:00Z", "Scheduled"),
+        _dh_row(G2, "2026-05-01T19:05:00Z", "Scheduled"),
+    )
+    _dh_feed(monkeypatch, "game2_only")
+
+    assert pipeline._espn_fallback(DAY, _repo_cfg()) == 0
+
+    games = store.load_games().set_index("game_id")
+    assert set(games["status"]) == {"Scheduled"}
+
+
+def test_assign_espn_refuses_rows_that_tie_for_one_event():
+    from panthera_mvp.ncaabase import matching
+
+    games = [
+        {"game_id": gid, "start_time_utc": "2026-05-01T19:05:00Z", "home_team": "LSU",
+         "away_team": "Texas A&M", "home_seo": "lsu", "away_seo": "texas-am"}
+        for gid in (G1, G2)
+    ]
+
+    class Ev:
+        event_id = "401800002"
+        home_names = ["LSU"]
+        away_names = ["Texas A&M"]
+        start_time_utc = "2026-05-01T19:05:00Z"
+
+    matched, reasons = matching.assign_espn(games, [Ev()], {}, 4, 60)
+
+    assert matched == {}
+    assert set(reasons) == {G1, G2}
+    assert all("ambiguous between rows" in r for r in reasons.values())
+
+
+def _tie_rows(*starts):
+    return [
+        {"game_id": f"900{i}", "start_time_utc": st, "home_team": "LSU",
+         "away_team": "Texas A&M", "home_seo": "lsu", "away_seo": "texas-am"}
+        for i, st in enumerate(starts)
+    ]
+
+
+class _Ev:
+    home_names = ["LSU"]
+    away_names = ["Texas A&M"]
+
+    def __init__(self, event_id, start):
+        self.event_id = event_id
+        self.start_time_utc = start
+
+
+def test_assign_espn_rows_within_the_ambiguity_window_both_refuse():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T18:25:00Z", "2026-05-01T19:05:00Z")  # 40 minutes apart
+    matched, reasons = matching.assign_espn(games, [_Ev("e", "2026-05-01T19:05:00Z")], {}, 4, 60)
+    assert matched == {} and set(reasons) == {"9000", "9001"}
+
+
+def test_assign_espn_the_nearer_row_wins_when_rows_are_far_apart():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T17:05:00Z", "2026-05-01T19:05:00Z")  # 2 hours apart
+    matched, reasons = matching.assign_espn(games, [_Ev("e", "2026-05-01T19:05:00Z")], {}, 4, 60)
+    assert set(matched) == {"9001"} and "9000" in reasons
+
+
+def test_assign_espn_same_start_two_events_never_decides_by_game_id():
+    from panthera_mvp.ncaabase import matching
+
+    games = _tie_rows("2026-05-01T17:05:00Z", "2026-05-01T17:05:00Z")
+    events = [_Ev("e1", "2026-05-01T17:05:00Z"), _Ev("e2", "2026-05-01T19:05:00Z")]
+    matched, reasons = matching.assign_espn(games, events, {}, 4, 60)
+    assert matched == {} and set(reasons) == {"9000", "9001"}
+
+
 def test_scoreless_final_does_not_overwrite_a_stored_final(tmp_root):
     """A college-baseball Final with no score must not blank a complete one.
 
