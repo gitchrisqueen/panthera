@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-09T17:53:50Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-10T22:38:32Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -30,11 +30,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 49 (22-27-0 W-L-P, 0 pending)
+- Singles: 50 (22-27-0 W-L-P, 1 pending)
 - Staked $4,900, profit $-692.27, ROI -14.1%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S1+S6 | pending |  |
 | 2026-10-22 | James Madison Dukes -12 | James Madison Dukes @ App State Mountaineers | -110 | S1 | loss | $-100.00 |
 | 2026-10-22 | Liberty Flames -8.5 | Liberty Flames @ Kennesaw State Owls | -110 | S6 | win | $+90.91 |
 | 2026-10-20 | Over 65.5 | South Alabama Jaguars @ Marshall Thundering Herd | -110 | S2 | loss | $-100.00 |
@@ -64,7 +65,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | Arkansas Razorbacks +13.5 | Tennessee Volunteers @ Arkansas Razorbacks | -103 | S4 | win | $+97.09 |
 | 2026-10-10 | Maryland Terrapins +33.5 | Maryland Terrapins @ Ohio State Buckeyes | -110 | S1+S3+S4+S6 | win | $+90.91 |
 | 2026-10-10 | Vanderbilt Commodores +9.5 | Ole Miss Rebels @ Vanderbilt Commodores | -108 | S6 | loss | $-100.00 |
-| 2026-10-10 | Under 55.5 | Houston Cougars @ Kansas State Wildcats | -114 | S5 | win | $+87.72 |
 
 ### Qualifying legs by signal
 
@@ -72,19 +72,20 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 11 | 5-6-0 | 45.5% | -2.2 pts |
+| S1 | 12 | 5-6-0 | 45.5% | -2.2 pts |
 | S2 | 9 | 2-7-0 | 22.2% | -25.4 pts |
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 28 | 13-15-0 | 46.4% | -1.2 pts |
+| S6 | 29 | 13-15-0 | 46.4% | -1.2 pts |
 
 ### Decisions
 
-no_ticket: 6, ticket: 4, skip: 3
+no_ticket: 7, ticket: 4, skip: 3
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-10 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-10-22 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-21 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-20 | ticket | 3 qualifying leg(s); top 3 taken |
@@ -98,3 +99,49 @@ no_ticket: 6, ticket: 4, skip: 3
 | 2026-10-08 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-07 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-06 | no_ticket | 0 qualifying leg(s); a ticket needs 3 |
+
+## cfb_spread_total_parlay_v2
+
+**forward_test**, registered 2026-11-09, enabled. Hash lineage: 827622ed7e.
+
+> Straight $100 bets on two college-football angles beat the vig where a 3-leg parlay of the same legs cannot: kickoff wind of 15+ mph on an outdoor game (take the under), which has some weak outside support, and SP+ disagreeing with the spread by 4+ points (take the side SP+ favors), which is staked as a test of a null that the peer-reviewed work predicts (rankings add nothing beyond the spread). The author's parlay structure triples the vig (break-even 14.4% per ticket against 52.4% per straight bet) and the research found no evidence a parlay beats the same legs bet straight, so v2 bets straight. Line-move, letdown and look-ahead angles stay in v1 as a control and are not staked here: line moves are bought after the move, and letdown and look-ahead spots have no credible published edge.
+
+**Pre-registered evaluation:** no verdict (SCREEN only). Ticket checkpoints [50, 100, 300]; qualifying-leg checkpoints [100, 300]. Every bet is a straight bet: at -110 it breaks even at a 52.4% win rate.
+
+### Bets
+
+**In lineage:**
+
+- Bets: 1 (0-0-0 W-L-P, 1 pending)
+- Staked $0, profit $+0.00, ROI n/a
+
+| Date | Legs | Price | Status | Profit |
+|---|---|---|---|---|
+| 2026-11-10 | Western Michigan Broncos -14.5 (pending) | -110 | pending |  |
+
+### Single bets
+
+Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
+
+- Singles: 1 (0-0-0 W-L-P, 1 pending)
+- Staked $0, profit $+0.00, ROI n/a
+
+| Date | Pick | Matchup | Price | Signals | Result | P/L |
+|---|---|---|---|---|---|---|
+| 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S6 | pending |  |
+
+### Qualifying legs by signal
+
+Every leg the engine found qualifying, on the ticket or not, graded at its best-available line. A leg fired by several signals counts under each. Descriptive only: it includes legs the daily cap or the price floor did not place, and it is not the strategy's review bar (that uses placed bets).
+
+| Signal | Legs | W-L-P | Win % | vs 52.4% |
+|---|---|---|---|---|
+| S6 | 1 | 0-0-0 | n/a |  |
+
+### Decisions
+
+ticket: 1
+
+| Date | Decision | Reason |
+|---|---|---|
+| 2026-11-10 | ticket | 1 qualifying leg(s); 1 placed |
