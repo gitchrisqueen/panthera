@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-11T13:19:08Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-11T23:13:22Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -30,11 +30,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 50 (23-27-0 W-L-P, 0 pending)
+- Singles: 51 (23-27-0 W-L-P, 1 pending)
 - Staked $5,000, profit $-601.36, ROI -12.0%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | pending |  |
 | 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S1+S6 | win | $+90.91 |
 | 2026-10-22 | James Madison Dukes -12 | James Madison Dukes @ App State Mountaineers | -110 | S1 | loss | $-100.00 |
 | 2026-10-22 | Liberty Flames -8.5 | Liberty Flames @ Kennesaw State Owls | -110 | S6 | win | $+90.91 |
@@ -64,7 +65,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | Marshall Thundering Herd -4 | Coastal Carolina Chanticleers @ Marshall Thundering Herd | -110 | S1 | loss | $-100.00 |
 | 2026-10-10 | Arkansas Razorbacks +13.5 | Tennessee Volunteers @ Arkansas Razorbacks | -103 | S4 | win | $+97.09 |
 | 2026-10-10 | Maryland Terrapins +33.5 | Maryland Terrapins @ Ohio State Buckeyes | -110 | S1+S3+S4+S6 | win | $+90.91 |
-| 2026-10-10 | Vanderbilt Commodores +9.5 | Ole Miss Rebels @ Vanderbilt Commodores | -108 | S6 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -77,14 +77,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 29 | 14-15-0 | 48.3% | +0.7 pts |
+| S6 | 30 | 14-15-0 | 48.3% | +0.7 pts |
 
 ### Decisions
 
-no_ticket: 7, ticket: 4, skip: 3
+no_ticket: 8, ticket: 4, skip: 3
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-11 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-11-10 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-10-22 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-21 | skip | previous day's ticket lost (skip-day rule) |
@@ -98,7 +99,6 @@ no_ticket: 7, ticket: 4, skip: 3
 | 2026-10-09 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-10-08 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-07 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
-| 2026-10-06 | no_ticket | 0 qualifying leg(s); a ticket needs 3 |
 
 ## cfb_spread_total_parlay_v2
 
@@ -112,22 +112,24 @@ no_ticket: 7, ticket: 4, skip: 3
 
 **In lineage:**
 
-- Bets: 1 (1-0-0 W-L-P, 0 pending)
+- Bets: 2 (1-0-0 W-L-P, 1 pending)
 - Staked $100, profit $+90.91, ROI +90.9%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-11-11 | Buffalo Bulls -1 (pending) | -103 | pending |  |
 | 2026-11-10 | Western Michigan Broncos -14.5 (win) | -110 | win | $+90.91 |
 
 ### Single bets
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 1 (1-0-0 W-L-P, 0 pending)
+- Singles: 2 (1-0-0 W-L-P, 1 pending)
 - Staked $100, profit $+90.91, ROI +90.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | pending |  |
 | 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S6 | win | $+90.91 |
 
 ### Qualifying legs by signal
@@ -136,12 +138,13 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 1 | 1-0-0 | 100.0% | +52.4 pts |
+| S6 | 2 | 1-0-0 | 100.0% | +52.4 pts |
 
 ### Decisions
 
-ticket: 1
+ticket: 2
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-11 | ticket | 1 qualifying leg(s); 1 placed |
 | 2026-11-10 | ticket | 1 qualifying leg(s); 1 placed |
