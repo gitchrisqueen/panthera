@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-11T23:14:52Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-12T13:18:26Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -30,12 +30,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 51 (23-27-0 W-L-P, 1 pending)
-- Staked $5,000, profit $-601.36, ROI -12.0%
+- Singles: 51 (24-27-0 W-L-P, 0 pending)
+- Staked $5,100, profit $-504.27, ROI -9.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | pending |  |
+| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
 | 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S1+S6 | win | $+90.91 |
 | 2026-10-22 | James Madison Dukes -12 | James Madison Dukes @ App State Mountaineers | -110 | S1 | loss | $-100.00 |
 | 2026-10-22 | Liberty Flames -8.5 | Liberty Flames @ Kennesaw State Owls | -110 | S6 | win | $+90.91 |
@@ -77,7 +77,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 30 | 14-15-0 | 48.3% | +0.7 pts |
+| S6 | 30 | 15-15-0 | 50.0% | +2.4 pts |
 
 ### Decisions
 
@@ -112,24 +112,24 @@ no_ticket: 8, ticket: 4, skip: 3
 
 **In lineage:**
 
-- Bets: 2 (1-0-0 W-L-P, 1 pending)
-- Staked $100, profit $+90.91, ROI +90.9%
+- Bets: 2 (2-0-0 W-L-P, 0 pending)
+- Staked $200, profit $+188.00, ROI +94.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-11 | Buffalo Bulls -1 (pending) | -103 | pending |  |
+| 2026-11-11 | Buffalo Bulls -1 (win) | -103 | win | $+97.09 |
 | 2026-11-10 | Western Michigan Broncos -14.5 (win) | -110 | win | $+90.91 |
 
 ### Single bets
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 2 (1-0-0 W-L-P, 1 pending)
-- Staked $100, profit $+90.91, ROI +90.9%
+- Singles: 2 (2-0-0 W-L-P, 0 pending)
+- Staked $200, profit $+188.00, ROI +94.0%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | pending |  |
+| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
 | 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S6 | win | $+90.91 |
 
 ### Qualifying legs by signal
@@ -138,7 +138,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 2 | 1-0-0 | 100.0% | +52.4 pts |
+| S6 | 2 | 2-0-0 | 100.0% | +52.4 pts |
 
 ### Decisions
 
