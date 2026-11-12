@@ -1,6 +1,6 @@
 # Panthera Running Ledger
 
-Updated: 2026-11-12T14:37:36Z · Flat stakes (per strategy YAML) · All picks are paper trades.
+Updated: 2026-11-12T20:53:59Z · Flat stakes (per strategy YAML) · All picks are paper trades.
 
 **How to read this report.** Every strategy here is a paper-traded hypothesis
 with its own pre-registered evaluation criteria (declared in its YAML at
