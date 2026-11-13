@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-13T13:18:20Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-13T22:38:39Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -30,11 +30,13 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 53 (26-27-0 W-L-P, 0 pending)
+- Singles: 55 (26-27-0 W-L-P, 2 pending)
 - Staked $5,300, profit $-322.45, ROI -6.1%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-13 | UCLA Bruins -10 | Illinois Fighting Illini @ UCLA Bruins | -112 | S6 | pending |  |
+| 2026-11-13 | Pittsburgh Panthers -3 | Florida State Seminoles @ Pittsburgh Panthers | -110 | S6 | pending |  |
 | 2026-11-12 | Louisiana Ragin' Cajuns -10 | Louisiana Ragin' Cajuns @ UL Monroe Warhawks | -110 | S6 | win | $+90.91 |
 | 2026-11-12 | Over 50.5 | Memphis Tigers @ South Florida Bulls | -110 | S2 | win | $+90.91 |
 | 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
@@ -63,8 +65,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-10-10 | Under 51 | LSU Tigers @ Kentucky Wildcats | -108 | S2+S5 | loss | $-100.00 |
 | 2026-10-10 | Memphis Tigers -14.5 | UAB Blazers @ Memphis Tigers | -109 | S6 | win | $+91.74 |
 | 2026-10-10 | Nevada Wolf Pack -9.5 | Nevada Wolf Pack @ UTEP Miners | -110 | S6 | win | $+90.91 |
-| 2026-10-10 | North Dakota State Bison -2 | North Dakota State Bison @ UNLV Rebels | -111 | S6 | loss | $-100.00 |
-| 2026-10-10 | Marshall Thundering Herd -4 | Coastal Carolina Chanticleers @ Marshall Thundering Herd | -110 | S1 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -77,14 +77,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | S3 | 1 | 1-0-0 | 100.0% | +52.4 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 31 | 16-15-0 | 51.6% | +4.0 pts |
+| S6 | 33 | 16-15-0 | 51.6% | +4.0 pts |
 
 ### Decisions
 
-no_ticket: 9, ticket: 4, skip: 3
+no_ticket: 10, ticket: 4, skip: 3
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-11-12 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-11-11 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-11-10 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
@@ -98,7 +99,6 @@ no_ticket: 9, ticket: 4, skip: 3
 | 2026-10-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-10 | ticket | 30 qualifying leg(s); top 3 taken |
 | 2026-10-09 | skip | previous day's ticket lost (skip-day rule) |
-| 2026-10-08 | ticket | 3 qualifying leg(s); top 3 taken |
 
 ## cfb_spread_total_parlay_v2
 
@@ -112,11 +112,14 @@ no_ticket: 9, ticket: 4, skip: 3
 
 **In lineage:**
 
-- Bets: 3 (3-0-0 W-L-P, 0 pending)
+- Bets: 6 (3-0-0 W-L-P, 3 pending)
 - Staked $300, profit $+278.91, ROI +93.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-11-13 | Houston Cougars -7.5 (pending) | -103 | pending |  |
+| 2026-11-13 | Pittsburgh Panthers -3 (pending) | -110 | pending |  |
+| 2026-11-13 | UCLA Bruins -10 (pending) | -112 | pending |  |
 | 2026-11-12 | Louisiana Ragin' Cajuns -10 (win) | -110 | win | $+90.91 |
 | 2026-11-11 | Buffalo Bulls -1 (win) | -103 | win | $+97.09 |
 | 2026-11-10 | Western Michigan Broncos -14.5 (win) | -110 | win | $+90.91 |
@@ -125,11 +128,14 @@ no_ticket: 9, ticket: 4, skip: 3
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 3 (3-0-0 W-L-P, 0 pending)
+- Singles: 6 (3-0-0 W-L-P, 3 pending)
 - Staked $300, profit $+278.91, ROI +93.0%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-13 | Houston Cougars -7.5 | Houston Cougars @ Colorado Buffaloes | -103 | S6 | pending |  |
+| 2026-11-13 | UCLA Bruins -10 | Illinois Fighting Illini @ UCLA Bruins | -112 | S6 | pending |  |
+| 2026-11-13 | Pittsburgh Panthers -3 | Florida State Seminoles @ Pittsburgh Panthers | -110 | S6 | pending |  |
 | 2026-11-12 | Louisiana Ragin' Cajuns -10 | Louisiana Ragin' Cajuns @ UL Monroe Warhawks | -110 | S6 | win | $+90.91 |
 | 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
 | 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S6 | win | $+90.91 |
@@ -140,14 +146,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 3 | 3-0-0 | 100.0% | +52.4 pts |
+| S6 | 6 | 3-0-0 | 100.0% | +52.4 pts |
 
 ### Decisions
 
-ticket: 3
+ticket: 4
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-13 | ticket | 3 qualifying leg(s); 3 placed |
 | 2026-11-12 | ticket | 1 qualifying leg(s); 1 placed |
 | 2026-11-11 | ticket | 1 qualifying leg(s); 1 placed |
 | 2026-11-10 | ticket | 1 qualifying leg(s); 1 placed |
