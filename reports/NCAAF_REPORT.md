@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-15T13:18:23Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-15T16:38:21Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -82,10 +82,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 ### Decisions
 
-no_ticket: 10, ticket: 5, skip: 3
+no_ticket: 10, ticket: 5, skip: 4
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-15 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-11-14 | ticket | 32 qualifying leg(s); top 3 taken |
 | 2026-11-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-11-12 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
@@ -99,7 +100,6 @@ no_ticket: 10, ticket: 5, skip: 3
 | 2026-10-15 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-14 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
-| 2026-10-10 | ticket | 30 qualifying leg(s); top 3 taken |
 
 ## cfb_spread_total_parlay_v2
 
@@ -113,11 +113,12 @@ no_ticket: 10, ticket: 5, skip: 3
 
 **In lineage:**
 
-- Bets: 12 (6-6-0 W-L-P, 0 pending)
+- Bets: 13 (6-6-0 W-L-P, 1 pending)
 - Staked $1,200, profit $-36.83, ROI -3.1%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-11-15 | Ole Miss Rebels +2.5 (pending) | -105 | pending |  |
 | 2026-11-14 | Nevada Wolf Pack -5.5 (win) | -110 | win | $+90.91 |
 | 2026-11-14 | Wyoming Cowboys -7 (win) | -101 | win | $+99.01 |
 | 2026-11-14 | East Carolina Pirates -10.5 (loss) | -110 | loss | $-100.00 |
@@ -135,11 +136,12 @@ no_ticket: 10, ticket: 5, skip: 3
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 30 (16-13-1 W-L-P, 0 pending)
+- Singles: 31 (16-13-1 W-L-P, 1 pending)
 - Staked $3,000, profit $+157.44, ROI +5.2%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-15 | Ole Miss Rebels +2.5 | Ole Miss Rebels @ Oklahoma Sooners | -105 | S6 | pending |  |
 | 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
 | 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
 | 2026-11-14 | Wyoming Cowboys -7 | Wyoming Cowboys @ UTEP Miners | -101 | S6 | win | $+99.01 |
@@ -169,7 +171,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-11-13 | Pittsburgh Panthers -3 | Florida State Seminoles @ Pittsburgh Panthers | -110 | S6 | loss | $-100.00 |
 | 2026-11-12 | Louisiana Ragin' Cajuns -10 | Louisiana Ragin' Cajuns @ UL Monroe Warhawks | -110 | S6 | win | $+90.91 |
 | 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
-| 2026-11-10 | Western Michigan Broncos -14.5 | Western Michigan Broncos @ Akron Zips | -110 | S6 | win | $+90.91 |
 
 ### Qualifying legs by signal
 
@@ -177,14 +178,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 30 | 16-13-1 | 55.2% | +7.6 pts |
+| S6 | 31 | 16-13-1 | 55.2% | +7.6 pts |
 
 ### Decisions
 
-ticket: 5
+ticket: 6
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-15 | ticket | 1 qualifying leg(s); 1 placed |
 | 2026-11-14 | ticket | 24 qualifying leg(s); 6 placed; 2 priced worse than -115 |
 | 2026-11-13 | ticket | 3 qualifying leg(s); 3 placed |
 | 2026-11-12 | ticket | 1 qualifying leg(s); 1 placed |
