@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-14T15:39:11Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-15T13:18:23Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -16,12 +16,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 **In lineage:**
 
-- Tickets: 5 (0-4-0 W-L-P, 1 pending)
-- Staked $400, profit $-400.00, ROI -100.0%
+- Tickets: 5 (0-5-0 W-L-P, 0 pending)
+- Staked $500, profit $-500.00, ROI -100.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-14 | Cincinnati Bearcats +3 (pending)<br>NC State Wolfpack +3 (pending)<br>SMU Mustangs -1.5 (pending) | +615 | pending |  |
+| 2026-11-14 | Cincinnati Bearcats +3 (loss)<br>NC State Wolfpack +3 (push)<br>SMU Mustangs -1.5 (loss) | +615 | loss | $-100.00 |
 | 2026-10-20 | Florida International Panthers -9.5 (loss)<br>Delaware Blue Hens -2 (win)<br>Over 65.5 (loss) | +581 | loss | $-100.00 |
 | 2026-10-16 | Under 50.5 (loss)<br>Memphis Tigers -6.5 (loss)<br>Under 49.5 (loss) | +566 | loss | $-100.00 |
 | 2026-10-10 | Maryland Terrapins +33.5 (win)<br>UCF Knights +10.5 (loss)<br>Under 48.5 (win) | +587 | loss | $-100.00 |
@@ -31,41 +31,41 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 87 (26-29-0 W-L-P, 32 pending)
-- Staked $5,500, profit $-522.45, ROI -9.5%
+- Singles: 87 (38-48-1 W-L-P, 0 pending)
+- Staked $8,700, profit $-1,357.99, ROI -15.6%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | pending |  |
-| 2026-11-14 | Arizona Wildcats +1.5 | Utah Utes @ Arizona Wildcats | -114 | S1 | pending |  |
-| 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | pending |  |
-| 2026-11-14 | Over 43.5 | Utah State Aggies @ San Diego State Aztecs | -115 | S2 | pending |  |
-| 2026-11-14 | South Carolina Gamecocks -7.5 | South Carolina Gamecocks @ Arkansas Razorbacks | -108 | S6 | pending |  |
-| 2026-11-14 | LSU Tigers -4.5 | Texas Longhorns @ LSU Tigers | -105 | S1 | pending |  |
-| 2026-11-14 | New Mexico Lobos -17.5 | UNLV Rebels @ New Mexico Lobos | -106 | S1 | pending |  |
-| 2026-11-14 | Under 73 | Florida Atlantic Owls @ Tulsa Golden Hurricane | -110 | S2 | pending |  |
-| 2026-11-14 | Louisville Cardinals -3.5 | Louisville Cardinals @ North Carolina Tar Heels | +100 | S6 | pending |  |
-| 2026-11-14 | Penn State Nittany Lions -11 | Minnesota Golden Gophers @ Penn State Nittany Lions | -113 | S1 | pending |  |
-| 2026-11-14 | Air Force Falcons -13.5 | San José State Spartans @ Air Force Falcons | -114 | S1 | pending |  |
-| 2026-11-14 | Washington Huskies -2 | Washington Huskies @ Michigan State Spartans | -106 | S6 | pending |  |
-| 2026-11-14 | Tulane Green Wave +3.5 | Tulane Green Wave @ Rice Owls | -118 | S6 | pending |  |
-| 2026-11-14 | Mississippi State Bulldogs +3 | Auburn Tigers @ Mississippi State Bulldogs | -112 | S6 | pending |  |
-| 2026-11-14 | Fresno State Bulldogs +10 | Fresno State Bulldogs @ Texas State Bobcats | -112 | S6 | pending |  |
-| 2026-11-14 | Boston College Eagles +29.5 | Boston College Eagles @ Notre Dame Fighting Irish | -110 | S3 | pending |  |
-| 2026-11-14 | Virginia Cavaliers -10.5 | California Golden Bears @ Virginia Cavaliers | -113 | S6 | pending |  |
-| 2026-11-14 | Indiana Hoosiers -9 | USC Trojans @ Indiana Hoosiers | -110 | S1 | pending |  |
-| 2026-11-14 | Michigan Wolverines +10.5 | Michigan Wolverines @ Oregon Ducks | -115 | S3 | pending |  |
-| 2026-11-14 | Nevada Wolf Pack -5.5 | Nevada Wolf Pack @ Northern Illinois Huskies | -110 | S6 | pending |  |
-| 2026-11-14 | Jacksonville State Gamecocks -7.5 | Jacksonville State Gamecocks @ Western Kentucky Hilltoppers | +100 | S6 | pending |  |
-| 2026-11-14 | Liberty Flames -21 | Middle Tennessee Blue Raiders @ Liberty Flames | -106 | S6 | pending |  |
-| 2026-11-14 | Under 46.5 | Kennesaw State Owls @ Sam Houston Bearkats | -110 | S2 | pending |  |
-| 2026-11-14 | East Carolina Pirates -10.5 | East Carolina Pirates @ Charlotte 49ers | -110 | S6 | pending |  |
-| 2026-11-14 | Over 52.5 | Arkansas State Red Wolves @ Coastal Carolina Chanticleers | -105 | S2 | pending |  |
-| 2026-11-14 | Clemson Tigers -15 | Georgia Tech Yellow Jackets @ Clemson Tigers | -110 | S1 | pending |  |
-| 2026-11-14 | Cincinnati Bearcats +3 | Cincinnati Bearcats @ Iowa State Cyclones | -110 | S6 | pending |  |
-| 2026-11-14 | NC State Wolfpack +3 | Syracuse Orange @ NC State Wolfpack | -110 | S6 | pending |  |
-| 2026-11-14 | SMU Mustangs -1.5 | Wake Forest Demon Deacons @ SMU Mustangs | -104 | S1 | pending |  |
-| 2026-11-14 | Under 41.5 | Wisconsin Badgers @ Maryland Terrapins | -108 | S2 | pending |  |
+| 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
+| 2026-11-14 | Arizona Wildcats +1.5 | Utah Utes @ Arizona Wildcats | -114 | S1 | win | $+87.72 |
+| 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
+| 2026-11-14 | Over 43.5 | Utah State Aggies @ San Diego State Aztecs | -115 | S2 | loss | $-100.00 |
+| 2026-11-14 | South Carolina Gamecocks -7.5 | South Carolina Gamecocks @ Arkansas Razorbacks | -108 | S6 | loss | $-100.00 |
+| 2026-11-14 | LSU Tigers -4.5 | Texas Longhorns @ LSU Tigers | -105 | S1 | loss | $-100.00 |
+| 2026-11-14 | New Mexico Lobos -17.5 | UNLV Rebels @ New Mexico Lobos | -106 | S1 | loss | $-100.00 |
+| 2026-11-14 | Under 73 | Florida Atlantic Owls @ Tulsa Golden Hurricane | -110 | S2 | win | $+90.91 |
+| 2026-11-14 | Louisville Cardinals -3.5 | Louisville Cardinals @ North Carolina Tar Heels | +100 | S6 | loss | $-100.00 |
+| 2026-11-14 | Penn State Nittany Lions -11 | Minnesota Golden Gophers @ Penn State Nittany Lions | -113 | S1 | win | $+88.50 |
+| 2026-11-14 | Air Force Falcons -13.5 | San José State Spartans @ Air Force Falcons | -114 | S1 | win | $+87.72 |
+| 2026-11-14 | Washington Huskies -2 | Washington Huskies @ Michigan State Spartans | -106 | S6 | win | $+94.34 |
+| 2026-11-14 | Tulane Green Wave +3.5 | Tulane Green Wave @ Rice Owls | -118 | S6 | win | $+84.75 |
+| 2026-11-14 | Mississippi State Bulldogs +3 | Auburn Tigers @ Mississippi State Bulldogs | -112 | S6 | loss | $-100.00 |
+| 2026-11-14 | Fresno State Bulldogs +10 | Fresno State Bulldogs @ Texas State Bobcats | -112 | S6 | win | $+89.29 |
+| 2026-11-14 | Boston College Eagles +29.5 | Boston College Eagles @ Notre Dame Fighting Irish | -110 | S3 | loss | $-100.00 |
+| 2026-11-14 | Virginia Cavaliers -10.5 | California Golden Bears @ Virginia Cavaliers | -113 | S6 | win | $+88.50 |
+| 2026-11-14 | Indiana Hoosiers -9 | USC Trojans @ Indiana Hoosiers | -110 | S1 | win | $+90.91 |
+| 2026-11-14 | Michigan Wolverines +10.5 | Michigan Wolverines @ Oregon Ducks | -115 | S3 | loss | $-100.00 |
+| 2026-11-14 | Nevada Wolf Pack -5.5 | Nevada Wolf Pack @ Northern Illinois Huskies | -110 | S6 | win | $+90.91 |
+| 2026-11-14 | Jacksonville State Gamecocks -7.5 | Jacksonville State Gamecocks @ Western Kentucky Hilltoppers | +100 | S6 | loss | $-100.00 |
+| 2026-11-14 | Liberty Flames -21 | Middle Tennessee Blue Raiders @ Liberty Flames | -106 | S6 | loss | $-100.00 |
+| 2026-11-14 | Under 46.5 | Kennesaw State Owls @ Sam Houston Bearkats | -110 | S2 | win | $+90.91 |
+| 2026-11-14 | East Carolina Pirates -10.5 | East Carolina Pirates @ Charlotte 49ers | -110 | S6 | loss | $-100.00 |
+| 2026-11-14 | Over 52.5 | Arkansas State Red Wolves @ Coastal Carolina Chanticleers | -105 | S2 | loss | $-100.00 |
+| 2026-11-14 | Clemson Tigers -15 | Georgia Tech Yellow Jackets @ Clemson Tigers | -110 | S1 | loss | $-100.00 |
+| 2026-11-14 | Cincinnati Bearcats +3 | Cincinnati Bearcats @ Iowa State Cyclones | -110 | S6 | loss | $-100.00 |
+| 2026-11-14 | NC State Wolfpack +3 | Syracuse Orange @ NC State Wolfpack | -110 | S6 | push | $+0.00 |
+| 2026-11-14 | SMU Mustangs -1.5 | Wake Forest Demon Deacons @ SMU Mustangs | -104 | S1 | loss | $-100.00 |
+| 2026-11-14 | Under 41.5 | Wisconsin Badgers @ Maryland Terrapins | -108 | S2 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -73,12 +73,12 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 21 | 6-6-0 | 50.0% | +2.4 pts |
-| S2 | 15 | 3-7-0 | 30.0% | -17.6 pts |
-| S3 | 3 | 1-0-0 | 100.0% | +52.4 pts |
+| S1 | 21 | 10-11-0 | 47.6% | +0.0 pts |
+| S2 | 15 | 5-10-0 | 33.3% | -14.3 pts |
+| S3 | 3 | 1-2-0 | 33.3% | -14.3 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 49 | 16-17-0 | 48.5% | +0.9 pts |
+| S6 | 49 | 22-26-1 | 45.8% | -1.8 pts |
 
 ### Decisions
 
@@ -113,17 +113,17 @@ no_ticket: 10, ticket: 5, skip: 3
 
 **In lineage:**
 
-- Bets: 12 (3-3-0 W-L-P, 6 pending)
-- Staked $600, profit $-21.09, ROI -3.5%
+- Bets: 12 (6-6-0 W-L-P, 0 pending)
+- Staked $1,200, profit $-36.83, ROI -3.1%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-14 | Nevada Wolf Pack -5.5 (pending) | -110 | pending |  |
-| 2026-11-14 | Wyoming Cowboys -7 (pending) | -101 | pending |  |
-| 2026-11-14 | East Carolina Pirates -10.5 (pending) | -110 | pending |  |
-| 2026-11-14 | Liberty Flames -21 (pending) | -106 | pending |  |
-| 2026-11-14 | Colorado State Rams +9.5 (pending) | -109 | pending |  |
-| 2026-11-14 | Tennessee Volunteers +0 (pending) | -106 | pending |  |
+| 2026-11-14 | Nevada Wolf Pack -5.5 (win) | -110 | win | $+90.91 |
+| 2026-11-14 | Wyoming Cowboys -7 (win) | -101 | win | $+99.01 |
+| 2026-11-14 | East Carolina Pirates -10.5 (loss) | -110 | loss | $-100.00 |
+| 2026-11-14 | Liberty Flames -21 (loss) | -106 | loss | $-100.00 |
+| 2026-11-14 | Colorado State Rams +9.5 (loss) | -109 | loss | $-100.00 |
+| 2026-11-14 | Tennessee Volunteers +0 (win) | -106 | win | $+94.34 |
 | 2026-11-13 | Houston Cougars -7.5 (loss) | -103 | loss | $-100.00 |
 | 2026-11-13 | Pittsburgh Panthers -3 (loss) | -110 | loss | $-100.00 |
 | 2026-11-13 | UCLA Bruins -10 (loss) | -112 | loss | $-100.00 |
@@ -135,35 +135,35 @@ no_ticket: 10, ticket: 5, skip: 3
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 30 (3-3-0 W-L-P, 24 pending)
-- Staked $600, profit $-21.09, ROI -3.5%
+- Singles: 30 (16-13-1 W-L-P, 0 pending)
+- Staked $3,000, profit $+157.44, ROI +5.2%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | pending |  |
-| 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | pending |  |
-| 2026-11-14 | Wyoming Cowboys -7 | Wyoming Cowboys @ UTEP Miners | -101 | S6 | pending |  |
-| 2026-11-14 | South Carolina Gamecocks -7.5 | South Carolina Gamecocks @ Arkansas Razorbacks | -108 | S6 | pending |  |
-| 2026-11-14 | Virginia Tech Hokies -15.5 | Stanford Cardinal @ Virginia Tech Hokies | -115 | S6 | pending |  |
-| 2026-11-14 | Louisville Cardinals -3.5 | Louisville Cardinals @ North Carolina Tar Heels | +100 | S6 | pending |  |
-| 2026-11-14 | Oregon State Beavers +16.5 | Oregon State Beavers @ Boise State Broncos | -106 | S6 | pending |  |
-| 2026-11-14 | Washington Huskies -2 | Washington Huskies @ Michigan State Spartans | -106 | S6 | pending |  |
-| 2026-11-14 | Tulane Green Wave +3.5 | Tulane Green Wave @ Rice Owls | -118 | S6 | pending |  |
-| 2026-11-14 | Mississippi State Bulldogs +3 | Auburn Tigers @ Mississippi State Bulldogs | -112 | S6 | pending |  |
-| 2026-11-14 | Fresno State Bulldogs +10 | Fresno State Bulldogs @ Texas State Bobcats | -112 | S6 | pending |  |
-| 2026-11-14 | Georgia Bulldogs -15.5 | Missouri Tigers @ Georgia Bulldogs | -115 | S6 | pending |  |
-| 2026-11-14 | Virginia Cavaliers -10.5 | California Golden Bears @ Virginia Cavaliers | -113 | S6 | pending |  |
-| 2026-11-14 | Nevada Wolf Pack -5.5 | Nevada Wolf Pack @ Northern Illinois Huskies | -110 | S6 | pending |  |
-| 2026-11-14 | Jacksonville State Gamecocks -7.5 | Jacksonville State Gamecocks @ Western Kentucky Hilltoppers | +100 | S6 | pending |  |
-| 2026-11-14 | Liberty Flames -21 | Middle Tennessee Blue Raiders @ Liberty Flames | -106 | S6 | pending |  |
-| 2026-11-14 | Tennessee Volunteers +0 | Tennessee Volunteers @ Texas A&M Aggies | -106 | S6 | pending |  |
-| 2026-11-14 | Kansas State Wildcats +13.5 | Kansas State Wildcats @ TCU Horned Frogs | -108 | S6 | pending |  |
-| 2026-11-14 | East Carolina Pirates -10.5 | East Carolina Pirates @ Charlotte 49ers | -110 | S6 | pending |  |
-| 2026-11-14 | Alabama Crimson Tide -14 | Alabama Crimson Tide @ Vanderbilt Commodores | -108 | S6 | pending |  |
-| 2026-11-14 | Nebraska Cornhuskers -14.5 | Nebraska Cornhuskers @ Rutgers Scarlet Knights | -110 | S6 | pending |  |
-| 2026-11-14 | Cincinnati Bearcats +3 | Cincinnati Bearcats @ Iowa State Cyclones | -110 | S6 | pending |  |
-| 2026-11-14 | NC State Wolfpack +3 | Syracuse Orange @ NC State Wolfpack | -110 | S6 | pending |  |
-| 2026-11-14 | James Madison Dukes -4.5 | James Madison Dukes @ UConn Huskies | -109 | S6 | pending |  |
+| 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
+| 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
+| 2026-11-14 | Wyoming Cowboys -7 | Wyoming Cowboys @ UTEP Miners | -101 | S6 | win | $+99.01 |
+| 2026-11-14 | South Carolina Gamecocks -7.5 | South Carolina Gamecocks @ Arkansas Razorbacks | -108 | S6 | loss | $-100.00 |
+| 2026-11-14 | Virginia Tech Hokies -15.5 | Stanford Cardinal @ Virginia Tech Hokies | -115 | S6 | loss | $-100.00 |
+| 2026-11-14 | Louisville Cardinals -3.5 | Louisville Cardinals @ North Carolina Tar Heels | +100 | S6 | loss | $-100.00 |
+| 2026-11-14 | Oregon State Beavers +16.5 | Oregon State Beavers @ Boise State Broncos | -106 | S6 | win | $+94.34 |
+| 2026-11-14 | Washington Huskies -2 | Washington Huskies @ Michigan State Spartans | -106 | S6 | win | $+94.34 |
+| 2026-11-14 | Tulane Green Wave +3.5 | Tulane Green Wave @ Rice Owls | -118 | S6 | win | $+84.75 |
+| 2026-11-14 | Mississippi State Bulldogs +3 | Auburn Tigers @ Mississippi State Bulldogs | -112 | S6 | loss | $-100.00 |
+| 2026-11-14 | Fresno State Bulldogs +10 | Fresno State Bulldogs @ Texas State Bobcats | -112 | S6 | win | $+89.29 |
+| 2026-11-14 | Georgia Bulldogs -15.5 | Missouri Tigers @ Georgia Bulldogs | -115 | S6 | win | $+86.96 |
+| 2026-11-14 | Virginia Cavaliers -10.5 | California Golden Bears @ Virginia Cavaliers | -113 | S6 | win | $+88.50 |
+| 2026-11-14 | Nevada Wolf Pack -5.5 | Nevada Wolf Pack @ Northern Illinois Huskies | -110 | S6 | win | $+90.91 |
+| 2026-11-14 | Jacksonville State Gamecocks -7.5 | Jacksonville State Gamecocks @ Western Kentucky Hilltoppers | +100 | S6 | loss | $-100.00 |
+| 2026-11-14 | Liberty Flames -21 | Middle Tennessee Blue Raiders @ Liberty Flames | -106 | S6 | loss | $-100.00 |
+| 2026-11-14 | Tennessee Volunteers +0 | Tennessee Volunteers @ Texas A&M Aggies | -106 | S6 | win | $+94.34 |
+| 2026-11-14 | Kansas State Wildcats +13.5 | Kansas State Wildcats @ TCU Horned Frogs | -108 | S6 | win | $+92.59 |
+| 2026-11-14 | East Carolina Pirates -10.5 | East Carolina Pirates @ Charlotte 49ers | -110 | S6 | loss | $-100.00 |
+| 2026-11-14 | Alabama Crimson Tide -14 | Alabama Crimson Tide @ Vanderbilt Commodores | -108 | S6 | win | $+92.59 |
+| 2026-11-14 | Nebraska Cornhuskers -14.5 | Nebraska Cornhuskers @ Rutgers Scarlet Knights | -110 | S6 | win | $+90.91 |
+| 2026-11-14 | Cincinnati Bearcats +3 | Cincinnati Bearcats @ Iowa State Cyclones | -110 | S6 | loss | $-100.00 |
+| 2026-11-14 | NC State Wolfpack +3 | Syracuse Orange @ NC State Wolfpack | -110 | S6 | push | $+0.00 |
+| 2026-11-14 | James Madison Dukes -4.5 | James Madison Dukes @ UConn Huskies | -109 | S6 | loss | $-100.00 |
 | 2026-11-13 | Houston Cougars -7.5 | Houston Cougars @ Colorado Buffaloes | -103 | S6 | loss | $-100.00 |
 | 2026-11-13 | UCLA Bruins -10 | Illinois Fighting Illini @ UCLA Bruins | -112 | S6 | loss | $-100.00 |
 | 2026-11-13 | Pittsburgh Panthers -3 | Florida State Seminoles @ Pittsburgh Panthers | -110 | S6 | loss | $-100.00 |
@@ -177,7 +177,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 30 | 3-3-0 | 50.0% | +2.4 pts |
+| S6 | 30 | 16-13-1 | 55.2% | +7.6 pts |
 
 ### Decisions
 
