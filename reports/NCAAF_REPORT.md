@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-15T23:16:47Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-16T11:20:27Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -113,12 +113,12 @@ no_ticket: 10, ticket: 5, skip: 4
 
 **In lineage:**
 
-- Bets: 13 (6-6-0 W-L-P, 1 pending)
-- Staked $1,200, profit $-36.83, ROI -3.1%
+- Bets: 13 (6-7-0 W-L-P, 0 pending)
+- Staked $1,300, profit $-136.83, ROI -10.5%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-15 | Ole Miss Rebels +2.5 (pending) | -105 | pending |  |
+| 2026-11-15 | Ole Miss Rebels +2.5 (loss) | -105 | loss | $-100.00 |
 | 2026-11-14 | Nevada Wolf Pack -5.5 (win) | -110 | win | $+90.91 |
 | 2026-11-14 | Wyoming Cowboys -7 (win) | -101 | win | $+99.01 |
 | 2026-11-14 | East Carolina Pirates -10.5 (loss) | -110 | loss | $-100.00 |
@@ -136,12 +136,12 @@ no_ticket: 10, ticket: 5, skip: 4
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 31 (16-13-1 W-L-P, 1 pending)
-- Staked $3,000, profit $+157.44, ROI +5.2%
+- Singles: 31 (16-14-1 W-L-P, 0 pending)
+- Staked $3,100, profit $+57.44, ROI +1.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-15 | Ole Miss Rebels +2.5 | Ole Miss Rebels @ Oklahoma Sooners | -105 | S6 | pending |  |
+| 2026-11-15 | Ole Miss Rebels +2.5 | Ole Miss Rebels @ Oklahoma Sooners | -105 | S6 | loss | $-100.00 |
 | 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
 | 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
 | 2026-11-14 | Wyoming Cowboys -7 | Wyoming Cowboys @ UTEP Miners | -101 | S6 | win | $+99.01 |
@@ -178,7 +178,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 31 | 16-13-1 | 55.2% | +7.6 pts |
+| S6 | 31 | 16-14-1 | 53.3% | +5.7 pts |
 
 ### Decisions
 
