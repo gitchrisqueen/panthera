@@ -87,13 +87,74 @@
       : `<p class="empty-note">No college football strategy is registered.</p>`;
   }
 
+  // Default: newest date first. The payload is grouped per strategy, so without
+  // a client-side sort dates restart at the top of each strategy's block.
+  const ticketSort = { key: "game_date_et", dir: -1 };
+
+  function sortedTickets(tickets) {
+    const { key, dir } = ticketSort;
+    return tickets.slice().sort((a, b) => {
+      const av = a[key], bv = b[key];
+      // Missing values (a pending ticket has no P/L) sink to the bottom either way.
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const c = typeof av === "string" ? av.localeCompare(bv) : av - bv;
+      // Equal primary keys fall back to newest date, then ticket id, so order is stable.
+      return c * dir || b.game_date_et.localeCompare(a.game_date_et) ||
+        String(a.ticket_id).localeCompare(String(b.ticket_id));
+    });
+  }
+
+  function updateTicketSortHeaders() {
+    document.querySelectorAll("#tickets-table th[data-sortable]").forEach((th) => {
+      const active = th.dataset.key === ticketSort.key;
+      th.setAttribute("aria-sort", active ? (ticketSort.dir === -1 ? "descending" : "ascending") : "none");
+      let arrow = th.querySelector(".sort-arrow");
+      if (!arrow) {
+        arrow = document.createElement("span");
+        arrow.className = "sort-arrow";
+        arrow.setAttribute("aria-hidden", "true");
+        th.appendChild(arrow);
+      }
+      arrow.textContent = active ? (ticketSort.dir === -1 ? "▼" : "▲") : "↕";
+      th.classList.toggle("sort-active", active);
+    });
+  }
+
+  function wireTicketSort(data) {
+    document.querySelectorAll("#tickets-table th[data-sortable]").forEach((th) => {
+      th.tabIndex = 0;
+      const activate = () => {
+        const key = th.dataset.key;
+        // First click on a new column: newest/highest first; click again to flip.
+        const dir = ticketSort.key === key ? -ticketSort.dir : -1;
+        ticketSort.key = key;
+        ticketSort.dir = dir;
+        renderTickets(data);
+      };
+      th.addEventListener("click", (e) => {
+        // The glossary affordance sits inside the <th>; let it navigate.
+        if (e.target.closest(".gloss-link")) return;
+        activate();
+      });
+      th.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target === th) {
+          e.preventDefault();
+          activate();
+        }
+      });
+    });
+  }
+
   function renderTickets(data) {
     const tbody = document.getElementById("tickets-tbody");
+    updateTicketSortHeaders();
     if (!data.tickets.length) {
       tbody.innerHTML = emptyRow(5, noTickets(data.strategies[0]));
       return;
     }
-    tbody.innerHTML = data.tickets.map((t) => `
+    tbody.innerHTML = sortedTickets(data.tickets).map((t) => `
       <tr>
         <td data-label="Date">${esc(t.game_date_et)}</td>
         <td data-label="Legs"><ul class="ticket-legs">${t.legs.map((lg) =>
@@ -188,6 +249,7 @@
     renderFreshness(data);
     renderStrategies(data);
     renderTickets(data);
+    wireTicketSort(data);
     renderSingles(data);
     renderSignals(data);
     renderDecisions(data);
