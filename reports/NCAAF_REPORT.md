@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-16T11:20:27Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-17T21:39:03Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -16,11 +16,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 **In lineage:**
 
-- Tickets: 5 (0-5-0 W-L-P, 0 pending)
+- Tickets: 6 (0-5-0 W-L-P, 1 pending)
 - Staked $500, profit $-500.00, ROI -100.0%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-11-17 | Ohio Bobcats -9.5 (pending)<br>Miami (OH) RedHawks -9 (pending)<br>Western Michigan Broncos -15 (pending) | +550 | pending |  |
 | 2026-11-14 | Cincinnati Bearcats +3 (loss)<br>NC State Wolfpack +3 (push)<br>SMU Mustangs -1.5 (loss) | +615 | loss | $-100.00 |
 | 2026-10-20 | Florida International Panthers -9.5 (loss)<br>Delaware Blue Hens -2 (win)<br>Over 65.5 (loss) | +581 | loss | $-100.00 |
 | 2026-10-16 | Under 50.5 (loss)<br>Memphis Tigers -6.5 (loss)<br>Under 49.5 (loss) | +566 | loss | $-100.00 |
@@ -31,11 +32,14 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 87 (38-48-1 W-L-P, 0 pending)
+- Singles: 90 (38-48-1 W-L-P, 3 pending)
 - Staked $8,700, profit $-1,357.99, ROI -15.6%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S1+S6 | pending |  |
+| 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S1+S6 | pending |  |
+| 2026-11-17 | Western Michigan Broncos -15 | Eastern Michigan Eagles @ Western Michigan Broncos | -112 | S1 | pending |  |
 | 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
 | 2026-11-14 | Arizona Wildcats +1.5 | Utah Utes @ Arizona Wildcats | -114 | S1 | win | $+87.72 |
 | 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
@@ -63,9 +67,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-11-14 | Over 52.5 | Arkansas State Red Wolves @ Coastal Carolina Chanticleers | -105 | S2 | loss | $-100.00 |
 | 2026-11-14 | Clemson Tigers -15 | Georgia Tech Yellow Jackets @ Clemson Tigers | -110 | S1 | loss | $-100.00 |
 | 2026-11-14 | Cincinnati Bearcats +3 | Cincinnati Bearcats @ Iowa State Cyclones | -110 | S6 | loss | $-100.00 |
-| 2026-11-14 | NC State Wolfpack +3 | Syracuse Orange @ NC State Wolfpack | -110 | S6 | push | $+0.00 |
-| 2026-11-14 | SMU Mustangs -1.5 | Wake Forest Demon Deacons @ SMU Mustangs | -104 | S1 | loss | $-100.00 |
-| 2026-11-14 | Under 41.5 | Wisconsin Badgers @ Maryland Terrapins | -108 | S2 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -73,19 +74,20 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 21 | 10-11-0 | 47.6% | +0.0 pts |
+| S1 | 24 | 10-11-0 | 47.6% | +0.0 pts |
 | S2 | 15 | 5-10-0 | 33.3% | -14.3 pts |
 | S3 | 3 | 1-2-0 | 33.3% | -14.3 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 49 | 22-26-1 | 45.8% | -1.8 pts |
+| S6 | 51 | 22-26-1 | 45.8% | -1.8 pts |
 
 ### Decisions
 
-no_ticket: 10, ticket: 5, skip: 4
+no_ticket: 10, ticket: 6, skip: 4
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-11-15 | skip | previous day's ticket lost (skip-day rule) |
 | 2026-11-14 | ticket | 32 qualifying leg(s); top 3 taken |
 | 2026-11-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
@@ -99,7 +101,6 @@ no_ticket: 10, ticket: 5, skip: 4
 | 2026-10-16 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-10-15 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-14 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
-| 2026-10-13 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 
 ## cfb_spread_total_parlay_v2
 
@@ -113,11 +114,12 @@ no_ticket: 10, ticket: 5, skip: 4
 
 **In lineage:**
 
-- Bets: 13 (6-7-0 W-L-P, 0 pending)
+- Bets: 14 (6-7-0 W-L-P, 1 pending)
 - Staked $1,300, profit $-136.83, ROI -10.5%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
+| 2026-11-17 | Miami (OH) RedHawks -9 (pending) | -110 | pending |  |
 | 2026-11-15 | Ole Miss Rebels +2.5 (loss) | -105 | loss | $-100.00 |
 | 2026-11-14 | Nevada Wolf Pack -5.5 (win) | -110 | win | $+90.91 |
 | 2026-11-14 | Wyoming Cowboys -7 (win) | -101 | win | $+99.01 |
@@ -136,11 +138,13 @@ no_ticket: 10, ticket: 5, skip: 4
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 31 (16-14-1 W-L-P, 0 pending)
+- Singles: 33 (16-14-1 W-L-P, 2 pending)
 - Staked $3,100, profit $+57.44, ROI +1.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S6 | pending |  |
+| 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S6 | pending |  |
 | 2026-11-15 | Ole Miss Rebels +2.5 | Ole Miss Rebels @ Oklahoma Sooners | -105 | S6 | loss | $-100.00 |
 | 2026-11-14 | North Dakota State Bison -6.5 | North Dakota State Bison @ Hawai'i Rainbow Warriors | -125 | S6 | win | $+80.00 |
 | 2026-11-14 | Colorado State Rams +9.5 | Colorado State Rams @ Washington State Cougars | -109 | S6 | loss | $-100.00 |
@@ -169,8 +173,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-11-13 | Houston Cougars -7.5 | Houston Cougars @ Colorado Buffaloes | -103 | S6 | loss | $-100.00 |
 | 2026-11-13 | UCLA Bruins -10 | Illinois Fighting Illini @ UCLA Bruins | -112 | S6 | loss | $-100.00 |
 | 2026-11-13 | Pittsburgh Panthers -3 | Florida State Seminoles @ Pittsburgh Panthers | -110 | S6 | loss | $-100.00 |
-| 2026-11-12 | Louisiana Ragin' Cajuns -10 | Louisiana Ragin' Cajuns @ UL Monroe Warhawks | -110 | S6 | win | $+90.91 |
-| 2026-11-11 | Buffalo Bulls -1 | Buffalo Bulls @ Ball State Cardinals | -103 | S6 | win | $+97.09 |
 
 ### Qualifying legs by signal
 
@@ -178,14 +180,15 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 31 | 16-14-1 | 53.3% | +5.7 pts |
+| S6 | 33 | 16-14-1 | 53.3% | +5.7 pts |
 
 ### Decisions
 
-ticket: 6
+ticket: 7
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | ticket | 2 qualifying leg(s); 1 placed; 1 priced worse than -115 |
 | 2026-11-15 | ticket | 1 qualifying leg(s); 1 placed |
 | 2026-11-14 | ticket | 24 qualifying leg(s); 6 placed; 2 priced worse than -115 |
 | 2026-11-13 | ticket | 3 qualifying leg(s); 3 placed |
