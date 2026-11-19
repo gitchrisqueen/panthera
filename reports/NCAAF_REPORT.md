@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-18T23:15:39Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-19T13:18:40Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -114,12 +114,12 @@ no_ticket: 10, ticket: 6, skip: 5
 
 **In lineage:**
 
-- Bets: 15 (7-7-0 W-L-P, 1 pending)
-- Staked $1,400, profit $-45.92, ROI -3.3%
+- Bets: 15 (7-8-0 W-L-P, 0 pending)
+- Staked $1,500, profit $-145.92, ROI -9.7%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-18 | Massachusetts Minutemen -3.5 (pending) | -107 | pending |  |
+| 2026-11-18 | Massachusetts Minutemen -3.5 (loss) | -107 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 (win) | -110 | win | $+90.91 |
 | 2026-11-15 | Ole Miss Rebels +2.5 (loss) | -105 | loss | $-100.00 |
 | 2026-11-14 | Nevada Wolf Pack -5.5 (win) | -110 | win | $+90.91 |
@@ -139,12 +139,12 @@ no_ticket: 10, ticket: 6, skip: 5
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 34 (17-15-1 W-L-P, 1 pending)
-- Staked $3,300, profit $+48.35, ROI +1.5%
+- Singles: 34 (17-16-1 W-L-P, 0 pending)
+- Staked $3,400, profit $-51.65, ROI -1.5%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-18 | Massachusetts Minutemen -3.5 | Akron Zips @ Massachusetts Minutemen | -107 | S6 | pending |  |
+| 2026-11-18 | Massachusetts Minutemen -3.5 | Akron Zips @ Massachusetts Minutemen | -107 | S6 | loss | $-100.00 |
 | 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S6 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S6 | win | $+90.91 |
 | 2026-11-15 | Ole Miss Rebels +2.5 | Ole Miss Rebels @ Oklahoma Sooners | -105 | S6 | loss | $-100.00 |
@@ -181,7 +181,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 34 | 17-15-1 | 53.1% | +5.5 pts |
+| S6 | 34 | 17-16-1 | 51.5% | +3.9 pts |
 
 ### Decisions
 
