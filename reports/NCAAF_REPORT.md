@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-19T23:11:56Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-20T13:18:11Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -32,12 +32,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 91 (39-50-1 W-L-P, 1 pending)
-- Staked $9,000, profit $-1,467.08, ROI -16.3%
+- Singles: 91 (39-51-1 W-L-P, 0 pending)
+- Staked $9,100, profit $-1,567.08, ROI -17.2%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | pending |  |
+| 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | loss | $-100.00 |
 | 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S1+S6 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S1+S6 | win | $+90.91 |
 | 2026-11-17 | Western Michigan Broncos -15 | Eastern Michigan Eagles @ Western Michigan Broncos | -112 | S1 | loss | $-100.00 |
@@ -79,7 +79,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 | S3 | 3 | 1-2-0 | 33.3% | -14.3 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 52 | 23-27-1 | 46.0% | -1.6 pts |
+| S6 | 52 | 23-28-1 | 45.1% | -2.5 pts |
 
 ### Decisions
 
@@ -114,12 +114,12 @@ no_ticket: 11, ticket: 6, skip: 5
 
 **In lineage:**
 
-- Bets: 16 (7-8-0 W-L-P, 1 pending)
-- Staked $1,500, profit $-145.92, ROI -9.7%
+- Bets: 16 (7-9-0 W-L-P, 0 pending)
+- Staked $1,600, profit $-245.92, ROI -15.4%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-19 | Temple Owls -2.5 (pending) | -113 | pending |  |
+| 2026-11-19 | Temple Owls -2.5 (loss) | -113 | loss | $-100.00 |
 | 2026-11-18 | Massachusetts Minutemen -3.5 (loss) | -107 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 (win) | -110 | win | $+90.91 |
 | 2026-11-15 | Ole Miss Rebels +2.5 (loss) | -105 | loss | $-100.00 |
@@ -140,12 +140,12 @@ no_ticket: 11, ticket: 6, skip: 5
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 35 (17-16-1 W-L-P, 1 pending)
-- Staked $3,400, profit $-51.65, ROI -1.5%
+- Singles: 35 (17-17-1 W-L-P, 0 pending)
+- Staked $3,500, profit $-151.65, ROI -4.3%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | pending |  |
+| 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | loss | $-100.00 |
 | 2026-11-18 | Massachusetts Minutemen -3.5 | Akron Zips @ Massachusetts Minutemen | -107 | S6 | loss | $-100.00 |
 | 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S6 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S6 | win | $+90.91 |
@@ -182,7 +182,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 35 | 17-16-1 | 51.5% | +3.9 pts |
+| S6 | 35 | 17-17-1 | 50.0% | +2.4 pts |
 
 ### Decisions
 
