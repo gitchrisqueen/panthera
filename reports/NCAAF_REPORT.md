@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-20T21:38:26Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-21T13:17:23Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -16,12 +16,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 **In lineage:**
 
-- Tickets: 7 (0-6-0 W-L-P, 1 pending)
-- Staked $600, profit $-600.00, ROI -100.0%
+- Tickets: 7 (1-6-0 W-L-P, 0 pending)
+- Staked $700, profit $-9.99, ROI -1.4%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-20 | Toledo Rockets -16 (pending)<br>Oregon Ducks -17.5 (pending)<br>Air Force Falcons -21.5 (pending) | +590 | pending |  |
+| 2026-11-20 | Toledo Rockets -16 (win)<br>Oregon Ducks -17.5 (win)<br>Air Force Falcons -21.5 (win) | +590 | win | $+590.01 |
 | 2026-11-17 | Ohio Bobcats -9.5 (loss)<br>Miami (OH) RedHawks -9 (win)<br>Western Michigan Broncos -15 (loss) | +550 | loss | $-100.00 |
 | 2026-11-14 | Cincinnati Bearcats +3 (loss)<br>NC State Wolfpack +3 (push)<br>SMU Mustangs -1.5 (loss) | +615 | loss | $-100.00 |
 | 2026-10-20 | Florida International Panthers -9.5 (loss)<br>Delaware Blue Hens -2 (win)<br>Over 65.5 (loss) | +581 | loss | $-100.00 |
@@ -33,14 +33,14 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 94 (39-51-1 W-L-P, 3 pending)
-- Staked $9,100, profit $-1,567.08, ROI -17.2%
+- Singles: 94 (42-51-1 W-L-P, 0 pending)
+- Staked $9,400, profit $-1,295.93, ROI -13.8%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-20 | Oregon Ducks -17.5 | Oregon Ducks @ Michigan State Spartans | -109 | S1 | pending |  |
-| 2026-11-20 | Air Force Falcons -21.5 | UTEP Miners @ Air Force Falcons | -110 | S6 | pending |  |
-| 2026-11-20 | Toledo Rockets -16 | Bowling Green Falcons @ Toledo Rockets | -113 | S1+S6 | pending |  |
+| 2026-11-20 | Oregon Ducks -17.5 | Oregon Ducks @ Michigan State Spartans | -109 | S1 | win | $+91.74 |
+| 2026-11-20 | Air Force Falcons -21.5 | UTEP Miners @ Air Force Falcons | -110 | S6 | win | $+90.91 |
+| 2026-11-20 | Toledo Rockets -16 | Bowling Green Falcons @ Toledo Rockets | -113 | S1+S6 | win | $+88.50 |
 | 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | loss | $-100.00 |
 | 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S1+S6 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 | Miami (OH) RedHawks @ Kent State Golden Flashes | -110 | S1+S6 | win | $+90.91 |
@@ -75,12 +75,12 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 26 | 11-13-0 | 45.8% | -1.8 pts |
+| S1 | 26 | 13-13-0 | 50.0% | +2.4 pts |
 | S2 | 15 | 5-10-0 | 33.3% | -14.3 pts |
 | S3 | 3 | 1-2-0 | 33.3% | -14.3 pts |
 | S4 | 5 | 4-1-0 | 80.0% | +32.4 pts |
 | S5 | 4 | 2-2-0 | 50.0% | +2.4 pts |
-| S6 | 54 | 23-28-1 | 45.1% | -2.5 pts |
+| S6 | 54 | 25-28-1 | 47.2% | -0.4 pts |
 
 ### Decisions
 
@@ -115,14 +115,14 @@ no_ticket: 11, ticket: 7, skip: 5
 
 **In lineage:**
 
-- Bets: 19 (7-9-0 W-L-P, 3 pending)
-- Staked $1,600, profit $-245.92, ROI -15.4%
+- Bets: 19 (10-9-0 W-L-P, 0 pending)
+- Staked $1,900, profit $+26.08, ROI +1.4%
 
 | Date | Legs | Price | Status | Profit |
 |---|---|---|---|---|
-| 2026-11-20 | UCF Knights +1.5 (pending) | -108 | pending |  |
-| 2026-11-20 | Toledo Rockets -16 (pending) | -113 | pending |  |
-| 2026-11-20 | Air Force Falcons -21.5 (pending) | -110 | pending |  |
+| 2026-11-20 | UCF Knights +1.5 (win) | -108 | win | $+92.59 |
+| 2026-11-20 | Toledo Rockets -16 (win) | -113 | win | $+88.50 |
+| 2026-11-20 | Air Force Falcons -21.5 (win) | -110 | win | $+90.91 |
 | 2026-11-19 | Temple Owls -2.5 (loss) | -113 | loss | $-100.00 |
 | 2026-11-18 | Massachusetts Minutemen -3.5 (loss) | -107 | loss | $-100.00 |
 | 2026-11-17 | Miami (OH) RedHawks -9 (win) | -110 | win | $+90.91 |
@@ -144,14 +144,14 @@ no_ticket: 11, ticket: 7, skip: 5
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Includes legs the daily cap or the price floor kept off the placed bets above.
 
-- Singles: 38 (17-17-1 W-L-P, 3 pending)
-- Staked $3,500, profit $-151.65, ROI -4.3%
+- Singles: 38 (20-17-1 W-L-P, 0 pending)
+- Staked $3,800, profit $+120.35, ROI +3.2%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-20 | Air Force Falcons -21.5 | UTEP Miners @ Air Force Falcons | -110 | S6 | pending |  |
-| 2026-11-20 | Toledo Rockets -16 | Bowling Green Falcons @ Toledo Rockets | -113 | S6 | pending |  |
-| 2026-11-20 | UCF Knights +1.5 | Iowa State Cyclones @ UCF Knights | -108 | S6 | pending |  |
+| 2026-11-20 | Air Force Falcons -21.5 | UTEP Miners @ Air Force Falcons | -110 | S6 | win | $+90.91 |
+| 2026-11-20 | Toledo Rockets -16 | Bowling Green Falcons @ Toledo Rockets | -113 | S6 | win | $+88.50 |
+| 2026-11-20 | UCF Knights +1.5 | Iowa State Cyclones @ UCF Knights | -108 | S6 | win | $+92.59 |
 | 2026-11-19 | Temple Owls -2.5 | Rice Owls @ Temple Owls | -113 | S6 | loss | $-100.00 |
 | 2026-11-18 | Massachusetts Minutemen -3.5 | Akron Zips @ Massachusetts Minutemen | -107 | S6 | loss | $-100.00 |
 | 2026-11-17 | Ohio Bobcats -9.5 | Ball State Cardinals @ Ohio Bobcats | -125 | S6 | loss | $-100.00 |
@@ -186,7 +186,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S6 | 38 | 17-17-1 | 50.0% | +2.4 pts |
+| S6 | 38 | 20-17-1 | 54.1% | +6.4 pts |
 
 ### Decisions
 
