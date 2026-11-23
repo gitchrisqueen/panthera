@@ -104,3 +104,7 @@ panthera-mvp lab status
   manual `ncaabase-capture` workflow records real ones.
 - Wednesday is a HYBRID day; historical backtests skip it (no start times in
   the archives) — only forward paper-trading tests hybrid slots.
+
+## Frontend design
+
+UI changes follow the maintainer's design standard: plan how each section is shown, use the brand tokens, and verify in a rendered browser at desktop, tablet and phone widths in light and dark.
