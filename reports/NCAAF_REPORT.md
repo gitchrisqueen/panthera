@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-22T23:15:40Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-24T22:38:45Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -34,11 +34,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 137 (65-71-1 W-L-P, 0 pending)
+- Singles: 138 (65-71-1 W-L-P, 1 pending)
 - Staked $13,700, profit $-1,214.06, ROI -8.9%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
+| 2026-11-24 | Miami (OH) RedHawks +5 | Miami (OH) RedHawks @ Western Michigan Broncos | -108 | S1 | pending |  |
 | 2026-11-21 | Nevada Wolf Pack -6 | Hawai'i Rainbow Warriors @ Nevada Wolf Pack | -110 | S1 | win | $+90.91 |
 | 2026-11-21 | Boise State Broncos -20 | San Diego State Aztecs @ Boise State Broncos | -109 | S1 | loss | $-100.00 |
 | 2026-11-21 | Utah Utes -8 | Utah Utes @ TCU Horned Frogs | -109 | S1 | win | $+91.74 |
@@ -68,7 +69,6 @@ Every qualifying leg as a $100 straight bet at its best-available price (break-e
 | 2026-11-21 | App State Mountaineers -13.5 | UL Monroe Warhawks @ App State Mountaineers | -109 | S6 | loss | $-100.00 |
 | 2026-11-21 | Under 58.5 | Chattanooga Mocs @ Alabama Crimson Tide | -118 | S2 | win | $+84.75 |
 | 2026-11-21 | Tulsa Golden Hurricane -22.5 | Charlotte 49ers @ Tulsa Golden Hurricane | -110 | S1+S6 | win | $+90.91 |
-| 2026-11-21 | Jacksonville State Gamecocks -10.5 | Missouri State Bears @ Jacksonville State Gamecocks | -110 | S6 | loss | $-100.00 |
 
 ### Qualifying legs by signal
 
@@ -76,7 +76,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 45 | 23-22-0 | 51.1% | +3.5 pts |
+| S1 | 46 | 23-22-0 | 51.1% | +3.5 pts |
 | S2 | 23 | 10-13-0 | 43.5% | -4.1 pts |
 | S3 | 4 | 2-2-0 | 50.0% | +2.4 pts |
 | S4 | 10 | 8-2-0 | 80.0% | +32.4 pts |
@@ -85,10 +85,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 ### Decisions
 
-no_ticket: 11, ticket: 8, skip: 5
+no_ticket: 12, ticket: 8, skip: 5
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-24 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-11-21 | ticket | 43 qualifying leg(s); top 3 taken |
 | 2026-11-20 | ticket | 3 qualifying leg(s); top 3 taken |
 | 2026-11-19 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
@@ -102,7 +103,6 @@ no_ticket: 11, ticket: 8, skip: 5
 | 2026-11-10 | no_ticket | 1 qualifying leg(s); a ticket needs 3 |
 | 2026-10-22 | no_ticket | 2 qualifying leg(s); a ticket needs 3 |
 | 2026-10-21 | skip | previous day's ticket lost (skip-day rule) |
-| 2026-10-20 | ticket | 3 qualifying leg(s); top 3 taken |
 
 ## cfb_spread_total_parlay_v2
 
@@ -198,10 +198,11 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 ### Decisions
 
-ticket: 11
+ticket: 11, no_ticket: 1
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-24 | no_ticket | 0 qualifying leg(s); none to place |
 | 2026-11-21 | ticket | 22 qualifying leg(s); 6 placed; 1 priced worse than -115 |
 | 2026-11-20 | ticket | 3 qualifying leg(s); 3 placed |
 | 2026-11-19 | ticket | 1 qualifying leg(s); 1 placed |
