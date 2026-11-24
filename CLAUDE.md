@@ -107,4 +107,9 @@ panthera-mvp lab status
 
 ## Frontend design
 
-UI changes follow the maintainer's design standard: plan how each section is shown, use the brand tokens, and verify in a rendered browser at desktop, tablet and phone widths in light and dark.
+UI work here means the public dashboard in `src/panthera_mvp/dashboard_static/`. `frontend/` and `mockup/` are frozen legacy (see above): do not restyle them.
+
+- Plan how each section is shown, not just what it says, before you write markup.
+- Reuse the CSS custom-property tokens at the top of `src/panthera_mvp/dashboard_static/app.css`. Do not add one-off colors or sizes. The dashboard is light by default, follows `prefers-color-scheme`, and has a manual `data-theme` override.
+- Verify in a rendered browser at desktop, tablet and phone widths, in light and dark. Reading the source is not visual verification. `python scripts/site_audit.py` builds the site, serves it and checks layout geometry in headless Chromium (needs `pip install -e ".[audit]" && python -m playwright install chromium`).
+- If no browser is available, say in the PR that the visual check was not done. Do not claim it.
