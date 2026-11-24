@@ -1,6 +1,6 @@
 # Lab: weekly hill-climb
 
-_Generated 2026-11-17T12:49:42Z by `panthera-mvp lab run`. Do not edit._
+_Generated 2026-11-24T12:49:34Z by `panthera-mvp lab run`. Do not edit._
 
 > Exploratory lab: selected on past data, not verdict-eligible; ~17,800 straight bets are needed to confirm a +2% ROI, so most weeks correctly end in no change.
 
@@ -12,7 +12,7 @@ Evaluator `lab_eval_v1`. Champion `e050ea59da`, effective from 2026-11-09 (initi
 
 Challengers evaluated so far: 0. To be promoted, a challenger needs at least 100 graded training bets; at least 30 games where the challenger differs from the champion; a paired z >= 2.35 (floor 2.0, raised by the multiple-testing penalty) that still holds with its single best game removed; and a holdout (the newest 3 weeks) where it is strictly better than the champion in mean profit per game where either bets, with at least one differing game. With fewer than 50 graded training games the run records `insufficient_data`. Details: `docs/lab/PROGRAM.md`.
 
-**Replayed since 2026-11-09:** 13 graded bets, -1.37 units, ROI -10.5% per bet. Selected on past data; replayed from the logged features, not a live ticket.
+**Replayed since 2026-11-09:** 25 graded bets, -3.77 units, ROI -15.1% per bet. Selected on past data; replayed from the logged features, not a live ticket.
 
 | Parameter | Value |
 |---|---|
@@ -41,6 +41,7 @@ Challengers evaluated so far: 0. To be promoted, a challenger needs at least 100
 
 | Run (UTC) | Week | Decision | Change tested | n | Challenger z (needed) | Why |
 |---|---|---|---|---|---|---|
+| 2026-11-24T12:49:34Z | 2026-W48 | insufficient_data | - | 0 | - (-) | 0 graded training games, need 50 (holdout is the newest 3 weeks) |
 | 2026-11-17T12:49:42Z | 2026-W47 | insufficient_data | - | 0 | - (-) | 0 graded training games, need 50 (holdout is the newest 3 weeks) |
 | 2026-11-09T23:20:18Z | 2026-W46 | insufficient_data | - | 0 | - (-) | no feature rows logged yet |
 | 2026-11-09T22:55:30Z | 2026-W46 | insufficient_data | - | 0 | - (-) | no feature rows logged yet |
