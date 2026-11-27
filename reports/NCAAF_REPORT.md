@@ -1,6 +1,6 @@
 # NCAAF strategies
 
-_Generated 2026-11-26T23:38:46Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
+_Generated 2026-11-27T13:18:05Z by `panthera-mvp ncaaf report` from `data/ncaaf/tickets/`. Do not edit._
 
 Paper trades only: flat stakes, no real money. Intake record and the author's answers: `docs/strategy-intake/`.
 
@@ -34,12 +34,12 @@ Paper trades only: flat stakes, no real money. Intake record and the author's an
 
 Every qualifying leg as a $100 straight bet at its best-available price (break-even 52.4% at -110). Descriptive: the strategy's bet is still the ticket.
 
-- Singles: 139 (66-71-1 W-L-P, 1 pending)
-- Staked $13,800, profit $-1,121.47, ROI -8.1%
+- Singles: 139 (67-71-1 W-L-P, 0 pending)
+- Staked $13,900, profit $-1,025.32, ROI -7.4%
 
 | Date | Pick | Matchup | Price | Signals | Result | P/L |
 |---|---|---|---|---|---|---|
-| 2026-11-26 | Texas Tech Red Raiders -14 | TCU Horned Frogs @ Texas Tech Red Raiders | -104 | S1 | pending |  |
+| 2026-11-26 | Texas Tech Red Raiders -14 | TCU Horned Frogs @ Texas Tech Red Raiders | -104 | S1 | win | $+96.15 |
 | 2026-11-24 | Miami (OH) RedHawks +5 | Miami (OH) RedHawks @ Western Michigan Broncos | -108 | S1 | win | $+92.59 |
 | 2026-11-21 | Nevada Wolf Pack -6 | Hawai'i Rainbow Warriors @ Nevada Wolf Pack | -110 | S1 | win | $+90.91 |
 | 2026-11-21 | Boise State Broncos -20 | San Diego State Aztecs @ Boise State Broncos | -109 | S1 | loss | $-100.00 |
@@ -76,7 +76,7 @@ Every leg the engine found qualifying, on the ticket or not, graded at its best-
 
 | Signal | Legs | W-L-P | Win % | vs 52.4% |
 |---|---|---|---|---|
-| S1 | 47 | 24-22-0 | 52.2% | +4.6 pts |
+| S1 | 47 | 25-22-0 | 53.2% | +5.6 pts |
 | S2 | 23 | 10-13-0 | 43.5% | -4.1 pts |
 | S3 | 4 | 2-2-0 | 50.0% | +2.4 pts |
 | S4 | 10 | 8-2-0 | 80.0% | +32.4 pts |
